@@ -880,14 +880,167 @@ header{
 #audio-toggle:hover, #audio-toggle.on{opacity:1}
 #audio-toggle svg{width:16px; height:16px}
 
-#stats-toggle{
-  position:fixed; top:6px; right:38px; z-index:8;
+#stats-toggle, #sanctum-toggle, #transmute-toggle{
+  position:fixed; top:6px; z-index:8;
   background:transparent; border:none; padding:6px;
   cursor:pointer;
   color:var(--gold); opacity:.55;
 }
-#stats-toggle:hover{opacity:1}
-#stats-toggle svg{width:16px; height:16px}
+#stats-toggle{right:38px}
+#sanctum-toggle{right:68px}
+#transmute-toggle{right:98px}
+#stats-toggle:hover, #sanctum-toggle:hover, #transmute-toggle:hover{opacity:1}
+#stats-toggle svg, #sanctum-toggle svg, #transmute-toggle svg{width:16px; height:16px}
+#sanctum-toggle.has-stars{opacity:1; color:var(--gold-bright); animation:glowStars 2.5s ease-in-out infinite}
+#transmute-toggle.ready{opacity:1; color:var(--gold-bright); animation:glowReady 2s ease-in-out infinite}
+@keyframes glowStars{0%,100%{filter:drop-shadow(0 0 4px var(--gold-glow))} 50%{filter:drop-shadow(0 0 10px var(--gold-bright))}}
+@keyframes glowReady{0%,100%{filter:drop-shadow(0 0 6px var(--gold-glow))} 50%{filter:drop-shadow(0 0 14px var(--gold-bright))}}
+
+/* TRANSMUTATION + SANCTUM */
+.trm-locked{padding:18px 12px; text-align:center}
+.trm-locked-title{
+  font-family:"Cinzel", serif; font-weight:900;
+  letter-spacing:.34em; font-size:13px;
+  color:var(--gold-dark); margin-bottom:10px;
+}
+.trm-locked p{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:14px; color:var(--parchment-2);
+  margin:0 0 8px;
+}
+.trm-stars-preview{
+  text-align:center;
+  background:radial-gradient(ellipse at 50% 50%, rgba(232,200,120,.12), transparent 70%);
+  border:1px solid var(--gold);
+  padding:14px;
+  margin:0 0 14px;
+  position:relative;
+}
+.trm-stars-preview::before, .trm-stars-preview::after{
+  content:""; position:absolute; width:7px; height:7px;
+  border:1.4px solid var(--gold-bright); pointer-events:none;
+}
+.trm-stars-preview::before{top:-1px; left:-1px; border-right:none; border-bottom:none}
+.trm-stars-preview::after{bottom:-1px; right:-1px; border-left:none; border-top:none}
+.trm-stars-preview .trm-num{
+  font-family:"Cinzel", serif; font-weight:900;
+  font-size:48px; letter-spacing:.1em;
+  color:var(--gold-bright);
+  text-shadow:0 0 24px var(--gold-glow);
+  line-height:1;
+}
+.trm-stars-preview .trm-label{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:13px; color:var(--gold);
+  letter-spacing:.18em;
+  margin-top:4px;
+}
+.trm-warn{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:13px; color:var(--blood);
+  text-align:center; margin:8px 0;
+}
+.trm-warn em{color:#c84a2a; font-weight:700}
+.trm-keep{
+  font-family:"Cormorant Garamond", serif;
+  font-size:13px; color:var(--parchment-2);
+  text-align:center; margin:8px 0 14px;
+}
+.trm-keep strong{color:var(--gold-bright); font-weight:700}
+.trm-confirm{
+  display:block; width:100%;
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:11px; letter-spacing:.32em;
+  color:#000; background:linear-gradient(180deg, var(--gold-bright), var(--gold));
+  border:1px solid var(--gold-bright);
+  padding:10px;
+  cursor:pointer;
+  text-transform:uppercase;
+  box-shadow:0 0 16px var(--gold-glow);
+  position:relative;
+}
+.trm-confirm::before, .trm-confirm::after{
+  content:""; position:absolute; width:8px; height:8px;
+  border:1.5px solid var(--gold-bright);
+}
+.trm-confirm::before{top:-3px; left:-3px; border-right:none; border-bottom:none}
+.trm-confirm::after{bottom:-3px; right:-3px; border-left:none; border-top:none}
+.trm-hint{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:11px; color:var(--gold); opacity:.6;
+  text-align:center; margin:8px 0 0;
+}
+
+.sanctum-intro{
+  text-align:center;
+  background:linear-gradient(180deg, #2a1f1a, #1a1410);
+  border:1px solid var(--gold);
+  padding:8px;
+  margin-bottom:10px;
+  position:relative;
+}
+.sanctum-intro::before, .sanctum-intro::after{
+  content:""; position:absolute; width:6px; height:6px;
+  border:1px solid var(--gold-bright); pointer-events:none;
+}
+.sanctum-intro::before{top:-1px; left:-1px; border-right:none; border-bottom:none}
+.sanctum-intro::after{bottom:-1px; right:-1px; border-left:none; border-top:none}
+.sanctum-stars .num{
+  font-family:"Cinzel"; font-weight:900;
+  font-size:30px; color:var(--gold-bright);
+  text-shadow:0 0 16px var(--gold-glow);
+}
+.sanctum-stars .lbl{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:12px; color:var(--gold); display:block;
+  letter-spacing:.16em;
+}
+.sanctum-totals{
+  font-family:"VT323", monospace; font-size:13px;
+  color:var(--parchment-2); margin-top:4px;
+}
+.sanctum-row{
+  background:linear-gradient(180deg, #2a1f1a, #1a1410);
+  border:1px solid var(--gold-dark);
+  padding:8px 10px;
+  margin-bottom:6px;
+  position:relative;
+  cursor:pointer;
+  transition:border-color .2s, box-shadow .2s, filter .2s;
+}
+.sanctum-row::before, .sanctum-row::after{
+  content:""; position:absolute; width:6px; height:6px;
+  border:1px solid var(--gold); pointer-events:none;
+}
+.sanctum-row::before{top:-1px; left:-1px; border-right:none; border-bottom:none}
+.sanctum-row::after{bottom:-1px; right:-1px; border-left:none; border-top:none}
+.sanctum-row:hover:not(.unaff):not(.owned){border-color:var(--gold-bright); box-shadow:0 0 12px var(--gold-glow)}
+.sanctum-row.unaff{filter:grayscale(.6) brightness(.7); cursor:not-allowed}
+.sanctum-row.owned{
+  border-color:var(--gold-bright);
+  background:linear-gradient(180deg, #3d2818, #2a1810);
+  cursor:default;
+}
+.sanctum-name{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:11px; letter-spacing:.18em;
+  color:var(--gold-bright); text-transform:uppercase;
+  margin-bottom:3px;
+}
+.sanctum-desc{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:13px; color:var(--parchment-2);
+  margin-bottom:5px;
+}
+.sanctum-bottom{
+  display:flex; justify-content:space-between; align-items:center;
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:10px; letter-spacing:.22em;
+}
+.sanctum-cost{color:var(--gold-bright)}
+.sanctum-buy{color:#000; background:linear-gradient(180deg, var(--gold-bright), var(--gold)); padding:3px 7px}
+.sanctum-row.unaff .sanctum-buy{background:#3a2818; color:var(--gold-dark)}
+.sanctum-owned{color:var(--gold-bright); letter-spacing:.32em; opacity:.85}
 
 /* ================ MODAL ================ */
 .modal{
@@ -1178,6 +1331,17 @@ header{
 <canvas id="fx"></canvas>
 <canvas id="cinema"></canvas>
 
+<button id="sanctum-toggle" title="Sanctum">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+    <polygon points="12,3 14,9 20,9.5 15,13.5 17,20 12,16 7,20 9,13.5 4,9.5 10,9"/>
+  </svg>
+</button>
+<button id="transmute-toggle" title="Transmutation">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+    <circle cx="12" cy="12" r="9"/>
+    <path d="M12 4 L12 20 M4 12 L20 12 M6 6 L18 18 M6 18 L18 6"/>
+  </svg>
+</button>
 <button id="stats-toggle" title="Statistiques">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
     <rect x="4" y="13" width="3" height="7"/>
@@ -1192,6 +1356,40 @@ header{
     <path d="M16 8 q3 4 0 8 M19 6 q5 6 0 12"/>
   </svg>
 </button>
+
+<!-- TRANSMUTATION modal -->
+<div id="transmute-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-close" id="transmute-close" aria-label="Fermer">×</div>
+    <h2>TRANSMUTATIO</h2>
+    <div class="modal-subtitle">— le rite des étoiles —</div>
+    <div class="divider">
+      <svg viewBox="0 0 200 16" fill="none" stroke="currentColor" stroke-width=".8">
+        <path d="M0 8 H80 M120 8 H200"/>
+        <path d="M88 8 q4 -6 8 0 q4 6 8 0"/>
+        <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="stats-body" id="transmute-body"></div>
+  </div>
+</div>
+
+<!-- SANCTUM (boutique d'upgrades permanents) -->
+<div id="sanctum-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-close" id="sanctum-close" aria-label="Fermer">×</div>
+    <h2>SANCTUM</h2>
+    <div class="modal-subtitle">— les graveurs d'étoiles —</div>
+    <div class="divider">
+      <svg viewBox="0 0 200 16" fill="none" stroke="currentColor" stroke-width=".8">
+        <path d="M0 8 H80 M120 8 H200"/>
+        <path d="M88 8 q4 -6 8 0 q4 6 8 0"/>
+        <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="stats-body" id="sanctum-body"></div>
+  </div>
+</div>
 
 <!-- ATHANOR modal -->
 <div id="athanor-modal" class="modal">
@@ -2580,6 +2778,12 @@ const STATE = {
   lastSaveTime: Date.now(),
   lastOfflineMs: 0,
   totalPlayMs: 0,
+
+  // Prestige / Transmutation
+  stars: 0,            // monnaie permanente
+  totalStars: 0,       // lifetime stars gagnées
+  transmutations: 0,   // nombre de transmutations effectuées
+  upgrades: {},        // id -> niveau acheté (0 ou 1)
   selectedCodex: null,
 };
 
@@ -2640,6 +2844,180 @@ function refreshQuests(){
     q.done = !q.claimed && q.progress >= q.target;
   }
   renderQuests();
+}
+
+/* ================ PRESTIGE / TRANSMUTATION ================ */
+const UPGRADES = [
+  { id:"verbum",  name:"Verbum Cordis",   cost:5,  desc:"L'éther murmure plus fort. +25% régénération d'étincelle.",  effect:{regenMul:1.25} },
+  { id:"lapis",   name:"Lapis Mater",     cost:8,  desc:"Le calice s'étend. +25% capacité d'étincelle.",              effect:{essenceMaxMul:1.25} },
+  { id:"mercurio",name:"Mercurio Volatil",cost:12, desc:"Mercure rapide. Cooldowns des cauldrons réduits de 15%.",     effect:{cdMul:.85} },
+  { id:"sol",     name:"Sol Aurum",       cost:16, desc:"L'or solaire afflue. Quêtes : récompense +25%.",              effect:{questGoldMul:1.25} },
+  { id:"fulmen",  name:"Fulmen",          cost:22, desc:"La foudre paie. Chaque fusion T2+ rapporte +3 couronnes.",    effect:{mergeBonus:3} },
+  { id:"anima",   name:"Anima Mundi",     cost:30, desc:"L'âme du monde s'incarne. 8% de chance de spawn directement à T1.", effect:{t1Chance:.08} },
+];
+
+function calcTransmuteStars(){
+  // Étoiles = floor(sumMerged/100) + bonus paliers
+  let stars = Math.floor(sumMerged(STATE) / 80);
+  // Bonus par voie atteinte
+  for(let c=0;c<3;c++){
+    const t = STATE.totals.maxTier[c];
+    if(t >= 5) stars += 1;
+    if(t >= 6) stars += 2;
+    if(t >= 7) stars += 5;
+  }
+  // Bonus achievements
+  stars += Math.floor(Object.keys(STATE.achievements||{}).length / 4);
+  // Bonus paliers totaux
+  stars += Math.floor(sumProduced(STATE) / 200);
+  return Math.max(1, stars);
+}
+
+function canTransmute(){
+  // Doit avoir au moins une voie à T6+
+  return STATE.totals.maxTier.some(t => t >= 6);
+}
+
+function openTransmute(){
+  const modal = document.getElementById("transmute-modal");
+  const body = document.getElementById("transmute-body");
+  if(!canTransmute()){
+    body.innerHTML = `
+      <div class="trm-locked">
+        <div class="trm-locked-title">SCEAU SCELLÉ</div>
+        <p>Le rituel de Transmutation requiert qu'au moins <em>une voie atteigne le palier de Transcendance</em> (VI).</p>
+        <p style="opacity:.7">Atteins l'Arbre-Monde, l'Étoile Polaire ou l'Akasha pour briser le sceau.</p>
+      </div>
+    `;
+  } else {
+    const stars = calcTransmuteStars();
+    body.innerHTML = `
+      <div class="trm-stars-preview">
+        <div class="trm-num">${stars}</div>
+        <div class="trm-label">étoiles à graver</div>
+      </div>
+      <p class="trm-warn">Tu réinitialiseras le cabinet. Ton plateau, tes couronnes, tes générateurs et tes quêtes <em>seront effacés</em>.</p>
+      <p class="trm-keep">Conservés : <strong>Hauts Faits</strong>, <strong>Codex</strong>, <strong>statistiques totales</strong>, et tes <strong>${STATE.stars||0} ★</strong> permanents.</p>
+      <button class="trm-confirm" id="trm-confirm">CONFIRMER LA TRANSMUTATION</button>
+      <p class="trm-hint">Toucher en dehors pour annuler.</p>
+    `;
+    document.getElementById("trm-confirm").addEventListener("click", doTransmute);
+  }
+  modal.classList.add("show");
+}
+
+function doTransmute(){
+  const stars = calcTransmuteStars();
+  // Cinematique courte
+  const ge = document.getElementById("grand-oeuvre");
+  document.getElementById("ouvre-text").textContent = "TRANSMUTATIO";
+  document.getElementById("ouvre-sub").textContent = "— +" + stars + " ★ étoiles permanentes —";
+  ge.classList.add("show");
+  cinematicBurst("#e8c878", 7);
+  sfxGrand(7);
+  vibrate([60, 80, 60, 80, 60, 80, 200]);
+  setTimeout(()=>ge.classList.remove("show"), 4200);
+
+  // Mémoire qui survit
+  STATE.stars = (STATE.stars||0) + stars;
+  STATE.totalStars = (STATE.totalStars||0) + stars;
+  STATE.transmutations = (STATE.transmutations||0) + 1;
+
+  // Reset board, gold, quests, totals
+  STATE.gold = 0;
+  STATE.grid = Array.from({length:ROWS},()=>Array(COLS).fill(null));
+  STATE.firstReached = [0,0,0];
+  STATE.totals = { produced:[0,0,0], merged:[0,0,0], maxTier:[0,0,0] };
+  // Reset générateurs niveaux/cooldown mais garde l'unlock Athanor (durable)
+  const athUnlocked = STATE.generators[3]?.unlocked;
+  STATE.generators = [
+    { chain:0, tier:0, cost:3, cdMs:1500, lastFire:0, unlocked:true, kind:"cauldron" },
+    { chain:1, tier:0, cost:5, cdMs:2200, lastFire:0, unlocked:true, kind:"cauldron" },
+    { chain:2, tier:0, cost:8, cdMs:3000, lastFire:0, unlocked:true, kind:"cauldron" },
+    { chain:3, tier:0, cost:0, cdMs:0,    lastFire:0, unlocked:!!athUnlocked, kind:"athanor", unlockCost:500 },
+  ];
+  STATE.activeEvents = {};
+  applyEventModifiers();
+  rebuildQuests();
+  applyUpgrades();
+  applyProgressionBonuses();
+  STATE.essence = STATE.essenceMax;
+  renderGenerators();
+  renderAll();
+  refreshQuests();
+  renderCodex();
+  document.getElementById("transmute-modal").classList.remove("show");
+}
+
+function applyUpgrades(){
+  // Reset aux valeurs de base puis applique upgrades
+  let regenMul = 1, essenceMaxMul = 1, cdMul = 1;
+  for(const u of UPGRADES){
+    if((STATE.upgrades?.[u.id]||0) > 0){
+      const e = u.effect;
+      if(e.regenMul) regenMul *= e.regenMul;
+      if(e.essenceMaxMul) essenceMaxMul *= e.essenceMaxMul;
+      if(e.cdMul) cdMul *= e.cdMul;
+    }
+  }
+  STATE.upgradeRegenMul = regenMul;
+  STATE.upgradeEssenceMaxMul = essenceMaxMul;
+  STATE.upgradeCdMul = cdMul;
+}
+
+function getQuestGoldMul(){
+  return (STATE.upgrades?.sol > 0) ? 1.25 : 1;
+}
+function getMergeBonusGold(){
+  return (STATE.upgrades?.fulmen > 0) ? 3 : 0;
+}
+function getT1SpawnChance(){
+  return (STATE.upgrades?.anima > 0) ? .08 : 0;
+}
+
+function openSanctum(){
+  const modal = document.getElementById("sanctum-modal");
+  const body = document.getElementById("sanctum-body");
+  body.innerHTML = "";
+  const intro = document.createElement("div");
+  intro.className = "sanctum-intro";
+  intro.innerHTML = `
+    <div class="sanctum-stars">
+      <span class="num">${STATE.stars||0}</span>
+      <span class="lbl">étoiles disponibles</span>
+    </div>
+    <div class="sanctum-totals">Lifetime : ${STATE.totalStars||0} ★ · ${STATE.transmutations||0} transmutations</div>
+  `;
+  body.appendChild(intro);
+  for(const u of UPGRADES){
+    const owned = (STATE.upgrades?.[u.id]||0) > 0;
+    const canBuy = !owned && STATE.stars >= u.cost;
+    const div = document.createElement("div");
+    div.className = "sanctum-row" + (owned ? " owned" : (canBuy ? "" : " unaff"));
+    div.innerHTML = `
+      <div class="sanctum-name">${u.name}</div>
+      <div class="sanctum-desc">${u.desc}</div>
+      <div class="sanctum-bottom">
+        ${owned ? '<span class="sanctum-owned">ACQUIS</span>' : `<span class="sanctum-cost">${u.cost} ★</span><span class="sanctum-buy">${canBuy ? "ACQUÉRIR" : "ATTENDRE"}</span>`}
+      </div>
+    `;
+    if(canBuy){ div.addEventListener("click", ()=>buyUpgrade(u.id)); }
+    body.appendChild(div);
+  }
+  modal.classList.add("show");
+}
+
+function buyUpgrade(id){
+  const u = UPGRADES.find(x=>x.id===id);
+  if(!u || (STATE.upgrades?.[id]||0)>0 || STATE.stars < u.cost){ sfxDeny(); return; }
+  STATE.stars -= u.cost;
+  STATE.upgrades = STATE.upgrades || {};
+  STATE.upgrades[id] = 1;
+  applyUpgrades();
+  applyProgressionBonuses();
+  sfxClaim();
+  vibrate([15, 30, 15, 60]);
+  openSanctum(); // refresh
 }
 
 /* ================ ÉVÈNEMENTS ALÉATOIRES ================ */
@@ -3271,6 +3649,17 @@ function renderStats(){
   $gold.title = STATE.gold + " couronnes";
   const modal = document.getElementById("stats-modal");
   if(modal && modal.classList.contains("show")) renderStatsBody();
+  // Sanctum + Transmute toggle visibility
+  const sanc = document.getElementById("sanctum-toggle");
+  const trm = document.getElementById("transmute-toggle");
+  if(sanc){
+    sanc.style.display = (STATE.transmutations > 0 || STATE.stars > 0) ? "" : "none";
+    sanc.classList.toggle("has-stars", (STATE.stars||0) > 0);
+  }
+  if(trm){
+    trm.style.display = canTransmute() ? "" : "none";
+    trm.classList.toggle("ready", canTransmute());
+  }
 }
 
 function renderStatsBody(){
@@ -3314,6 +3703,15 @@ function renderStatsBody(){
   html.push(`<div class="stats-row"><span class="lbl">Quêtes réclamées</span><span class="val">${STATE.quests.filter(q=>q.claimed).length}/${STATE.quests.length}</span></div>`);
   html.push(`</div>`);
 
+  if((STATE.transmutations||0) > 0 || (STATE.totalStars||0) > 0){
+    html.push(`<div class="stats-section"><h3>Transmutations</h3>`);
+    html.push(`<div class="stats-row"><span class="lbl">Transmutations</span><span class="val">${STATE.transmutations||0}</span></div>`);
+    html.push(`<div class="stats-row"><span class="lbl">Étoiles disponibles</span><span class="val">${STATE.stars||0} ★</span></div>`);
+    html.push(`<div class="stats-row"><span class="lbl">Étoiles totales</span><span class="val">${STATE.totalStars||0} ★</span></div>`);
+    html.push(`<div class="stats-row"><span class="lbl">Upgrades acquis</span><span class="val">${Object.keys(STATE.upgrades||{}).filter(k=>STATE.upgrades[k]>0).length}/${UPGRADES.length}</span></div>`);
+    html.push(`</div>`);
+  }
+
   body.innerHTML = html.join("");
 }
 
@@ -3342,9 +3740,12 @@ function fireGenerator(idx, el){
   STATE.essence -= g.cost;
   g.lastFire = now;
   const [x,y] = empties[Math.floor(Math.random()*empties.length)];
-  setTile(x,y,{ id: STATE.nextId++, chain: g.chain, tier: g.tier });
+  // Anima Mundi : chance de spawn directement à T1 au lieu de T0
+  let spawnTier = g.tier;
+  if(spawnTier === 0 && Math.random() < getT1SpawnChance()) spawnTier = 1;
+  setTile(x,y,{ id: STATE.nextId++, chain: g.chain, tier: spawnTier });
   STATE.totals.produced[g.chain]++;
-  STATE.totals.maxTier[g.chain] = Math.max(STATE.totals.maxTier[g.chain], g.tier);
+  STATE.totals.maxTier[g.chain] = Math.max(STATE.totals.maxTier[g.chain], spawnTier);
   renderTile(x,y);
   renderStats();
   refreshQuests();
@@ -3573,6 +3974,11 @@ function doMerge(fx, fy, tx, ty){
       const bonus = Math.floor((newTier * 2) * (goldMul - 1));
       if(bonus > 0){ STATE.gold += bonus; floating(bx, by + 10, "+"+bonus, "gain"); }
     }
+    // Upgrade Fulmen : +N couronnes par fusion T2+
+    if(newTier >= 2){
+      const fulmen = getMergeBonusGold();
+      if(fulmen > 0){ STATE.gold += fulmen; }
+    }
     // Hook achievements
     if(typeof checkAchievements === 'function') checkAchievements();
     renderStats();
@@ -3583,8 +3989,9 @@ function doMerge(fx, fy, tx, ty){
 function claimQuest(q){
   if(!q.done || q.claimed) return;
   q.claimed = true;
-  const goldMul = (STATE.activeEvents?.goldbreath?.multipliers?.goldMul) || 1;
-  const reward = Math.floor(q.reward * goldMul);
+  const eventGoldMul = (STATE.activeEvents?.goldbreath?.multipliers?.goldMul) || 1;
+  const upgradeGoldMul = getQuestGoldMul();
+  const reward = Math.floor(q.reward * eventGoldMul * upgradeGoldMul);
   STATE.gold += reward;
   q.actualReward = reward;
   sfxClaim();
@@ -3598,12 +4005,16 @@ function claimQuest(q){
 }
 function applyProgressionBonuses(){
   const factor = Math.max(.4, 1 - STATE.gold/4000);
-  STATE.generators.forEach((g, i)=>{
-    g.cdMs = [1500, 2200, 3000][i] * factor;
-  });
-  if(STATE.gold >= 200){ STATE.essenceMax = 80; STATE.essenceRegen = 1.4; }
-  if(STATE.gold >= 800){ STATE.essenceMax = 120; STATE.essenceRegen = 2; }
-  if(STATE.gold >= 2500){ STATE.essenceMax = 200; STATE.essenceRegen = 3; }
+  const upgradeCdMul = STATE.upgradeCdMul || 1;
+  for(let i=0; i<3; i++){
+    if(STATE.generators[i]) STATE.generators[i].cdMs = [1500, 2200, 3000][i] * factor * upgradeCdMul;
+  }
+  let baseMax = 60, baseRegen = 1;
+  if(STATE.gold >= 200){ baseMax = 80;  baseRegen = 1.4; }
+  if(STATE.gold >= 800){ baseMax = 120; baseRegen = 2; }
+  if(STATE.gold >= 2500){ baseMax = 200; baseRegen = 3; }
+  STATE.essenceMax = Math.floor(baseMax * (STATE.upgradeEssenceMaxMul || 1));
+  STATE.essenceRegen = baseRegen * (STATE.upgradeRegenMul || 1);
 }
 
 /* ================ GRAND ŒUVRE CINEMATIC ================ */
@@ -3993,6 +4404,9 @@ function save(){
       audio:STATE.audio,
       athanorUnlocked: STATE.generators[3]?.unlocked || false,
       activeEvents: STATE.activeEvents || {},
+      stars:STATE.stars||0, totalStars:STATE.totalStars||0,
+      transmutations:STATE.transmutations||0,
+      upgrades:STATE.upgrades||{},
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
   }catch(e){}
@@ -4013,6 +4427,10 @@ function load(){
     STATE.totalPlayMs = s.totalPlayMs ?? 0;
     STATE.audio = s.audio ?? true;
     if(STATE.generators[3] && s.athanorUnlocked) STATE.generators[3].unlocked = true;
+    STATE.stars = s.stars ?? 0;
+    STATE.totalStars = s.totalStars ?? 0;
+    STATE.transmutations = s.transmutations ?? 0;
+    STATE.upgrades = s.upgrades ?? {};
     // Restaurer events dont l'expiration n'est pas passée
     if(s.activeEvents){
       const nowT = Date.now();
@@ -4056,6 +4474,7 @@ function boot(){
   buildGrid();
   rebuildQuests();
   load();
+  applyUpgrades();
   applyProgressionBonuses();
   renderGenerators();
   renderAll();
@@ -4096,6 +4515,21 @@ function boot(){
   });
   document.getElementById("athanor-modal").addEventListener("click", e=>{
     if(e.target.id === "athanor-modal") document.getElementById("athanor-modal").classList.remove("show");
+  });
+
+  document.getElementById("sanctum-toggle").addEventListener("click", openSanctum);
+  document.getElementById("sanctum-close").addEventListener("click", ()=>{
+    document.getElementById("sanctum-modal").classList.remove("show");
+  });
+  document.getElementById("sanctum-modal").addEventListener("click", e=>{
+    if(e.target.id === "sanctum-modal") document.getElementById("sanctum-modal").classList.remove("show");
+  });
+  document.getElementById("transmute-toggle").addEventListener("click", openTransmute);
+  document.getElementById("transmute-close").addEventListener("click", ()=>{
+    document.getElementById("transmute-modal").classList.remove("show");
+  });
+  document.getElementById("transmute-modal").addEventListener("click", e=>{
+    if(e.target.id === "transmute-modal") document.getElementById("transmute-modal").classList.remove("show");
   });
 
   document.getElementById("start-btn").addEventListener("click", ()=>{

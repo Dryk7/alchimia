@@ -1,0 +1,2831 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#0a0709">
+<title>ALCHIMIA — Le Cabinet des Trois Voies</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&family=UnifrakturMaguntia&family=VT323&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   ALCHIMIA v2 — DA Maximum
+   - palette gothique-alchimique, 5 familles (or, parchemin, plante, pierre, essence)
+   - 32×32 sprites SVG pixel art
+   - canvas : poussière + bougies + bulles cauldron + FX de fusion
+   - cinématique Grand Œuvre
+   - aucun emoji : tout est SVG inline
+   ========================================================= */
+:root{
+  --ink:#070506;
+  --ink-2:#0e0a0c;
+  --shadow:#1a1318;
+  --panel:#1f1620;
+  --panel-2:#2a1f24;
+  --leather:#3d2a24;
+
+  --parchment:#d8c69a;
+  --parchment-2:#b8a072;
+  --parchment-3:#8a7048;
+
+  --gold-dark:#5a4528;
+  --gold:#9a7842;
+  --gold-light:#c9a25a;
+  --gold-bright:#e8c878;
+  --gold-glow:rgba(232,200,120,.4);
+
+  --plant:#5a8a4a;
+  --plant-2:#7ab36a;
+  --plant-glow:rgba(140,210,120,.6);
+
+  --mineral:#4a6a8a;
+  --mineral-2:#7aa3c8;
+  --mineral-glow:rgba(140,200,240,.6);
+
+  --essence:#6a4a8a;
+  --essence-2:#a070d0;
+  --essence-glow:rgba(180,120,240,.6);
+
+  --ember:#c84a2a;
+  --flame:#e8a050;
+  --flame-glow:rgba(232,160,80,.55);
+
+  --blood:#8a2a2a;
+}
+
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html,body{margin:0; padding:0; width:100%; height:100%; overflow:hidden; overscroll-behavior:none}
+body{
+  background:var(--ink);
+  color:var(--parchment);
+  font-family:"IM Fell English", Georgia, serif;
+  font-size:15px; line-height:1.4;
+  user-select:none; -webkit-user-select:none;
+  touch-action:none;
+}
+
+/* ================ FOND : table en bois sombre + ambiance ================ */
+#stage{
+  position:fixed; inset:0;
+  background:
+    radial-gradient(ellipse 50% 30% at 18% 4%, rgba(232,160,80,.13), transparent 60%),
+    radial-gradient(ellipse 50% 30% at 82% 4%, rgba(232,160,80,.13), transparent 60%),
+    radial-gradient(ellipse 80% 60% at 50% 50%, rgba(120,80,40,.18), transparent 70%),
+    radial-gradient(ellipse 110% 90% at 50% 50%, transparent 40%, rgba(0,0,0,.78) 100%),
+    repeating-linear-gradient(91deg,
+      #1a0f0a 0px, #1a0f0a 2px,
+      #150c08 2px, #150c08 4px,
+      #1d110b 4px, #1d110b 7px,
+      #160d09 7px, #160d09 10px),
+    #120906;
+  display:flex; flex-direction:column;
+}
+
+/* couches canvas plein-écran */
+#dust{position:fixed; inset:0; pointer-events:none; z-index:2}
+#candles{position:fixed; inset:0; pointer-events:none; z-index:3}
+#fx{position:fixed; inset:0; pointer-events:none; z-index:55}
+#cinema{position:fixed; inset:0; pointer-events:none; z-index:90}
+
+/* grain de parchemin global, très subtil */
+#stage::after{
+  content:""; position:absolute; inset:0;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 0.9   0 0 0 0 0.78   0 0 0 0 0.55   0 0 0 0.13 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  opacity:.18; mix-blend-mode:overlay; pointer-events:none;
+}
+
+/* ================ HEADER ================ */
+header{
+  position:relative; z-index:5;
+  padding:8px 12px 6px;
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:8px;
+  align-items:center;
+  border-bottom:1px solid var(--gold-dark);
+  background:linear-gradient(180deg, rgba(20,14,18,.96), rgba(20,14,18,.6));
+  box-shadow:0 8px 20px -10px #000;
+}
+.brand{display:flex; align-items:center; gap:8px}
+.brand .fleur{width:18px; height:18px; color:var(--gold); flex-shrink:0; opacity:.9}
+.brand .name{
+  font-family:"Cinzel", serif; font-weight:900;
+  letter-spacing:.20em; font-size:15px;
+  color:var(--gold-bright);
+  text-shadow:0 0 12px var(--gold-glow), 0 1px 0 #000;
+  line-height:1;
+}
+.brand .name small{
+  display:block; font-family:"Cormorant Garamond", serif;
+  font-style:italic; font-weight:500; font-size:9px;
+  letter-spacing:.28em; color:var(--gold); opacity:.7;
+  margin-top:2px;
+}
+
+.stats{display:flex; gap:8px; justify-content:flex-end; align-items:center}
+.stat{
+  display:flex; align-items:center; gap:5px;
+  padding:4px 8px;
+  background:linear-gradient(180deg, #1a1014, #0e0708);
+  border:1px solid var(--gold-dark);
+  border-radius:2px;
+  font-family:"VT323", monospace;
+  font-size:18px; line-height:1;
+  color:var(--gold-bright);
+  text-shadow:0 0 6px var(--gold-glow);
+  min-width:70px;
+  position:relative;
+}
+.stat::before, .stat::after{
+  content:""; position:absolute; width:5px; height:5px;
+  border:1px solid var(--gold);
+}
+.stat::before{top:-1px; left:-1px; border-right:none; border-bottom:none}
+.stat::after{bottom:-1px; right:-1px; border-left:none; border-top:none}
+.stat .icon{width:16px; height:16px; display:inline-block; flex-shrink:0}
+
+/* ================ GAME ================ */
+#play{
+  flex:1;
+  display:flex; flex-direction:column;
+  position:relative; z-index:4;
+  padding:6px 6px 8px;
+  gap:8px;
+  min-height:0;
+}
+
+#grid-wrap{
+  flex:1;
+  display:flex; align-items:center; justify-content:center;
+  position:relative;
+  min-height:0;
+  padding:6px;
+}
+#grid-frame{
+  position:relative;
+  background:
+    radial-gradient(ellipse 70% 50% at 50% 50%, rgba(232,200,120,.07), transparent 70%),
+    linear-gradient(180deg, #1a1218, #0d090c);
+  border:2px solid var(--gold-dark);
+  border-radius:3px;
+  padding:8px;
+  width:min(94vw, calc((100vh - 280px) * 5 / 6));
+  aspect-ratio: 5 / 6;
+  max-width:520px;
+  box-shadow:
+    inset 0 0 30px rgba(0,0,0,.7),
+    inset 0 0 0 1px rgba(232,200,120,.08),
+    0 0 0 1px var(--ink),
+    0 0 0 2px var(--gold-dark),
+    0 10px 40px rgba(0,0,0,.6);
+}
+/* Coins ornementés baroques (SVG décoratif) */
+.frame-corner{
+  position:absolute; width:22px; height:22px;
+  color:var(--gold); pointer-events:none;
+  filter:drop-shadow(0 0 4px var(--gold-glow));
+}
+.frame-corner.tl{top:-9px; left:-9px}
+.frame-corner.tr{top:-9px; right:-9px; transform:scaleX(-1)}
+.frame-corner.bl{bottom:-9px; left:-9px; transform:scaleY(-1)}
+.frame-corner.br{bottom:-9px; right:-9px; transform:scale(-1,-1)}
+
+#grid{
+  display:grid;
+  gap:4px;
+  position:relative;
+  width:100%; height:100%;
+}
+.cell{
+  position:relative;
+  aspect-ratio:1/1;
+  background:
+    radial-gradient(ellipse at 50% 30%, rgba(232,200,120,.04), transparent 70%),
+    linear-gradient(180deg, #0a0608, #050304);
+  border:1px solid #2a1f24;
+  border-radius:2px;
+  box-shadow:inset 0 1px 0 rgba(232,200,120,.05), inset 0 -1px 2px rgba(0,0,0,.5);
+}
+.cell.drop{
+  border-color:var(--gold-bright);
+  box-shadow:
+    inset 0 0 0 1px var(--gold-bright),
+    inset 0 0 12px var(--gold-glow),
+    0 0 12px var(--gold-glow);
+}
+.cell.merge-target{
+  border-color:#fff;
+  box-shadow:
+    inset 0 0 0 1px #fff,
+    inset 0 0 16px #fff,
+    0 0 18px #fff;
+}
+.cell.flash{
+  animation:cellFlash .35s ease-out;
+}
+@keyframes cellFlash{
+  0%{box-shadow:inset 0 0 0 0 #fff}
+  50%{box-shadow:inset 0 0 24px #fff, 0 0 24px #fff}
+  100%{box-shadow:inset 0 0 0 0 transparent}
+}
+
+.tile{
+  position:absolute; inset:2px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:grab;
+  transition:transform .14s cubic-bezier(.2,.9,.2,1.4), filter .2s, opacity .2s;
+  will-change:transform;
+}
+.tile.dragging{cursor:grabbing; z-index:60; transition:none; filter:brightness(1.15) drop-shadow(0 4px 8px #000)}
+.tile.spawn{animation:spawn .42s cubic-bezier(.2,.9,.2,1.4)}
+.tile.merge-out{animation:mergeOut .25s ease-in forwards}
+.tile.merge-in{animation:mergeIn .55s cubic-bezier(.2,.9,.2,1.4)}
+.tile svg{width:90%; height:90%; image-rendering:pixelated; filter:drop-shadow(0 1px 0 #000)}
+.tile .tier-badge{
+  position:absolute; bottom:-2px; right:-2px;
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:8px; letter-spacing:.05em;
+  color:var(--gold-bright);
+  background:#000;
+  border:1px solid var(--gold-dark);
+  padding:0 3px;
+  line-height:1.2;
+  text-shadow:0 0 3px var(--gold-glow);
+}
+.tile[data-chain="0"] svg{filter:drop-shadow(0 0 5px var(--plant-glow)) drop-shadow(0 1px 0 #000)}
+.tile[data-chain="1"] svg{filter:drop-shadow(0 0 5px var(--mineral-glow)) drop-shadow(0 1px 0 #000)}
+.tile[data-chain="2"] svg{filter:drop-shadow(0 0 5px var(--essence-glow)) drop-shadow(0 1px 0 #000)}
+.tile[data-tier="3"] svg{animation:halo3 2.6s ease-in-out infinite}
+.tile[data-tier="4"] svg{animation:halo4 2.4s ease-in-out infinite}
+.tile[data-tier="5"]{animation:floaty 3.2s ease-in-out infinite}
+.tile[data-tier="5"] svg{animation:halo5 2.0s ease-in-out infinite}
+
+@keyframes halo3{0%,100%{filter:drop-shadow(0 0 6px currentColor) drop-shadow(0 1px 0 #000)} 50%{filter:drop-shadow(0 0 10px currentColor) drop-shadow(0 1px 0 #000)}}
+@keyframes halo4{0%,100%{filter:drop-shadow(0 0 8px currentColor) drop-shadow(0 1px 0 #000)} 50%{filter:drop-shadow(0 0 14px currentColor) drop-shadow(0 1px 0 #000)}}
+@keyframes halo5{0%,100%{filter:drop-shadow(0 0 10px currentColor) drop-shadow(0 0 18px #fff8) drop-shadow(0 1px 0 #000)} 50%{filter:drop-shadow(0 0 16px currentColor) drop-shadow(0 0 24px #fff) drop-shadow(0 1px 0 #000)}}
+@keyframes floaty{0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)}}
+@keyframes spawn{
+  0%{transform:scale(.2) rotate(-30deg); opacity:0; filter:brightness(2)}
+  60%{transform:scale(1.15) rotate(4deg); opacity:1}
+  100%{transform:scale(1) rotate(0); opacity:1; filter:brightness(1)}
+}
+@keyframes mergeOut{
+  0%{transform:scale(1); opacity:1}
+  100%{transform:scale(.4); opacity:0; filter:brightness(2.5)}
+}
+@keyframes mergeIn{
+  0%{transform:scale(.3); opacity:0; filter:brightness(2.5)}
+  50%{transform:scale(1.4); opacity:1; filter:brightness(1.7)}
+  100%{transform:scale(1); opacity:1; filter:brightness(1)}
+}
+
+/* ================ GENERATEURS ================ */
+#generators{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:6px;
+  padding:0 2px;
+}
+.gen{
+  position:relative;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 90%, rgba(232,160,80,.22), transparent 70%),
+    linear-gradient(180deg, #1f1418, #0a0608);
+  border:1px solid var(--gold-dark);
+  border-radius:3px;
+  padding:6px 4px 4px;
+  cursor:pointer;
+  display:flex; flex-direction:column; align-items:center;
+  transition:transform .1s, filter .2s;
+  overflow:hidden;
+  min-height:96px;
+}
+.gen::before{
+  content:""; position:absolute; left:4px; right:4px; bottom:0; height:4px;
+  background:linear-gradient(90deg, transparent, var(--flame), transparent);
+  opacity:.55; filter:blur(2px);
+}
+.gen[data-chain="0"]::before{background:linear-gradient(90deg, transparent, var(--plant-2), transparent)}
+.gen[data-chain="1"]::before{background:linear-gradient(90deg, transparent, var(--mineral-2), transparent)}
+.gen[data-chain="2"]::before{background:linear-gradient(90deg, transparent, var(--essence-2), transparent)}
+.gen:active{transform:scale(.96)}
+.gen.cooldown{filter:grayscale(.5) brightness(.75); cursor:wait}
+.gen.locked{filter:grayscale(1) brightness(.4); cursor:not-allowed}
+.gen .gen-stack{position:relative; width:54px; height:54px}
+.gen .gen-svg{position:absolute; inset:0; width:100%; height:100%; image-rendering:pixelated; filter:drop-shadow(0 2px 0 #000)}
+.gen .gen-bubbles{position:absolute; inset:0; pointer-events:none}
+.gen .gen-name{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:9px; letter-spacing:.18em;
+  color:var(--gold-light);
+  margin-top:3px; text-transform:uppercase;
+}
+.gen .gen-cost{
+  font-family:"VT323", monospace; font-size:13px;
+  color:var(--parchment-2); margin-top:1px;
+  display:flex; align-items:center; gap:3px;
+}
+.gen .gen-cost svg{width:10px; height:10px}
+.gen .cd-bar{
+  position:absolute; left:2px; right:2px; bottom:5px; height:2px;
+  background:rgba(0,0,0,.6); border-radius:1px; overflow:hidden;
+}
+.gen .cd-bar > span{
+  display:block; height:100%; width:0%;
+  background:var(--gold-bright);
+  transition:width .1s linear;
+}
+
+/* ================ SIDE TOGGLES (livre / parchemin) ================ */
+.side-toggle{
+  position:fixed; top:50%; transform:translateY(-50%);
+  z-index:6;
+  background:linear-gradient(90deg, var(--leather), #2a1f1a);
+  color:var(--gold-bright);
+  border:1px solid var(--gold-dark);
+  padding:10px 6px;
+  cursor:pointer;
+  font-family:"Cinzel", serif;
+  font-size:9px;
+  letter-spacing:.22em;
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+}
+.side-toggle .ico{width:16px; height:16px; color:var(--gold-bright)}
+.side-toggle .label{writing-mode:vertical-rl}
+.side-toggle .badge{
+  background:var(--blood); color:#fff;
+  font-family:"VT323", monospace; font-size:11px;
+  border-radius:50%; width:14px; height:14px; line-height:14px;
+  text-align:center;
+  box-shadow:0 0 8px var(--blood);
+  display:none;
+}
+.side-toggle .badge.show{display:inline-block; animation:badgePulse 1.4s ease-in-out infinite}
+@keyframes badgePulse{0%,100%{transform:scale(1)} 50%{transform:scale(1.15)}}
+#codex-toggle{left:0; border-left:none; border-radius:0 3px 3px 0}
+#quest-toggle{right:0; border-right:none; border-radius:3px 0 0 3px}
+
+/* ================ DRAWERS ================ */
+.drawer{
+  position:fixed; top:0; bottom:0; width:340px;
+  z-index:7;
+  background:
+    radial-gradient(ellipse 60% 30% at 50% 0%, rgba(232,160,80,.08), transparent 60%),
+    linear-gradient(180deg, #1a1218, #0a0608);
+  border:1px solid var(--gold-dark);
+  transition:transform .35s cubic-bezier(.2,.9,.2,1);
+  display:flex; flex-direction:column;
+  padding:14px 12px 12px;
+  overflow:hidden;
+}
+#codex.drawer{left:0; border-left:none; transform:translateX(-100%); box-shadow:20px 0 40px rgba(0,0,0,.8)}
+#quests.drawer{right:0; border-right:none; transform:translateX(100%); box-shadow:-20px 0 40px rgba(0,0,0,.8)}
+#codex.drawer.open{transform:translateX(0)}
+#quests.drawer.open{transform:translateX(0)}
+
+.drawer h2{
+  font-family:"Cinzel", serif; font-weight:900;
+  letter-spacing:.20em; font-size:14px;
+  color:var(--gold-bright); margin:0 0 4px;
+  text-align:center;
+  text-shadow:0 0 12px var(--gold-glow);
+}
+.drawer .subtitle{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:12px; color:var(--gold); opacity:.75;
+  text-align:center; margin-bottom:8px;
+  letter-spacing:.18em;
+}
+.drawer .divider{
+  height:18px; margin:8px 0;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--gold); opacity:.7;
+}
+.drawer .divider svg{width:120px; height:14px}
+.drawer-body{flex:1; overflow-y:auto; padding-right:4px}
+.drawer-body::-webkit-scrollbar{width:4px}
+.drawer-body::-webkit-scrollbar-thumb{background:var(--gold-dark); border-radius:2px}
+
+/* QUETES */
+.quest{
+  position:relative;
+  background:
+    repeating-linear-gradient(0deg,
+      rgba(216,198,154,.04) 0px, rgba(216,198,154,.04) 1px,
+      transparent 1px, transparent 3px),
+    linear-gradient(180deg, #2a1f1a, #1a1410);
+  border:1px solid var(--gold-dark);
+  border-radius:2px;
+  padding:8px 10px;
+  margin-bottom:8px;
+}
+.quest::before, .quest::after{
+  content:""; position:absolute; width:6px; height:6px;
+  border:1px solid var(--gold); pointer-events:none;
+}
+.quest::before{top:-1px; left:-1px; border-right:none; border-bottom:none}
+.quest::after{bottom:-1px; right:-1px; border-left:none; border-top:none}
+.quest .qname{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:11px; letter-spacing:.14em;
+  color:var(--gold-bright);
+  text-transform:uppercase;
+  margin-bottom:3px;
+}
+.quest .qdesc{
+  font-family:"Cormorant Garamond", serif;
+  font-size:13px; color:var(--parchment-2);
+  margin-bottom:6px; font-style:italic;
+}
+.quest .qprog{
+  display:flex; align-items:center; gap:8px;
+  font-family:"VT323", monospace; font-size:13px;
+  color:var(--gold-light);
+}
+.quest .qbar{
+  flex:1; height:5px;
+  background:#0a0608;
+  border:1px solid var(--gold-dark);
+  border-radius:1px;
+  overflow:hidden;
+}
+.quest .qbar > span{
+  display:block; height:100%; width:0%;
+  background:linear-gradient(90deg, var(--gold-dark), var(--gold-bright));
+  box-shadow:0 0 4px var(--gold-glow);
+  transition:width .3s;
+}
+.quest .qreward{
+  display:flex; align-items:center; gap:4px;
+  font-family:"VT323", monospace; font-size:13px;
+  color:var(--gold-bright); margin-top:4px;
+}
+.quest .qreward svg{width:12px; height:12px}
+.quest.done{
+  border-color:var(--gold-bright);
+  cursor:pointer;
+  animation:pulseGold 1.6s ease-in-out infinite;
+}
+@keyframes pulseGold{
+  0%,100%{box-shadow:0 0 0 transparent, inset 0 0 0 transparent}
+  50%{box-shadow:0 0 16px var(--gold-glow), inset 0 0 12px rgba(232,200,120,.18)}
+}
+.quest.done .qclaim{
+  display:block; text-align:center;
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:11px; letter-spacing:.22em;
+  color:#000; background:linear-gradient(180deg, var(--gold-bright), var(--gold));
+  padding:4px; margin-top:6px;
+  text-transform:uppercase;
+}
+
+/* CODEX */
+.codex-chain{margin-bottom:16px}
+.codex-chain h3{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:11px; letter-spacing:.18em;
+  margin:0 0 6px;
+  text-transform:uppercase;
+  display:flex; align-items:center; gap:6px;
+}
+.codex-chain h3 .sym{width:14px; height:14px; flex-shrink:0}
+.codex-chain[data-chain="0"] h3{color:var(--plant-2)}
+.codex-chain[data-chain="1"] h3{color:var(--mineral-2)}
+.codex-chain[data-chain="2"] h3{color:var(--essence-2)}
+.codex-row{
+  display:grid;
+  grid-template-columns:repeat(6, 1fr);
+  gap:4px;
+}
+.codex-cell{
+  aspect-ratio:1/1;
+  background:linear-gradient(180deg, #0a0608, #050304);
+  border:1px solid #2a1f24;
+  border-radius:2px;
+  display:flex; align-items:center; justify-content:center;
+  position:relative;
+  cursor:pointer;
+}
+.codex-cell svg.sprite{width:88%; height:88%; image-rendering:pixelated}
+.codex-cell.locked svg.sprite{filter:brightness(0) opacity(.18)}
+.codex-cell.locked::after{
+  content:""; position:absolute; inset:30%;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M5 7V5a3 3 0 0 1 6 0v2h1v7H4V7zM7 5v2h2V5a1 1 0 0 0-2 0z' fill='%235a4528'/></svg>") no-repeat center/contain;
+}
+.codex-cell .ct{position:absolute; bottom:-1px; right:-1px; font-family:"Cinzel"; font-weight:700; font-size:8px; color:var(--gold); background:#000; padding:0 2px; letter-spacing:.05em}
+
+#codex-detail{
+  background:
+    repeating-linear-gradient(0deg,
+      rgba(216,198,154,.04) 0px, rgba(216,198,154,.04) 1px,
+      transparent 1px, transparent 3px),
+    linear-gradient(180deg, #2a1f1a, #1a1410);
+  border:1px solid var(--gold-dark);
+  padding:8px 10px;
+  margin-top:6px;
+  font-family:"Cormorant Garamond", serif;
+  font-style:italic;
+  font-size:13px;
+  color:var(--parchment-2);
+  text-align:center;
+  min-height:42px;
+}
+#codex-detail .name{
+  font-family:"Cinzel", serif; font-weight:700; font-style:normal;
+  color:var(--gold-bright); font-size:12px; letter-spacing:.14em;
+  text-transform:uppercase; display:block; margin-bottom:4px;
+}
+
+/* ================ TOAST ================ */
+.float{
+  position:fixed; pointer-events:none; z-index:80;
+  font-family:"VT323", monospace; font-size:18px;
+  color:var(--gold-bright);
+  text-shadow:0 0 6px var(--gold-glow), 0 1px 0 #000;
+  animation:floatUp 1.3s ease-out forwards;
+  white-space:nowrap;
+}
+.float.gain{color:var(--gold-bright)}
+.float.lose{color:var(--blood)}
+.float.tier{color:#fff; font-family:"Cinzel"; font-size:13px; letter-spacing:.18em; font-weight:700}
+@keyframes floatUp{
+  0%{transform:translate(-50%,0); opacity:1}
+  100%{transform:translate(-50%,-50px); opacity:0}
+}
+
+/* ================ INTRO ================ */
+#intro{
+  position:fixed; inset:0; z-index:95;
+  background:radial-gradient(ellipse at 50% 50%, #1a1218 0%, #050304 100%);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:24px;
+  transition:opacity .9s;
+}
+#intro.gone{opacity:0; pointer-events:none}
+#intro .ouroboros{
+  width:140px; height:140px; color:var(--gold-light);
+  margin-bottom:14px;
+  filter:drop-shadow(0 0 20px var(--gold-glow));
+  animation:ouroIn 1.6s cubic-bezier(.2,.9,.2,1.2);
+}
+#intro .ouroboros .rotate{transform-origin:0 0; transform-box:view-box}
+#intro .logo{
+  font-family:"Cinzel", serif; font-weight:900;
+  font-size:36px; letter-spacing:.32em;
+  color:var(--gold-bright);
+  text-shadow:0 0 24px var(--gold-glow), 0 2px 0 #000;
+  margin:0 0 6px;
+  animation:logoIn 1.4s ease-out;
+}
+#intro .tagline{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  color:var(--gold); font-size:14px;
+  letter-spacing:.16em;
+  max-width:340px;
+  margin-bottom:36px;
+  opacity:0; animation:fadeIn .8s ease-out .8s forwards;
+}
+#intro .start{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:11px; letter-spacing:.32em;
+  color:#000;
+  background:linear-gradient(180deg, var(--gold-bright), var(--gold));
+  border:1px solid var(--gold-bright);
+  padding:11px 28px;
+  cursor:pointer; text-transform:uppercase;
+  box-shadow:0 0 28px var(--gold-glow);
+  opacity:0; animation:fadeIn .8s ease-out 1.4s forwards;
+  position:relative;
+}
+#intro .start::before, #intro .start::after{
+  content:""; position:absolute; width:8px; height:8px;
+  border:1px solid var(--gold-bright);
+}
+#intro .start::before{top:-3px; left:-3px; border-right:none; border-bottom:none}
+#intro .start::after{bottom:-3px; right:-3px; border-left:none; border-top:none}
+#intro .seal-row{
+  display:flex; gap:18px; margin-top:30px;
+  opacity:0; animation:fadeIn .9s ease-out 1.7s forwards;
+}
+#intro .seal-row svg{width:22px; height:22px; color:var(--gold); opacity:.55}
+
+@keyframes logoIn{
+  0%{opacity:0; transform:scale(.7); filter:blur(8px)}
+  100%{opacity:1; transform:scale(1); filter:blur(0)}
+}
+@keyframes ouroIn{
+  0%{opacity:0; transform:scale(.4) rotate(-180deg); filter:blur(12px)}
+  100%{opacity:1; transform:scale(1) rotate(0); filter:blur(0)}
+}
+@keyframes rotateOuro{to{transform:rotate(360deg)}}
+@keyframes fadeIn{to{opacity:1}}
+
+/* ================ AUDIO TOGGLE ================ */
+#audio-toggle{
+  position:fixed; top:6px; right:8px; z-index:8;
+  background:transparent; border:none; padding:6px;
+  cursor:pointer;
+  color:var(--gold); opacity:.55;
+  display:flex; align-items:center; gap:3px;
+}
+#audio-toggle:hover, #audio-toggle.on{opacity:1}
+#audio-toggle svg{width:16px; height:16px}
+
+/* ================ GRAND ŒUVRE CINEMATIC ================ */
+#grand-oeuvre{
+  position:fixed; inset:0; z-index:92;
+  pointer-events:none; opacity:0;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(255,240,200,.45) 0%, rgba(232,160,80,.25) 30%, rgba(0,0,0,.95) 70%);
+  display:flex; align-items:center; justify-content:center;
+  flex-direction:column;
+  transition:opacity .6s;
+}
+#grand-oeuvre.show{opacity:1; pointer-events:auto}
+#grand-oeuvre .seal{
+  width:240px; height:240px;
+  color:var(--gold-bright);
+  filter:drop-shadow(0 0 30px #fff) drop-shadow(0 0 60px var(--gold-bright));
+  animation:sealIn 1.8s cubic-bezier(.2,.9,.2,1.2);
+}
+#grand-oeuvre .ouvre-text{
+  margin-top:20px;
+  font-family:"Cinzel", serif; font-weight:900;
+  letter-spacing:.4em;
+  color:#fff;
+  font-size:22px;
+  text-shadow:0 0 24px #fff, 0 0 40px var(--gold-bright);
+  animation:fadeIn 1s ease-out 1s forwards; opacity:0;
+}
+#grand-oeuvre .ouvre-sub{
+  margin-top:6px;
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:14px; letter-spacing:.18em;
+  color:var(--gold-bright);
+  animation:fadeIn 1s ease-out 1.4s forwards; opacity:0;
+}
+@keyframes sealIn{
+  0%{transform:scale(.1) rotate(-360deg); opacity:0}
+  100%{transform:scale(1) rotate(0); opacity:1}
+}
+
+/* ================ RESPONSIVE ================ */
+@media (min-width: 600px){
+  body{font-size:16px}
+  .brand .name{font-size:18px}
+  .stat{font-size:22px}
+  .gen .gen-stack{width:64px; height:64px}
+  .gen .gen-name{font-size:11px}
+  .frame-corner{width:28px; height:28px}
+}
+@media (min-width: 900px){
+  #grid-frame{padding:14px}
+  .gen{min-height:112px}
+}
+</style>
+</head>
+<body>
+
+<div id="stage">
+
+  <header>
+    <div class="brand">
+      <svg class="fleur" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+        <path d="M12 3 c-2 3 -2 5 0 7 c-2 -2 -5 -2 -7 0 c3 0 5 2 7 4 c2 -2 4 -4 7 -4 c-2 -2 -5 -2 -7 0 c2 -2 2 -4 0 -7z"/>
+        <path d="M12 14 v6 M9 18 h6"/>
+      </svg>
+      <div class="name">
+        ALCHIMIA
+        <small>LE CABINET DES TROIS VOIES</small>
+      </div>
+    </div>
+    <div></div>
+    <div class="stats">
+      <div class="stat" id="stat-essence" title="Étincelle — coût des invocations">
+        <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges">
+          <rect x="7" y="2" width="2" height="2" fill="#e8c878"/>
+          <rect x="6" y="4" width="4" height="1" fill="#e8a050"/>
+          <rect x="5" y="5" width="6" height="3" fill="#e8a050"/>
+          <rect x="4" y="6" width="8" height="2" fill="#c84a2a"/>
+          <rect x="5" y="8" width="6" height="2" fill="#c84a2a"/>
+          <rect x="6" y="10" width="4" height="2" fill="#8a2a2a"/>
+          <rect x="7" y="12" width="2" height="1" fill="#8a2a2a"/>
+        </svg>
+        <span id="essence-val">0</span>
+      </div>
+      <div class="stat" id="stat-gold" title="Couronnes — récompense des quêtes">
+        <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges">
+          <rect x="3" y="3" width="2" height="2" fill="#e8c878"/>
+          <rect x="7" y="2" width="2" height="2" fill="#fff"/>
+          <rect x="11" y="3" width="2" height="2" fill="#e8c878"/>
+          <rect x="3" y="5" width="10" height="2" fill="#c9a25a"/>
+          <rect x="3" y="7" width="10" height="5" fill="#9a7842"/>
+          <rect x="4" y="6" width="8" height="1" fill="#e8c878"/>
+          <rect x="3" y="12" width="10" height="1" fill="#5a4528"/>
+          <rect x="6" y="8" width="1" height="3" fill="#5a4528"/>
+          <rect x="9" y="8" width="1" height="3" fill="#5a4528"/>
+        </svg>
+        <span id="gold-val">0</span>
+      </div>
+    </div>
+  </header>
+
+  <main id="play">
+    <div id="grid-wrap">
+      <div id="grid-frame">
+        <!-- coins ornés baroques -->
+        <svg class="frame-corner tl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+          <path d="M2 2 H10 M2 2 V10"/>
+          <path d="M2 6 q3 0 4 -2 q1 -2 4 -2"/>
+          <path d="M6 2 q0 3 -2 4 q-2 1 -2 4"/>
+          <circle cx="6" cy="6" r="1.2" fill="currentColor"/>
+        </svg>
+        <svg class="frame-corner tr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+          <path d="M2 2 H10 M2 2 V10"/>
+          <path d="M2 6 q3 0 4 -2 q1 -2 4 -2"/>
+          <path d="M6 2 q0 3 -2 4 q-2 1 -2 4"/>
+          <circle cx="6" cy="6" r="1.2" fill="currentColor"/>
+        </svg>
+        <svg class="frame-corner bl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+          <path d="M2 2 H10 M2 2 V10"/>
+          <path d="M2 6 q3 0 4 -2 q1 -2 4 -2"/>
+          <path d="M6 2 q0 3 -2 4 q-2 1 -2 4"/>
+          <circle cx="6" cy="6" r="1.2" fill="currentColor"/>
+        </svg>
+        <svg class="frame-corner br" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
+          <path d="M2 2 H10 M2 2 V10"/>
+          <path d="M2 6 q3 0 4 -2 q1 -2 4 -2"/>
+          <path d="M6 2 q0 3 -2 4 q-2 1 -2 4"/>
+          <circle cx="6" cy="6" r="1.2" fill="currentColor"/>
+        </svg>
+        <div id="grid"></div>
+      </div>
+    </div>
+    <div id="generators"></div>
+  </main>
+
+</div>
+
+<canvas id="dust"></canvas>
+<canvas id="candles"></canvas>
+<canvas id="fx"></canvas>
+<canvas id="cinema"></canvas>
+
+<button id="audio-toggle" title="Son">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">
+    <path d="M5 9 v6 h3 l5 4 V5 l-5 4z" fill="currentColor"/>
+    <path d="M16 8 q3 4 0 8 M19 6 q5 6 0 12"/>
+  </svg>
+</button>
+
+<button class="side-toggle" id="codex-toggle" title="Codex">
+  <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+    <rect x="4" y="3" width="16" height="18" rx="1"/>
+    <path d="M4 6 h16 M12 3 v18"/>
+    <path d="M7 9 h3 M14 9 h3 M7 12 h3 M14 12 h3 M7 15 h3 M14 15 h3"/>
+  </svg>
+  <span class="label">CODEX</span>
+</button>
+<aside class="drawer" id="codex">
+  <h2>CODEX</h2>
+  <div class="subtitle">— LES TROIS VOIES —</div>
+  <div class="divider">
+    <svg viewBox="0 0 200 16" fill="none" stroke="currentColor" stroke-width=".8">
+      <path d="M0 8 H80 M120 8 H200"/>
+      <path d="M88 8 q4 -6 8 0 q4 6 8 0" />
+      <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
+    </svg>
+  </div>
+  <div class="drawer-body" id="codex-body"></div>
+  <div id="codex-detail"></div>
+</aside>
+
+<button class="side-toggle" id="quest-toggle" title="Quêtes">
+  <span class="badge" id="quest-badge">0</span>
+  <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+    <path d="M5 4 q-2 0 -2 2 v12 q0 2 2 2 h13 q2 0 2 -2 V8 l-4 -4 z"/>
+    <path d="M14 4 v4 h4"/>
+    <path d="M7 11 h10 M7 14 h10 M7 17 h6"/>
+  </svg>
+  <span class="label">QUÊTES</span>
+</button>
+<aside class="drawer" id="quests">
+  <h2>QUÊTES</h2>
+  <div class="subtitle">— LE GRAND ŒUVRE —</div>
+  <div class="divider">
+    <svg viewBox="0 0 200 16" fill="none" stroke="currentColor" stroke-width=".8">
+      <path d="M0 8 H80 M120 8 H200"/>
+      <path d="M88 8 q4 -6 8 0 q4 6 8 0" />
+      <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
+    </svg>
+  </div>
+  <div class="drawer-body" id="quest-list"></div>
+</aside>
+
+<!-- INTRO -->
+<div id="intro">
+  <svg class="ouroboros" viewBox="-50 -50 100 100">
+    <g class="rotate">
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="80s" repeatCount="indefinite"/>
+      <!-- corps du serpent : cercle complet -->
+      <circle cx="0" cy="0" r="38" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+      <!-- écailles : pointillés intérieurs -->
+      <circle cx="0" cy="0" r="38" fill="none" stroke="#3a2818" stroke-width="1.6" stroke-dasharray="3 5"/>
+      <circle cx="0" cy="0" r="34" fill="none" stroke="#5a4528" stroke-width=".6" stroke-dasharray="1 3" opacity=".5"/>
+      <!-- tête (à droite, mordant la queue) -->
+      <g transform="translate(34,-15)">
+        <path d="M 0 0 q 6 -3 10 1 q 2 4 -2 7 q -4 2 -7 -1 q -3 -3 -1 -7 z" fill="currentColor" stroke="#3a2818" stroke-width=".6"/>
+        <circle cx="5" cy="2" r="1.6" fill="#000"/>
+        <circle cx="5" cy="2" r=".6" fill="#fff" opacity=".7"/>
+        <!-- crocs -->
+        <path d="M 1 5 l -1 2 M 3 6 l -1 2" stroke="#fff" stroke-width=".7"/>
+      </g>
+      <!-- queue qui rentre dans la bouche -->
+      <g transform="translate(34,-15)">
+        <path d="M 0 0 q -3 -2 -6 -1 q -2 1 0 3" fill="currentColor"/>
+      </g>
+      <!-- écailles décoratives le long du corps -->
+      <g stroke="#3a2818" stroke-width=".7" fill="none" opacity=".7">
+        <path d="M -36 -8 q 3 -1.5 5 0" transform="rotate(-30)"/>
+        <path d="M -36 -8 q 3 -1.5 5 0" transform="rotate(30)"/>
+        <path d="M -36 -8 q 3 -1.5 5 0" transform="rotate(80)"/>
+        <path d="M -36 -8 q 3 -1.5 5 0" transform="rotate(140)"/>
+        <path d="M -36 -8 q 3 -1.5 5 0" transform="rotate(190)"/>
+      </g>
+    </g>
+    <!-- 4 points cardinaux : éléments -->
+    <g fill="currentColor" opacity=".75">
+      <!-- haut : air -->
+      <g transform="translate(0,-44)"><polygon points="-3,3 3,3 0,-3" fill="none" stroke="currentColor" stroke-width="1"/><line x1="-2" y1="0" x2="2" y2="0" stroke="currentColor" stroke-width="1"/></g>
+      <!-- droite : feu -->
+      <g transform="translate(44,0)"><polygon points="-3,3 3,3 0,-3" fill="none" stroke="currentColor" stroke-width="1"/></g>
+      <!-- bas : eau -->
+      <g transform="translate(0,44)"><polygon points="-3,-3 3,-3 0,3" fill="none" stroke="currentColor" stroke-width="1"/></g>
+      <!-- gauche : terre -->
+      <g transform="translate(-44,0)"><polygon points="-3,-3 3,-3 0,3" fill="none" stroke="currentColor" stroke-width="1"/><line x1="-2" y1="0" x2="2" y2="0" stroke="currentColor" stroke-width="1"/></g>
+    </g>
+  </svg>
+  <h1 class="logo">ALCHIMIA</h1>
+  <div class="tagline">« Trois voies mènent au Grand Œuvre.<br>Plante, Pierre, Essence — fusionne, transmute, élève. »</div>
+  <button class="start" id="start-btn">Ouvrir le cabinet</button>
+  <div class="seal-row">
+    <!-- sulfur, mercury, salt, sun, moon -->
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><polygon points="12,4 7,12 17,12"/><line x1="12" y1="12" x2="12" y2="20"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M7 7 q5 -4 10 0" /><circle cx="12" cy="12" r="4"/><line x1="12" y1="16" x2="12" y2="22"/><line x1="9" y1="20" x2="15" y2="20"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="12" cy="12" r="6"/><line x1="6" y1="12" x2="18" y2="12"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M16 5 a8 8 0 1 0 0 14 a6 6 0 1 1 0 -14"/></svg>
+  </div>
+</div>
+
+<!-- GRAND ŒUVRE CINEMATIC -->
+<div id="grand-oeuvre">
+  <svg class="seal" viewBox="-50 -50 100 100">
+    <g>
+      <!-- triangle alchimique -->
+      <polygon points="0,-40 35,22 -35,22" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <!-- cercle inscrit -->
+      <circle cx="0" cy="3" r="28" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <!-- carré -->
+      <rect x="-20" y="-17" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.2"/>
+      <!-- ouroboros minimal -->
+      <circle cx="0" cy="3" r="14" fill="none" stroke="currentColor" stroke-width=".8" stroke-dasharray="2 3"/>
+      <!-- monogramme central -->
+      <g transform="translate(0,3)">
+        <circle r="3.5" fill="currentColor"/>
+        <line x1="0" y1="-3.5" x2="0" y2="-9" stroke="currentColor" stroke-width="1.2"/>
+      </g>
+      <!-- 3 points cardinaux -->
+      <circle cx="0" cy="-40" r="2.5" fill="currentColor"/>
+      <circle cx="35" cy="22" r="2.5" fill="currentColor"/>
+      <circle cx="-35" cy="22" r="2.5" fill="currentColor"/>
+    </g>
+  </svg>
+  <div class="ouvre-text" id="ouvre-text">VIA VEGETABILIS</div>
+  <div class="ouvre-sub" id="ouvre-sub">— le sceau du Grand Œuvre est posé —</div>
+</div>
+
+<script>
+/* =========================================================
+   ALCHIMIA — moteur
+   ========================================================= */
+
+const COLS = 5, ROWS = 6;
+
+const CHAINS = [
+  { id:0, name:"Voie de la Plante",   short:"Plante",  latin:"VIA VEGETABILIS",
+    color:"#7ab36a", glow:"plant",
+    sym:"sulfur",
+    tiers:[
+      {n:"Graine",            d:"Semence patiente, lourde de promesses."},
+      {n:"Bourgeon",           d:"La sève ose le jour."},
+      {n:"Mandragore",         d:"Cri sous la lune, racine humaine."},
+      {n:"Fleur Sépulcrale",   d:"Calice noir, sentinelle des veilleurs."},
+      {n:"Élixir d'Aube",      d:"Sève condensée des prophètes."},
+      {n:"Panacée",            d:"Le souffle qui guérit toute chose."},
+    ]},
+  { id:1, name:"Voie de la Pierre",   short:"Pierre",  latin:"VIA MINERALIS",
+    color:"#7aa3c8", glow:"mineral",
+    sym:"salt",
+    tiers:[
+      {n:"Caillou",            d:"Une larme pétrifiée du monde."},
+      {n:"Quartz",             d:"Lumière en cage, géométrie pure."},
+      {n:"Améthyste",          d:"Sang violet de la terre."},
+      {n:"Géode",              d:"Sanctuaire en miniature."},
+      {n:"Pierre Runique",     d:"Mots gravés par les anciens."},
+      {n:"Pierre Philosophale",d:"L'œuvre rouge, transmutation absolue."},
+    ]},
+  { id:2, name:"Voie de l'Essence",   short:"Essence", latin:"VIA SPIRITUALIS",
+    color:"#a070d0", glow:"essence",
+    sym:"mercury",
+    tiers:[
+      {n:"Brume",              d:"Souffle errant des matins humides."},
+      {n:"Étincelle",          d:"Mémoire fossile d'une étoile."},
+      {n:"Flamme Bleue",       d:"Cœur d'astre, feu sans fumée."},
+      {n:"Esprit",             d:"Voix sans corps, présence qui veille."},
+      {n:"Constellation",      d:"Trame du ciel cousue à la main."},
+      {n:"Quintessence",       d:"L'éther innommé, cinquième élément."},
+    ]},
+];
+
+/* ================ PALETTE ================ */
+const PAL = {
+  '.':null,
+  'k':'#0a0709','K':'#1a1318','S':'#2a1f24',
+  // bois / cuir
+  'b':'#3d2a1a','B':'#5a3a24','a':'#7a5a3a','A':'#a07a4a',
+  // gold
+  'g':'#3a2818','G':'#5a4528','y':'#9a7842','Y':'#c9a25a','W':'#e8c878','Z':'#fff5d8',
+  // plant
+  'p':'#2a4a1a','P':'#3a5a2a','q':'#5a8a4a','Q':'#7ab36a','r':'#a8d890','R':'#d8f0a8',
+  // mineral
+  'i':'#1a2a3a','I':'#2a4a6a','j':'#4a6a8a','J':'#7aa3c8','l':'#a8c8e8','L':'#d8e8f8',
+  // essence
+  'm':'#2a1a3a','M':'#3a2a5a','n':'#6a4a8a','N':'#a070d0','o':'#c898e8','O':'#e8c8f8',
+  // fire
+  'f':'#8a2a2a','F':'#c84a2a','h':'#e8a050','H':'#ffd070',
+  // stone
+  'c':'#3a3a45','C':'#5a5a68','x':'#7a7a88','X':'#a8a8b8','s':'#d8d8e0',
+  // parchment / bone
+  'w':'#d8c69a','e':'#b8a072','d':'#8a7048',
+  // pure white
+  '#':'#ffffff',
+};
+
+/* ================ SPRITES 32×32 ================ */
+/* Convention :
+   '.' transparent, 1 char par pixel
+   palette ci-dessus, 32 lignes de 32 caractères
+*/
+
+const SPRITES = [
+  /* ===========================================================
+     CHAINE 0 — VOIE DE LA PLANTE
+     =========================================================== */
+  // T0 — Graine (semence brun-or, ombrée, germe vert)
+  [
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "............qqQq................",
+    "...........qQQQQq...............",
+    "..........kkbBBBkk..............",
+    ".........kbBBaaABbk.............",
+    "........kbBaAAAAaABk............",
+    ".......kbBaAAAAAAaABk...........",
+    ".......kBaAAAAAAAAaABk..........",
+    ".......kBaAAAAaAAaABBk..........",
+    ".......kBaAAaaaAAABBk...........",
+    "........kBaAaaAAABBk............",
+    ".........kBaaaAABBk.............",
+    "..........kBBaABBk..............",
+    "...........kBBBBk...............",
+    "............kkkk................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+  ],
+  // T1 — Bourgeon (pousse double, feuilles ouvertes, tige)
+  [
+    "................................",
+    "................................",
+    "................................",
+    "..............kk................",
+    ".............krrk...............",
+    "............kQrrQk..............",
+    "...........kQQRRQQk.............",
+    "..........kqQQRRQQqk............",
+    "..........kqPQQQQPqk............",
+    "..........kPpPPPPpPk............",
+    "...........kpPpPpPk.............",
+    "............kPpPpk..............",
+    "...kk........kqQk........kk.....",
+    "..kqQQk......kQRk......kQQqk....",
+    ".kqQQRRQk....kRrk....kQRRQQqk...",
+    ".kqRRRrRQk..kRRRk..kQRrRRRrqk...",
+    ".kqRRrRrQk..kRRRk..kQrRrRRRqk...",
+    "..kqQRRrQk.kRRRRRk.kQrRRQqk.....",
+    "...kqPQQQqkPRRRRRPkqQQQPqk......",
+    "....kpPPpqQRRRRRRRQpPPpk........",
+    ".....kkkkqQRRRRRRRQkkkk.........",
+    "..........kqRRRRRqk.............",
+    "...........kqRRRqk..............",
+    "............kPPPk...............",
+    "............kpPpk...............",
+    "............kpPpk...............",
+    "............kpPpk...............",
+    "............kpPpk...............",
+    "............kbpbk...............",
+    ".............kbk................",
+    "............kbbbk...............",
+    "................................",
+  ],
+  // T2 — Mandragore (racine anthropomorphe brun, tuft de feuilles vertes en haut)
+  [
+    "................................",
+    "................................",
+    ".............kqQk...............",
+    "............kqRRQk..............",
+    "...........kqRRrRQk.............",
+    "..........kqQRrRrRQk............",
+    "..........kQRrRRrRQk............",
+    "..........kQRRrRRRQk............",
+    "...........kqQQRQQqk............",
+    "............kpPpPpk.............",
+    "..........kkkbABBkkk............",
+    ".........kBaAAAAAAaBk...........",
+    "........kBaAAAAAAAAaBk..........",
+    "........kBaAaaaAAaaABk..........",
+    "........kBaakKakaKaABk..........",
+    "........kBaAakkakkAABk..........",
+    ".........kBaAAaaaAAaBk..........",
+    "..........kBaAaaaaABk...........",
+    "..........kkBAAaABBk............",
+    "............kBABBk..............",
+    "...........kkbAABbk.............",
+    "..........kBaAAAAaBk............",
+    ".........kBaAAaaAAaBk...........",
+    "........kBaAAakKakaABk..........",
+    "........kBakBkkkkkkkBk..........",
+    "........kBkBBk..kBBkBk..........",
+    "........kBkBBk..kBBkBk..........",
+    ".........kBBk....kBBk...........",
+    "..........kBk....kBk............",
+    "..........kBBk..kBBk............",
+    "...........kkk..kkk.............",
+    "................................",
+  ],
+  // T3 — Fleur Sépulcrale (lis violet sombre, étamines os blanc)
+  [
+    "................................",
+    "................................",
+    ".............kNok...............",
+    "............kNoON...............",
+    "...........kNoOOoNk.............",
+    "..........kMNoOOoNMk............",
+    ".........kMNNoOOoNNMk...........",
+    "........kMNNoOWWOoNNMk..........",
+    "........kMNoOWZZWOoNMk..........",
+    "........kMNoOZ##ZOoNMk..........",
+    "........kMNoOWZZWOoNMk..........",
+    ".......kMNoOWZWWZWOoNMk.........",
+    "......kMNoOWZWZZWZWOoNMk........",
+    ".....kMNoOWZWoOoWZWOoNMk........",
+    ".....kMNoOWZWoOoWZWOoNMk........",
+    "......kMNoOWZWZZWZWOoNMk........",
+    ".......kMNoOWZWWZWOoNMk.........",
+    "........kMNoOWZZWOoNMk..........",
+    "........kMNoOZ##ZOoNMk..........",
+    "........kMNNoOWWOoNNMk..........",
+    ".........kMNNoOOoNNMk...........",
+    "..........kMNNoOoNNMk...........",
+    "...........kMNNoNNMk............",
+    "............kMnnnMk.............",
+    ".............kqPqk..............",
+    "..............kQk...............",
+    "..............kPk...............",
+    "..............kPk...............",
+    "..............kPk...............",
+    "..............kpk...............",
+    "..............kpk...............",
+    ".............kbpbk..............",
+  ],
+  // T4 — Élixir d'Aube (fiole en cristal avec liquide doré, bouchon de cire)
+  [
+    "................................",
+    "................................",
+    "............kggggk..............",
+    "...........kgYWWYgk.............",
+    "...........gWZZZZWg.............",
+    "...........gYWWWWYg.............",
+    "...........kgYYYYgk.............",
+    "............kkggkk..............",
+    "............kjJJjk..............",
+    "...........kjJlllJjk............",
+    "..........kjJllZllJjk...........",
+    "..........kJlZZZZZZJk...........",
+    ".........kjJl#######Jjk.........",
+    ".........kJl##WWWWWWlJk.........",
+    "........kjJl#WWHHWWWlJjk........",
+    "........kJl#WHHHHHWWWlJk........",
+    "........kJl#WHHWWWHHWWlJk.......",
+    "........kJl#WHWWHHWWHWlJk.......",
+    "........kJl#WHHWHHWHHWlJk.......",
+    "........kJl#WWHHWHHHWWlJk.......",
+    "........kJl#WWWHHHHHWWlJk.......",
+    "........kJl##WWWHHWWWWlJk.......",
+    "........kJl###WWWWWW##lJk.......",
+    ".........kJl##########lJk.......",
+    "..........kJlll#####llJk........",
+    "..........kJlllllllllJk.........",
+    "...........kjJlllllJjk..........",
+    "............kJJjJjJk............",
+    "............kjJjJjk.............",
+    ".............kkjkk..............",
+    "..............kkk...............",
+    "................................",
+  ],
+  // T5 — Panacée (calice doré, liquide arc-en-ciel, halo)
+  [
+    "................................",
+    "...............ZZ...............",
+    "..............ZWWZ..............",
+    ".............ZWYYWZ.............",
+    "..ZZ........ZWYWWYWZ........ZZ..",
+    "...ZZZ.....ZWYWWWWYWZ.....ZZZ...",
+    ".....ZZ...ZYWWQNoOoNQWWY...ZZ...",
+    "......ZZZZWQNoOO##OOoNQWZZZZ....",
+    ".......ZZWQNoOZ##ZOoNQWZZ.......",
+    "........ZWQNoOZ##ZOoNQWZ........",
+    "........WYQNoOOZZOOoNQYW........",
+    "........WYQNoOOOOOOoNQYW........",
+    "........WYQNNoOOOOoNNQYW........",
+    "........kWYYQQNNNNQQYYWk........",
+    ".........kWWWWGGGGWWWWk.........",
+    "..........kkkkgGGgkkkk..........",
+    "............kgyYYygk............",
+    "...........kgYWWWWYgk...........",
+    "..........kgYWWZZWWYgk..........",
+    "..........kYWZZ##ZZWYk..........",
+    "..........kYW##WW##WYk..........",
+    "...........kgYWWWWYgk...........",
+    "............kgyYYygk............",
+    ".............kgYYgk.............",
+    "............kgYYYYgk............",
+    "...........kgYWWWWYgk...........",
+    "..........kgYWWWWWWYgk..........",
+    "..........kkgYYYYYYgkk..........",
+    "...........kkkgggggkk...........",
+    "..............kkkk..............",
+    "................................",
+    "................................",
+  ],
+
+  /* ===========================================================
+     CHAINE 1 — VOIE DE LA PIERRE
+     =========================================================== */
+  // T0 — Caillou (galet gris, mouchetures, ombre portée)
+  [
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "...........kkCCCCkk.............",
+    "..........kCxxxxxCkk............",
+    ".........kCxxXXXxxxCk...........",
+    "........kCxXXsXXXxxxCk..........",
+    ".......kCxXXsssXXXxxxCk.........",
+    ".......kCxXsXXXXXxXxxCk.........",
+    "......kCxxXXXxXXXxxxXxCk........",
+    "......kCxXXxxXxxXxxxxxCk........",
+    "......kCxxxXxxxxxxxXxxCk........",
+    ".......kCxxxxxXxxXxxxCk.........",
+    ".......kCCxxxxxxxxxCCk..........",
+    "........kkCCCCCCCCCkk...........",
+    "..........kkkkkkkkk.............",
+    "..........kkccccckk.............",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+  ],
+  // T1 — Quartz (prisme hexagonal cristallin)
+  [
+    "................................",
+    "................................",
+    "................................",
+    "..............kk................",
+    ".............kJJk...............",
+    "............kJlJJk..............",
+    "...........kJllJlJk.............",
+    "..........kJlllJllJk............",
+    ".........kJllLLJlllJk...........",
+    "........kJllLZLJllllJk..........",
+    "........JllLLZLLJllllJ..........",
+    "........JlLZLZLLJllllJ..........",
+    "........JlLZZZLLJllllJ..........",
+    "........JllLZLLJlllllJ..........",
+    "........JlllLLJlllllllJ.........",
+    "........JlllLJlllllllJ..........",
+    "........JlllJlllllllJ...........",
+    "........JllJllllllllJ...........",
+    "........IJlJlllllllJI...........",
+    "........IJJlllllllJI............",
+    ".........IJlllllllJI............",
+    ".........IJllllllJI.............",
+    "..........IJlllllJI.............",
+    "..........IJllllJI..............",
+    "...........IJlllJI..............",
+    "...........IJllJI...............",
+    "............IJlJI...............",
+    "............IJJI................",
+    ".............IJI................",
+    ".............II.................",
+    "................................",
+    "................................",
+  ],
+  // T2 — Améthyste (cluster de cristaux violets)
+  [
+    "................................",
+    "................................",
+    "................................",
+    "...............kk...............",
+    "..............kNk...............",
+    ".............kNoNk..............",
+    "............kNoNoNk..k..........",
+    "....k.......koOoNoNk.kNk........",
+    "...kNk.....kNoOZOoNkkNoNk.......",
+    "..kNoNk....kOoOZOoNkNoOoNk......",
+    ".kNoOoNk...kOZOZOoNkOoOZOoNk....",
+    "kNoOZOoNk..kOZ#ZOoNoOZ#ZOoNk....",
+    "kOoOZOoNk..kOZ##ZONOZ##ZOoNk....",
+    "kOZOZOoNk..kOZZZZOOZZ#ZOoNNk....",
+    "kOZ#ZOoNk..kOOZOOOOOZZOoNNNk....",
+    "kOZ##ZOoNk.kOOoONOOOOOoNNNNk....",
+    "kOZZZZOoNkkOoooNoooooooNNkkk....",
+    ".kOOZZOoNkkoNoNoNoNNNNNoNk......",
+    ".kOOOoOoNooNNNNNNNNNNNNNk.......",
+    "..kNooNoNoNNNNNNNNMMMMMk........",
+    ".kNooooooooNoNNNNMMMMMMMk.......",
+    "kMNNNooNooNNNNNNMMMMMMMnk.......",
+    "kMMMNNNNNNNMMMMMMMMMnnnnk.......",
+    "kMMMMNNNNMMMMMMMMnnnnnnk........",
+    "kMMMMMMMMMMMMMnnnnnnnkk.........",
+    ".kMMMMMMMMMnnnnnnnnnk...........",
+    "..kkMMMMMnnnnnnnnnkk............",
+    "....kkMMnnnnnnnkkk..............",
+    "......kkkkkkkkkk................",
+    "................................",
+    "................................",
+    "................................",
+  ],
+  // T3 — Géode (demi-sphère croûte brune, coeur cristallin bleu)
+  [
+    "................................",
+    "................................",
+    "................................",
+    "..........kkbbbbbbbkk...........",
+    ".........kbBBaaaaaBBbk..........",
+    "........kbBaAAAAAAAaBbk.........",
+    ".......kbBaAAAAAAAAAaBbk........",
+    "......kbBaAAAjJJJjAAAaBbk.......",
+    ".....kbBaAAjJlllllJjAAaBbk......",
+    "....kbBaAAjJllLLLLlJjAAaBbk.....",
+    "....kBaAAjJllLLZZLLlJjAAaBk.....",
+    "...kBaAAjJlllLZ##ZLlllJjAABk....",
+    "...kBaAjJllLLZZ##ZZLLllJjABk....",
+    "...kBaAJllLLZZZZZZZZLLllJABk....",
+    "...kBaJllLLLLZZ##ZZLLLLllJBk....",
+    "...kBaJllLLLLZ##ZLLLLLLllJBk....",
+    "...kBaJllLLLLLZZLLLLLLLllJBk....",
+    "...kBaJllLLLLLLLLLLLLLllJ.Bk....",
+    "...kBaJlllLLLLLLLLLLLllJ..Bk....",
+    "...kBaJlllllLLLLLLllllJ..Bk.....",
+    "....kBaAJjlllllllllllJjABk......",
+    "....kBaAjJjjlllllllJJjjAaBk.....",
+    ".....kBaAjJjJjJjjJjJjAaBk.......",
+    "......kBaAAjJjJJjJjAAaBk........",
+    ".......kBaAAAjjJjjAAaBk.........",
+    "........kBaaAAAAAAAaaBk.........",
+    ".........kBBaaAAAAaaBBk.........",
+    "..........kkBBBaaBBBkk..........",
+    "............kkbbbbkk............",
+    "................................",
+    "................................",
+    "................................",
+  ],
+  // T4 — Pierre Runique (tablette sombre avec rune dorée incandescente)
+  [
+    "................................",
+    "................................",
+    "................................",
+    ".......kkccccccccccccckk........",
+    "......kcCCCCCCCCCCCCCCCck.......",
+    ".....kCCxxxxxxxxxxxxxxxCCk......",
+    ".....kCxxxxxxxxxxxxxxxxxCk......",
+    ".....kCxxxxxxxxxxxxxxxxxCk......",
+    ".....kCxxxxgyYYYYYYygxxxxCk.....",
+    ".....kCxxxgYWWWZZWWWYgxxxCk.....",
+    ".....kCxxgYWZZ#ZZ#ZZWYgxxCk.....",
+    ".....kCxxYWZ#ZZ#ZZ#ZZWYxxCk.....",
+    ".....kCxxYWZ#####ZZ##ZWYxxCk....",
+    ".....kCxxYWZ#ZZZ##ZZ##ZWYxCk....",
+    ".....kCxxYWZ#####ZZ##ZWYxxCk....",
+    ".....kCxxYWZZ##Z##ZZ#ZZWYxCk....",
+    ".....kCxxYWZ##ZZZZ###ZZWYxCk....",
+    ".....kCxxYWZ#ZZ##ZZ#ZZWYxxCk....",
+    ".....kCxxYWZ#####ZZ##ZWYxxCk....",
+    ".....kCxxYWZZ#ZZ#ZZ##ZWYxxCk....",
+    ".....kCxxgYWZZ#ZZ#ZZWYgxxxCk....",
+    ".....kCxxxgYWWWWZZWWWYgxxxCk....",
+    ".....kCxxxxgyYYYYYYygxxxxxCk....",
+    ".....kCxxxxxxxxxxxxxxxxxxxCk....",
+    ".....kCxxxxxxxxxxxxxxxxxxxCk....",
+    ".....kCxxxxxxxxxxxxxxxxxxxCk....",
+    ".....kCxxxxxxxxxxxxxxxxxxxCk....",
+    ".....kCCxxxxxxxxxxxxxxxxxCCk....",
+    "......kcCCCCCCCCCCCCCCCCCCck....",
+    ".......kkccccccccccccccccckk....",
+    "................................",
+    "................................",
+  ],
+  // T5 — Pierre Philosophale (sphère rouge facetée, halo doré)
+  [
+    "................................",
+    "...............ZZ...............",
+    "..............ZWZ...............",
+    "..ZZ.........ZWWWZ.........ZZ...",
+    "...ZZZ......ZWHHHWZ......ZZZ....",
+    ".....ZZ....ZWHhhhhWZ....ZZ......",
+    "......ZZZZWHFFhFFhWZZZZZ........",
+    ".......ZWHFFFhhhhFFWZZ..........",
+    "......ZWHFFhFhFhFhFFWZ..........",
+    ".....ZWHFFhFFFhhFFhFFWZ.........",
+    ".....WHFFhfffhFhFFFhFFW.........",
+    "....ZWHFhFffFhFhfFhFhFWZ........",
+    "....WHFFhFFFhFFhFhFFhFFW........",
+    "...ZWHFFhFFhFhfFhFFhFhFWZ.......",
+    "...WHFFhFFFhFFhFhfFFhFFFW.......",
+    "...WHFFhFFhFFhFhFhFhFFhFW.......",
+    "...WHFFhfFFhFhFhfFFhFhFFW.......",
+    "...WHFFhFhFFhFhFFhFFhFhFW.......",
+    "...ZWHFFhFFhfFhFFhFhFFhWZ.......",
+    "....WHFFhfFhFFhFhFhFFhFW........",
+    "....ZWHFFhFhFFhFhFhFFhWZ........",
+    ".....WHFFhFFhfFhFFhFhFW.........",
+    ".....ZWHFFhFFFhhfFhFFWZ.........",
+    "......ZWHFFhFFFhFFhFWZ..........",
+    "......ZZWHFFhfFhFFFWZZ..........",
+    ".......ZZZWHHFFFhFWZZZ..........",
+    "..ZZZZZZZZZWHHHHHWZZZZZZZZZ.....",
+    "...ZZ.....ZZWWWWWZZ.....ZZ......",
+    "...........ZZWWWZZ..............",
+    "............ZZWZZ...............",
+    ".............ZZZ................",
+    "..............Z.................",
+  ],
+
+  /* ===========================================================
+     CHAINE 2 — VOIE DE L'ESSENCE
+     =========================================================== */
+  // T0 — Brume (volute pâle bleu-gris, transparente)
+  [
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "..........mMMMmmm...............",
+    "........mMMnnNNnnMm.....mm......",
+    ".......mMnnNNoooNNnMm..mMNm.....",
+    "......mMnNoooOOOoooNMmMNoNm.....",
+    "......mMNoOOOOZOOOOoNNoOoNMm....",
+    ".....mMNoOOZZZOZZOOoOOOZZONMm...",
+    ".....mNoOOZ##ZZOZZOZOOOZZONNm...",
+    ".....mNoOOZ##ZZZOZOOOZZONNNm....",
+    "......mNoOOZZZOOOZOZZONNNNm.....",
+    ".......mMNoOOOOOZOZZONNMMm......",
+    "........mMNNoOOOZOZONMMm........",
+    ".........mMMNooOOoNMm...........",
+    "..........mmMNoNMmm.............",
+    "...........mmmmmm...............",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+  ],
+  // T1 — Étincelle (étoile à 4 branches, blanc-violet incandescent)
+  [
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "...............kk...............",
+    "..............kZZk..............",
+    "..............kZZk..............",
+    "..............kZZk..............",
+    "..............kZZk..............",
+    "..............kOOk..............",
+    "..............kOoNk.............",
+    "...........kkkkooNkk............",
+    "..........kkONooooONkk..........",
+    "....kkkkkkONOoOZZOoONkkkkkkk....",
+    "..kkOONNooOOZ#####ZOoNNNoOOkk...",
+    "..kkOONNoooOZ##Z##ZOoooNoOOkk...",
+    "....kkkkkkONOoOZZOoONkkkkkkk....",
+    "..........kkONooooNNkk..........",
+    "...........kkkkooNkkk...........",
+    "..............kNoNk.............",
+    "..............kOoNk.............",
+    "..............kOOk..............",
+    "..............kZZk..............",
+    "..............kZZk..............",
+    "..............kZZk..............",
+    "..............kZZk..............",
+    "..............kZZk..............",
+    "...............kk...............",
+    "................................",
+    "................................",
+    "................................",
+  ],
+  // T2 — Flamme Bleue (langue de feu cyan-azur, coeur blanc)
+  [
+    "................................",
+    "................................",
+    "................................",
+    "...............ZZ...............",
+    "..............ZZZZ..............",
+    ".............ZZllZZ.............",
+    ".............ZllllZ.............",
+    "............ZllllllZ............",
+    "...........ZllLLLLllZ...........",
+    "...........ZllLZZLllZ...........",
+    "..........ZllLZZZZLllZ..........",
+    "..........ZllLZ##ZLllZ..........",
+    ".........ZllLZZ##ZZLllZ.........",
+    ".........ZJllZ####ZllJZ.........",
+    "........ZJlLZZ#ZZ#ZZLlJZ........",
+    "........ZJllZ##ZZ##ZllJZ........",
+    "........ZJlLZ#ZZZ#ZZLlJZ........",
+    "........ZJllZ#####ZllJZ.........",
+    "........ZJjllZZ##ZllJjZ.........",
+    ".........ZJjlllllllJjZ..........",
+    ".........IZJjlllllJjZI..........",
+    "..........IZJjlllJjZI...........",
+    "..........IIZJjjjJZII...........",
+    "...........IIZJjJZII............",
+    "............IIZJZII.............",
+    ".............IIZII..............",
+    "..............III...............",
+    "...............I................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+  ],
+  // T3 — Esprit (silhouette fantomatique, drap pourpre, yeux creux)
+  [
+    "................................",
+    "................................",
+    "................................",
+    "............kMNNNNMk............",
+    "...........kMNoOOoNMk...........",
+    "..........kMNNoOOoNNMk..........",
+    ".........kMNoOOOOOOoNMk.........",
+    ".........kMNoOZZooZZoNMk........",
+    "........kMNoOZ##ooZ##ZoNMk......",
+    "........kMNoOZ##ooZ##ZoNMk......",
+    "........kMNoOZ#ZooZ#ZZoNMk......",
+    "........kMNoOZZZOoOZZZONMk......",
+    "........kMNNooOOOOOOoONMNk......",
+    "........kMNNNoooOOOoooNNMk......",
+    "........kMNNNNNooooNNNNNMk......",
+    "........kMNNoooNoooooNNNMk......",
+    "........kMNoNNoooooNooNNMk......",
+    "........kMNoNoooNoNooNoMk.......",
+    "........kMNoooNoooNoooNMk.......",
+    ".........kMNoNooooooNoMk........",
+    ".........kMNoooooNooNoMk........",
+    "..........kMNooooooNoMk.........",
+    "...........kMNNoooNNoMk.........",
+    "............kMNNoNNoMk..........",
+    ".............kMNNNNMk...........",
+    "..............kMNNMk............",
+    "...............kMMk.............",
+    "...............kMnk.............",
+    "..............kMnnMk............",
+    ".............kMnnnnMk...........",
+    "............kkMMnnMMkk..........",
+    ".............kkkkkkkk...........",
+  ],
+  // T4 — Constellation (champ noir étoilé, lignes connectant les étoiles)
+  [
+    "................................",
+    "..ZZ............................",
+    ".ZZZZ.....................ZZ....",
+    ".ZZZZ.....Z..............ZZZZ...",
+    "..ZZ.....ZZZ.............ZZZZ...",
+    "...Z......Z...............ZZ....",
+    "....Z........................Z..",
+    "...Z..ZZ........Z...........Z...",
+    "..Z..ZZZZ.....ZZZ..........Z....",
+    ".Z....ZZ.......Z..ZZ.............",
+    "Z......Z..........ZZZZ.........Z",
+    ".Z................ZZ..........Z.",
+    "..Z.....Z.........Z..ZZ......Z..",
+    "...ZZZ.ZZZ.........ZZZZZ...ZZ...",
+    "....ZZ..Z.....Z....ZZZ.ZZZZ.....",
+    ".....Z.......ZZZ....Z..Z........",
+    "..Z..ZZ.......Z....Z..Z.........",
+    ".ZZZ.ZZ......Z....Z..Z.....Z....",
+    "..ZZ.ZZZZ...ZZ...Z..ZZZ...ZZZ...",
+    "..Z..ZZZZZ.ZZ...Z..ZZZZZ..ZZZ...",
+    "......ZZZZZ.....Z...ZZZ....Z....",
+    "..Z....ZZZ.....ZZ...........Z..Z",
+    ".ZZZ...........Z......ZZ...ZZZZZ",
+    "..ZZ.....Z....ZZ.....ZZZZ...ZZ.Z",
+    "...Z....ZZZ..Z........ZZ....Z...",
+    ".........Z..Z....Z....ZZ........",
+    "............Z...ZZZ....Z..ZZ....",
+    ".....Z......Z....Z........ZZZZ..",
+    "....ZZZ......Z...........Z.ZZ...",
+    "....ZZZZ......Z....Z....Z....Z..",
+    ".....ZZ........Z..ZZZ..Z......Z.",
+    "................................",
+  ],
+  // T5 — Quintessence (orbe prismatique, rayons radiaux)
+  [
+    "...............ZZ...............",
+    "...............Z................",
+    "...............Z................",
+    "....Z..........Z..........Z.....",
+    ".....ZZZ.......Z.......ZZZ......",
+    "......ZZZ......Z......ZZZ.......",
+    ".......ZZZ.....Z.....ZZZ........",
+    "........ZZZ....Z....ZZZ.........",
+    ".........ZZZkkkOkkkZZZ..........",
+    "..........ZZkOoONOoOkZZ.........",
+    "..........kOoNoOZOoNoOk.........",
+    ".........kOoNoOZ#ZOoNoOk........",
+    "ZZZZZZZZZZOoNOZ###ZONoOZZZZZZZZZ",
+    "Z........kOoNOZ#W#ZONoOk........",
+    "Z........kOoOoZ#W#ZoOoOk........",
+    "Z........kONOOZ###ZOONNk........",
+    "Z........kOoOOOZ#ZOOoOOk........",
+    "Z........kOoNoOZZZOoNoOk........",
+    "ZZZZZZZZZkkOoNOZOOoNoOkZZZZZZZZZ",
+    "..........kOoNoOOONoOk..........",
+    "..........kkkOoNoOOkkk..........",
+    "........ZZZ....Z....ZZZ.........",
+    ".......ZZZ.....Z.....ZZZ........",
+    "......ZZZ......Z......ZZZ.......",
+    ".....ZZZ.......Z.......ZZZ......",
+    "....Z..........Z..........Z.....",
+    "...............Z................",
+    "...............Z................",
+    "...............Z................",
+    "...............ZZ...............",
+    "................................",
+    "................................",
+  ],
+];
+
+/* ================ CAULDRONS 32×32 ================ */
+const GEN_SPRITES = [
+  // CHAUDRON PLANTE — fer noir, rebord doré, liquide vert clapotant, vapeur verte
+  [
+    "................................",
+    "..............kk................",
+    ".............kQQk...............",
+    "............kqQRQk..............",
+    "............kQRrRk..............",
+    ".............kqQqk..............",
+    "..............kk................",
+    "................................",
+    "....kkkkkkkkkkkkkkkkkkkkk.......",
+    "...kggGGGGGGGGGGGGGGGGGGGgk.....",
+    "..kGYWyyyyyyyyyyyyyyyyyyyYGk....",
+    "..kGyqQqQQrQRrRRRrRQQQqqQqGk....",
+    ".kgkqQRrRRrRRRrRRRrRRrRQqkgk....",
+    ".kGkqRrRRrRRRrRRRrRRrRRRqkGk....",
+    ".kGkpPqQRrRRrRRRrRRrRQqPpkGk....",
+    ".kGkkkpPqQRrRRRrRRrRQqPpkkGk....",
+    ".kGSkkkkpPqQQQQQQQpPpkkkkSGk....",
+    ".kGSSSkkkkpPpPpPpPpkkkkSSSGk....",
+    ".kGSSSSSkkkkpPpPpkkkkSSSSSGk....",
+    ".kGSSSSSSSSkkkkkkkkSSSSSSSGk....",
+    ".kGSSSSSSSSSSSSSSSSSSSSSSSGk....",
+    "..kGSSSSSSSSSSSSSSSSSSSSSGk.....",
+    "..kkGGSSSSSSSSSSSSSSSSSGGkk.....",
+    "....kkGGGGSSSSSSSSSGGGGkk.......",
+    "......kkGGGGGGGGGGGGkk..........",
+    "........kkkkkkkkkkkk............",
+    "............kkkk................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+  ],
+  // CHAUDRON PIERRE — fer noir, liquide cristallin bleu, fragments de cristal qui flottent
+  [
+    "................................",
+    "...............kk...............",
+    "..............kJJk..............",
+    "..............kJlk..............",
+    "............kkkJlkkk............",
+    "...........kJJlllJJk............",
+    "............kJlllJk.............",
+    ".............kJlJk..............",
+    "....kkkkkkkkkkkkkkkkkkkkk.......",
+    "...kggGGGGGGGGGGGGGGGGGGGgk.....",
+    "..kGYWyyyyyyyyyyyyyyyyyyyYGk....",
+    "..kGyjJjlJJlllllLLlllJjJjJGk....",
+    ".kgkjJlJLLlllLLLLLlllJlJjkgk....",
+    ".kGkJlJLLlllLLLLLLllllJJkGk.....",
+    ".kGkjJlJLLLZZLLZZLLLllJjkGk.....",
+    ".kGkkjJlJLLZ##ZLZ##LllJjkGk.....",
+    ".kGSkkjJlJLLZZLLZZLllJjkkSGk....",
+    ".kGSSSkkjJlJLLLLLLllJjkkSSSGk...",
+    ".kGSSSSSkkjJlllllllJjkkSSSSSGk..",
+    ".kGSSSSSSSSkkjJjjjjkkSSSSSSSGk..",
+    ".kGSSSSSSSSSSSSSSSSSSSSSSSGk....",
+    "..kGSSSSSSSSSSSSSSSSSSSSSGk.....",
+    "..kkGGSSSSSSSSSSSSSSSSSGGkk.....",
+    "....kkGGGGSSSSSSSSSGGGGkk.......",
+    "......kkGGGGGGGGGGGGkk..........",
+    "........kkkkkkkkkkkk............",
+    "............kkkk................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+  ],
+  // CHAUDRON ESSENCE — fer noir, liquide pourpre lumineux, étoiles qui brillent
+  [
+    "................................",
+    "................Z...............",
+    "...............ZoZ..............",
+    "..............ZONOZ.............",
+    ".......Z.....ZONnnNOZ.....Z.....",
+    "......ZoZ....ZNnNoNnNZ...ZoZ....",
+    "......NoN.....ZNoNoNZ....NoN....",
+    ".......Z.......ZoNoZ......Z.....",
+    "....kkkkkkkkkkkkkkkkkkkkk.......",
+    "...kggGGGGGGGGGGGGGGGGGGGgk.....",
+    "..kGYWyyyyyyyyyyyyyyyyyyyYGk....",
+    "..kGymMnNoOOoNNooNoNNNoOoNGk....",
+    ".kgkmNoOOoNZZOOZZOoNoOOoNkgk....",
+    ".kGknNZ##ZONOZ##ZONoOZZONkGk....",
+    ".kGkNoOZ#ZOOZOZZOZOZOZZOkGk.....",
+    ".kGkkmNoOZZOZONoOoOOoOoNkkGk....",
+    ".kGSkkmNoOOOoNoNoOOoOOoNkSGk....",
+    ".kGSSSkkmnNNoOoOoOOoOoNkSSSGk...",
+    ".kGSSSSSkkmNoOoOoOOoNkkSSSSSGk..",
+    ".kGSSSSSSSSkkmnNnNNkkSSSSSSSGk..",
+    ".kGSSSSSSSSSSSSSSSSSSSSSSSGk....",
+    "..kGSSSSSSSSSSSSSSSSSSSSSGk.....",
+    "..kkGGSSSSSSSSSSSSSSSSSGGkk.....",
+    "....kkGGGGSSSSSSSSSGGGGkk.......",
+    "......kkGGGGGGGGGGGGkk..........",
+    "........kkkkkkkkkkkk............",
+    "............kkkk................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+  ],
+];
+
+function spriteSVG(grid){
+  const N = 32;
+  let rects = "";
+  // emit by column run for compactness
+  for(let y=0; y<N; y++){
+    let runStart = -1, runChar = '.';
+    for(let x=0; x<N; x++){
+      const ch = grid[y][x];
+      if(ch === runChar){ continue; }
+      if(runChar !== '.' && runStart >= 0){
+        const c = PAL[runChar];
+        if(c) rects += `<rect x="${runStart}" y="${y}" width="${x-runStart}" height="1" fill="${c}"/>`;
+      }
+      runStart = x; runChar = ch;
+    }
+    if(runChar !== '.' && runStart >= 0){
+      const c = PAL[runChar];
+      if(c) rects += `<rect x="${runStart}" y="${y}" width="${N-runStart}" height="1" fill="${c}"/>`;
+    }
+  }
+  return `<svg class="sprite" viewBox="0 0 ${N} ${N}" shape-rendering="crispEdges" preserveAspectRatio="xMidYMid meet">${rects}</svg>`;
+}
+
+/* ================ ETAT ================ */
+const STATE = {
+  essence: 30,
+  gold: 0,
+  grid: Array.from({length:ROWS},()=>Array(COLS).fill(null)),
+  nextId: 1,
+  generators:[
+    { chain:0, tier:0, cost:3, cdMs:1500, lastFire:0, unlocked:true },
+    { chain:1, tier:0, cost:5, cdMs:2200, lastFire:0, unlocked:true },
+    { chain:2, tier:0, cost:8, cdMs:3000, lastFire:0, unlocked:true },
+  ],
+  quests: [],
+  totals:{ produced:[0,0,0], merged:[0,0,0], maxTier:[0,0,0] },
+  audio:true,
+  essenceMax: 60, essenceRegen: 1,
+  hasReachedT5:[false,false,false],
+  selectedCodex: null,
+};
+
+/* ================ QUETES ================ */
+const QUEST_TEMPLATES = [
+  { type:"produce", chain:0, tier:0, target:5,  reward:8,  name:"Semer", desc:"Produis 5 graines au cabinet vert." },
+  { type:"reach",   chain:0, tier:1, target:1,  reward:12, name:"Bourgeon", desc:"Atteins le palier du Bourgeon." },
+  { type:"merge",   chain:0, tier:1, target:3,  reward:15, name:"Mains vertes", desc:"Réalise 3 fusions de plantes." },
+  { type:"reach",   chain:0, tier:2, target:1,  reward:25, name:"Mandragore", desc:"Invoque la Mandragore hurlante." },
+  { type:"reach",   chain:0, tier:3, target:1,  reward:60, name:"Fleur des veilleurs", desc:"Fais éclore la Fleur Sépulcrale." },
+  { type:"reach",   chain:0, tier:4, target:1,  reward:140,name:"Aube nouvelle", desc:"Distille l'Élixir d'Aube." },
+  { type:"reach",   chain:0, tier:5, target:1,  reward:400,name:"Panacée", desc:"Achève la Voie de la Plante." },
+
+  { type:"produce", chain:1, tier:0, target:5,  reward:10, name:"Glaner", desc:"Ramasse 5 cailloux." },
+  { type:"reach",   chain:1, tier:1, target:1,  reward:15, name:"Quartz", desc:"Trouve un cristal de Quartz." },
+  { type:"merge",   chain:1, tier:1, target:3,  reward:20, name:"Tailleur", desc:"Réalise 3 fusions de pierres." },
+  { type:"reach",   chain:1, tier:2, target:1,  reward:35, name:"Améthyste", desc:"Façonne une Améthyste." },
+  { type:"reach",   chain:1, tier:3, target:1,  reward:80, name:"Géode", desc:"Ouvre une Géode." },
+  { type:"reach",   chain:1, tier:4, target:1,  reward:180,name:"Runique", desc:"Grave une Pierre Runique." },
+  { type:"reach",   chain:1, tier:5, target:1,  reward:500,name:"L'Œuvre rouge", desc:"Forge la Pierre Philosophale." },
+
+  { type:"produce", chain:2, tier:0, target:5,  reward:14, name:"Brumes", desc:"Capture 5 Brumes." },
+  { type:"reach",   chain:2, tier:1, target:1,  reward:20, name:"Étincelle", desc:"Allume une Étincelle." },
+  { type:"merge",   chain:2, tier:1, target:3,  reward:28, name:"Souffle", desc:"Réalise 3 fusions d'essences." },
+  { type:"reach",   chain:2, tier:2, target:1,  reward:50, name:"Flamme bleue", desc:"Invoque la Flamme Bleue." },
+  { type:"reach",   chain:2, tier:3, target:1,  reward:120,name:"Esprit", desc:"Convoque un Esprit." },
+  { type:"reach",   chain:2, tier:4, target:1,  reward:260,name:"Constellation", desc:"Trace une Constellation." },
+  { type:"reach",   chain:2, tier:5, target:1,  reward:700,name:"Quintessence", desc:"Atteins la Quintessence." },
+
+  { type:"merge_any", target:20, reward:30, name:"Apprenti", desc:"Réalise 20 fusions, toutes voies confondues." },
+  { type:"merge_any", target:80, reward:120, name:"Adepte", desc:"Réalise 80 fusions au total." },
+  { type:"merge_any", target:300, reward:500, name:"Maître", desc:"Réalise 300 fusions au total." },
+];
+
+function rebuildQuests(){
+  STATE.quests = QUEST_TEMPLATES.map((q,i)=>({
+    ...q, id:i, progress:0, claimed:false, done:false,
+  }));
+}
+function questProgress(q){
+  if(q.type==="produce") return STATE.totals.produced[q.chain] || 0;
+  if(q.type==="merge")   return STATE.totals.merged[q.chain] || 0;
+  if(q.type==="merge_any") return STATE.totals.merged.reduce((a,b)=>a+b,0);
+  if(q.type==="reach")   return STATE.totals.maxTier[q.chain] >= q.tier ? 1 : 0;
+  return 0;
+}
+function refreshQuests(){
+  for(const q of STATE.quests){
+    q.progress = questProgress(q);
+    q.done = !q.claimed && q.progress >= q.target;
+  }
+  renderQuests();
+}
+
+/* ================ AUDIO ================ */
+const A = { ctx:null, master:null, drone:null, droneOn:false, reverb:null };
+function audioInit(){
+  if(A.ctx) return;
+  A.ctx = new (window.AudioContext||window.webkitAudioContext)();
+  A.master = A.ctx.createGain();
+  A.master.gain.value = STATE.audio ? .35 : 0;
+  // Reverb : convolution avec impulse synthétique
+  const ir = makeImpulse(2.6, 2.4);
+  A.reverb = A.ctx.createConvolver();
+  A.reverb.buffer = ir;
+  const wet = A.ctx.createGain();
+  wet.gain.value = .25;
+  A.reverb.connect(wet).connect(A.master);
+  A.master.connect(A.ctx.destination);
+  A.wet = wet;
+}
+function makeImpulse(seconds=2, decay=2){
+  const r = 44100;
+  const len = r*seconds;
+  const buf = (A.ctx||(new (window.AudioContext||window.webkitAudioContext)())).createBuffer(2, len, r);
+  for(let ch=0; ch<2; ch++){
+    const data = buf.getChannelData(ch);
+    for(let i=0; i<len; i++){
+      data[i] = (Math.random()*2 - 1) * Math.pow(1 - i/len, decay);
+    }
+  }
+  return buf;
+}
+function startDrone(){
+  if(!A.ctx || A.droneOn) return;
+  A.droneOn = true;
+  // Pad multi-voix detuné + filtre + LFO
+  const fund = 55; // A1
+  const filt = A.ctx.createBiquadFilter();
+  filt.type = "lowpass"; filt.frequency.value = 380; filt.Q.value = .7;
+  const gain = A.ctx.createGain(); gain.gain.value = .14;
+  filt.connect(gain); gain.connect(A.master); gain.connect(A.reverb);
+
+  const partials = [
+    {f:fund, type:"sine",     g:.55, det:0},
+    {f:fund*1.5, type:"triangle", g:.30, det:7},
+    {f:fund*2.0, type:"sine",     g:.18, det:-4},
+    {f:fund*3.0, type:"sine",     g:.10, det:11},
+    {f:fund*1.25, type:"triangle", g:.16, det:-9},
+  ];
+  partials.forEach((p,i)=>{
+    const o = A.ctx.createOscillator();
+    o.type = p.type; o.frequency.value = p.f; o.detune.value = p.det;
+    const g = A.ctx.createGain(); g.gain.value = p.g;
+    o.connect(g).connect(filt);
+    o.start();
+    // LFO sur la frequence pour vibrato lent
+    const lfo = A.ctx.createOscillator();
+    const lg = A.ctx.createGain();
+    lfo.frequency.value = .07 + i*.04;
+    lg.gain.value = p.f*.004;
+    lfo.connect(lg).connect(o.frequency);
+    lfo.start();
+  });
+
+  // Layer de souffle / vent (bruit blanc filtré passe-bande)
+  const noise = makeNoiseBuffer(4);
+  const ns = A.ctx.createBufferSource();
+  ns.buffer = noise; ns.loop = true;
+  const nbf = A.ctx.createBiquadFilter();
+  nbf.type = "bandpass"; nbf.frequency.value = 380; nbf.Q.value = 1.6;
+  const ng = A.ctx.createGain(); ng.gain.value = .025;
+  ns.connect(nbf).connect(ng).connect(A.master);
+  ns.start();
+  // LFO sur le filtre du vent
+  const wlfo = A.ctx.createOscillator();
+  const wlg = A.ctx.createGain();
+  wlfo.frequency.value = .12;
+  wlg.gain.value = 200;
+  wlfo.connect(wlg).connect(nbf.frequency);
+  wlfo.start();
+}
+function makeNoiseBuffer(seconds=2){
+  const r = 44100;
+  const buf = A.ctx.createBuffer(1, r*seconds, r);
+  const data = buf.getChannelData(0);
+  for(let i=0; i<data.length; i++) data[i] = Math.random()*2-1;
+  return buf;
+}
+
+function blip(freq=440, dur=.1, type="sine", vol=.3, wet=.3){
+  if(!A.ctx) return;
+  const o = A.ctx.createOscillator();
+  const g = A.ctx.createGain();
+  o.type = type; o.frequency.value = freq;
+  g.gain.value = 0;
+  o.connect(g);
+  g.connect(A.master);
+  if(A.reverb && wet>0){
+    const w = A.ctx.createGain(); w.gain.value = wet;
+    g.connect(w); w.connect(A.reverb);
+  }
+  const t = A.ctx.currentTime;
+  g.gain.linearRampToValueAtTime(vol, t+.005);
+  g.gain.exponentialRampToValueAtTime(.0001, t+dur);
+  o.start(t); o.stop(t+dur+.05);
+}
+
+function sfxMerge(tier, chain){
+  // Cloche cristalline montante + harmoniques + sub-basse
+  const baseScale = [220, 277, 330, 392, 466, 587];
+  const base = baseScale[tier] || 660;
+  const types = ["triangle","triangle","sine"];
+  blip(base, .22, "triangle", .26, .35);
+  setTimeout(()=>blip(base*1.5, .18, "sine", .18, .4), 40);
+  setTimeout(()=>blip(base*2,    .14, "sine", .12, .45), 90);
+  setTimeout(()=>blip(base*3,    .10, "sine", .08, .5), 150);
+  if(tier >= 3){
+    setTimeout(()=>blip(base*.5, .35, "sine", .22, .3), 30);
+  }
+  if(tier >= 5){
+    setTimeout(()=>blip(base*.25, .9, "sine", .3, .5), 60);
+  }
+}
+function sfxSpawn(chain){
+  const base = [196, 247, 165][chain] || 220;
+  blip(base, .08, "square", .12, .15);
+  blip(base*2, .06, "triangle", .08, .15);
+}
+function sfxClaim(){
+  blip(523, .12, "triangle", .22, .4);
+  setTimeout(()=>blip(659, .14, "triangle", .22, .4), 80);
+  setTimeout(()=>blip(784, .25, "triangle", .26, .5), 160);
+}
+function sfxDeny(){
+  blip(140, .12, "sawtooth", .14, .2);
+}
+function sfxGrand(){
+  // Cinematique : sub + cloche grave + harmonics empilés
+  blip(55,  3.0, "sine", .35, .6);
+  blip(110, 2.4, "sine", .25, .7);
+  setTimeout(()=>blip(220, 2.0, "triangle", .2, .8), 120);
+  setTimeout(()=>blip(440, 1.6, "triangle", .15, .8), 240);
+  setTimeout(()=>blip(880, 1.4, "sine", .1, .9), 360);
+  setTimeout(()=>blip(1320, 1.2, "sine", .08, .9), 460);
+  setTimeout(()=>blip(1760, 1.0, "sine", .06, .9), 560);
+}
+
+function vibrate(pattern){
+  if(navigator.vibrate) try{ navigator.vibrate(pattern); }catch(e){}
+}
+
+/* ================ RENDER ================ */
+const $grid = document.getElementById("grid");
+const $gens = document.getElementById("generators");
+const $essence = document.getElementById("essence-val");
+const $gold = document.getElementById("gold-val");
+
+const ROMAN = ["","I","II","III","IV","V"];
+
+function buildGrid(){
+  $grid.style.gridTemplateColumns = `repeat(${COLS}, 1fr)`;
+  $grid.style.gridTemplateRows = `repeat(${ROWS}, 1fr)`;
+  $grid.innerHTML = "";
+  for(let y=0; y<ROWS; y++){
+    for(let x=0; x<COLS; x++){
+      const c = document.createElement("div");
+      c.className = "cell";
+      c.dataset.x = x; c.dataset.y = y;
+      $grid.appendChild(c);
+    }
+  }
+}
+function cellAt(x,y){ return $grid.children[y*COLS + x]; }
+function setTile(x,y,t){ STATE.grid[y][x] = t; }
+
+function findEmpty(){
+  const emp = [];
+  for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++) if(!STATE.grid[y][x]) emp.push([x,y]);
+  return emp;
+}
+
+function renderTile(x,y){
+  const cell = cellAt(x,y);
+  cell.innerHTML = "";
+  const t = STATE.grid[y][x];
+  if(!t) return;
+  const div = document.createElement("div");
+  div.className = "tile spawn";
+  div.dataset.id = t.id;
+  div.dataset.chain = t.chain;
+  div.dataset.tier = t.tier;
+  const chain = CHAINS[t.chain];
+  div.style.color = chain.color;
+  div.innerHTML = spriteSVG(SPRITES[t.chain*6 + t.tier]);
+  if(t.tier > 0){
+    const b = document.createElement("div");
+    b.className = "tier-badge";
+    b.textContent = ROMAN[t.tier];
+    div.appendChild(b);
+  }
+  cell.appendChild(div);
+  attachDrag(div, x, y);
+  setTimeout(()=>div.classList.remove("spawn"), 440);
+}
+
+function renderAll(){
+  for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++) renderTile(x,y);
+  renderStats();
+}
+
+function renderStats(){
+  $essence.textContent = Math.floor(STATE.essence) + "/" + STATE.essenceMax;
+  $gold.textContent = STATE.gold;
+}
+
+function renderGenerators(){
+  $gens.innerHTML = "";
+  STATE.generators.forEach((g,i)=>{
+    const div = document.createElement("div");
+    div.className = "gen";
+    div.dataset.chain = g.chain;
+    if(!g.unlocked) div.classList.add("locked");
+
+    const stack = document.createElement("div");
+    stack.className = "gen-stack";
+    const sp = document.createElement("div");
+    sp.className = "gen-svg";
+    sp.innerHTML = spriteSVG(GEN_SPRITES[g.chain]);
+    stack.appendChild(sp);
+    const bub = document.createElement("canvas");
+    bub.className = "gen-bubbles";
+    bub.width = 64; bub.height = 64;
+    stack.appendChild(bub);
+    div.appendChild(stack);
+
+    const nm = document.createElement("div");
+    nm.className = "gen-name";
+    nm.textContent = CHAINS[g.chain].short;
+    div.appendChild(nm);
+
+    const co = document.createElement("div");
+    co.className = "gen-cost";
+    co.innerHTML = `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><rect x="6" y="3" width="4" height="2" fill="#e8a050"/><rect x="5" y="5" width="6" height="3" fill="#c84a2a"/><rect x="6" y="8" width="4" height="2" fill="#8a2a2a"/></svg> ${g.cost}`;
+    div.appendChild(co);
+
+    const cd = document.createElement("div");
+    cd.className = "cd-bar";
+    cd.innerHTML = "<span></span>";
+    div.appendChild(cd);
+
+    div.addEventListener("pointerdown", e=>{ e.preventDefault(); fireGenerator(i, div); });
+    $gens.appendChild(div);
+  });
+}
+
+function renderQuests(){
+  const list = document.getElementById("quest-list");
+  list.innerHTML = "";
+  let claimable = 0;
+  for(const q of STATE.quests){
+    if(q.claimed) continue;
+    const el = document.createElement("div");
+    el.className = "quest" + (q.done? " done":"");
+    const pct = Math.min(100, (q.progress/q.target)*100);
+    el.innerHTML = `
+      <div class="qname">${q.name}</div>
+      <div class="qdesc">${q.desc}</div>
+      <div class="qprog">
+        <div class="qbar"><span style="width:${pct}%"></span></div>
+        <span>${Math.min(q.progress,q.target)}/${q.target}</span>
+      </div>
+      <div class="qreward">
+        <svg viewBox="0 0 16 16" shape-rendering="crispEdges"><rect x="3" y="5" width="10" height="2" fill="#c9a25a"/><rect x="3" y="7" width="10" height="5" fill="#9a7842"/><rect x="3" y="12" width="10" height="1" fill="#5a4528"/></svg>
+        +${q.reward}
+      </div>
+      ${q.done ? '<div class="qclaim">Réclamer</div>' : ''}
+    `;
+    if(q.done){
+      claimable++;
+      el.addEventListener("click", ()=>claimQuest(q));
+    }
+    list.appendChild(el);
+  }
+  const badge = document.getElementById("quest-badge");
+  badge.textContent = claimable;
+  badge.classList.toggle("show", claimable > 0);
+}
+
+function chainSym(chain){
+  // glyphs alchimiques par voie
+  if(chain === 0) return `<svg class="sym" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><polygon points="12,4 7,12 17,12"/><line x1="12" y1="12" x2="12" y2="20"/><line x1="9" y1="17" x2="15" y2="17"/></svg>`; // sulfur
+  if(chain === 1) return `<svg class="sym" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="6"/><line x1="6" y1="12" x2="18" y2="12"/></svg>`; // salt
+  if(chain === 2) return `<svg class="sym" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M7 7 q5 -4 10 0"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="16" x2="12" y2="22"/><line x1="9" y1="20" x2="15" y2="20"/></svg>`; // mercury
+  return "";
+}
+
+function renderCodex(){
+  const body = document.getElementById("codex-body");
+  body.innerHTML = "";
+  for(let c=0;c<3;c++){
+    const ch = CHAINS[c];
+    const div = document.createElement("div");
+    div.className = "codex-chain";
+    div.dataset.chain = c;
+    div.innerHTML = `<h3>${chainSym(c)}<span>${ch.name}</span></h3><div class="codex-row" id="codex-row-${c}"></div>`;
+    body.appendChild(div);
+    const row = div.querySelector(`#codex-row-${c}`);
+    for(let t=0;t<6;t++){
+      const cell = document.createElement("div");
+      const isLocked = STATE.totals.maxTier[c] < t;
+      cell.className = "codex-cell" + (isLocked ? " locked":"");
+      cell.title = ch.tiers[t].n + " — " + ch.tiers[t].d;
+      cell.innerHTML = spriteSVG(SPRITES[c*6 + t]);
+      const ct = document.createElement("div");
+      ct.className = "ct";
+      ct.textContent = ROMAN[t] || "I";
+      cell.appendChild(ct);
+      cell.addEventListener("click", ()=>{
+        if(isLocked){
+          showCodexDetail(null);
+        } else {
+          showCodexDetail({chain:c, tier:t});
+        }
+      });
+      row.appendChild(cell);
+    }
+  }
+  if(STATE.selectedCodex) showCodexDetail(STATE.selectedCodex);
+}
+
+function showCodexDetail(sel){
+  const det = document.getElementById("codex-detail");
+  STATE.selectedCodex = sel;
+  if(!sel){
+    det.innerHTML = `<span class="name">— SCEAU INCONNU —</span>Cette page reste obscure. Avance sur la voie pour la révéler.`;
+    return;
+  }
+  const ch = CHAINS[sel.chain];
+  const t = ch.tiers[sel.tier];
+  det.innerHTML = `<span class="name">${t.n} <span style="opacity:.5">· ${ROMAN[sel.tier]||"I"} ·</span></span>${t.d}`;
+}
+
+/* ================ GENERATEURS ================ */
+function fireGenerator(idx, el){
+  const g = STATE.generators[idx];
+  if(!g.unlocked) { sfxDeny(); return; }
+  const now = performance.now();
+  if(now - g.lastFire < g.cdMs) { return; }
+  if(STATE.essence < g.cost) { sfxDeny(); flashStat("essence-val"); return; }
+  const empties = findEmpty();
+  if(!empties.length) { sfxDeny(); shake(el); return; }
+  STATE.essence -= g.cost;
+  g.lastFire = now;
+  const [x,y] = empties[Math.floor(Math.random()*empties.length)];
+  setTile(x,y,{ id: STATE.nextId++, chain: g.chain, tier: g.tier });
+  STATE.totals.produced[g.chain]++;
+  STATE.totals.maxTier[g.chain] = Math.max(STATE.totals.maxTier[g.chain], g.tier);
+  renderTile(x,y);
+  renderStats();
+  refreshQuests();
+  sfxSpawn(g.chain);
+  vibrate(8);
+  audioInit();
+  // burst from cauldron
+  const r = el.getBoundingClientRect();
+  particles(r.left + r.width/2, r.top + 14, CHAINS[g.chain].color, 14);
+}
+function shake(el){
+  el.animate([
+    { transform:"translateX(0)" },{ transform:"translateX(-3px)" },
+    { transform:"translateX(3px)" },{ transform:"translateX(0)" }
+  ], { duration:240 });
+}
+function flashStat(id){
+  const el = document.getElementById(id).parentElement;
+  el.animate([
+    { boxShadow:"0 0 0 transparent" },
+    { boxShadow:"0 0 20px #c84a2a" },
+    { boxShadow:"0 0 0 transparent" }
+  ], { duration:400 });
+}
+function tickGenerators(now){
+  $gens.querySelectorAll(".gen").forEach((el, i)=>{
+    const g = STATE.generators[i];
+    const dt = now - g.lastFire;
+    const cdPct = Math.min(100, (dt/g.cdMs)*100);
+    el.querySelector(".cd-bar > span").style.width = cdPct + "%";
+    el.classList.toggle("cooldown", dt < g.cdMs);
+  });
+  // bulles canvas
+  $gens.querySelectorAll(".gen-bubbles").forEach((cv, i)=>{
+    const ctx = cv.getContext("2d");
+    drawCauldronBubbles(ctx, cv.width, cv.height, i, now);
+  });
+}
+
+/* Bulles dans les cauldrons */
+const BUB = [[],[],[]];
+function drawCauldronBubbles(ctx, w, h, chainIdx, now){
+  ctx.clearRect(0,0,w,h);
+  // spawn
+  if(Math.random() < .35){
+    BUB[chainIdx].push({
+      x: w*.32 + Math.random()*w*.36,
+      y: h*.78,
+      r: .8 + Math.random()*1.6,
+      vy: -.18 - Math.random()*.25,
+      a: .9, born: now,
+    });
+  }
+  const colors = [
+    ['#a8d890','#7ab36a'], // plant
+    ['#a8c8e8','#7aa3c8'], // mineral
+    ['#c898e8','#a070d0'], // essence
+  ];
+  const [hi, lo] = colors[chainIdx];
+  for(let i=BUB[chainIdx].length-1; i>=0; i--){
+    const b = BUB[chainIdx][i];
+    b.y += b.vy; b.a -= .012;
+    if(b.a <= 0 || b.y < h*.55){ BUB[chainIdx].splice(i,1); continue; }
+    ctx.fillStyle = lo; ctx.globalAlpha = b.a*.7;
+    ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = hi; ctx.globalAlpha = b.a;
+    ctx.beginPath(); ctx.arc(b.x - b.r*.3, b.y - b.r*.3, b.r*.45, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+
+/* ================ DRAG / MERGE ================ */
+let drag = null;
+
+function attachDrag(el, x, y){
+  el.addEventListener("pointerdown", e=>{
+    e.preventDefault();
+    audioInit();
+    const t = STATE.grid[y][x];
+    if(!t) return;
+    el.setPointerCapture(e.pointerId);
+    const r = el.getBoundingClientRect();
+    drag = {
+      pid: e.pointerId, tile:t, fromX:x, fromY:y, el,
+      startX:e.clientX, startY:e.clientY, moved:false,
+    };
+    el.classList.add("dragging");
+    moveDrag(e.clientX, e.clientY);
+  });
+  el.addEventListener("pointermove", e=>{
+    if(!drag || drag.pid !== e.pointerId) return;
+    const dx = e.clientX - drag.startX, dy = e.clientY - drag.startY;
+    if(!drag.moved && Math.hypot(dx,dy) > 4) drag.moved = true;
+    moveDrag(e.clientX, e.clientY);
+  });
+  el.addEventListener("pointerup", e=>{
+    if(!drag || drag.pid !== e.pointerId) return;
+    endDrag(e.clientX, e.clientY);
+  });
+  el.addEventListener("pointercancel", ()=>{
+    if(!drag) return;
+    endDrag(null);
+  });
+}
+
+function pointerToCell(cx, cy){
+  const el = document.elementFromPoint(cx, cy);
+  if(!el) return null;
+  const cell = el.closest(".cell");
+  if(!cell) return null;
+  return { x:+cell.dataset.x, y:+cell.dataset.y, el:cell };
+}
+
+function moveDrag(cx, cy){
+  document.querySelectorAll(".cell.drop, .cell.merge-target").forEach(c=>c.classList.remove("drop","merge-target"));
+  const gridR = $grid.getBoundingClientRect();
+  drag.el.style.position = "fixed";
+  drag.el.style.left = (cx - drag.el.offsetWidth/2) + "px";
+  drag.el.style.top  = (cy - drag.el.offsetHeight/2) + "px";
+  drag.el.style.width = (gridR.width / COLS - 4) + "px";
+  drag.el.style.height = (gridR.height / ROWS - 4) + "px";
+  const tgt = pointerToCell(cx, cy);
+  if(tgt){
+    const dest = STATE.grid[tgt.y][tgt.x];
+    if(!dest || (tgt.x===drag.fromX && tgt.y===drag.fromY)){
+      tgt.el.classList.add("drop");
+    } else if(dest.chain === drag.tile.chain && dest.tier === drag.tile.tier && dest.tier < 5){
+      tgt.el.classList.add("merge-target");
+    } else {
+      tgt.el.classList.add("drop");
+    }
+  }
+}
+
+function endDrag(cx, cy){
+  const d = drag;
+  drag = null;
+  document.querySelectorAll(".cell.drop, .cell.merge-target").forEach(c=>c.classList.remove("drop","merge-target"));
+  if(!d) return;
+  d.el.classList.remove("dragging");
+  d.el.style.position = ""; d.el.style.left=""; d.el.style.top="";
+  d.el.style.width=""; d.el.style.height="";
+
+  if(cx===null) { renderTile(d.fromX, d.fromY); return; }
+  const tgt = pointerToCell(cx, cy);
+  if(!tgt || (tgt.x===d.fromX && tgt.y===d.fromY)) {
+    renderTile(d.fromX, d.fromY); return;
+  }
+  const dest = STATE.grid[tgt.y][tgt.x];
+  if(!dest){
+    setTile(tgt.x, tgt.y, d.tile);
+    setTile(d.fromX, d.fromY, null);
+    renderTile(d.fromX, d.fromY);
+    renderTile(tgt.x, tgt.y);
+  } else if(dest.chain === d.tile.chain && dest.tier === d.tile.tier && dest.tier < 5){
+    doMerge(d.fromX, d.fromY, tgt.x, tgt.y);
+  } else {
+    setTile(d.fromX, d.fromY, dest);
+    setTile(tgt.x, tgt.y, d.tile);
+    renderTile(d.fromX, d.fromY);
+    renderTile(tgt.x, tgt.y);
+  }
+}
+
+function doMerge(fx, fy, tx, ty){
+  const a = STATE.grid[fy][fx], b = STATE.grid[ty][tx];
+  const newTier = b.tier + 1;
+  const cellFrom = cellAt(fx, fy), cellTo = cellAt(tx, ty);
+  cellFrom.firstChild?.classList.add("merge-out");
+  cellTo.firstChild?.classList.add("merge-out");
+  const r1 = cellFrom.getBoundingClientRect(), r2 = cellTo.getBoundingClientRect();
+  const ax = r1.left + r1.width/2, ay = r1.top + r1.height/2;
+  const bx = r2.left + r2.width/2, by = r2.top + r2.height/2;
+  const ch = CHAINS[a.chain];
+
+  // ÉCLAIR entre les deux tuiles
+  lightning(ax, ay, bx, by, ch.color);
+  cellFrom.classList.add("flash");
+  cellTo.classList.add("flash");
+  setTimeout(()=>{
+    cellFrom.classList.remove("flash");
+    cellTo.classList.remove("flash");
+  }, 360);
+
+  particles(ax, ay, ch.color, 22, bx, by);
+  shockwave(bx, by, ch.color, newTier);
+  sfxMerge(newTier, a.chain);
+  vibrate([12, 30, 18]);
+  floating(bx, by - 30, "▲ " + ch.tiers[newTier].n, "tier");
+
+  setTimeout(()=>{
+    setTile(fx, fy, null);
+    setTile(tx, ty, { id: STATE.nextId++, chain:a.chain, tier:newTier });
+    STATE.totals.merged[a.chain]++;
+    const wasMaxBefore = STATE.totals.maxTier[a.chain];
+    STATE.totals.maxTier[a.chain] = Math.max(wasMaxBefore, newTier);
+    renderTile(fx, fy);
+    renderTile(tx, ty);
+    const nt = cellAt(tx,ty).firstChild;
+    if(nt){ nt.classList.add("merge-in"); setTimeout(()=>nt.classList.remove("merge-in"), 560); }
+    refreshQuests();
+    renderCodex();
+
+    // Premier T5 : grande cinématique
+    if(newTier === 5 && !STATE.hasReachedT5[a.chain]){
+      STATE.hasReachedT5[a.chain] = true;
+      STATE.gold += 500;
+      grandOeuvre(a.chain);
+    } else if(newTier === 5){
+      STATE.gold += 200;
+      floating(bx, by + 10, "+200", "gain");
+      sfxClaim();
+    }
+    renderStats();
+  }, 280);
+}
+
+/* ================ QUETES — claim ================ */
+function claimQuest(q){
+  if(!q.done || q.claimed) return;
+  q.claimed = true;
+  STATE.gold += q.reward;
+  sfxClaim();
+  vibrate(20);
+  const r = document.getElementById("quests").getBoundingClientRect();
+  floating(r.left + r.width/2, r.top + 80, "+"+q.reward+" couronnes", "gain");
+  renderStats();
+  refreshQuests();
+  applyProgressionBonuses();
+}
+function applyProgressionBonuses(){
+  const factor = Math.max(.4, 1 - STATE.gold/4000);
+  STATE.generators.forEach((g, i)=>{
+    g.cdMs = [1500, 2200, 3000][i] * factor;
+  });
+  if(STATE.gold >= 200){ STATE.essenceMax = 80; STATE.essenceRegen = 1.4; }
+  if(STATE.gold >= 800){ STATE.essenceMax = 120; STATE.essenceRegen = 2; }
+  if(STATE.gold >= 2500){ STATE.essenceMax = 200; STATE.essenceRegen = 3; }
+}
+
+/* ================ GRAND ŒUVRE CINEMATIC ================ */
+function grandOeuvre(chain){
+  const overlay = document.getElementById("grand-oeuvre");
+  document.getElementById("ouvre-text").textContent = CHAINS[chain].latin;
+  document.getElementById("ouvre-sub").textContent = "— " + CHAINS[chain].tiers[5].n.toUpperCase() + " —";
+  overlay.classList.add("show");
+  sfxGrand();
+  vibrate([40, 60, 40, 60, 100]);
+  // Halo d'expansion sur écran
+  cinematicBurst(CHAINS[chain].color);
+  setTimeout(()=>overlay.classList.remove("show"), 4200);
+}
+
+/* ================ CANVAS LAYERS ================ */
+const fx = document.getElementById("fx");
+const fxCtx = fx.getContext("2d");
+const dust = document.getElementById("dust");
+const dustCtx = dust.getContext("2d");
+const candleC = document.getElementById("candles");
+const cdCtx = candleC.getContext("2d");
+const cinemaC = document.getElementById("cinema");
+const cnCtx = cinemaC.getContext("2d");
+
+function resize(){
+  for(const c of [fx, dust, candleC, cinemaC]){
+    c.width = window.innerWidth * devicePixelRatio;
+    c.height = window.innerHeight * devicePixelRatio;
+    c.style.width = window.innerWidth + "px";
+    c.style.height = window.innerHeight + "px";
+  }
+  for(const ctx of [fxCtx, dustCtx, cdCtx, cnCtx]){
+    ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  }
+}
+window.addEventListener("resize", resize);
+
+/* DUST */
+const DUST = [];
+function initDust(){
+  DUST.length = 0;
+  const N = 50;
+  for(let i=0;i<N;i++){
+    DUST.push({
+      x: Math.random()*window.innerWidth,
+      y: Math.random()*window.innerHeight,
+      r: .4 + Math.random()*1.6,
+      vy: -.05 - Math.random()*.15,
+      vx: (Math.random()-.5)*.06,
+      a: .15 + Math.random()*.45,
+      ph: Math.random()*Math.PI*2,
+    });
+  }
+}
+function tickDust(){
+  dustCtx.clearRect(0,0,window.innerWidth,window.innerHeight);
+  for(const p of DUST){
+    p.x += p.vx + Math.sin(p.ph)*.05;
+    p.y += p.vy;
+    p.ph += .02;
+    if(p.y < -10){ p.y = window.innerHeight + 10; p.x = Math.random()*window.innerWidth; }
+    const al = p.a * (.6 + .4*Math.sin(p.ph));
+    dustCtx.fillStyle = `rgba(232,200,120,${al})`;
+    dustCtx.beginPath();
+    dustCtx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+    dustCtx.fill();
+  }
+}
+
+/* CANDLES (bougies aux 2 coins supérieurs) */
+const CANDLES = [
+  { x:0, y:0, ph:0 }, // sera positionné dans tickCandles
+  { x:0, y:0, ph:Math.PI }
+];
+const EMBERS = [];
+function tickCandles(now){
+  cdCtx.clearRect(0,0,window.innerWidth,window.innerHeight);
+  // positions : coins supérieurs, hors header
+  CANDLES[0].x = 28; CANDLES[0].y = 70;
+  CANDLES[1].x = window.innerWidth - 28; CANDLES[1].y = 70;
+  for(const c of CANDLES){
+    c.ph += .12;
+    drawCandle(cdCtx, c.x, c.y, c.ph);
+    // braises occasionnelles
+    if(Math.random() < .04){
+      EMBERS.push({
+        x: c.x + (Math.random()-.5)*4,
+        y: c.y - 10,
+        vx:(Math.random()-.5)*.4,
+        vy:-.6 - Math.random()*.6,
+        a:1, r:.6+Math.random()*1.2,
+        col: Math.random()<.5 ? '#e8a050':'#ffd070',
+      });
+    }
+  }
+  for(let i=EMBERS.length-1; i>=0; i--){
+    const e = EMBERS[i];
+    e.x += e.vx; e.y += e.vy;
+    e.vy += .005; e.a -= .012;
+    if(e.a <= 0){ EMBERS.splice(i,1); continue; }
+    cdCtx.fillStyle = e.col; cdCtx.globalAlpha = e.a;
+    cdCtx.beginPath(); cdCtx.arc(e.x, e.y, e.r, 0, Math.PI*2); cdCtx.fill();
+    cdCtx.fillStyle = '#fff'; cdCtx.globalAlpha = e.a*.4;
+    cdCtx.beginPath(); cdCtx.arc(e.x, e.y, e.r*.5, 0, Math.PI*2); cdCtx.fill();
+  }
+  cdCtx.globalAlpha = 1;
+}
+function drawCandle(ctx, x, y, ph){
+  // halo
+  const halo = 50 + Math.sin(ph*2.3)*6 + Math.sin(ph*5.1)*3;
+  const grad = ctx.createRadialGradient(x, y-10, 4, x, y-10, halo);
+  grad.addColorStop(0, 'rgba(255,220,140,.55)');
+  grad.addColorStop(.4, 'rgba(232,160,80,.18)');
+  grad.addColorStop(1, 'rgba(232,160,80,0)');
+  ctx.fillStyle = grad;
+  ctx.beginPath(); ctx.arc(x, y-10, halo, 0, Math.PI*2); ctx.fill();
+
+  // bougie (cire ivoire)
+  ctx.fillStyle = '#d8c69a';
+  ctx.fillRect(x-3, y, 6, 22);
+  ctx.fillStyle = '#b8a072';
+  ctx.fillRect(x+2, y, 1, 22);
+  // gouttes de cire
+  ctx.fillStyle = '#d8c69a';
+  ctx.beginPath();
+  ctx.arc(x-3, y+7, 1.5, 0, Math.PI*2);
+  ctx.arc(x+3, y+12, 2, 0, Math.PI*2);
+  ctx.fill();
+  // mèche
+  ctx.fillStyle = '#1a1318';
+  ctx.fillRect(x, y-3, 1, 4);
+
+  // flamme — forme de goutte avec flicker
+  const flick = 1 + Math.sin(ph*3.7)*.08 + Math.sin(ph*9.1)*.05;
+  const fh = 14 * flick;
+  const fw = 5 * flick;
+  // flamme externe orange
+  ctx.beginPath();
+  ctx.fillStyle = '#e8a050';
+  ctx.moveTo(x, y - fh - 4);
+  ctx.quadraticCurveTo(x+fw, y - fh*.5, x+fw*.3, y - 2);
+  ctx.quadraticCurveTo(x, y, x-fw*.3, y - 2);
+  ctx.quadraticCurveTo(x-fw, y - fh*.5, x, y - fh - 4);
+  ctx.fill();
+  // flamme intermédiaire
+  ctx.beginPath();
+  ctx.fillStyle = '#ffd070';
+  const fh2 = fh*.7, fw2 = fw*.55;
+  ctx.moveTo(x, y - fh2 - 3);
+  ctx.quadraticCurveTo(x+fw2, y - fh2*.5, x+fw2*.4, y - 1);
+  ctx.quadraticCurveTo(x, y - .5, x-fw2*.4, y - 1);
+  ctx.quadraticCurveTo(x-fw2, y - fh2*.5, x, y - fh2 - 3);
+  ctx.fill();
+  // cœur blanc
+  ctx.beginPath();
+  ctx.fillStyle = '#fff5d8';
+  const fh3 = fh*.45, fw3 = fw*.3;
+  ctx.moveTo(x, y - fh3 - 2);
+  ctx.quadraticCurveTo(x+fw3, y - fh3*.5, x, y - 1);
+  ctx.quadraticCurveTo(x-fw3, y - fh3*.5, x, y - fh3 - 2);
+  ctx.fill();
+}
+
+/* PARTICLES + SHOCKWAVE + LIGHTNING */
+const FX_PARTS = [];
+const SHOCKS = [];
+const BOLTS = [];
+
+function particles(x, y, color, n=14, tx=null, ty=null){
+  for(let i=0;i<n;i++){
+    const a = Math.random()*Math.PI*2;
+    const sp = .5 + Math.random()*2.8;
+    FX_PARTS.push({
+      x, y,
+      vx: Math.cos(a)*sp, vy: Math.sin(a)*sp - .5,
+      life: 1, max: 30 + Math.random()*30,
+      r: 1 + Math.random()*2.5,
+      color,
+      tx, ty,
+      kind: tx!==null ? "attract" : "burst",
+    });
+  }
+}
+function shockwave(x, y, color, tier){
+  SHOCKS.push({ x, y, r:5, max: 50 + tier*22, life:1, color });
+}
+function lightning(x1, y1, x2, y2, color){
+  BOLTS.push({
+    x1, y1, x2, y2, color,
+    pts: makeBoltPoints(x1, y1, x2, y2),
+    life: 1, max: 18, born: performance.now(),
+  });
+}
+function makeBoltPoints(x1, y1, x2, y2){
+  const pts = [{x:x1, y:y1}];
+  const segs = 8;
+  for(let i=1; i<segs; i++){
+    const t = i/segs;
+    const dx = x2-x1, dy = y2-y1;
+    const nx = -dy / Math.max(1, Math.hypot(dx,dy));
+    const ny =  dx / Math.max(1, Math.hypot(dx,dy));
+    const off = (Math.random()-.5) * 18;
+    pts.push({x: x1+dx*t + nx*off, y: y1+dy*t + ny*off});
+  }
+  pts.push({x:x2, y:y2});
+  return pts;
+}
+
+function tickFX(){
+  fxCtx.clearRect(0,0,window.innerWidth,window.innerHeight);
+  // SHOCKS
+  for(let i=SHOCKS.length-1;i>=0;i--){
+    const s = SHOCKS[i];
+    s.r += (s.max - s.r) * .15;
+    s.life -= .04;
+    if(s.life <= 0){ SHOCKS.splice(i,1); continue; }
+    fxCtx.strokeStyle = s.color;
+    fxCtx.globalAlpha = s.life;
+    fxCtx.lineWidth = 2;
+    fxCtx.beginPath(); fxCtx.arc(s.x, s.y, s.r, 0, Math.PI*2); fxCtx.stroke();
+    fxCtx.globalAlpha = s.life * .35;
+    fxCtx.lineWidth = 8;
+    fxCtx.beginPath(); fxCtx.arc(s.x, s.y, s.r, 0, Math.PI*2); fxCtx.stroke();
+  }
+  // BOLTS
+  fxCtx.lineCap = "round";
+  for(let i=BOLTS.length-1;i>=0;i--){
+    const b = BOLTS[i];
+    b.life -= 1/b.max;
+    if(b.life <= 0){ BOLTS.splice(i,1); continue; }
+    // Re-jitter pour effet "vivant" 2 fois pendant la vie
+    if(Math.random() < .25){
+      b.pts = makeBoltPoints(b.x1, b.y1, b.x2, b.y2);
+    }
+    // Glow extérieur
+    fxCtx.globalAlpha = b.life * .45;
+    fxCtx.strokeStyle = b.color; fxCtx.lineWidth = 7;
+    fxCtx.beginPath();
+    fxCtx.moveTo(b.pts[0].x, b.pts[0].y);
+    for(let j=1; j<b.pts.length; j++) fxCtx.lineTo(b.pts[j].x, b.pts[j].y);
+    fxCtx.stroke();
+    // cœur blanc
+    fxCtx.globalAlpha = b.life;
+    fxCtx.strokeStyle = "#fff"; fxCtx.lineWidth = 1.6;
+    fxCtx.beginPath();
+    fxCtx.moveTo(b.pts[0].x, b.pts[0].y);
+    for(let j=1; j<b.pts.length; j++) fxCtx.lineTo(b.pts[j].x, b.pts[j].y);
+    fxCtx.stroke();
+  }
+  fxCtx.globalAlpha = 1;
+  // PARTICLES
+  for(let i=FX_PARTS.length-1;i>=0;i--){
+    const p = FX_PARTS[i];
+    if(p.kind==="attract" && p.tx!==null){
+      const dx = p.tx - p.x, dy = p.ty - p.y;
+      const d = Math.max(8, Math.hypot(dx,dy));
+      p.vx += (dx/d) * .85; p.vy += (dy/d) * .85;
+      p.vx *= .9; p.vy *= .9;
+    } else {
+      p.vy += .08; p.vx *= .98;
+    }
+    p.x += p.vx; p.y += p.vy;
+    p.life -= 1/p.max;
+    if(p.life <= 0){ FX_PARTS.splice(i,1); continue; }
+    fxCtx.fillStyle = p.color;
+    fxCtx.globalAlpha = p.life;
+    fxCtx.beginPath(); fxCtx.arc(p.x, p.y, p.r, 0, Math.PI*2); fxCtx.fill();
+    fxCtx.globalAlpha = p.life * .4;
+    fxCtx.beginPath(); fxCtx.arc(p.x, p.y, p.r*2.5, 0, Math.PI*2); fxCtx.fill();
+  }
+  fxCtx.globalAlpha = 1;
+}
+
+/* CINEMATIC burst plein écran */
+let CINEMA = null;
+function cinematicBurst(color){
+  CINEMA = { life:1, max:120, color, born: performance.now() };
+}
+function tickCinema(){
+  cnCtx.clearRect(0,0,window.innerWidth,window.innerHeight);
+  if(!CINEMA) return;
+  CINEMA.life -= 1/CINEMA.max;
+  if(CINEMA.life <= 0){ CINEMA = null; return; }
+  const cx = window.innerWidth/2, cy = window.innerHeight/2;
+  const r = (1 - CINEMA.life) * Math.hypot(window.innerWidth, window.innerHeight)*.7;
+  cnCtx.strokeStyle = CINEMA.color;
+  cnCtx.globalAlpha = CINEMA.life;
+  cnCtx.lineWidth = 3;
+  cnCtx.beginPath(); cnCtx.arc(cx, cy, r, 0, Math.PI*2); cnCtx.stroke();
+  cnCtx.globalAlpha = CINEMA.life * .35;
+  cnCtx.lineWidth = 16;
+  cnCtx.beginPath(); cnCtx.arc(cx, cy, r, 0, Math.PI*2); cnCtx.stroke();
+  // étoiles tout autour
+  cnCtx.globalAlpha = CINEMA.life;
+  cnCtx.fillStyle = "#fff";
+  for(let i=0;i<20;i++){
+    const a = i/20 * Math.PI*2;
+    const rr = r + (Math.random()-.5)*40;
+    cnCtx.beginPath();
+    cnCtx.arc(cx + Math.cos(a)*rr, cy + Math.sin(a)*rr, 2 + Math.random()*2, 0, Math.PI*2);
+    cnCtx.fill();
+  }
+  cnCtx.globalAlpha = 1;
+}
+
+function floating(x, y, txt, kind="gain"){
+  const f = document.createElement("div");
+  f.className = "float " + kind;
+  f.style.left = x + "px"; f.style.top = y + "px";
+  f.textContent = txt;
+  document.body.appendChild(f);
+  setTimeout(()=>f.remove(), 1300);
+}
+
+/* ================ SAVE / LOAD ================ */
+function save(){
+  try{
+    const s = {
+      essence:STATE.essence, gold:STATE.gold,
+      grid:STATE.grid, nextId:STATE.nextId,
+      totals:STATE.totals,
+      quests:STATE.quests.map(q=>({id:q.id, claimed:q.claimed})),
+      essenceMax:STATE.essenceMax, essenceRegen:STATE.essenceRegen,
+      hasReachedT5:STATE.hasReachedT5,
+      audio:STATE.audio,
+    };
+    localStorage.setItem("alchimia.save", JSON.stringify(s));
+  }catch(e){}
+}
+function load(){
+  try{
+    const s = JSON.parse(localStorage.getItem("alchimia.save")||"null");
+    if(!s) return;
+    STATE.essence = s.essence ?? STATE.essence;
+    STATE.gold = s.gold ?? 0;
+    STATE.grid = s.grid ?? STATE.grid;
+    STATE.nextId = s.nextId ?? 1;
+    STATE.totals = s.totals ?? STATE.totals;
+    STATE.essenceMax = s.essenceMax ?? STATE.essenceMax;
+    STATE.essenceRegen = s.essenceRegen ?? STATE.essenceRegen;
+    STATE.hasReachedT5 = s.hasReachedT5 ?? [false,false,false];
+    STATE.audio = s.audio ?? true;
+    rebuildQuests();
+    if(s.quests){
+      for(const q of s.quests){
+        const t = STATE.quests.find(x=>x.id===q.id);
+        if(t) t.claimed = q.claimed;
+      }
+    }
+  }catch(e){}
+}
+
+/* ================ BOOT ================ */
+function boot(){
+  resize();
+  initDust();
+  buildGrid();
+  rebuildQuests();
+  load();
+  applyProgressionBonuses();
+  renderGenerators();
+  renderAll();
+  refreshQuests();
+  renderCodex();
+
+  document.getElementById("quest-toggle").addEventListener("click", ()=>{
+    document.getElementById("quests").classList.toggle("open");
+    document.getElementById("codex").classList.remove("open");
+  });
+  document.getElementById("codex-toggle").addEventListener("click", ()=>{
+    document.getElementById("codex").classList.toggle("open");
+    document.getElementById("quests").classList.remove("open");
+  });
+  document.getElementById("audio-toggle").addEventListener("click", ()=>{
+    STATE.audio = !STATE.audio;
+    if(A.master) A.master.gain.value = STATE.audio ? .35 : 0;
+    document.getElementById("audio-toggle").classList.toggle("on", STATE.audio);
+  });
+  document.getElementById("audio-toggle").classList.toggle("on", STATE.audio);
+
+  document.getElementById("start-btn").addEventListener("click", ()=>{
+    document.getElementById("intro").classList.add("gone");
+    audioInit();
+    if(A.ctx && A.ctx.state === "suspended") A.ctx.resume();
+    startDrone();
+  });
+
+  // boucle principale
+  let last = performance.now();
+  function loop(now){
+    const dt = (now - last)/1000; last = now;
+    STATE.essence = Math.min(STATE.essenceMax, STATE.essence + STATE.essenceRegen*dt);
+    renderStats();
+    tickGenerators(now);
+    tickDust();
+    tickCandles(now);
+    tickFX();
+    tickCinema();
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+
+  setInterval(save, 4000);
+  window.addEventListener("beforeunload", save);
+}
+
+window.addEventListener("DOMContentLoaded", boot);
+</script>
+
+</body>
+</html>

@@ -618,6 +618,81 @@ header{
   text-transform:uppercase; display:block; margin-bottom:4px;
 }
 
+/* ================ EVENT TOAST ================ */
+.event-toast{
+  position:fixed; top:64px; left:50%;
+  transform:translate(-50%, -200%);
+  z-index:84;
+  width:min(94vw, 380px);
+  background:
+    repeating-linear-gradient(0deg,
+      rgba(216,198,154,.05) 0px, rgba(216,198,154,.05) 1px,
+      transparent 1px, transparent 3px),
+    linear-gradient(180deg, #2d2218, #1a120e);
+  border:1px solid var(--gold);
+  padding:8px 14px 10px;
+  text-align:center;
+  pointer-events:none;
+  box-shadow:0 0 24px rgba(232,200,120,.25), 0 12px 40px rgba(0,0,0,.7);
+  transition:transform .55s cubic-bezier(.2,.9,.2,1.2);
+}
+.event-toast::before, .event-toast::after{
+  content:""; position:absolute; width:7px; height:7px;
+  border:1.4px solid var(--gold); pointer-events:none;
+}
+.event-toast::before{top:-1.4px; left:-1.4px; border-right:none; border-bottom:none}
+.event-toast::after{bottom:-1.4px; right:-1.4px; border-left:none; border-top:none}
+.event-toast.show{transform:translate(-50%, 0)}
+.event-toast .ev-banner{
+  font-family:"Cinzel", serif; font-weight:900;
+  letter-spacing:.36em; font-size:9px;
+  color:var(--gold);
+  margin-bottom:1px;
+}
+.event-toast .ev-name{
+  font-family:"Cinzel", serif; font-weight:700;
+  letter-spacing:.18em; font-size:14px;
+  color:var(--gold-bright);
+  text-shadow:0 0 12px var(--gold-glow);
+  text-transform:uppercase;
+  margin-bottom:3px;
+}
+.event-toast .ev-desc{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:13px; color:var(--parchment-2);
+  line-height:1.3;
+}
+.event-toast .ev-extra{
+  font-family:"VT323", monospace; font-size:14px;
+  color:var(--gold-bright); margin-top:3px;
+}
+
+/* Active events banner */
+#active-events{
+  position:fixed; left:50%; top:46px;
+  transform:translateX(-50%);
+  z-index:5;
+  display:flex; gap:5px;
+  pointer-events:none;
+}
+.active-event{
+  background:linear-gradient(180deg, rgba(45,34,24,.95), rgba(20,14,18,.95));
+  border:1px solid var(--gold);
+  border-radius:2px;
+  padding:2px 6px 2px;
+  font-family:"Cinzel", serif;
+  font-size:9px; letter-spacing:.18em;
+  color:var(--gold-bright);
+  text-transform:uppercase;
+  display:flex; align-items:center; gap:4px;
+  text-shadow:0 0 8px var(--gold-glow);
+}
+.active-event .ev-time{
+  font-family:"VT323", monospace; font-size:11px;
+  color:var(--gold-light);
+  letter-spacing:0;
+}
+
 /* ================ OFFLINE TOAST ================ */
 .offline-toast{
   position:fixed; inset:0; z-index:88;
@@ -996,6 +1071,8 @@ header{
       </div>
     </div>
   </header>
+
+  <div id="active-events"></div>
 
   <main id="play">
     <div id="grid-wrap">
@@ -2448,6 +2525,115 @@ function refreshQuests(){
   renderQuests();
 }
 
+/* ================ ÉVÈNEMENTS ALÉATOIRES ================ */
+const EVENTS = [
+  { id:"starfall", name:"Pluie d'Étoiles", duration:0,
+    desc:"Le ciel pleut sur le cabinet. Huit brumes et étincelles tombent.",
+    apply:()=>{
+      // Spawn 8 items random voies T0 dans cellules vides
+      let n = 0;
+      const empties = findEmpty();
+      for(let i=0;i<8 && empties.length;i++){
+        const idx = Math.floor(Math.random()*empties.length);
+        const [x,y] = empties.splice(idx, 1)[0];
+        const c = Math.floor(Math.random()*3);
+        STATE.grid[y][x] = { id: STATE.nextId++, chain:c, tier:0 };
+        renderTile(x,y); n++;
+      }
+      return n + " items invoqués";
+    }},
+  { id:"conjunction", name:"Conjonction Astrale", duration:60000,
+    desc:"Les astres s'alignent. Cooldowns divisés par deux.",
+    multipliers:{ cdMul:.5 } },
+  { id:"tide", name:"Marée d'Esprit", duration:60000,
+    desc:"L'éther afflue. Étincelle se régénère trois fois plus vite.",
+    multipliers:{ regenMul:3 } },
+  { id:"goldbreath", name:"Souffle d'Or", duration:90000,
+    desc:"Le métal solaire infuse l'air. Quêtes réclamées : récompense ×1.5.",
+    multipliers:{ goldMul:1.5 } },
+  { id:"comet", name:"Comète Errante", duration:0,
+    desc:"Une comète embrase la prochaine fusion : palier sauté.",
+    apply:()=>{ STATE.cometBoost = 1; return "fusion suivante : palier doublé"; }},
+  { id:"deepnight", name:"Nuit Profonde", duration:75000,
+    desc:"Le drone s'épaissit. Toute fusion gagne 25% de couronnes en plus.",
+    multipliers:{ mergeGoldMul:1.25 } },
+  { id:"moonsmile", name:"Sourire de Lune", duration:0,
+    desc:"La lune sourit. +30 étincelle, +50 couronnes.",
+    apply:()=>{
+      STATE.essence = Math.min(STATE.essenceMax, STATE.essence + 30);
+      STATE.gold += 50; renderStats();
+      return "+30 étincelle · +50 couronnes";
+    }},
+];
+
+const EVENT_INTERVAL_MIN = 110000;  // ~110s minimum entre 2 events
+const EVENT_INTERVAL_MAX = 220000;  // ~220s max
+let nextEventAt = 0;
+
+function maybeFireEvent(now){
+  if(now < nextEventAt) return;
+  // Premier set quand on rentre dans le cabinet
+  if(nextEventAt === 0){ nextEventAt = now + EVENT_INTERVAL_MIN + Math.random()*(EVENT_INTERVAL_MAX-EVENT_INTERVAL_MIN); return; }
+  fireEvent();
+  nextEventAt = now + EVENT_INTERVAL_MIN + Math.random()*(EVENT_INTERVAL_MAX-EVENT_INTERVAL_MIN);
+}
+
+function fireEvent(){
+  const e = EVENTS[Math.floor(Math.random()*EVENTS.length)];
+  STATE.lastEvent = e.id;
+  let extra = "";
+  if(e.apply) extra = e.apply();
+  if(e.duration > 0){
+    STATE.activeEvents = STATE.activeEvents || {};
+    STATE.activeEvents[e.id] = {
+      id:e.id, name:e.name, expiresAt: Date.now() + e.duration,
+      multipliers: e.multipliers || {}
+    };
+  }
+  eventNotification(e, extra);
+  if(A.ctx){
+    blip(330, .25, "triangle", .2, .6);
+    setTimeout(()=>blip(495, .3, "sine", .2, .6), 150);
+    setTimeout(()=>blip(660, .4, "triangle", .24, .7), 320);
+  }
+  vibrate([22, 60, 22]);
+  applyEventModifiers();
+}
+
+function eventNotification(e, extra){
+  const el = document.createElement("div");
+  el.className = "event-toast";
+  el.innerHTML = `
+    <div class="ev-banner">ÉVÈNEMENT</div>
+    <div class="ev-name">${e.name}</div>
+    <div class="ev-desc">${e.desc}</div>
+    ${extra ? `<div class="ev-extra">${extra}</div>` : ""}
+  `;
+  document.body.appendChild(el);
+  setTimeout(()=>el.classList.add("show"), 30);
+  setTimeout(()=>el.classList.remove("show"), 4500);
+  setTimeout(()=>el.remove(), 5400);
+}
+
+function applyEventModifiers(){
+  // Appliqué au démarrage de l'event ou quand un expire
+  const ae = STATE.activeEvents || {};
+  let cdMul = 1, regenMul = 1;
+  for(const id in ae){ const a = ae[id]; if(a.multipliers?.cdMul) cdMul *= a.multipliers.cdMul; if(a.multipliers?.regenMul) regenMul *= a.multipliers.regenMul; }
+  STATE.eventCdMul = cdMul;
+  STATE.eventRegenMul = regenMul;
+}
+
+function tickEvents(now){
+  // Expirer les events échus
+  const ae = STATE.activeEvents || {};
+  let changed = false;
+  for(const id in ae){ if(ae[id].expiresAt <= Date.now()){ delete ae[id]; changed = true; } }
+  if(changed) applyEventModifiers();
+  // Possiblement firer un nouveau event
+  maybeFireEvent(now);
+}
+
 /* ================ AUDIO ================ */
 const A = { ctx:null, master:null, drone:null, droneOn:false, reverb:null };
 function audioInit(){
@@ -2824,10 +3010,16 @@ function achIconSVG(kind, size=14){
   }
 }
 
+function fmtNumber(n){
+  if(n >= 1_000_000) return (n/1_000_000).toFixed(n>=10_000_000?0:1) + "M";
+  if(n >= 10_000)    return (n/1000).toFixed(0) + "k";
+  if(n >= 1000)      return (n/1000).toFixed(1) + "k";
+  return ""+n;
+}
 function renderStats(){
   $essence.textContent = Math.floor(STATE.essence) + "/" + STATE.essenceMax;
-  $gold.textContent = STATE.gold;
-  // Si modal stats ouverte, mettre à jour
+  $gold.textContent = fmtNumber(STATE.gold);
+  $gold.title = STATE.gold + " couronnes";
   const modal = document.getElementById("stats-modal");
   if(modal && modal.classList.contains("show")) renderStatsBody();
 }
@@ -2893,7 +3085,8 @@ function fireGenerator(idx, el){
   const g = STATE.generators[idx];
   if(!g.unlocked) { sfxDeny(); return; }
   const now = performance.now();
-  if(now - g.lastFire < g.cdMs) { return; }
+  const effCd = g.cdMs * (STATE.eventCdMul || 1);
+  if(now - g.lastFire < effCd) { return; }
   if(STATE.essence < g.cost) { sfxDeny(); flashStat("essence-val"); return; }
   const empties = findEmpty();
   if(!empties.length) { sfxDeny(); shake(el); return; }
@@ -2932,9 +3125,10 @@ function tickGenerators(now){
   $gens.querySelectorAll(".gen").forEach((el, i)=>{
     const g = STATE.generators[i];
     const dt = now - g.lastFire;
-    const cdPct = Math.min(100, (dt/g.cdMs)*100);
+    const effCd = g.cdMs * (STATE.eventCdMul || 1);
+    const cdPct = Math.min(100, (dt/effCd)*100);
     el.querySelector(".cd-bar > span").style.width = cdPct + "%";
-    el.classList.toggle("cooldown", dt < g.cdMs);
+    el.classList.toggle("cooldown", dt < effCd);
   });
   // bulles canvas
   $gens.querySelectorAll(".gen-bubbles").forEach((cv, i)=>{
@@ -3070,7 +3264,13 @@ function endDrag(cx, cy){
 
 function doMerge(fx, fy, tx, ty){
   const a = STATE.grid[fy][fx], b = STATE.grid[ty][tx];
-  const newTier = b.tier + 1;
+  let newTier = b.tier + 1;
+  // Comet boost : saute un palier supplémentaire (max TIERS-1)
+  if(STATE.cometBoost > 0 && newTier < TIERS-1){
+    newTier = Math.min(TIERS-1, newTier + 1);
+    STATE.cometBoost = 0;
+    floating(cellAt(tx,ty).getBoundingClientRect().left + 30, cellAt(tx,ty).getBoundingClientRect().top - 12, "✦ COMÈTE", "tier");
+  }
   const cellFrom = cellAt(fx, fy), cellTo = cellAt(tx, ty);
   cellFrom.firstChild?.classList.add("merge-out");
   cellTo.firstChild?.classList.add("merge-out");
@@ -3108,16 +3308,21 @@ function doMerge(fx, fy, tx, ty){
     renderCodex();
 
     // Cinématique Grand Œuvre à chaque palier ultime atteint pour la première fois
+    const goldMul = (STATE.activeEvents?.deepnight?.multipliers?.mergeGoldMul) || 1;
     if(newTier >= 5 && (STATE.firstReached[a.chain] || 0) < newTier){
       STATE.firstReached[a.chain] = newTier;
-      const reward = TIER_REWARDS[newTier] || 200;
+      const reward = Math.floor((TIER_REWARDS[newTier] || 200) * goldMul);
       STATE.gold += reward;
       grandOeuvre(a.chain, newTier);
     } else if(newTier >= 5){
-      const reward = Math.floor((TIER_REWARDS[newTier] || 200) * .25);
+      const reward = Math.floor((TIER_REWARDS[newTier] || 200) * .25 * goldMul);
       STATE.gold += reward;
       floating(bx, by + 10, "+"+reward, "gain");
       sfxClaim();
+    } else if(goldMul > 1 && newTier >= 2){
+      // bonus or sur fusions intermédiaires pendant Nuit Profonde
+      const bonus = Math.floor((newTier * 2) * (goldMul - 1));
+      if(bonus > 0){ STATE.gold += bonus; floating(bx, by + 10, "+"+bonus, "gain"); }
     }
     // Hook achievements
     if(typeof checkAchievements === 'function') checkAchievements();
@@ -3129,11 +3334,14 @@ function doMerge(fx, fy, tx, ty){
 function claimQuest(q){
   if(!q.done || q.claimed) return;
   q.claimed = true;
-  STATE.gold += q.reward;
+  const goldMul = (STATE.activeEvents?.goldbreath?.multipliers?.goldMul) || 1;
+  const reward = Math.floor(q.reward * goldMul);
+  STATE.gold += reward;
+  q.actualReward = reward;
   sfxClaim();
   vibrate(20);
   const r = document.getElementById("quests").getBoundingClientRect();
-  floating(r.left + r.width/2, r.top + 80, "+"+q.reward+" couronnes", "gain");
+  floating(r.left + r.width/2, r.top + 80, "+"+reward+" couronnes", "gain");
   renderStats();
   refreshQuests();
   applyProgressionBonuses();
@@ -3467,6 +3675,24 @@ function floating(x, y, txt, kind="gain"){
   setTimeout(()=>f.remove(), 1300);
 }
 
+function renderActiveEvents(){
+  const wrap = document.getElementById("active-events");
+  if(!wrap) return;
+  const ae = STATE.activeEvents || {};
+  const ids = Object.keys(ae);
+  if(ids.length === 0){ if(wrap.children.length) wrap.innerHTML = ""; return; }
+  wrap.innerHTML = "";
+  for(const id of ids){
+    const a = ae[id];
+    const remain = Math.max(0, a.expiresAt - Date.now());
+    const s = Math.ceil(remain/1000);
+    const div = document.createElement("div");
+    div.className = "active-event";
+    div.innerHTML = `${a.name} <span class="ev-time">${s}s</span>`;
+    wrap.appendChild(div);
+  }
+}
+
 function fmtDuration(ms){
   const s = Math.floor(ms/1000);
   const h = Math.floor(s/3600);
@@ -3619,15 +3845,18 @@ function boot(){
 
   // boucle principale
   let last = performance.now();
+  let lastEventTickRender = 0;
   function loop(now){
     const dt = (now - last)/1000; last = now;
-    STATE.essence = Math.min(STATE.essenceMax, STATE.essence + STATE.essenceRegen*dt);
+    STATE.essence = Math.min(STATE.essenceMax, STATE.essence + STATE.essenceRegen * (STATE.eventRegenMul || 1) * dt);
     renderStats();
     tickGenerators(now);
     tickDust();
     tickCandles(now);
     tickFX();
     tickCinema();
+    tickEvents(now);
+    if(now - lastEventTickRender > 250){ renderActiveEvents(); lastEventTickRender = now; }
     requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);

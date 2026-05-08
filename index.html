@@ -260,11 +260,36 @@ header{
 .tile[data-tier="4"] svg{animation:halo4 2.4s ease-in-out infinite}
 .tile[data-tier="5"]{animation:floaty 3.2s ease-in-out infinite}
 .tile[data-tier="5"] svg{animation:halo5 2.0s ease-in-out infinite}
+.tile[data-tier="6"]{animation:floaty 2.8s ease-in-out infinite}
+.tile[data-tier="6"] svg{animation:halo6 1.8s ease-in-out infinite}
+.tile[data-tier="7"]{animation:floaty7 2.4s ease-in-out infinite}
+.tile[data-tier="7"] svg{animation:halo7 1.5s ease-in-out infinite}
+.tile[data-tier="6"] .tier-badge,
+.tile[data-tier="7"] .tier-badge{
+  background:linear-gradient(180deg, #c9a25a, #5a4528);
+  color:#000; border-color:#fff;
+  box-shadow:0 0 8px var(--gold-bright);
+}
 
 @keyframes halo3{0%,100%{filter:drop-shadow(0 0 6px currentColor) drop-shadow(0 1px 0 #000)} 50%{filter:drop-shadow(0 0 10px currentColor) drop-shadow(0 1px 0 #000)}}
 @keyframes halo4{0%,100%{filter:drop-shadow(0 0 8px currentColor) drop-shadow(0 1px 0 #000)} 50%{filter:drop-shadow(0 0 14px currentColor) drop-shadow(0 1px 0 #000)}}
 @keyframes halo5{0%,100%{filter:drop-shadow(0 0 10px currentColor) drop-shadow(0 0 18px #fff8) drop-shadow(0 1px 0 #000)} 50%{filter:drop-shadow(0 0 16px currentColor) drop-shadow(0 0 24px #fff) drop-shadow(0 1px 0 #000)}}
+@keyframes halo6{
+  0%,100%{filter:drop-shadow(0 0 12px currentColor) drop-shadow(0 0 22px #fff8) drop-shadow(0 0 32px #c9a25a) drop-shadow(0 1px 0 #000)}
+  50%{filter:drop-shadow(0 0 20px currentColor) drop-shadow(0 0 32px #fff) drop-shadow(0 0 44px #e8c878) drop-shadow(0 1px 0 #000)}
+}
+@keyframes halo7{
+  0%,100%{filter:drop-shadow(0 0 14px currentColor) drop-shadow(0 0 28px #fff) drop-shadow(0 0 40px var(--gold-bright)) drop-shadow(0 0 50px #fff) drop-shadow(0 1px 0 #000)}
+  33%{filter:drop-shadow(0 0 22px #fff) drop-shadow(0 0 36px currentColor) drop-shadow(0 0 50px var(--gold-bright)) drop-shadow(0 1px 0 #000)}
+  66%{filter:drop-shadow(0 0 18px var(--gold-bright)) drop-shadow(0 0 32px currentColor) drop-shadow(0 0 56px #fff) drop-shadow(0 1px 0 #000)}
+}
 @keyframes floaty{0%,100%{transform:translateY(0)} 50%{transform:translateY(-3px)}}
+@keyframes floaty7{
+  0%,100%{transform:translateY(0) rotate(0deg)}
+  25%{transform:translateY(-2px) rotate(.5deg)}
+  50%{transform:translateY(-4px) rotate(0deg)}
+  75%{transform:translateY(-2px) rotate(-.5deg)}
+}
 @keyframes spawn{
   0%{transform:scale(.2) rotate(-30deg); opacity:0; filter:brightness(2)}
   60%{transform:scale(1.15) rotate(4deg); opacity:1}
@@ -495,8 +520,8 @@ header{
 .codex-chain[data-chain="2"] h3{color:var(--essence-2)}
 .codex-row{
   display:grid;
-  grid-template-columns:repeat(6, 1fr);
-  gap:4px;
+  grid-template-columns:repeat(8, 1fr);
+  gap:3px;
 }
 .codex-cell{
   aspect-ratio:1/1;
@@ -912,6 +937,7 @@ header{
    ========================================================= */
 
 const COLS = 5, ROWS = 6;
+const TIERS = 8; // T0..T7
 
 const CHAINS = [
   { id:0, name:"Voie de la Plante",   short:"Plante",  latin:"VIA VEGETABILIS",
@@ -924,6 +950,8 @@ const CHAINS = [
       {n:"Fleur Sépulcrale",   d:"Calice noir, sentinelle des veilleurs."},
       {n:"Élixir d'Aube",      d:"Sève condensée des prophètes."},
       {n:"Panacée",            d:"Le souffle qui guérit toute chose."},
+      {n:"Arbre-Monde",        d:"Le grand axis mundi, cime des cimes."},
+      {n:"Yggdra",             d:"L'arbre des arbres, cosmos en ramure."},
     ]},
   { id:1, name:"Voie de la Pierre",   short:"Pierre",  latin:"VIA MINERALIS",
     color:"#7aa3c8", glow:"mineral",
@@ -935,6 +963,8 @@ const CHAINS = [
       {n:"Géode",              d:"Sanctuaire en miniature."},
       {n:"Pierre Runique",     d:"Mots gravés par les anciens."},
       {n:"Pierre Philosophale",d:"L'œuvre rouge, transmutation absolue."},
+      {n:"Étoile Polaire",     d:"Cristal-boussole de l'éternité."},
+      {n:"Eternium",           d:"Métal qui n'oublie pas."},
     ]},
   { id:2, name:"Voie de l'Essence",   short:"Essence", latin:"VIA SPIRITUALIS",
     color:"#a070d0", glow:"essence",
@@ -946,8 +976,13 @@ const CHAINS = [
       {n:"Esprit",             d:"Voix sans corps, présence qui veille."},
       {n:"Constellation",      d:"Trame du ciel cousue à la main."},
       {n:"Quintessence",       d:"L'éther innommé, cinquième élément."},
+      {n:"Akasha",             d:"Mémoire universelle, registre des âmes."},
+      {n:"Singularité",        d:"Le point où tout commence et finit."},
     ]},
 ];
+
+const ROMAN = ["","I","II","III","IV","V","VI","VII"];
+const TIER_REWARDS = [0, 0, 0, 0, 0, 0, 200, 800, 3000]; // bonus or à chaque tier atteint en plus de la quête
 
 /* ================ PALETTE ================ */
 const PAL = {
@@ -1193,6 +1228,76 @@ const SPRITES = [
     "................................",
     "................................",
   ],
+  // T6 — Arbre-Monde (axis mundi, tronc puissant, ramure d'or vert, racines visibles)
+  [
+    "................................",
+    "...............ZZ...............",
+    "..............ZWZ...............",
+    ".............ZWZWZ..............",
+    "............ZQQRRQZ.............",
+    "...........ZQqRRrQqZ............",
+    "..........ZQqQRRrRQqZ...........",
+    ".........ZQqRrRRrRrQqZ..........",
+    "........ZQQRrRrRRrRrQQZ.........",
+    ".......ZQqRRrRRRrRRrRQqZ........",
+    "......ZQqRrRRRrRrRRrRrQqZ.......",
+    ".....ZQqRrRRrRrRRRRrRRrQqZ......",
+    "....ZQqRrRRrRRrRRRrRRrRRrQqZ....",
+    "...ZQqRrRRrRRRrRWWrRRrRRrRRqZ...",
+    "....ZQqRrRRRrRWZZWrRRRrRRrQqZ...",
+    ".....ZQqRrRRrRWWZWrRRrRRrQqZ....",
+    "......ZQqRrRRRrWWrRRRrRRrQqZ....",
+    ".......ZQqRRrRRrRrRRrRRrQqZ.....",
+    "........ZpPQRRrRRrRRrRQqPpZ.....",
+    ".........kpPQRRrRRrRRQqPpk......",
+    "...........kpPaaAaaApPpk........",
+    "............kBaAAAAaBk..........",
+    "...........kbBaAAAaABbk.........",
+    "...........kbBaAAAaABbk.........",
+    "...........kbBaAAAaABbk.........",
+    "..........kbBaAAaaaABbk.........",
+    "..........kbBaAaaaaABbk.........",
+    ".........kbBaaA..AaaABbk........",
+    "........kbBaaa....aaaABbk.......",
+    ".......kbBaa........aaABbk......",
+    "......kbBa............aBbk......",
+    "......kkk..............kkk......",
+  ],
+  // T7 — Yggdra (arbre cosmique, feuilles d'or et étoiles, racines plongeant dans l'éther)
+  [
+    "...............Z................",
+    "..............ZWZ.....Z.........",
+    "....Z........ZWWWZ...ZoZ........",
+    "...ZoZ......ZWYYYWZ...Z.........",
+    "....Z......ZWYWWWYWZ............",
+    "..........ZWYWWWWWYWZ.....Z.....",
+    "Z........ZWYWWWWWWWYWZ...ZWZ....",
+    "ZoZ......ZYWWWWWWWWWYZ....Z.....",
+    ".Z......ZWYWQQRRRQQWYWZ.........",
+    ".......ZWYWQqQRRRQqQWYWZ........",
+    "......ZWYWQqRRrRrRRQqQWYWZ......",
+    ".....ZWYWQqRRrRWWrRRRQqQWYWZ....",
+    "....ZWYWQqRrRRWZZWrRRrQqQWYWZ...",
+    "...ZWYWQqRrRRrWWZWrRRrRQqQWYWZ..",
+    "....ZWYWQqRrRRrWWrRRrRQqQWYWZ...",
+    ".....ZWYWQqRRrRRrRRRQqQWYWZ.....",
+    ".......ZWYWQQRrRRrRQQWYWZ.......",
+    "........ZpPQRRrRRrRRQqPpZ.......",
+    ".........kpPaAAaAAaApPpk........",
+    "..........kbAAAAAAAAbk..........",
+    "...........kbBAAaaABbk..........",
+    "...........kbBaAAaABbk..........",
+    "...........kbBaAAaABbk..........",
+    "..........kkbBaAAAaBbkk.........",
+    "..........kbbBAAAAABbbk.........",
+    ".........kbBaaA..AaaBbk.........",
+    "........kbBa.....AaaABbk........",
+    ".....Z.kbB..........aBbk.Z......",
+    "....ZoZk............kZoZ........",
+    ".....ZkZ.............ZkZ........",
+    "................................",
+    "................................",
+  ],
 
   /* ===========================================================
      CHAINE 1 — VOIE DE LA PIERRE
@@ -1406,6 +1511,76 @@ const SPRITES = [
     "............ZZWZZ...............",
     ".............ZZZ................",
     "..............Z.................",
+  ],
+  // T6 — Étoile Polaire (cristal en étoile à 7 branches, bleu glacé, halo blanc)
+  [
+    "................................",
+    "...............Z................",
+    "..............ZZZ...............",
+    ".............ZWlWZ..............",
+    "............ZWlLLlWZ............",
+    "...........ZWlLZZZLlWZ..........",
+    "..........ZWlLZ###ZLlWZ.........",
+    ".....Z...ZWlLZ#####ZLlWZ........",
+    "....ZWZ.ZWlLZ##WZW##ZLlWZ.Z.....",
+    ".....ZZWlLZ##WZ#ZW##ZLlWZWZ.....",
+    "...ZZWWlLLZ##WZWZW##ZLLLlWWZZ...",
+    "..ZZWWLLZZ##WZ#W#ZW##ZZLLWWZZ...",
+    ".ZWLZZ##ZZ##WZWWWZW##ZZ##ZZLWZ..",
+    "ZWLZ###ZWZ##WZ###ZW##ZWZ###ZLWZ.",
+    "ZWLZ##W##ZZ##WZ#ZW##ZZ##W##ZLWZ.",
+    "ZWLZ###W##Z##WZWZW##Z##W###ZLWZ.",
+    "ZWLZW####W##Z#W#W#W#Z##W####WZLZ",
+    ".ZWLZ###W###Z#WZWZW#Z###W###ZLWZ",
+    "ZWLZ##W##ZZ##WZ#ZW##ZZ##W##ZLWZ.",
+    ".ZWLZZ##ZZ##WZWWWZW##ZZ##ZZLWZ..",
+    "..ZZWWLLZZ##WZ#W#ZW##ZZLLWWZZ...",
+    "...ZZWWlLLZ##WZWZW##ZLLLlWWZZ...",
+    ".....ZZWlLZ##WZ#ZW##ZLlWZWZ.....",
+    "....ZWZ.ZWlLZ##WZW##ZLlWZ.Z.....",
+    ".....Z...ZWlLZ#####ZLlWZ........",
+    "..........ZWlLZ###ZLlWZ.........",
+    "...........ZWlLZZZLlWZ..........",
+    "............ZWlLLlWZ............",
+    ".............ZWlWZ..............",
+    "..............ZZZ...............",
+    "...............Z................",
+    "................................",
+  ],
+  // T7 — Eternium (sphère métallique sombre runes dorées qui pulsent, métal mythique)
+  [
+    "................................",
+    "..............kkkk..............",
+    "............kkccccckk...........",
+    "..........kkcCCCCCCcck..........",
+    ".........kCCxXXXXXXXxxCk........",
+    "........kCxXXxXxXxXxXxXCk.......",
+    ".......kCxXxXyYWWYyYxXxxCk......",
+    "......kCxxXxYWZ##ZWYxXxXCk......",
+    ".....kCxXxYW##W##W##WYxXxCk.....",
+    ".....kCxXxYWZWWZWWZWWYxXxCk.....",
+    "....kCxXxYW##WW#WW##WYxXxxCk....",
+    "....kCxXxYWZ##WZWWWZWYxXxXCk....",
+    "....kCxXxYW##WWZ#ZWW##WYXxXCk...",
+    "....kCxXxYWZWWZ###ZWWZWYXxXCk...",
+    "....kCxXxYW##WZ##W##ZW##YXxXCk..",
+    "....kCxXxYWZWWZ##W##ZWWZYXxXCk..",
+    "....kCxXxYW##WZ##W##ZW##YXxXCk..",
+    "....kCxXxYWZWWZ#####ZWWZYXxXCk..",
+    "....kCxXxYW##WWZ###ZWW##WYXxXCk.",
+    "....kCxXxYWZ##WZ#ZWWWZWYxXxXCk..",
+    "....kCxXxYW##WW#WWWWWYxXxXCk....",
+    "....kCxXxYWWZWWZWWZWWYxXxXCk....",
+    "....kCxXxYW##W##W##WYxXxxCk.....",
+    ".....kCxXxYWZ##ZWYxXxXCk........",
+    ".....kCxxXxYWWYyYxXxXxCk........",
+    "......kCxXxXyYxXxXxxCk..........",
+    ".......kCxXxXxXxXxxCk...........",
+    "........kCCxXXXXxxCk............",
+    ".........kkcCCCCCCck............",
+    "..........kkccccccckk...........",
+    "............kkkkkkkk............",
+    "................................",
   ],
 
   /* ===========================================================
@@ -1621,6 +1796,76 @@ const SPRITES = [
     "................................",
     "................................",
   ],
+  // T6 — Akasha (mandala cosmique, spirale dorée-violette, étoiles satellites)
+  [
+    "................................",
+    ".....Z....Z....Z....Z....Z......",
+    "....ZoZ..ZoZ..ZoZ..ZoZ..ZoZ.....",
+    ".....Z....Z....Z....Z....Z......",
+    "................................",
+    "..............kkkk..............",
+    "............kkmMMMmkk...........",
+    "..........kkmMNnnNNMmkk.........",
+    ".........kmMNnoOOOOoNnMmk.......",
+    "........kmNnoOZ#W#W#ZOOoNmk.....",
+    ".......kmNoOZ#WYYWYYW##ZOoNmk...",
+    "......kmNoZ#WYWYYYYWWWZ##OoNmk..",
+    ".....kmNOZ#WYWYZZWZZWWY##ZOoNmk.",
+    "....kmNoZ#WYWYZZ##ZZWWYW##ZOoNmk",
+    "....kmNZ##WYWZ##W#W##ZWWY##ZOoNm",
+    "....kmNZ##YWZ#W#YGY#W##WY##ZOoNm",
+    "....kmNZ##WYZ#W#WGW#W#ZWY##ZOoNm",
+    "....kmNZ##YWZ#W#YGY#W##WY##ZOoNm",
+    "....kmNZ##WYWZ##W#W##ZWWY##ZOoNm",
+    "....kmNoZ##WYWYZZ##ZZWWYW##ZOoNm",
+    ".....kmNOZ#WYWYZZWZZWWY##ZOoNmk.",
+    "......kmNoZ#WYWYYYYWWWZ##OoNmk..",
+    ".......kmNoOZ#WYYWYYW##ZOoNmk...",
+    "........kmNnoOZ#W#W#ZOOoNmk.....",
+    ".........kmMNnoOOOOoNnMmk.......",
+    "..........kkmMNnnNNMmkk.........",
+    "............kkmMMMmkk...........",
+    "..............kkkk..............",
+    "................................",
+    ".....Z....Z....Z....Z....Z......",
+    "....ZoZ..ZoZ..ZoZ..ZoZ..ZoZ.....",
+    ".....Z....Z....Z....Z....Z......",
+  ],
+  // T7 — Singularité (trou noir central, disque d'accrétion lumineux, horizon)
+  [
+    ".......Z....................Z...",
+    "..Z....ZZ.................ZZ..Z.",
+    ".ZZ....ZZZ...............ZZZ.ZZ.",
+    "ZZZZ....ZZZ.............ZZZ.ZZZZ",
+    ".ZZ......ZZZZ.........ZZZZ...ZZ.",
+    "..Z........ZZZZZZZZZZZZZZ......Z",
+    "...........ZWYYYYYYYYYYWZ.......",
+    "..........ZWYWWWZZZZWWWYWZ......",
+    ".........ZWYWWZZ#####ZZWWYWZ....",
+    ".......ZZWYWZ##W#####W##ZWYWZZ..",
+    "....ZZZZWYWZ##WW##W##W##WZWYWZZZ",
+    "ZZZZZZZZWYWZ##WW#W#W##W##WZWYWZZ",
+    "ZZZZZZZZYWZ##W#####W##W##WZYWZZZ",
+    "....ZZZZWZ##W##kkk##W#W##W#WZZZZ",
+    "........WZ##W#kkkkk###W##WZZZZZZ",
+    "........Z##W#kkkkkkk#W##WZZZZZZZ",
+    "........Z##W#kkkkkkk#W##WZZZZZZZ",
+    "........Z##W#kkkkkkk#W##WZZZZZZZ",
+    "........WZ##W#kkkkk###W##WZZZZZZ",
+    "....ZZZZWZ##W##kkk##W#W##W#WZZZZ",
+    "ZZZZZZZZYWZ##W#####W##W##WZYWZZZ",
+    "ZZZZZZZZWYWZ##WW#W#W##W##WZWYWZZ",
+    "....ZZZZWYWZ##WW##W##W##WZWYWZZZ",
+    ".......ZZWYWZ##W#####W##ZWYWZZ..",
+    ".........ZWYWWZZ#####ZZWWYWZ....",
+    "..........ZWYWWWZZZZWWWYWZ......",
+    "...........ZWYYYYYYYYYYWZ.......",
+    "..Z........ZZZZZZZZZZZZZZ......Z",
+    ".ZZ......ZZZZ.........ZZZZ...ZZ.",
+    "ZZZZ....ZZZ.............ZZZ.ZZZZ",
+    ".ZZ....ZZZ...............ZZZ.ZZ.",
+    "..Z....ZZ.................ZZ..Z.",
+  ],
 ];
 
 /* ================ CAULDRONS 32×32 ================ */
@@ -1770,7 +2015,7 @@ const STATE = {
   totals:{ produced:[0,0,0], merged:[0,0,0], maxTier:[0,0,0] },
   audio:true,
   essenceMax: 60, essenceRegen: 1,
-  hasReachedT5:[false,false,false],
+  firstReached:[0,0,0], // par chaîne, palier max atteint pour la 1ère fois
   selectedCodex: null,
 };
 
@@ -1783,6 +2028,8 @@ const QUEST_TEMPLATES = [
   { type:"reach",   chain:0, tier:3, target:1,  reward:60, name:"Fleur des veilleurs", desc:"Fais éclore la Fleur Sépulcrale." },
   { type:"reach",   chain:0, tier:4, target:1,  reward:140,name:"Aube nouvelle", desc:"Distille l'Élixir d'Aube." },
   { type:"reach",   chain:0, tier:5, target:1,  reward:400,name:"Panacée", desc:"Achève la Voie de la Plante." },
+  { type:"reach",   chain:0, tier:6, target:1,  reward:1200,name:"Axis Mundi", desc:"Fais grandir l'Arbre-Monde." },
+  { type:"reach",   chain:0, tier:7, target:1,  reward:4000,name:"Yggdra", desc:"Atteins l'arbre des arbres."},
 
   { type:"produce", chain:1, tier:0, target:5,  reward:10, name:"Glaner", desc:"Ramasse 5 cailloux." },
   { type:"reach",   chain:1, tier:1, target:1,  reward:15, name:"Quartz", desc:"Trouve un cristal de Quartz." },
@@ -1791,6 +2038,8 @@ const QUEST_TEMPLATES = [
   { type:"reach",   chain:1, tier:3, target:1,  reward:80, name:"Géode", desc:"Ouvre une Géode." },
   { type:"reach",   chain:1, tier:4, target:1,  reward:180,name:"Runique", desc:"Grave une Pierre Runique." },
   { type:"reach",   chain:1, tier:5, target:1,  reward:500,name:"L'Œuvre rouge", desc:"Forge la Pierre Philosophale." },
+  { type:"reach",   chain:1, tier:6, target:1,  reward:1500,name:"Étoile Polaire", desc:"Fixe l'aiguille du destin."},
+  { type:"reach",   chain:1, tier:7, target:1,  reward:5000,name:"Eternium", desc:"Forge le métal qui ne s'oublie pas."},
 
   { type:"produce", chain:2, tier:0, target:5,  reward:14, name:"Brumes", desc:"Capture 5 Brumes." },
   { type:"reach",   chain:2, tier:1, target:1,  reward:20, name:"Étincelle", desc:"Allume une Étincelle." },
@@ -1799,10 +2048,14 @@ const QUEST_TEMPLATES = [
   { type:"reach",   chain:2, tier:3, target:1,  reward:120,name:"Esprit", desc:"Convoque un Esprit." },
   { type:"reach",   chain:2, tier:4, target:1,  reward:260,name:"Constellation", desc:"Trace une Constellation." },
   { type:"reach",   chain:2, tier:5, target:1,  reward:700,name:"Quintessence", desc:"Atteins la Quintessence." },
+  { type:"reach",   chain:2, tier:6, target:1,  reward:2200,name:"Akasha", desc:"Lis le registre des âmes."},
+  { type:"reach",   chain:2, tier:7, target:1,  reward:7000,name:"Singularité", desc:"Touche le point de toute chose."},
 
-  { type:"merge_any", target:20, reward:30, name:"Apprenti", desc:"Réalise 20 fusions, toutes voies confondues." },
-  { type:"merge_any", target:80, reward:120, name:"Adepte", desc:"Réalise 80 fusions au total." },
-  { type:"merge_any", target:300, reward:500, name:"Maître", desc:"Réalise 300 fusions au total." },
+  { type:"merge_any", target:20,  reward:30,  name:"Apprenti",  desc:"Réalise 20 fusions, toutes voies confondues." },
+  { type:"merge_any", target:80,  reward:120, name:"Adepte",    desc:"Réalise 80 fusions au total." },
+  { type:"merge_any", target:300, reward:500, name:"Maître",    desc:"Réalise 300 fusions au total." },
+  { type:"merge_any", target:800, reward:1500,name:"Hiérophante",desc:"Réalise 800 fusions au total." },
+  { type:"merge_any", target:2000,reward:5000,name:"Mage Suprême",desc:"Réalise 2000 fusions au total." },
 ];
 
 function rebuildQuests(){
@@ -1958,15 +2211,23 @@ function sfxClaim(){
 function sfxDeny(){
   blip(140, .12, "sawtooth", .14, .2);
 }
-function sfxGrand(){
-  // Cinematique : sub + cloche grave + harmonics empilés
-  blip(55,  3.0, "sine", .35, .6);
-  blip(110, 2.4, "sine", .25, .7);
-  setTimeout(()=>blip(220, 2.0, "triangle", .2, .8), 120);
-  setTimeout(()=>blip(440, 1.6, "triangle", .15, .8), 240);
+function sfxGrand(tier=5){
+  // Cinematique : plus on monte, plus c'est dense
+  const subVol = .3 + (tier-5)*.06;
+  blip(55,  3.4, "sine", subVol, .65);
+  blip(82.5, 3.0, "sine", .22, .7);  // sub-quint
+  blip(110, 2.6, "sine", .25, .75);
+  setTimeout(()=>blip(220, 2.2, "triangle", .22, .8), 120);
+  setTimeout(()=>blip(330, 1.8, "triangle", .15, .8), 200);
+  setTimeout(()=>blip(440, 1.6, "triangle", .14, .85), 240);
+  setTimeout(()=>blip(660, 1.4, "sine", .11, .9), 320);
   setTimeout(()=>blip(880, 1.4, "sine", .1, .9), 360);
   setTimeout(()=>blip(1320, 1.2, "sine", .08, .9), 460);
-  setTimeout(()=>blip(1760, 1.0, "sine", .06, .9), 560);
+  if(tier >= 6) setTimeout(()=>blip(1760, 1.4, "sine", .08, .95), 560);
+  if(tier >= 7){
+    setTimeout(()=>blip(2640, 1.6, "sine", .07, 1.0), 660);
+    setTimeout(()=>blip(27.5, 4.5, "sine", .35, .9), 0); // sub-sub
+  }
 }
 
 function vibrate(pattern){
@@ -1978,8 +2239,6 @@ const $grid = document.getElementById("grid");
 const $gens = document.getElementById("generators");
 const $essence = document.getElementById("essence-val");
 const $gold = document.getElementById("gold-val");
-
-const ROMAN = ["","I","II","III","IV","V"];
 
 function buildGrid(){
   $grid.style.gridTemplateColumns = `repeat(${COLS}, 1fr)`;
@@ -2015,7 +2274,7 @@ function renderTile(x,y){
   div.dataset.tier = t.tier;
   const chain = CHAINS[t.chain];
   div.style.color = chain.color;
-  div.innerHTML = spriteSVG(SPRITES[t.chain*6 + t.tier]);
+  div.innerHTML = spriteSVG(SPRITES[t.chain*TIERS + t.tier]);
   if(t.tier > 0){
     const b = document.createElement("div");
     b.className = "tier-badge";
@@ -2129,12 +2388,12 @@ function renderCodex(){
     div.innerHTML = `<h3>${chainSym(c)}<span>${ch.name}</span></h3><div class="codex-row" id="codex-row-${c}"></div>`;
     body.appendChild(div);
     const row = div.querySelector(`#codex-row-${c}`);
-    for(let t=0;t<6;t++){
+    for(let t=0;t<TIERS;t++){
       const cell = document.createElement("div");
       const isLocked = STATE.totals.maxTier[c] < t;
       cell.className = "codex-cell" + (isLocked ? " locked":"");
       cell.title = ch.tiers[t].n + " — " + ch.tiers[t].d;
-      cell.innerHTML = spriteSVG(SPRITES[c*6 + t]);
+      cell.innerHTML = spriteSVG(SPRITES[c*TIERS + t]);
       const ct = document.createElement("div");
       ct.className = "ct";
       ct.textContent = ROMAN[t] || "I";
@@ -2305,7 +2564,7 @@ function moveDrag(cx, cy){
     const dest = STATE.grid[tgt.y][tgt.x];
     if(!dest || (tgt.x===drag.fromX && tgt.y===drag.fromY)){
       tgt.el.classList.add("drop");
-    } else if(dest.chain === drag.tile.chain && dest.tier === drag.tile.tier && dest.tier < 5){
+    } else if(dest.chain === drag.tile.chain && dest.tier === drag.tile.tier && dest.tier < TIERS-1){
       tgt.el.classList.add("merge-target");
     } else {
       tgt.el.classList.add("drop");
@@ -2333,7 +2592,7 @@ function endDrag(cx, cy){
     setTile(d.fromX, d.fromY, null);
     renderTile(d.fromX, d.fromY);
     renderTile(tgt.x, tgt.y);
-  } else if(dest.chain === d.tile.chain && dest.tier === d.tile.tier && dest.tier < 5){
+  } else if(dest.chain === d.tile.chain && dest.tier === d.tile.tier && dest.tier < TIERS-1){
     doMerge(d.fromX, d.fromY, tgt.x, tgt.y);
   } else {
     setTile(d.fromX, d.fromY, dest);
@@ -2382,16 +2641,20 @@ function doMerge(fx, fy, tx, ty){
     refreshQuests();
     renderCodex();
 
-    // Premier T5 : grande cinématique
-    if(newTier === 5 && !STATE.hasReachedT5[a.chain]){
-      STATE.hasReachedT5[a.chain] = true;
-      STATE.gold += 500;
-      grandOeuvre(a.chain);
-    } else if(newTier === 5){
-      STATE.gold += 200;
-      floating(bx, by + 10, "+200", "gain");
+    // Cinématique Grand Œuvre à chaque palier ultime atteint pour la première fois
+    if(newTier >= 5 && (STATE.firstReached[a.chain] || 0) < newTier){
+      STATE.firstReached[a.chain] = newTier;
+      const reward = TIER_REWARDS[newTier] || 200;
+      STATE.gold += reward;
+      grandOeuvre(a.chain, newTier);
+    } else if(newTier >= 5){
+      const reward = Math.floor((TIER_REWARDS[newTier] || 200) * .25);
+      STATE.gold += reward;
+      floating(bx, by + 10, "+"+reward, "gain");
       sfxClaim();
     }
+    // Hook achievements
+    if(typeof checkAchievements === 'function') checkAchievements();
     renderStats();
   }, 280);
 }
@@ -2420,16 +2683,21 @@ function applyProgressionBonuses(){
 }
 
 /* ================ GRAND ŒUVRE CINEMATIC ================ */
-function grandOeuvre(chain){
+function grandOeuvre(chain, tier){
   const overlay = document.getElementById("grand-oeuvre");
-  document.getElementById("ouvre-text").textContent = CHAINS[chain].latin;
-  document.getElementById("ouvre-sub").textContent = "— " + CHAINS[chain].tiers[5].n.toUpperCase() + " —";
+  const labels = {
+    5: ["GRAND ŒUVRE", "le sceau du Grand Œuvre est posé"],
+    6: ["TRANSCENDANCE", "la voie s'élève au-dessus du visible"],
+    7: ["APOTHÉOSE", "l'innommé prend forme"],
+  };
+  const [title, sub] = labels[tier] || labels[5];
+  document.getElementById("ouvre-text").textContent = CHAINS[chain].latin + " · " + title;
+  document.getElementById("ouvre-sub").textContent = "— " + CHAINS[chain].tiers[tier].n.toUpperCase() + " · " + sub + " —";
   overlay.classList.add("show");
-  sfxGrand();
-  vibrate([40, 60, 40, 60, 100]);
-  // Halo d'expansion sur écran
-  cinematicBurst(CHAINS[chain].color);
-  setTimeout(()=>overlay.classList.remove("show"), 4200);
+  sfxGrand(tier);
+  vibrate(tier >= 7 ? [60, 80, 60, 80, 60, 80, 200] : [40, 60, 40, 60, 100]);
+  cinematicBurst(CHAINS[chain].color, tier);
+  setTimeout(()=>overlay.classList.remove("show"), tier >= 7 ? 5400 : 4200);
 }
 
 /* ================ CANVAS LAYERS ================ */
@@ -2693,8 +2961,8 @@ function tickFX(){
 
 /* CINEMATIC burst plein écran */
 let CINEMA = null;
-function cinematicBurst(color){
-  CINEMA = { life:1, max:120, color, born: performance.now() };
+function cinematicBurst(color, tier=5){
+  CINEMA = { life:1, max: 100 + (tier-5)*30, color, tier, born: performance.now() };
 }
 function tickCinema(){
   cnCtx.clearRect(0,0,window.innerWidth,window.innerHeight);
@@ -2741,7 +3009,7 @@ function save(){
       totals:STATE.totals,
       quests:STATE.quests.map(q=>({id:q.id, claimed:q.claimed})),
       essenceMax:STATE.essenceMax, essenceRegen:STATE.essenceRegen,
-      hasReachedT5:STATE.hasReachedT5,
+      firstReached:STATE.firstReached,
       audio:STATE.audio,
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
@@ -2758,7 +3026,7 @@ function load(){
     STATE.totals = s.totals ?? STATE.totals;
     STATE.essenceMax = s.essenceMax ?? STATE.essenceMax;
     STATE.essenceRegen = s.essenceRegen ?? STATE.essenceRegen;
-    STATE.hasReachedT5 = s.hasReachedT5 ?? [false,false,false];
+    STATE.firstReached = s.firstReached ?? [0,0,0];
     STATE.audio = s.audio ?? true;
     rebuildQuests();
     if(s.quests){

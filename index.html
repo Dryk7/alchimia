@@ -523,6 +523,62 @@ header{
   grid-template-columns:repeat(8, 1fr);
   gap:3px;
 }
+
+/* Hauts Faits grid */
+.achievements-section{margin-top:18px}
+.ach-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:5px;
+}
+.ach-cell{
+  display:flex; align-items:center; gap:8px;
+  padding:6px 8px;
+  background:linear-gradient(180deg, #1a1218, #0d090c);
+  border:1px solid #2a1f24;
+  border-radius:2px;
+  filter:grayscale(1) brightness(.55);
+  transition:filter .3s, border-color .3s;
+}
+.ach-cell.unlocked{
+  filter:none;
+  border-color:var(--gold-dark);
+  background:
+    repeating-linear-gradient(0deg,
+      rgba(216,198,154,.04) 0px, rgba(216,198,154,.04) 1px,
+      transparent 1px, transparent 3px),
+    linear-gradient(180deg, #2a1f1a, #1a1410);
+}
+.ach-cell .ach-ico{
+  width:30px; height:30px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--gold);
+  border:1px solid var(--gold-dark);
+  border-radius:50%;
+  background:#0a0608;
+}
+.ach-cell.unlocked .ach-ico{
+  color:var(--gold-bright);
+  box-shadow:0 0 10px var(--gold-glow), inset 0 0 6px var(--gold-glow);
+}
+.ach-cell .ach-meta{flex:1; min-width:0}
+.ach-cell-name{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:10px; letter-spacing:.14em;
+  color:var(--gold-bright);
+  text-transform:uppercase;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.ach-cell-desc{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:11px; color:var(--parchment-2);
+  line-height:1.2;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.ach-cell-reward{
+  font-family:"VT323", monospace; font-size:11px;
+  color:var(--gold-light);
+}
 .codex-cell{
   aspect-ratio:1/1;
   background:linear-gradient(180deg, #0a0608, #050304);
@@ -560,6 +616,98 @@ header{
   font-family:"Cinzel", serif; font-weight:700; font-style:normal;
   color:var(--gold-bright); font-size:12px; letter-spacing:.14em;
   text-transform:uppercase; display:block; margin-bottom:4px;
+}
+
+/* ================ OFFLINE TOAST ================ */
+.offline-toast{
+  position:fixed; inset:0; z-index:88;
+  background:radial-gradient(ellipse at 50% 50%, rgba(0,0,0,.78), rgba(0,0,0,.92));
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  text-align:center; padding:20px;
+  opacity:0; pointer-events:none;
+  transition:opacity .5s;
+}
+.offline-toast.show{opacity:1; pointer-events:auto}
+.offline-toast .of-banner{
+  font-family:"Cinzel", serif; font-weight:900;
+  letter-spacing:.34em; font-size:11px;
+  color:var(--gold);
+  margin-bottom:6px;
+}
+.offline-toast .of-time{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:30px; letter-spacing:.18em;
+  color:var(--gold-bright);
+  text-shadow:0 0 16px var(--gold-glow);
+  margin-bottom:14px;
+}
+.offline-toast .of-text{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:15px; color:var(--parchment-2);
+  max-width:300px; line-height:1.4;
+  margin-bottom:18px;
+}
+.offline-toast .of-gain{
+  font-family:"VT323", monospace; font-size:24px;
+  color:var(--gold-bright);
+  background:linear-gradient(180deg, #2a1f1a, #1a1410);
+  border:1px solid var(--gold-bright);
+  padding:6px 16px;
+  margin-bottom:20px;
+  box-shadow:0 0 16px var(--gold-glow);
+}
+.offline-toast .of-close{
+  font-family:"Cinzel", serif; font-size:9px;
+  letter-spacing:.3em;
+  color:var(--gold); opacity:.7;
+}
+
+/* ================ ACHIEVEMENT TOAST ================ */
+.achievement-toast{
+  position:fixed; top:80px; left:50%;
+  transform:translate(-50%, -200%);
+  z-index:88;
+  width:min(92vw, 360px);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(232,200,120,.25), transparent 70%),
+    linear-gradient(180deg, #2a1f1a, #150d0a);
+  border:1px solid var(--gold-bright);
+  border-radius:3px;
+  padding:8px 14px 10px;
+  text-align:center;
+  pointer-events:none;
+  box-shadow:0 0 32px var(--gold-glow), 0 12px 40px rgba(0,0,0,.7);
+  transition:transform .55s cubic-bezier(.2,.9,.2,1.2);
+}
+.achievement-toast::before, .achievement-toast::after{
+  content:""; position:absolute; width:8px; height:8px;
+  border:1.5px solid var(--gold-bright); pointer-events:none;
+}
+.achievement-toast::before{top:-1.5px; left:-1.5px; border-right:none; border-bottom:none}
+.achievement-toast::after{bottom:-1.5px; right:-1.5px; border-left:none; border-top:none}
+.achievement-toast.show{transform:translate(-50%, 0)}
+.achievement-toast .ach-banner{
+  font-family:"Cinzel", serif; font-weight:900;
+  letter-spacing:.32em; font-size:9px;
+  color:var(--gold);
+  margin-bottom:2px;
+}
+.achievement-toast .ach-name{
+  font-family:"Cinzel", serif; font-weight:700;
+  letter-spacing:.18em; font-size:14px;
+  color:var(--gold-bright);
+  text-shadow:0 0 12px var(--gold-glow);
+  text-transform:uppercase;
+  margin-bottom:2px;
+}
+.achievement-toast .ach-desc{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:12px; color:var(--parchment-2);
+  margin-bottom:4px;
+}
+.achievement-toast .ach-reward{
+  font-family:"VT323", monospace; font-size:14px;
+  color:var(--gold-bright);
 }
 
 /* ================ TOAST ================ */
@@ -983,6 +1131,104 @@ const CHAINS = [
 
 const ROMAN = ["","I","II","III","IV","V","VI","VII"];
 const TIER_REWARDS = [0, 0, 0, 0, 0, 0, 200, 800, 3000]; // bonus or à chaque tier atteint en plus de la quête
+
+/* ================ ACHIEVEMENTS / HAUTS FAITS ================ */
+const sumMerged = s => s.totals.merged.reduce((a,b)=>a+b,0);
+const sumProduced = s => s.totals.produced.reduce((a,b)=>a+b,0);
+
+const ACHIEVEMENTS = [
+  // === Premiers pas ===
+  { id:"first_seed",   name:"Premier Geste",     desc:"Produire ta première graine.",         icon:"sulfur",  reward:3,  check:s => s.totals.produced[0]>=1 },
+  { id:"first_pebble", name:"À la Sueur",        desc:"Ramasser ton premier caillou.",        icon:"salt",    reward:3,  check:s => s.totals.produced[1]>=1 },
+  { id:"first_mist",   name:"Premier Souffle",   desc:"Capturer ta première brume.",          icon:"mercury", reward:3,  check:s => s.totals.produced[2]>=1 },
+  { id:"first_merge",  name:"Premier Œuvre",     desc:"Réaliser ta toute première fusion.",   icon:"fuse",    reward:5,  check:s => sumMerged(s)>=1 },
+
+  // === Progression Plante ===
+  { id:"plant_t1",     name:"Bourgeon",          desc:"Faire pousser un Bourgeon.",           icon:"sulfur",  reward:8,   check:s => s.totals.maxTier[0]>=1 },
+  { id:"plant_t3",     name:"Cri de la Mandragore", desc:"Atteindre la Fleur Sépulcrale.",    icon:"sulfur",  reward:30,  check:s => s.totals.maxTier[0]>=3 },
+  { id:"plant_t5",     name:"Panacée Verte",     desc:"Distiller la Panacée.",                icon:"sulfur",  reward:200, check:s => s.totals.maxTier[0]>=5 },
+  { id:"plant_t7",     name:"Yggdrasill",        desc:"Faire éclore Yggdra.",                 icon:"sulfur",  reward:1500,check:s => s.totals.maxTier[0]>=7 },
+
+  // === Progression Pierre ===
+  { id:"stone_t1",     name:"Quartz",            desc:"Tailler ton premier Quartz.",          icon:"salt",    reward:8,   check:s => s.totals.maxTier[1]>=1 },
+  { id:"stone_t3",     name:"Cœur de Géode",     desc:"Ouvrir ta première Géode.",            icon:"salt",    reward:30,  check:s => s.totals.maxTier[1]>=3 },
+  { id:"stone_t5",     name:"Œuvre Rouge",       desc:"Forger la Pierre Philosophale.",       icon:"salt",    reward:200, check:s => s.totals.maxTier[1]>=5 },
+  { id:"stone_t7",     name:"Métal Mémoire",     desc:"Forger l'Eternium.",                   icon:"salt",    reward:1500,check:s => s.totals.maxTier[1]>=7 },
+
+  // === Progression Essence ===
+  { id:"ess_t1",       name:"Étincelle",         desc:"Allumer ta première Étincelle.",       icon:"mercury", reward:8,   check:s => s.totals.maxTier[2]>=1 },
+  { id:"ess_t3",       name:"Convocation",       desc:"Convoquer un Esprit.",                 icon:"mercury", reward:30,  check:s => s.totals.maxTier[2]>=3 },
+  { id:"ess_t5",       name:"Quintessence",      desc:"Atteindre l'éther innommé.",           icon:"mercury", reward:200, check:s => s.totals.maxTier[2]>=5 },
+  { id:"ess_t7",       name:"Singularité",       desc:"Atteindre la Singularité.",            icon:"mercury", reward:1500,check:s => s.totals.maxTier[2]>=7 },
+
+  // === Production ===
+  { id:"prod_50",      name:"Petit Producteur",  desc:"Produire 50 items au total.",          icon:"horn",    reward:15,  check:s => sumProduced(s)>=50 },
+  { id:"prod_500",     name:"Manufacture",       desc:"Produire 500 items au total.",         icon:"horn",    reward:60,  check:s => sumProduced(s)>=500 },
+  { id:"prod_2000",    name:"Grande Manufacture", desc:"Produire 2000 items au total.",        icon:"horn",    reward:240, check:s => sumProduced(s)>=2000 },
+  { id:"prod_10000",   name:"Industrie Alchimique", desc:"Produire 10 000 items au total.",   icon:"horn",    reward:1200,check:s => sumProduced(s)>=10000 },
+
+  // === Fusions ===
+  { id:"merge_50",     name:"Fusionneur",        desc:"50 fusions au total.",                 icon:"fuse",    reward:25,  check:s => sumMerged(s)>=50 },
+  { id:"merge_500",    name:"Maître Artisan",    desc:"500 fusions au total.",                icon:"fuse",    reward:120, check:s => sumMerged(s)>=500 },
+  { id:"merge_2000",   name:"Légende Vivante",   desc:"2000 fusions au total.",               icon:"fuse",    reward:500, check:s => sumMerged(s)>=2000 },
+  { id:"merge_10000",  name:"Mythe d'Atelier",   desc:"10 000 fusions au total.",             icon:"fuse",    reward:2500,check:s => sumMerged(s)>=10000 },
+
+  // === Économie ===
+  { id:"gold_500",     name:"Bourse Garnie",     desc:"Posséder 500 couronnes.",              icon:"crown",   reward:50,  check:s => s.gold>=500 },
+  { id:"gold_5000",    name:"Trésor",            desc:"Posséder 5 000 couronnes.",            icon:"crown",   reward:250, check:s => s.gold>=5000 },
+  { id:"gold_50000",   name:"Fortune",           desc:"Posséder 50 000 couronnes.",           icon:"crown",   reward:1500,check:s => s.gold>=50000 },
+
+  // === Équilibre / records ===
+  { id:"triple_t5",    name:"Triple Couronne",   desc:"Avoir les 3 voies à V ou plus.",       icon:"trinity", reward:400, check:s => s.totals.maxTier.every(t=>t>=5) },
+  { id:"triple_t7",    name:"Adepte Suprême",    desc:"Avoir les 3 voies à VII.",             icon:"trinity", reward:5000,check:s => s.totals.maxTier.every(t=>t>=7) },
+  { id:"balanced_100", name:"Équilibre Parfait", desc:"100 fusions sur chaque voie.",         icon:"trinity", reward:300, check:s => s.totals.merged.every(m=>m>=100) },
+
+  // === Cinématique / Découverte ===
+  { id:"first_grand",  name:"Spectateur du Sacré", desc:"Voir la première cinématique du Grand Œuvre.", icon:"eye", reward:75, check:s => s.firstReached.some(t=>t>=5) },
+  { id:"codex_full",   name:"Bibliothécaire",    desc:"Découvrir les 24 paliers du codex.",   icon:"book",    reward:1000,check:s => s.totals.maxTier.every(t=>t>=7) },
+
+  // === Idle / temps ===
+  { id:"session_60",   name:"Veillée d'Atelier", desc:"Jouer 60 minutes d'affilée.",          icon:"hourglass",reward:120, check:s => (s.sessionMs||0) >= 60*60*1000 },
+  { id:"offline_back", name:"Retour de Voyage",  desc:"Revenir après plus d'1 h d'absence.",  icon:"hourglass",reward:80, check:s => (s.lastOfflineMs||0) >= 60*60*1000 },
+];
+
+function checkAchievements(){
+  if(!STATE.achievements) STATE.achievements = {};
+  let unlocked = 0;
+  for(const a of ACHIEVEMENTS){
+    if(STATE.achievements[a.id]) continue;
+    if(a.check(STATE)){
+      STATE.achievements[a.id] = Date.now();
+      STATE.gold += a.reward;
+      achievementToast(a);
+      unlocked++;
+    }
+  }
+  if(unlocked > 0){ renderStats(); renderCodex(); }
+  return unlocked;
+}
+
+function achievementToast(a){
+  const el = document.createElement("div");
+  el.className = "achievement-toast";
+  el.innerHTML = `
+    <div class="ach-banner">HAUT FAIT</div>
+    <div class="ach-name">${a.name}</div>
+    <div class="ach-desc">${a.desc}</div>
+    <div class="ach-reward">+${a.reward} couronnes</div>
+  `;
+  document.body.appendChild(el);
+  // sound
+  if(A.ctx){
+    blip(660, .14, "triangle", .22, .5);
+    setTimeout(()=>blip(880, .16, "triangle", .22, .5), 80);
+    setTimeout(()=>blip(1320, .22, "sine", .26, .6), 180);
+  }
+  vibrate([14, 30, 14, 30, 80]);
+  setTimeout(()=>el.classList.add("show"), 30);
+  setTimeout(()=>el.classList.remove("show"), 4000);
+  setTimeout(()=>el.remove(), 4800);
+}
 
 /* ================ PALETTE ================ */
 const PAL = {
@@ -2016,6 +2262,12 @@ const STATE = {
   audio:true,
   essenceMax: 60, essenceRegen: 1,
   firstReached:[0,0,0], // par chaîne, palier max atteint pour la 1ère fois
+  achievements:{}, // id -> timestamp d'unlock
+  sessionStartMs: Date.now(),
+  sessionMs: 0,
+  lastSaveTime: Date.now(),
+  lastOfflineMs: 0,
+  totalPlayMs: 0,
   selectedCodex: null,
 };
 
@@ -2408,7 +2660,55 @@ function renderCodex(){
       row.appendChild(cell);
     }
   }
+
+  // === Hauts Faits ===
+  const ach = STATE.achievements || {};
+  const total = ACHIEVEMENTS.length;
+  const unlocked = Object.keys(ach).length;
+  const ad = document.createElement("div");
+  ad.className = "codex-chain achievements-section";
+  ad.innerHTML = `<h3 style="color:var(--gold-bright)">${achIconSVG('trinity', 14)}<span>Hauts Faits — ${unlocked}/${total}</span></h3>`;
+  body.appendChild(ad);
+  const grid = document.createElement("div");
+  grid.className = "ach-grid";
+  ad.appendChild(grid);
+  for(const a of ACHIEVEMENTS){
+    const u = !!ach[a.id];
+    const cell = document.createElement("div");
+    cell.className = "ach-cell" + (u? " unlocked":"");
+    cell.title = u ? a.desc : "Verrouillé";
+    cell.innerHTML = `
+      <div class="ach-ico">${achIconSVG(a.icon, 20)}</div>
+      <div class="ach-meta">
+        <div class="ach-cell-name">${u ? a.name : "?  ?  ?"}</div>
+        <div class="ach-cell-desc">${u ? a.desc : "Haut fait à découvrir"}</div>
+        <div class="ach-cell-reward">+${a.reward} <svg viewBox="0 0 16 16" shape-rendering="crispEdges" style="width:9px;height:9px;vertical-align:-1px"><rect x="3" y="5" width="10" height="2" fill="#c9a25a"/><rect x="3" y="7" width="10" height="5" fill="#9a7842"/></svg></div>
+      </div>
+    `;
+    grid.appendChild(cell);
+  }
+
   if(STATE.selectedCodex) showCodexDetail(STATE.selectedCodex);
+}
+
+function achIconSVG(kind, size=14){
+  const s = size;
+  const stroke = "currentColor";
+  const sw = 1.4;
+  const wrap = inner => `<svg viewBox="0 0 24 24" style="width:${s}px;height:${s}px" fill="none" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round">${inner}</svg>`;
+  switch(kind){
+    case "sulfur":   return wrap('<polygon points="12,4 7,12 17,12"/><line x1="12" y1="12" x2="12" y2="20"/><line x1="9" y1="17" x2="15" y2="17"/>');
+    case "salt":     return wrap('<circle cx="12" cy="12" r="6"/><line x1="6" y1="12" x2="18" y2="12"/>');
+    case "mercury":  return wrap('<path d="M7 7 q5 -4 10 0"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="16" x2="12" y2="22"/><line x1="9" y1="20" x2="15" y2="20"/>');
+    case "fuse":     return wrap('<circle cx="8" cy="12" r="4"/><circle cx="16" cy="12" r="4"/><circle cx="12" cy="12" r="2.4" fill="currentColor"/>');
+    case "horn":     return wrap('<path d="M5 18 q-1 -8 6 -10 q5 -1 8 2 l-1 4 q3 0 4 3 q-1 2 -3 1 q-1 4 -5 4 q-6 0 -9 -4 z"/>');
+    case "crown":    return wrap('<path d="M4 18 V10 l3 4 l5 -8 l5 8 l3 -4 V18 z"/><path d="M4 18 H20" stroke-width="1.8"/>');
+    case "trinity":  return wrap('<circle cx="9" cy="9" r="4"/><circle cx="15" cy="9" r="4"/><circle cx="12" cy="15" r="4"/>');
+    case "eye":      return wrap('<path d="M3 12 q4 -7 9 -7 q5 0 9 7 q-4 7 -9 7 q-5 0 -9 -7z"/><circle cx="12" cy="12" r="3" fill="currentColor"/>');
+    case "book":     return wrap('<rect x="4" y="3" width="16" height="18" rx="1"/><line x1="12" y1="3" x2="12" y2="21"/><path d="M7 9 h3 M14 9 h3"/>');
+    case "hourglass":return wrap('<path d="M6 4 H18 L13 11 L18 18 L18 20 H6 V18 L11 11 L6 4 z"/>');
+    default: return wrap('<circle cx="12" cy="12" r="6"/>');
+  }
 }
 
 function showCodexDetail(sel){
@@ -2444,6 +2744,7 @@ function fireGenerator(idx, el){
   sfxSpawn(g.chain);
   vibrate(8);
   audioInit();
+  if(typeof checkAchievements === 'function') checkAchievements();
   // burst from cauldron
   const r = el.getBoundingClientRect();
   particles(r.left + r.width/2, r.top + 14, CHAINS[g.chain].color, 14);
@@ -2671,6 +2972,7 @@ function claimQuest(q){
   renderStats();
   refreshQuests();
   applyProgressionBonuses();
+  if(typeof checkAchievements === 'function') checkAchievements();
 }
 function applyProgressionBonuses(){
   const factor = Math.max(.4, 1 - STATE.gold/4000);
@@ -3000,9 +3302,43 @@ function floating(x, y, txt, kind="gain"){
   setTimeout(()=>f.remove(), 1300);
 }
 
+function fmtDuration(ms){
+  const s = Math.floor(ms/1000);
+  const h = Math.floor(s/3600);
+  const m = Math.floor((s%3600)/60);
+  const sec = s%60;
+  if(h>0) return h+"h "+m+"min";
+  if(m>0) return m+"min "+sec+"s";
+  return sec+"s";
+}
+
+function showOfflineToast(offlineMs, gold){
+  const ov = document.createElement("div");
+  ov.className = "offline-toast";
+  ov.innerHTML = `
+    <div class="of-banner">PENDANT TON ABSENCE</div>
+    <div class="of-time">${fmtDuration(offlineMs)}</div>
+    <div class="of-text">Le cabinet a continué de murmurer. La poussière a brillé. L'étincelle s'est rechargée.</div>
+    <div class="of-gain">+${gold} <svg viewBox="0 0 16 16" shape-rendering="crispEdges" style="width:11px;height:11px;vertical-align:-2px"><rect x="3" y="5" width="10" height="2" fill="#c9a25a"/><rect x="3" y="7" width="10" height="5" fill="#9a7842"/></svg></div>
+    <div class="of-close">Toucher pour fermer</div>
+  `;
+  document.body.appendChild(ov);
+  ov.addEventListener("click", ()=>{ ov.classList.remove("show"); setTimeout(()=>ov.remove(), 600); });
+  setTimeout(()=>ov.classList.add("show"), 30);
+  if(A.ctx){
+    blip(440, .25, "sine", .18, .6);
+    setTimeout(()=>blip(660, .25, "sine", .18, .6), 120);
+    setTimeout(()=>blip(880, .35, "triangle", .22, .7), 260);
+  }
+}
+
 /* ================ SAVE / LOAD ================ */
 function save(){
   try{
+    const now = Date.now();
+    STATE.sessionMs = now - STATE.sessionStartMs;
+    STATE.totalPlayMs = (STATE.totalPlayMs||0) + (now - (STATE.lastSaveTime||now));
+    STATE.lastSaveTime = now;
     const s = {
       essence:STATE.essence, gold:STATE.gold,
       grid:STATE.grid, nextId:STATE.nextId,
@@ -3010,6 +3346,10 @@ function save(){
       quests:STATE.quests.map(q=>({id:q.id, claimed:q.claimed})),
       essenceMax:STATE.essenceMax, essenceRegen:STATE.essenceRegen,
       firstReached:STATE.firstReached,
+      achievements:STATE.achievements,
+      sessionMs:STATE.sessionMs,
+      totalPlayMs:STATE.totalPlayMs,
+      lastSaveTime:now,
       audio:STATE.audio,
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
@@ -3027,7 +3367,26 @@ function load(){
     STATE.essenceMax = s.essenceMax ?? STATE.essenceMax;
     STATE.essenceRegen = s.essenceRegen ?? STATE.essenceRegen;
     STATE.firstReached = s.firstReached ?? [0,0,0];
+    STATE.achievements = s.achievements ?? {};
+    STATE.totalPlayMs = s.totalPlayMs ?? 0;
     STATE.audio = s.audio ?? true;
+
+    // Calcul du temps offline
+    const now = Date.now();
+    const lastSave = s.lastSaveTime || now;
+    const offlineMs = Math.max(0, now - lastSave);
+    if(offlineMs > 60*1000){ // au-delà d'1 min on parle d'offline
+      STATE.lastOfflineMs = offlineMs;
+      // Récupération offline : essence se remplit + petit gain de couronnes proportionnel
+      STATE.essence = STATE.essenceMax;
+      const cappedHours = Math.min(8, offlineMs / (3600*1000)); // cap 8h
+      const offlineGold = Math.floor(cappedHours * 12 + (cappedHours * (sumProduced(STATE)/100)));
+      STATE.gold += offlineGold;
+      STATE.pendingOfflineToast = { ms: offlineMs, gold: offlineGold };
+    }
+    STATE.sessionStartMs = now;
+    STATE.lastSaveTime = now;
+
     rebuildQuests();
     if(s.quests){
       for(const q of s.quests){
@@ -3050,6 +3409,8 @@ function boot(){
   renderAll();
   refreshQuests();
   renderCodex();
+  checkAchievements();
+  // Offline progress toast (déclenché dans le start-btn pour éviter d'apparaître avant l'intro)
 
   document.getElementById("quest-toggle").addEventListener("click", ()=>{
     document.getElementById("quests").classList.toggle("open");
@@ -3071,6 +3432,12 @@ function boot(){
     audioInit();
     if(A.ctx && A.ctx.state === "suspended") A.ctx.resume();
     startDrone();
+    // Affiche toast offline si applicable
+    if(STATE.pendingOfflineToast){
+      const p = STATE.pendingOfflineToast;
+      setTimeout(()=>showOfflineToast(p.ms, p.gold), 700);
+      STATE.pendingOfflineToast = null;
+    }
   });
 
   // boucle principale

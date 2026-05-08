@@ -794,7 +794,7 @@ header{
 @keyframes rotateOuro{to{transform:rotate(360deg)}}
 @keyframes fadeIn{to{opacity:1}}
 
-/* ================ AUDIO TOGGLE ================ */
+/* ================ TOP-RIGHT TOGGLES ================ */
 #audio-toggle{
   position:fixed; top:6px; right:8px; z-index:8;
   background:transparent; border:none; padding:6px;
@@ -804,6 +804,99 @@ header{
 }
 #audio-toggle:hover, #audio-toggle.on{opacity:1}
 #audio-toggle svg{width:16px; height:16px}
+
+#stats-toggle{
+  position:fixed; top:6px; right:38px; z-index:8;
+  background:transparent; border:none; padding:6px;
+  cursor:pointer;
+  color:var(--gold); opacity:.55;
+}
+#stats-toggle:hover{opacity:1}
+#stats-toggle svg{width:16px; height:16px}
+
+/* ================ MODAL ================ */
+.modal{
+  position:fixed; inset:0; z-index:85;
+  background:rgba(0,0,0,.78);
+  display:flex; align-items:center; justify-content:center;
+  padding:18px;
+  opacity:0; pointer-events:none;
+  transition:opacity .35s;
+}
+.modal.show{opacity:1; pointer-events:auto}
+.modal-card{
+  position:relative;
+  width:min(94vw, 460px); max-height:85vh;
+  background:
+    radial-gradient(ellipse 60% 30% at 50% 0%, rgba(232,160,80,.10), transparent 60%),
+    linear-gradient(180deg, #1a1218, #0a0608);
+  border:1px solid var(--gold-bright);
+  padding:14px 14px 16px;
+  display:flex; flex-direction:column;
+  box-shadow:0 0 40px var(--gold-glow), 0 14px 60px rgba(0,0,0,.8);
+  transform:scale(.96) translateY(8px);
+  transition:transform .35s cubic-bezier(.2,.9,.2,1.2);
+}
+.modal.show .modal-card{transform:scale(1) translateY(0)}
+.modal-card::before, .modal-card::after,
+.modal-card > .corner-ml{
+  content:""; position:absolute; width:8px; height:8px;
+  border:1.5px solid var(--gold-bright); pointer-events:none;
+}
+.modal-card::before{top:-1.5px; left:-1.5px; border-right:none; border-bottom:none}
+.modal-card::after{bottom:-1.5px; right:-1.5px; border-left:none; border-top:none}
+.modal-card h2{
+  font-family:"Cinzel", serif; font-weight:900;
+  letter-spacing:.22em; font-size:15px;
+  color:var(--gold-bright); margin:0 0 4px;
+  text-align:center;
+  text-shadow:0 0 12px var(--gold-glow);
+}
+.modal-subtitle{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:12px; color:var(--gold); opacity:.75;
+  text-align:center; margin-bottom:6px;
+  letter-spacing:.18em;
+}
+.modal-card .divider{
+  height:18px; margin:6px 0 8px;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--gold); opacity:.7;
+}
+.modal-card .divider svg{width:160px; height:14px}
+.modal-close{
+  position:absolute; top:6px; right:8px;
+  width:24px; height:24px; line-height:22px; text-align:center;
+  font-family:"Cormorant Garamond", serif;
+  color:var(--gold); cursor:pointer;
+  font-size:24px;
+  transition:color .2s;
+}
+.modal-close:hover{color:var(--gold-bright)}
+
+.stats-body{flex:1; overflow-y:auto; padding-right:4px}
+.stats-body::-webkit-scrollbar{width:4px}
+.stats-body::-webkit-scrollbar-thumb{background:var(--gold-dark); border-radius:2px}
+.stats-section{margin-bottom:14px}
+.stats-section h3{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:11px; letter-spacing:.18em;
+  color:var(--gold-bright);
+  margin:0 0 5px;
+  text-transform:uppercase;
+}
+.stats-row{
+  display:flex; justify-content:space-between;
+  padding:3px 6px;
+  font-size:13px;
+  border-bottom:1px dashed rgba(154,120,66,.25);
+}
+.stats-row:last-child{border-bottom:none}
+.stats-row .lbl{font-family:"Cormorant Garamond", serif; font-style:italic; color:var(--parchment-2)}
+.stats-row .val{font-family:"VT323", monospace; color:var(--gold-bright); font-size:15px}
+.stats-row[data-chain="0"] .val{color:var(--plant-2)}
+.stats-row[data-chain="1"] .val{color:var(--mineral-2)}
+.stats-row[data-chain="2"] .val{color:var(--essence-2)}
 
 /* ================ GRAND ŒUVRE CINEMATIC ================ */
 #grand-oeuvre{
@@ -945,12 +1038,37 @@ header{
 <canvas id="fx"></canvas>
 <canvas id="cinema"></canvas>
 
+<button id="stats-toggle" title="Statistiques">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+    <rect x="4" y="13" width="3" height="7"/>
+    <rect x="10.5" y="9" width="3" height="11"/>
+    <rect x="17" y="5" width="3" height="15"/>
+  </svg>
+</button>
+
 <button id="audio-toggle" title="Son">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">
     <path d="M5 9 v6 h3 l5 4 V5 l-5 4z" fill="currentColor"/>
     <path d="M16 8 q3 4 0 8 M19 6 q5 6 0 12"/>
   </svg>
 </button>
+
+<!-- STATS modal -->
+<div id="stats-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-close" id="stats-close" aria-label="Fermer">×</div>
+    <h2>STATISTIQUES</h2>
+    <div class="modal-subtitle">— grimoire intime —</div>
+    <div class="divider">
+      <svg viewBox="0 0 200 16" fill="none" stroke="currentColor" stroke-width=".8">
+        <path d="M0 8 H80 M120 8 H200"/>
+        <path d="M88 8 q4 -6 8 0 q4 6 8 0"/>
+        <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="stats-body" id="stats-body"></div>
+  </div>
+</div>
 
 <button class="side-toggle" id="codex-toggle" title="Codex">
   <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
@@ -2543,11 +2661,6 @@ function renderAll(){
   renderStats();
 }
 
-function renderStats(){
-  $essence.textContent = Math.floor(STATE.essence) + "/" + STATE.essenceMax;
-  $gold.textContent = STATE.gold;
-}
-
 function renderGenerators(){
   $gens.innerHTML = "";
   STATE.generators.forEach((g,i)=>{
@@ -2709,6 +2822,58 @@ function achIconSVG(kind, size=14){
     case "hourglass":return wrap('<path d="M6 4 H18 L13 11 L18 18 L18 20 H6 V18 L11 11 L6 4 z"/>');
     default: return wrap('<circle cx="12" cy="12" r="6"/>');
   }
+}
+
+function renderStats(){
+  $essence.textContent = Math.floor(STATE.essence) + "/" + STATE.essenceMax;
+  $gold.textContent = STATE.gold;
+  // Si modal stats ouverte, mettre à jour
+  const modal = document.getElementById("stats-modal");
+  if(modal && modal.classList.contains("show")) renderStatsBody();
+}
+
+function renderStatsBody(){
+  const body = document.getElementById("stats-body");
+  if(!body) return;
+  const totalProduced = sumProduced(STATE);
+  const totalMerged = sumMerged(STATE);
+  const sessionMs = Date.now() - (STATE.sessionStartMs||Date.now());
+  const totalPlay = (STATE.totalPlayMs||0) + sessionMs;
+  const ach = STATE.achievements||{};
+  const achCount = Object.keys(ach).length;
+
+  const html = [];
+  html.push(`<div class="stats-section"><h3>Sessions</h3>`);
+  html.push(`<div class="stats-row"><span class="lbl">Session courante</span><span class="val">${fmtDuration(sessionMs)}</span></div>`);
+  html.push(`<div class="stats-row"><span class="lbl">Temps total</span><span class="val">${fmtDuration(totalPlay)}</span></div>`);
+  if((STATE.lastOfflineMs||0) > 0)
+    html.push(`<div class="stats-row"><span class="lbl">Dernière absence</span><span class="val">${fmtDuration(STATE.lastOfflineMs)}</span></div>`);
+  html.push(`</div>`);
+
+  html.push(`<div class="stats-section"><h3>Économie</h3>`);
+  html.push(`<div class="stats-row"><span class="lbl">Couronnes</span><span class="val">${STATE.gold}</span></div>`);
+  html.push(`<div class="stats-row"><span class="lbl">Étincelle max</span><span class="val">${STATE.essenceMax}</span></div>`);
+  html.push(`<div class="stats-row"><span class="lbl">Étincelle / sec</span><span class="val">${STATE.essenceRegen.toFixed(2)}</span></div>`);
+  html.push(`</div>`);
+
+  html.push(`<div class="stats-section"><h3>Trois Voies</h3>`);
+  for(let c=0; c<3; c++){
+    const ch = CHAINS[c];
+    const top = ch.tiers[STATE.totals.maxTier[c]]?.n || "—";
+    html.push(`<div class="stats-row" data-chain="${c}"><span class="lbl">${ch.short} — palier max</span><span class="val">${top} (${ROMAN[STATE.totals.maxTier[c]]||"–"})</span></div>`);
+    html.push(`<div class="stats-row" data-chain="${c}"><span class="lbl">${ch.short} — items produits</span><span class="val">${STATE.totals.produced[c]}</span></div>`);
+    html.push(`<div class="stats-row" data-chain="${c}"><span class="lbl">${ch.short} — fusions</span><span class="val">${STATE.totals.merged[c]}</span></div>`);
+  }
+  html.push(`</div>`);
+
+  html.push(`<div class="stats-section"><h3>Totaux</h3>`);
+  html.push(`<div class="stats-row"><span class="lbl">Items produits (total)</span><span class="val">${totalProduced}</span></div>`);
+  html.push(`<div class="stats-row"><span class="lbl">Fusions (total)</span><span class="val">${totalMerged}</span></div>`);
+  html.push(`<div class="stats-row"><span class="lbl">Hauts faits</span><span class="val">${achCount}/${ACHIEVEMENTS.length}</span></div>`);
+  html.push(`<div class="stats-row"><span class="lbl">Quêtes réclamées</span><span class="val">${STATE.quests.filter(q=>q.claimed).length}/${STATE.quests.length}</span></div>`);
+  html.push(`</div>`);
+
+  body.innerHTML = html.join("");
 }
 
 function showCodexDetail(sel){
@@ -3426,6 +3591,18 @@ function boot(){
     document.getElementById("audio-toggle").classList.toggle("on", STATE.audio);
   });
   document.getElementById("audio-toggle").classList.toggle("on", STATE.audio);
+
+  document.getElementById("stats-toggle").addEventListener("click", ()=>{
+    const m = document.getElementById("stats-modal");
+    renderStatsBody();
+    m.classList.add("show");
+  });
+  document.getElementById("stats-close").addEventListener("click", ()=>{
+    document.getElementById("stats-modal").classList.remove("show");
+  });
+  document.getElementById("stats-modal").addEventListener("click", e=>{
+    if(e.target.id === "stats-modal") document.getElementById("stats-modal").classList.remove("show");
+  });
 
   document.getElementById("start-btn").addEventListener("click", ()=>{
     document.getElementById("intro").classList.add("gone");

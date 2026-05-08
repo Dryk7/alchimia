@@ -308,8 +308,8 @@ header{
 /* ================ GENERATEURS ================ */
 #generators{
   display:grid;
-  grid-template-columns:repeat(3, 1fr);
-  gap:6px;
+  grid-template-columns:repeat(4, 1fr);
+  gap:5px;
   padding:0 2px;
 }
 .gen{
@@ -337,7 +337,7 @@ header{
 .gen:active{transform:scale(.96)}
 .gen.cooldown{filter:grayscale(.5) brightness(.75); cursor:wait}
 .gen.locked{filter:grayscale(1) brightness(.4); cursor:not-allowed}
-.gen .gen-stack{position:relative; width:54px; height:54px}
+.gen .gen-stack{position:relative; width:48px; height:48px}
 .gen .gen-svg{position:absolute; inset:0; width:100%; height:100%; image-rendering:pixelated; filter:drop-shadow(0 2px 0 #000)}
 .gen .gen-bubbles{position:absolute; inset:0; pointer-events:none}
 .gen .gen-name{
@@ -949,6 +949,69 @@ header{
 }
 .modal-close:hover{color:var(--gold-bright)}
 
+/* Athanor */
+.ath-tagline{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:13px; color:var(--gold-light);
+  text-align:center; margin-bottom:8px;
+  letter-spacing:.1em;
+}
+.ath-empty{
+  text-align:center;
+  font-family:"Cormorant Garamond", serif;
+  color:var(--parchment-2);
+  padding:18px 8px;
+  font-size:14px;
+}
+.ath-empty em{display:block; margin-top:4px; font-size:12px; opacity:.7}
+.ath-row{
+  display:grid;
+  grid-template-columns:auto auto auto 1fr auto;
+  gap:6px; align-items:center;
+  padding:7px 8px;
+  background:linear-gradient(180deg, #2a1f1a, #1a1410);
+  border:1px solid var(--gold-dark);
+  margin-bottom:5px;
+  cursor:pointer;
+  transition:border-color .2s, box-shadow .2s;
+}
+.ath-row:hover:not(.unaff){
+  border-color:var(--gold-bright);
+  box-shadow:0 0 12px var(--gold-glow);
+}
+.ath-row.unaff{filter:grayscale(.7) brightness(.6); cursor:not-allowed}
+.ath-from, .ath-to{display:flex; align-items:center; gap:4px}
+.ath-spr{width:30px; height:30px; display:flex; align-items:center; justify-content:center; flex-shrink:0}
+.ath-spr svg{width:100%; height:100%; image-rendering:pixelated; filter:drop-shadow(0 0 4px currentColor)}
+.ath-x{
+  font-family:"VT323", monospace; font-size:13px;
+  color:var(--gold-light);
+}
+.ath-arrow{font-family:"Cinzel"; font-size:18px; color:var(--gold); padding:0 2px}
+.ath-meta{min-width:0}
+.ath-name{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:9px; letter-spacing:.12em; color:var(--gold-bright);
+  text-transform:uppercase;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.ath-cost{font-family:"VT323", monospace; font-size:12px; color:var(--gold-light)}
+.ath-action{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:9px; letter-spacing:.22em;
+  color:#000; background:linear-gradient(180deg, var(--gold-bright), var(--gold));
+  padding:5px 7px;
+  text-transform:uppercase;
+}
+.ath-row.unaff .ath-action{background:#3a2818; color:var(--gold-dark)}
+
+.gen[data-kind="athanor"]{
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(232,80,40,.22), transparent 70%),
+    linear-gradient(180deg, #1f1418, #0a0608);
+}
+.gen[data-kind="athanor"]::before{background:linear-gradient(90deg, transparent, var(--ember), var(--flame), var(--ember), transparent)}
+
 .stats-body{flex:1; overflow-y:auto; padding-right:4px}
 .stats-body::-webkit-scrollbar{width:4px}
 .stats-body::-webkit-scrollbar-thumb{background:var(--gold-dark); border-radius:2px}
@@ -1016,7 +1079,7 @@ header{
   body{font-size:16px}
   .brand .name{font-size:18px}
   .stat{font-size:22px}
-  .gen .gen-stack{width:64px; height:64px}
+  .gen .gen-stack{width:58px; height:58px}
   .gen .gen-name{font-size:11px}
   .frame-corner{width:28px; height:28px}
 }
@@ -1129,6 +1192,24 @@ header{
     <path d="M16 8 q3 4 0 8 M19 6 q5 6 0 12"/>
   </svg>
 </button>
+
+<!-- ATHANOR modal -->
+<div id="athanor-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-close" id="athanor-close" aria-label="Fermer">×</div>
+    <h2>ATHANOR</h2>
+    <div class="modal-subtitle">— purification par le feu —</div>
+    <div class="divider">
+      <svg viewBox="0 0 200 16" fill="none" stroke="currentColor" stroke-width=".8">
+        <path d="M0 8 H80 M120 8 H200"/>
+        <path d="M88 8 q4 -6 8 0 q4 6 8 0"/>
+        <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="ath-tagline">Trois deviennent un. Le palier s'élève.</div>
+    <div class="stats-body" id="athanor-body"></div>
+  </div>
+</div>
 
 <!-- STATS modal -->
 <div id="stats-modal" class="modal">
@@ -2416,6 +2497,41 @@ const GEN_SPRITES = [
     "................................",
     "................................",
   ],
+  // ATHANOR — four en pierre cubique, cheminée trapue, flammes intérieures, runes dorées
+  [
+    "................................",
+    ".............m..................",
+    "............mNm.....m...........",
+    ".....m.......m.....mNm..........",
+    "....mNm......m......m...........",
+    ".....m.......m..................",
+    ".............kk.................",
+    "............kCck................",
+    "............kxck................",
+    "...........kkkkkk...............",
+    "..........kCxxxxCk..............",
+    ".........kCxXXXXxCk.............",
+    "........kkkkkkkkkkkk............",
+    ".......kCccccccccccCk...........",
+    "......kCcxxxxxxxxxxxcCk.........",
+    ".....kCcxXkkkkkkkkkkXxcCk.......",
+    ".....kCcxXkggggggggkXxcCk.......",
+    ".....kCcxXkgyYWWYygkXxcCk.......",
+    ".....kCcxXkgYWHHHWYgkXxcCk......",
+    ".....kCcxXkgYHFhHfFYgkXxcCk.....",
+    ".....kCcxXkgYFhHHHfFYgkXxcCk....",
+    ".....kCcxXkgYHfHHHHFYgkXxcCk....",
+    ".....kCcxXkgYFhHHHfFYgkXxcCk....",
+    ".....kCcxXkgYHFFFFFFYgkXxcCk....",
+    ".....kCcxXkgYWWHFFFWWYgkXxcCk...",
+    ".....kCcxXkggggggggggkXxcCk.....",
+    ".....kCcxXkkkkkkkkkkkkXxcCk.....",
+    ".....kCcxxxxxxxxxxxxxxxxxcCk....",
+    "......kCcCCCCCCCCCCCCCCCCcCk....",
+    ".......kkccccccccccccccccckk....",
+    "........kkkkkkkkkkkkkkkkkk......",
+    "................................",
+  ],
 ];
 
 function spriteSVG(grid){
@@ -2448,9 +2564,10 @@ const STATE = {
   grid: Array.from({length:ROWS},()=>Array(COLS).fill(null)),
   nextId: 1,
   generators:[
-    { chain:0, tier:0, cost:3, cdMs:1500, lastFire:0, unlocked:true },
-    { chain:1, tier:0, cost:5, cdMs:2200, lastFire:0, unlocked:true },
-    { chain:2, tier:0, cost:8, cdMs:3000, lastFire:0, unlocked:true },
+    { chain:0, tier:0, cost:3, cdMs:1500, lastFire:0, unlocked:true, kind:"cauldron" },
+    { chain:1, tier:0, cost:5, cdMs:2200, lastFire:0, unlocked:true, kind:"cauldron" },
+    { chain:2, tier:0, cost:8, cdMs:3000, lastFire:0, unlocked:true, kind:"cauldron" },
+    { chain:3, tier:0, cost:0, cdMs:0,    lastFire:0, unlocked:false, kind:"athanor", unlockCost:500 },
   ],
   quests: [],
   totals:{ produced:[0,0,0], merged:[0,0,0], maxTier:[0,0,0] },
@@ -2853,6 +2970,7 @@ function renderGenerators(){
     const div = document.createElement("div");
     div.className = "gen";
     div.dataset.chain = g.chain;
+    div.dataset.kind = g.kind || "cauldron";
     if(!g.unlocked) div.classList.add("locked");
 
     const stack = document.createElement("div");
@@ -2861,30 +2979,161 @@ function renderGenerators(){
     sp.className = "gen-svg";
     sp.innerHTML = spriteSVG(GEN_SPRITES[g.chain]);
     stack.appendChild(sp);
-    const bub = document.createElement("canvas");
-    bub.className = "gen-bubbles";
-    bub.width = 64; bub.height = 64;
-    stack.appendChild(bub);
+    if(g.kind !== "athanor"){
+      const bub = document.createElement("canvas");
+      bub.className = "gen-bubbles";
+      bub.width = 64; bub.height = 64;
+      stack.appendChild(bub);
+    }
     div.appendChild(stack);
 
     const nm = document.createElement("div");
     nm.className = "gen-name";
-    nm.textContent = CHAINS[g.chain].short;
+    nm.textContent = g.kind === "athanor" ? "Athanor" : CHAINS[g.chain].short;
     div.appendChild(nm);
 
     const co = document.createElement("div");
     co.className = "gen-cost";
-    co.innerHTML = `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><rect x="6" y="3" width="4" height="2" fill="#e8a050"/><rect x="5" y="5" width="6" height="3" fill="#c84a2a"/><rect x="6" y="8" width="4" height="2" fill="#8a2a2a"/></svg> ${g.cost}`;
+    if(g.kind === "athanor"){
+      if(!g.unlocked){
+        co.innerHTML = `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><rect x="3" y="5" width="10" height="2" fill="#c9a25a"/><rect x="3" y="7" width="10" height="5" fill="#9a7842"/></svg> ${g.unlockCost}`;
+      } else {
+        co.innerHTML = `<span style="font-family:'Cinzel';font-size:8px;letter-spacing:.18em;color:var(--gold-light)">PURIFIER</span>`;
+      }
+    } else {
+      co.innerHTML = `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><rect x="6" y="3" width="4" height="2" fill="#e8a050"/><rect x="5" y="5" width="6" height="3" fill="#c84a2a"/><rect x="6" y="8" width="4" height="2" fill="#8a2a2a"/></svg> ${g.cost}`;
+    }
     div.appendChild(co);
 
-    const cd = document.createElement("div");
-    cd.className = "cd-bar";
-    cd.innerHTML = "<span></span>";
-    div.appendChild(cd);
+    if(g.kind !== "athanor"){
+      const cd = document.createElement("div");
+      cd.className = "cd-bar";
+      cd.innerHTML = "<span></span>";
+      div.appendChild(cd);
+    }
 
-    div.addEventListener("pointerdown", e=>{ e.preventDefault(); fireGenerator(i, div); });
+    div.addEventListener("pointerdown", e=>{
+      e.preventDefault();
+      if(g.kind === "athanor"){
+        if(!g.unlocked){ tryUnlockAthanor(); }
+        else openAthanor();
+      } else {
+        fireGenerator(i, div);
+      }
+    });
     $gens.appendChild(div);
   });
+}
+
+function tryUnlockAthanor(){
+  const g = STATE.generators[3];
+  if(STATE.gold < g.unlockCost){ sfxDeny(); flashStat("gold-val"); floating(window.innerWidth/2, window.innerHeight - 100, "Couronnes insuffisantes", "lose"); return; }
+  STATE.gold -= g.unlockCost;
+  g.unlocked = true;
+  renderStats();
+  renderGenerators();
+  sfxClaim();
+  vibrate([20, 80, 20, 80, 100]);
+  // Notification
+  eventNotification({ name:"L'Athanor s'éveille", desc:"Le four alchimique brûle de nouveau. Trois items deviennent un, le palier supérieur."}, "");
+  if(typeof checkAchievements === 'function') checkAchievements();
+}
+
+function openAthanor(){
+  // Compte les items par (chain, tier)
+  const counts = {}; // key = chain*TIERS+tier
+  for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++){
+    const t = STATE.grid[y][x]; if(!t) continue;
+    if(t.tier >= TIERS-1) continue;
+    const k = t.chain*TIERS + t.tier;
+    counts[k] = (counts[k]||0) + 1;
+  }
+  const eligible = [];
+  for(const k in counts){ if(counts[k] >= 3) eligible.push({key:+k, count:counts[k]}); }
+
+  const modal = document.getElementById("athanor-modal");
+  const body = document.getElementById("athanor-body");
+  if(!eligible.length){
+    body.innerHTML = `<div class="ath-empty">Aucun trio purifiable.<br><em>Il faut au moins trois exemplaires d'un même item, hors palier ultime.</em></div>`;
+  } else {
+    body.innerHTML = "";
+    eligible.sort((a,b)=> a.key - b.key);
+    for(const e of eligible){
+      const chain = Math.floor(e.key / TIERS), tier = e.key % TIERS;
+      const ch = CHAINS[chain];
+      const cost = athanorCost(tier);
+      const canPay = STATE.gold >= cost;
+      const row = document.createElement("div");
+      row.className = "ath-row" + (canPay ? "" : " unaff");
+      row.innerHTML = `
+        <div class="ath-from">
+          <div class="ath-spr" style="color:${ch.color}">${spriteSVG(SPRITES[chain*TIERS + tier])}</div>
+          <span class="ath-x">×3</span>
+        </div>
+        <div class="ath-arrow">→</div>
+        <div class="ath-to">
+          <div class="ath-spr" style="color:${ch.color}">${spriteSVG(SPRITES[chain*TIERS + tier + 1])}</div>
+          <span class="ath-x">×1</span>
+        </div>
+        <div class="ath-meta">
+          <div class="ath-name">${ch.tiers[tier].n} → ${ch.tiers[tier+1].n}</div>
+          <div class="ath-cost"><svg viewBox="0 0 16 16" shape-rendering="crispEdges" style="width:10px;height:10px;vertical-align:-1px"><rect x="3" y="5" width="10" height="2" fill="#c9a25a"/><rect x="3" y="7" width="10" height="5" fill="#9a7842"/></svg> ${cost}</div>
+        </div>
+        <div class="ath-action">${canPay ? "PURIFIER" : "—"}</div>
+      `;
+      if(canPay){ row.addEventListener("click", ()=>doPurify(chain, tier, cost)); }
+      body.appendChild(row);
+    }
+  }
+  modal.classList.add("show");
+}
+
+function athanorCost(tier){
+  return Math.floor(20 * Math.pow(2.4, tier));
+}
+
+function doPurify(chain, tier, cost){
+  // Trouver 3 items de (chain, tier)
+  const found = [];
+  for(let y=0;y<ROWS && found.length<3;y++)
+    for(let x=0;x<COLS && found.length<3;x++){
+      const t = STATE.grid[y][x];
+      if(t && t.chain===chain && t.tier===tier) found.push([x,y]);
+    }
+  if(found.length < 3) { sfxDeny(); return; }
+  STATE.gold -= cost;
+  // Animations : flash + remove
+  for(const [x,y] of found){
+    const cell = cellAt(x,y);
+    cell.classList.add("flash");
+    cell.firstChild?.classList.add("merge-out");
+    const r = cell.getBoundingClientRect();
+    particles(r.left + r.width/2, r.top + r.height/2, "#e8a050", 18);
+    lightning(r.left + r.width/2, r.top + r.height/2, window.innerWidth/2, window.innerHeight - 80, "#e8a050");
+  }
+  setTimeout(()=>{
+    for(const [x,y] of found){ STATE.grid[y][x] = null; renderTile(x,y); cellAt(x,y).classList.remove("flash"); }
+    // Place le résultat dans une case vide aléatoire
+    const empties = findEmpty();
+    if(empties.length){
+      const [nx,ny] = empties[Math.floor(Math.random()*empties.length)];
+      STATE.grid[ny][nx] = { id: STATE.nextId++, chain, tier: tier+1 };
+      STATE.totals.merged[chain] += 1;
+      STATE.totals.maxTier[chain] = Math.max(STATE.totals.maxTier[chain], tier+1);
+      renderTile(nx, ny);
+      const r = cellAt(nx,ny).getBoundingClientRect();
+      shockwave(r.left+r.width/2, r.top+r.height/2, CHAINS[chain].color, tier+1);
+      sfxMerge(tier+1, chain);
+      vibrate([18, 30, 12]);
+      floating(r.left + r.width/2, r.top - 14, "▲ " + CHAINS[chain].tiers[tier+1].n, "tier");
+    }
+    renderStats();
+    refreshQuests();
+    renderCodex();
+    if(typeof checkAchievements === 'function') checkAchievements();
+    // Refresh modal
+    openAthanor();
+  }, 280);
 }
 
 function renderQuests(){
@@ -3742,6 +3991,8 @@ function save(){
       totalPlayMs:STATE.totalPlayMs,
       lastSaveTime:now,
       audio:STATE.audio,
+      athanorUnlocked: STATE.generators[3]?.unlocked || false,
+      activeEvents: STATE.activeEvents || {},
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
   }catch(e){}
@@ -3761,6 +4012,16 @@ function load(){
     STATE.achievements = s.achievements ?? {};
     STATE.totalPlayMs = s.totalPlayMs ?? 0;
     STATE.audio = s.audio ?? true;
+    if(STATE.generators[3] && s.athanorUnlocked) STATE.generators[3].unlocked = true;
+    // Restaurer events dont l'expiration n'est pas passée
+    if(s.activeEvents){
+      const nowT = Date.now();
+      STATE.activeEvents = {};
+      for(const id in s.activeEvents){
+        if(s.activeEvents[id].expiresAt > nowT) STATE.activeEvents[id] = s.activeEvents[id];
+      }
+      applyEventModifiers();
+    }
 
     // Calcul du temps offline
     const now = Date.now();
@@ -3828,6 +4089,13 @@ function boot(){
   });
   document.getElementById("stats-modal").addEventListener("click", e=>{
     if(e.target.id === "stats-modal") document.getElementById("stats-modal").classList.remove("show");
+  });
+
+  document.getElementById("athanor-close").addEventListener("click", ()=>{
+    document.getElementById("athanor-modal").classList.remove("show");
+  });
+  document.getElementById("athanor-modal").addEventListener("click", e=>{
+    if(e.target.id === "athanor-modal") document.getElementById("athanor-modal").classList.remove("show");
   });
 
   document.getElementById("start-btn").addEventListener("click", ()=>{

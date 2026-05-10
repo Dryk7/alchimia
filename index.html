@@ -3906,7 +3906,8 @@ function attachDrag(el, x, y){
     if(!drag.moved && Math.hypot(dx,dy) > 4){
       drag.moved = true;
       if(drag.pressTimer) clearTimeout(drag.pressTimer);
-      hideItemTooltip();
+      // Si tooltip avait été montré, on le ferme et on autorise le drag normal
+      if(drag.tooltipShown){ hideItemTooltip(); drag.tooltipShown = false; }
     }
     moveDrag(e.clientX, e.clientY);
   });

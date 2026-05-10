@@ -458,13 +458,30 @@ header{
 }
 .gen .gen-cost svg{width:10px; height:10px}
 .gen .cd-bar{
-  position:absolute; left:2px; right:2px; bottom:5px; height:2px;
+  position:absolute; left:2px; right:2px; bottom:5px; height:3px;
   background:rgba(0,0,0,.6); border-radius:1px; overflow:hidden;
 }
 .gen .cd-bar > span{
   display:block; height:100%; width:0%;
   background:var(--gold-bright);
-  transition:width .1s linear;
+  transition:width .1s linear, box-shadow .3s;
+}
+/* Lueur pulsée quand le cooldown est prêt (full width) */
+.gen:not(.cooldown) .cd-bar > span{
+  box-shadow:0 0 6px var(--gold-bright), 0 0 12px rgba(232,200,120,.6);
+  animation:cdReady 1.4s ease-in-out infinite;
+}
+@keyframes cdReady{
+  0%,100%{box-shadow:0 0 6px var(--gold-bright), 0 0 10px rgba(232,200,120,.4)}
+  50%{box-shadow:0 0 10px #fff, 0 0 18px var(--gold-bright)}
+}
+/* Subtle breath sur les tuiles T0 pour que la grille respire */
+.tile[data-tier="0"] svg{
+  animation:tileBreath 4s ease-in-out infinite;
+}
+@keyframes tileBreath{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.04)}
 }
 
 /* ================ SIDE TOGGLES (livre / parchemin) ================ */
@@ -5571,7 +5588,7 @@ function shopSpawn(chain, tier){
   STATE.totals.maxTier[chain] = Math.max(STATE.totals.maxTier[chain], tier);
   renderTile(x,y);
   sfxSpawn(chain);
-  vibrate(8);
+  vibrate(14);
   particles(window.innerWidth/2, window.innerHeight - 100, CHAINS[chain].color, 14);
   return true;
 }
@@ -6049,6 +6066,7 @@ function sfxClaim(){
 }
 function sfxDeny(){
   blip(140, .12, "sawtooth", .14, .2);
+  vibrate(25); // négatif feedback haptique court
 }
 function sfxGrand(tier=5){
   // Cinematique : plus on monte, plus c'est dense
@@ -6708,7 +6726,7 @@ function fireGenerator(idx, el){
   renderStats();
   refreshQuests();
   sfxSpawn(g.chain);
-  vibrate(8);
+  vibrate(14);
   audioInit();
   if(typeof checkAchievements === 'function') checkAchievements();
   if(typeof tutorialOnSpawn === 'function') tutorialOnSpawn(g.chain);
@@ -7524,11 +7542,11 @@ const TUTORIAL_STEPS = [
     minDelay: 0,
   },
   {
-    id:'spawn2', title:'ENCORE',
-    text:'Bien. Invoque une <strong>seconde</strong> graine pour préparer une fusion.',
+    id:'spawn2', title:'UNE SECONDE',
+    text:'Une seconde graine pour pouvoir <strong>la fusionner avec la première</strong>. Re-tape le cauldron vert.',
     target:'.gen[data-chain="0"]', position:'above',
-    advanceOn:'spawn2', // 2ème spawn plante
-    minDelay: 800,
+    advanceOn:'spawn2',
+    minDelay: 600,
   },
   {
     id:'merge', title:'FUSIONNER',
@@ -7562,7 +7580,7 @@ function startTutorial(){
   if(_tutorialActive) return;
   _tutorialActive = true;
   _tutorialStep = -1;
-  setTimeout(advanceTutorial, 1400);
+  setTimeout(advanceTutorial, 600);
 }
 
 function advanceTutorial(){
@@ -7725,7 +7743,7 @@ function showItemTooltip(tile, x, y){
   if(top < 8) top = y + 24;
   el.style.left = left + "px"; el.style.top = top + "px";
   setTimeout(()=>el.classList.add("show"), 10);
-  vibrate(8);
+  vibrate(14);
 }
 function hideItemTooltip(){
   const el = document.getElementById("item-tooltip");

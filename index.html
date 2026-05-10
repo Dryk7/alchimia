@@ -113,13 +113,21 @@ header{
   position:relative; z-index:5;
   padding:8px 12px 6px;
   display:grid;
-  grid-template-columns:auto 1fr auto;
-  gap:8px;
+  grid-template-columns:auto auto 1fr auto;
+  gap:6px;
   align-items:center;
   border-bottom:1px solid var(--gold-dark);
   background:linear-gradient(180deg, rgba(20,14,18,.96), rgba(20,14,18,.6));
   box-shadow:0 8px 20px -10px #000;
 }
+#menu-toggle{
+  background:transparent; border:none; padding:4px;
+  cursor:pointer;
+  color:var(--gold);
+  display:flex; align-items:center; justify-content:center;
+}
+#menu-toggle:hover, #menu-toggle:active{color:var(--gold-bright)}
+#menu-toggle svg{width:22px; height:22px}
 .brand{display:flex; align-items:center; gap:8px}
 .brand .fleur{width:18px; height:18px; color:var(--gold); flex-shrink:0; opacity:.9}
 .brand .name{
@@ -1250,6 +1258,149 @@ header{
 .sanctum-row.unaff .sanctum-buy{background:#3a2818; color:var(--gold-dark)}
 .sanctum-owned{color:var(--gold-bright); letter-spacing:.32em; opacity:.85}
 
+/* ================ MENU + GRIMOIRE + SETTINGS ================ */
+.menu-card{ max-width:380px }
+.menu-list{ display:flex; flex-direction:column; gap:6px }
+.menu-item{
+  display:flex; align-items:center; gap:12px;
+  padding:10px 12px;
+  background:linear-gradient(180deg, #2a1f1a, #1a1410);
+  border:1px solid var(--gold-dark);
+  cursor:pointer; text-align:left;
+  font-family:"IM Fell English", serif;
+  color:var(--parchment);
+  transition:border-color .2s, box-shadow .2s, transform .1s;
+  position:relative;
+}
+.menu-item::before, .menu-item::after{
+  content:""; position:absolute; width:5px; height:5px;
+  border:1px solid var(--gold); pointer-events:none;
+}
+.menu-item::before{top:-1px; left:-1px; border-right:none; border-bottom:none}
+.menu-item::after{bottom:-1px; right:-1px; border-left:none; border-top:none}
+.menu-item:hover, .menu-item:active{
+  border-color:var(--gold-bright);
+  box-shadow:0 0 14px var(--gold-glow);
+  transform:translateY(-1px);
+}
+.menu-item svg{width:26px; height:26px; flex-shrink:0; color:var(--gold-bright)}
+.menu-item .mi-meta{flex:1; min-width:0}
+.menu-item .mi-title{
+  font-family:"Cinzel", serif; font-weight:700;
+  letter-spacing:.18em; font-size:13px;
+  color:var(--gold-bright);
+  text-transform:uppercase;
+  margin-bottom:1px;
+}
+.menu-item .mi-sub{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:12px; color:var(--parchment-2);
+}
+
+/* Grimoire / Settings sections */
+.grimoire-body, .settings-body, .credits-body{ padding-right:6px }
+.grim-sec{
+  margin-bottom:14px;
+  padding-bottom:12px;
+  border-bottom:1px dashed rgba(154,120,66,.3);
+}
+.grim-sec:last-child{border-bottom:none}
+.grim-sec h3{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:11px; letter-spacing:.22em;
+  color:var(--gold-bright);
+  text-transform:uppercase;
+  margin:0 0 6px;
+}
+.grim-sec p{
+  font-family:"Cormorant Garamond", serif;
+  font-size:14px; color:var(--parchment-2);
+  margin:0 0 6px;
+  line-height:1.4;
+}
+.grim-sec p:last-child{margin-bottom:0}
+.grim-sec p strong{color:var(--gold-bright); font-weight:700; font-style:normal}
+.grim-sec p em{font-style:italic}
+.grim-sec p a{color:var(--gold-light); text-decoration:underline}
+
+/* Settings rows */
+.setting-row{
+  display:flex; align-items:center; gap:10px;
+  margin-bottom:6px;
+}
+.set-lbl{
+  flex:1;
+  font-family:"Cormorant Garamond", serif;
+  color:var(--parchment-2); font-size:13px;
+}
+.set-val{
+  font-family:"VT323", monospace; color:var(--gold-bright);
+  font-size:14px; min-width:42px; text-align:right;
+}
+.set-help{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:12px; color:var(--parchment-3);
+  margin:0 0 6px;
+  line-height:1.35;
+}
+.setting-row input[type="range"]{
+  flex:1; max-width:140px;
+  -webkit-appearance:none; appearance:none;
+  height:3px;
+  background:linear-gradient(90deg, var(--gold-dark), var(--gold-bright));
+  border-radius:2px;
+  outline:none;
+}
+.setting-row input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none; appearance:none;
+  width:14px; height:14px; border-radius:50%;
+  background:var(--gold-bright);
+  border:1px solid var(--gold-dark);
+  cursor:pointer;
+  box-shadow:0 0 8px var(--gold-glow);
+}
+.setting-row input[type="range"]::-moz-range-thumb{
+  width:14px; height:14px; border-radius:50%;
+  background:var(--gold-bright);
+  border:1px solid var(--gold-dark);
+  cursor:pointer;
+}
+.set-toggle{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:10px; letter-spacing:.2em;
+  padding:5px 12px;
+  cursor:pointer;
+  border:1px solid var(--gold-dark);
+  background:#0a0608; color:var(--gold-light);
+  text-transform:uppercase;
+}
+.set-toggle[data-on="1"]{
+  background:linear-gradient(180deg, var(--gold-bright), var(--gold));
+  color:#000; border-color:var(--gold-bright);
+}
+.set-btn{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:10px; letter-spacing:.18em;
+  padding:7px 12px;
+  cursor:pointer;
+  background:#1a1218; color:var(--gold-light);
+  border:1px solid var(--gold-dark);
+  text-transform:uppercase;
+  flex:1;
+  transition:border-color .2s, color .2s;
+}
+.set-btn:hover{border-color:var(--gold-bright); color:var(--gold-bright)}
+.set-btn.danger{
+  background:linear-gradient(180deg, #2a0e0e, #1a0606);
+  color:#c84a2a;
+  border-color:#8a2a2a;
+  width:100%;
+}
+.set-btn.danger:hover{
+  background:linear-gradient(180deg, #c84a2a, #8a2a2a);
+  color:#fff; border-color:#fff;
+}
+
 /* ================ MODAL ================ */
 .modal{
   position:fixed; inset:0; z-index:85;
@@ -1563,6 +1714,11 @@ header{
 <div id="stage">
 
   <header>
+    <button id="menu-toggle" title="Menu" aria-label="Menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <path d="M5 7 H19 M5 12 H19 M5 17 H19"/>
+      </svg>
+    </button>
     <div class="brand">
       <svg class="fleur" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
         <path d="M12 3 c-2 3 -2 5 0 7 c-2 -2 -5 -2 -7 0 c3 0 5 2 7 4 c2 -2 4 -4 7 -4 c-2 -2 -5 -2 -7 0 c2 -2 2 -4 0 -7z"/>
@@ -1684,6 +1840,199 @@ header{
     <path d="M16 8 q3 4 0 8 M19 6 q5 6 0 12"/>
   </svg>
 </button>
+
+<!-- MENU principal -->
+<div id="menu-modal" class="modal">
+  <div class="modal-card menu-card">
+    <div class="modal-close" id="menu-close" aria-label="Fermer">×</div>
+    <h2>MENU</h2>
+    <div class="modal-subtitle">— le pas de la porte —</div>
+    <div class="divider">
+      <svg viewBox="0 0 200 16" fill="none" stroke="currentColor" stroke-width=".8">
+        <path d="M0 8 H80 M120 8 H200"/>
+        <path d="M88 8 q4 -6 8 0 q4 6 8 0"/>
+        <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="menu-list">
+      <button class="menu-item" data-target="grimoire-modal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <rect x="4" y="3" width="16" height="18" rx="1"/>
+          <path d="M12 3 v18"/>
+          <path d="M7 9 h3 M14 9 h3 M7 13 h3 M14 13 h3 M7 17 h3 M14 17 h3"/>
+        </svg>
+        <div class="mi-meta"><div class="mi-title">Le Grimoire</div><div class="mi-sub">comprendre les voies, les économies, les rituels</div></div>
+      </button>
+      <button class="menu-item" data-target="settings-modal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <circle cx="12" cy="12" r="3.5"/>
+          <path d="M12 2 v3 M12 19 v3 M2 12 h3 M19 12 h3 M4.5 4.5 l2 2 M17.5 17.5 l2 2 M19.5 4.5 l-2 2 M6.5 17.5 l-2 2"/>
+        </svg>
+        <div class="mi-meta"><div class="mi-title">Paramètres</div><div class="mi-sub">son, vibration, effacer la sauvegarde</div></div>
+      </button>
+      <button class="menu-item" data-target="credits-modal">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M12 8 v.5 M12 11 v6"/>
+        </svg>
+        <div class="mi-meta"><div class="mi-title">Crédits</div><div class="mi-sub">artistes, musique, attributions</div></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- LE GRIMOIRE - manuel du jeu -->
+<div id="grimoire-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-close" id="grimoire-close" aria-label="Fermer">×</div>
+    <h2>LE GRIMOIRE</h2>
+    <div class="modal-subtitle">— manuel de l'alchimiste —</div>
+    <div class="divider">
+      <svg viewBox="0 0 200 16" fill="none" stroke="currentColor" stroke-width=".8">
+        <path d="M0 8 H80 M120 8 H200"/>
+        <path d="M88 8 q4 -6 8 0 q4 6 8 0"/>
+        <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="stats-body grimoire-body">
+      <section class="grim-sec">
+        <h3>Le But</h3>
+        <p>Tu es l'alchimiste. Trois voies te sont ouvertes : la <em style="color:var(--plant-2)">Plante</em>, la <em style="color:var(--mineral-2)">Pierre</em>, l'<em style="color:var(--essence-2)">Essence</em>. Chaque voie monte en huit paliers, du plus humble (Graine, Caillou, Brume) au plus haut (Yggdra, Eternium, Singularité). Ton œuvre est de gravir ces voies, et — si l'art est juste — de les unir en un Grand Œuvre qui dépasse leurs sommes.</p>
+      </section>
+      <section class="grim-sec">
+        <h3>Comment Jouer</h3>
+        <p><strong>Invoque</strong> en touchant un cauldron en bas. <strong>Fusionne</strong> en glissant une tuile sur une jumelle (même voie, même palier) — le palier monte d'un cran. Répète. À chaque palier ultime atteint pour la première fois, le Grand Œuvre frappe : cinématique, halo, sub-bass.</p>
+        <p>Maintenir une tuile longtemps affiche son nom et sa lore. Tape n'importe où dehors un panneau ouvert pour le fermer.</p>
+      </section>
+      <section class="grim-sec">
+        <h3>Les Trois Économies</h3>
+        <p><strong>L'Étincelle</strong> (gemme rouge) — le coût de toute invocation. Elle se régénère seule. Plus tu progresses, plus la coupe s'élargit.</p>
+        <p><strong>Les Couronnes</strong> (sceau d'or) — le revenu. Elles arrivent par les fusions hautes (V+), les quêtes, les évènements. Elles débloquent l'Athanor (500c), accélèrent les cauldrons, étendent l'étincelle.</p>
+        <p><strong>Les Étoiles ★</strong> — la monnaie permanente, gagnée seulement par <em>Transmutation</em>. Elles s'achètent au Sanctum contre des bonus durables.</p>
+      </section>
+      <section class="grim-sec">
+        <h3>Le Combo</h3>
+        <p>Fusionner deux fois en moins de 1.8 secondes déclenche un combo (×1.5, ×2, ×3, ×4 d'or selon la longueur). Une chaîne de cinq fusions rapides paie autant que dix lentes. Le Diadème de l'Œuvre double cette fenêtre.</p>
+      </section>
+      <section class="grim-sec">
+        <h3>L'Athanor</h3>
+        <p>Le four cubique, débloqué pour 500 couronnes. Il <strong>purifie trois</strong> items du même palier en <strong>un seul</strong> du palier supérieur, contre des couronnes (coût en escalier). Indispensable pour avancer quand le board sature.</p>
+      </section>
+      <section class="grim-sec">
+        <h3>Le Grand Œuvre</h3>
+        <p>L'atelier des Catalyseurs. Une <em>recette</em> consomme un item de chaque voie au même palier (par exemple : un Bourgeon, un Quartz, une Étincelle pour le Sceau du Concord). Le résultat est un <strong>catalyseur permanent</strong> qui modifie le jeu : +10% d'or, auto-spawn, cooldowns réduits, étincelle plus large. Six catalyseurs au total. Un seul exemplaire par run.</p>
+        <p>C'est <strong>la</strong> raison de pousser tes trois voies en parallèle : elles doivent atteindre un palier commun pour s'unir.</p>
+      </section>
+      <section class="grim-sec">
+        <h3>La Transmutation (Prestige)</h3>
+        <p>Quand au moins une voie atteint le palier <strong>VI</strong>, la <em>Transmutatio</em> s'éveille. Elle réinitialise ton plateau, tes couronnes, tes générateurs et tes quêtes — mais te grave un nombre d'<strong>Étoiles</strong> proportionnel à ton parcours, et conserve ton Codex et tes Hauts Faits. Plus la fin de partie est haute, plus la moisson d'étoiles est abondante.</p>
+      </section>
+      <section class="grim-sec">
+        <h3>Le Sanctum</h3>
+        <p>Sept upgrades permanents s'achètent contre les Étoiles : régénération, capacité d'étincelle, cooldowns, or des quêtes, fulgurance, anima, et le <em>Spiritus Iungens</em> qui auto-fusionne les paires basses du board. Ces effets persistent à travers toutes les transmutations.</p>
+      </section>
+      <section class="grim-sec">
+        <h3>Évènements & Quêtes</h3>
+        <p>Toutes les 2-3 minutes environ, un évènement frappe le cabinet : Pluie d'Étoiles, Conjonction, Marée d'Esprit, Souffle d'Or, Comète, Nuit Profonde, Sourire de Lune, Brume Noire, Marchand Errant. Ils durent quelques secondes ou s'inscrivent à droite avec leur compteur.</p>
+        <p>Le parchemin de droite recense les quêtes — atteindre tel palier, fusionner X fois. Récompense en couronnes. Le bouton <strong>Tout Réclamer</strong> vide le carnet d'un coup quand plusieurs sont prêtes.</p>
+      </section>
+      <section class="grim-sec">
+        <h3>Conseil de l'Adepte</h3>
+        <p>Vise au moins <strong>palier I</strong> sur les trois voies dès l'ouverture du cabinet : le Sceau du Concord (10% d'or permanent) ne coûte que trois items basiques et compose le reste de ta partie.</p>
+        <p>Ne purifie pas tes T0 par l'Athanor — fusionne-les à la main. Garde l'Athanor pour les paliers IV+ qu'il devient pénible d'attendre.</p>
+        <p>La Transmutation n'a de sens qu'après avoir bu profondément à une voie — vise au moins palier VI sur les trois avant la première remise à zéro.</p>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- PARAMÈTRES -->
+<div id="settings-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-close" id="settings-close" aria-label="Fermer">×</div>
+    <h2>PARAMÈTRES</h2>
+    <div class="modal-subtitle">— l'établi —</div>
+    <div class="divider">
+      <svg viewBox="0 0 200 16" fill="none" stroke="currentColor" stroke-width=".8">
+        <path d="M0 8 H80 M120 8 H200"/>
+        <path d="M88 8 q4 -6 8 0 q4 6 8 0"/>
+        <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="stats-body settings-body">
+      <section class="grim-sec">
+        <h3>Son</h3>
+        <div class="setting-row">
+          <span class="set-lbl">Musique d'ambiance</span>
+          <input type="range" id="set-bgm-vol" min="0" max="100" value="55" step="5">
+          <span class="set-val" id="set-bgm-val">55%</span>
+        </div>
+        <div class="setting-row">
+          <span class="set-lbl">Effets sonores (master)</span>
+          <input type="range" id="set-sfx-vol" min="0" max="100" value="35" step="5">
+          <span class="set-val" id="set-sfx-val">35%</span>
+        </div>
+      </section>
+      <section class="grim-sec">
+        <h3>Haptique</h3>
+        <div class="setting-row">
+          <span class="set-lbl">Vibration mobile</span>
+          <button class="set-toggle" id="set-vib" data-on="1">Activé</button>
+        </div>
+      </section>
+      <section class="grim-sec">
+        <h3>Sauvegarde</h3>
+        <p class="set-help">Ta progression est gardée localement (LocalStorage). Tu peux l'exporter sous forme de texte, ou tout effacer.</p>
+        <div class="setting-row">
+          <button class="set-btn" id="set-export">Exporter</button>
+          <button class="set-btn" id="set-import">Importer</button>
+        </div>
+        <div class="setting-row" style="margin-top:8px">
+          <button class="set-btn danger" id="set-reset">Effacer toute la sauvegarde</button>
+        </div>
+      </section>
+      <section class="grim-sec">
+        <h3>À propos</h3>
+        <p class="set-help">Alchimia v3 — single-HTML, mobile-first, jouable hors ligne après la première visite.</p>
+        <p class="set-help">Bande sonore : <em>Forgotten Tomb Ambience</em> par <strong>kindland</strong> — CC0 — opengameart.org</p>
+      </section>
+    </div>
+  </div>
+</div>
+
+<!-- CRÉDITS -->
+<div id="credits-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-close" id="credits-close" aria-label="Fermer">×</div>
+    <h2>CRÉDITS</h2>
+    <div class="modal-subtitle">— ceux qui ont prêté la matière —</div>
+    <div class="divider">
+      <svg viewBox="0 0 200 16" fill="none" stroke="currentColor" stroke-width=".8">
+        <path d="M0 8 H80 M120 8 H200"/>
+        <path d="M88 8 q4 -6 8 0 q4 6 8 0"/>
+        <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="stats-body credits-body">
+      <section class="grim-sec">
+        <h3>Conception &amp; Code</h3>
+        <p>Florent <em>Dryk</em> Rouxel — direction artistique, mécaniques, équilibrage.<br>Co-auteur : Claude (Anthropic) — implémentation, sprites pixel art, synthèse audio.</p>
+      </section>
+      <section class="grim-sec">
+        <h3>Bande sonore</h3>
+        <p><strong>Forgotten Tomb Ambience</strong> — <em>kindland</em><br>Licence : CC0 (domaine public)<br><a href="https://opengameart.org/content/forgoten-tomb-ambience" target="_blank" rel="noopener">opengameart.org</a></p>
+      </section>
+      <section class="grim-sec">
+        <h3>Typographie</h3>
+        <p>Cinzel — Natanael Gama (OFL)<br>Cormorant Garamond — Christian Thalmann (OFL)<br>IM Fell English — Igino Marini (OFL)<br>VT323 — Peter Hunt (OFL)</p>
+      </section>
+      <section class="grim-sec">
+        <h3>Inspirations</h3>
+        <p>Les manuscrits alchimiques du XVII<sup>e</sup>, l'Atalanta Fugiens de Maier, le Mutus Liber.<br>Les jeux idle/merge du début 2020 pour la mécanique de base, mais la profondeur cross-voies est de notre fait.</p>
+      </section>
+    </div>
+  </div>
+</div>
 
 <!-- GRAND ŒUVRE (recettes) modal -->
 <div id="oeuvre-modal" class="modal">
@@ -4029,13 +4378,19 @@ function audioInit(){
   // Musique d'ambiance (HTMLAudioElement)
   A.bgm = document.getElementById('bgm');
   if(A.bgm){
-    A.bgm.volume = STATE.audio ? BGM_VOLUME : 0;
+    const userMul = (STATE.bgmUserVolume ?? 1);
+    A.bgm.volume = STATE.audio ? (BGM_VOLUME * userMul) : 0;
+  }
+  // Master gain pour SFX, ajusté par le slider utilisateur
+  if(A.master){
+    const sfxMul = (STATE.sfxUserVolume ?? 1);
+    A.master.gain.value = STATE.audio ? sfxMul : 0;
   }
 }
 function setBgmVolume(on){
   if(!A.bgm) return;
-  // Fade doux pour éviter les clicks
-  const target = on ? BGM_VOLUME : 0;
+  const userMul = (STATE.bgmUserVolume ?? 1);
+  const target = on ? (BGM_VOLUME * userMul) : 0;
   const start = A.bgm.volume;
   const t0 = performance.now();
   const dur = 600;
@@ -4197,6 +4552,7 @@ function sfxGrand(tier=5){
 }
 
 function vibrate(pattern){
+  if(STATE.vibrationEnabled === false) return;
   if(navigator.vibrate) try{ navigator.vibrate(pattern); }catch(e){}
 }
 
@@ -5784,7 +6140,7 @@ function boot(){
   });
   document.getElementById("audio-toggle").addEventListener("click", ()=>{
     STATE.audio = !STATE.audio;
-    if(A.master) A.master.gain.value = STATE.audio ? .35 : 0;
+    if(A.master) A.master.gain.value = STATE.audio ? (STATE.sfxUserVolume ?? .35) : 0;
     setBgmVolume(STATE.audio);
     if(STATE.audio && A.bgm && A.bgm.paused) bgmPlay();
     document.getElementById("audio-toggle").classList.toggle("on", STATE.audio);
@@ -5824,6 +6180,118 @@ function boot(){
   document.getElementById("transmute-modal").addEventListener("click", e=>{
     if(e.target.id === "transmute-modal") document.getElementById("transmute-modal").classList.remove("show");
   });
+  // ============ MENU + GRIMOIRE + SETTINGS + CREDITS ============
+  function openModal(id){ const m = document.getElementById(id); if(m) m.classList.add('show'); }
+  function closeModal(id){ const m = document.getElementById(id); if(m) m.classList.remove('show'); }
+  function bindModalClose(modalId, closeId){
+    const m = document.getElementById(modalId);
+    document.getElementById(closeId).addEventListener('click', ()=>m.classList.remove('show'));
+    m.addEventListener('click', e=>{ if(e.target.id === modalId) m.classList.remove('show'); });
+  }
+  document.getElementById('menu-toggle').addEventListener('click', ()=>openModal('menu-modal'));
+  bindModalClose('menu-modal','menu-close');
+  bindModalClose('grimoire-modal','grimoire-close');
+  bindModalClose('settings-modal','settings-close');
+  bindModalClose('credits-modal','credits-close');
+  // Menu items naviguent vers leurs cibles
+  document.querySelectorAll('.menu-item').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const target = btn.dataset.target;
+      closeModal('menu-modal');
+      setTimeout(()=>openModal(target), 200);
+    });
+  });
+  // Volume musique slider
+  const bgmRange = document.getElementById('set-bgm-vol');
+  const bgmVal = document.getElementById('set-bgm-val');
+  const initialBgm = parseInt(localStorage.getItem('alchimia.bgmVol') ?? 55, 10);
+  bgmRange.value = initialBgm;
+  bgmVal.textContent = initialBgm + '%';
+  STATE.bgmUserVolume = initialBgm / 100;
+  bgmRange.addEventListener('input', ()=>{
+    const v = parseInt(bgmRange.value, 10);
+    bgmVal.textContent = v + '%';
+    STATE.bgmUserVolume = v / 100;
+    if(A.bgm) A.bgm.volume = STATE.audio ? (BGM_VOLUME * STATE.bgmUserVolume) : 0;
+    localStorage.setItem('alchimia.bgmVol', v);
+  });
+  // Volume SFX (master)
+  const sfxRange = document.getElementById('set-sfx-vol');
+  const sfxVal = document.getElementById('set-sfx-val');
+  const initialSfx = parseInt(localStorage.getItem('alchimia.sfxVol') ?? 35, 10);
+  sfxRange.value = initialSfx;
+  sfxVal.textContent = initialSfx + '%';
+  STATE.sfxUserVolume = initialSfx / 100;
+  sfxRange.addEventListener('input', ()=>{
+    const v = parseInt(sfxRange.value, 10);
+    sfxVal.textContent = v + '%';
+    STATE.sfxUserVolume = v / 100;
+    if(A.master) A.master.gain.value = STATE.audio ? (.35 * STATE.sfxUserVolume / .35) : 0;
+    if(A.master && STATE.audio) A.master.gain.value = STATE.sfxUserVolume;
+    localStorage.setItem('alchimia.sfxVol', v);
+  });
+  // Vibration toggle
+  const vibBtn = document.getElementById('set-vib');
+  const initialVib = localStorage.getItem('alchimia.vibration') !== '0';
+  vibBtn.dataset.on = initialVib ? '1' : '0';
+  vibBtn.textContent = initialVib ? 'Activé' : 'Désactivé';
+  STATE.vibrationEnabled = initialVib;
+  vibBtn.addEventListener('click', ()=>{
+    const on = vibBtn.dataset.on === '1';
+    const next = !on;
+    vibBtn.dataset.on = next ? '1' : '0';
+    vibBtn.textContent = next ? 'Activé' : 'Désactivé';
+    STATE.vibrationEnabled = next;
+    localStorage.setItem('alchimia.vibration', next ? '1' : '0');
+    if(next) vibrate(20);
+  });
+  // Export / Import
+  document.getElementById('set-export').addEventListener('click', ()=>{
+    save();
+    const raw = localStorage.getItem('alchimia.save') || '{}';
+    const b64 = btoa(unescape(encodeURIComponent(raw)));
+    navigator.clipboard?.writeText(b64).then(
+      ()=>floating(window.innerWidth/2, window.innerHeight/2, "Sauvegarde copiée !", "gain"),
+      ()=>{ prompt('Copie ce texte pour sauvegarder :', b64); }
+    );
+  });
+  document.getElementById('set-import').addEventListener('click', ()=>{
+    const input = prompt('Colle ici le code de sauvegarde :');
+    if(!input) return;
+    try{
+      const raw = decodeURIComponent(escape(atob(input.trim())));
+      JSON.parse(raw); // valide
+      localStorage.setItem('alchimia.save', raw);
+      floating(window.innerWidth/2, window.innerHeight/2, "Sauvegarde importée — rechargement…", "gain");
+      setTimeout(()=>window.location.reload(), 800);
+    }catch(e){ floating(window.innerWidth/2, window.innerHeight/2, "Code invalide", "lose"); }
+  });
+  // Reset complet (avec double confirmation)
+  document.getElementById('set-reset').addEventListener('click', ()=>{
+    const btn = document.getElementById('set-reset');
+    if(btn.dataset.armed !== '1'){
+      btn.dataset.armed = '1';
+      btn.textContent = 'CONFIRMER — TOUT EFFACER';
+      setTimeout(()=>{
+        if(btn.dataset.armed === '1'){
+          btn.dataset.armed = '0';
+          btn.textContent = 'Effacer toute la sauvegarde';
+        }
+      }, 5000);
+      return;
+    }
+    // Confirmé : tout reset
+    localStorage.removeItem('alchimia.save');
+    localStorage.removeItem('alchimia.tutorialDone');
+    localStorage.removeItem('alchimia.bgmVol');
+    localStorage.removeItem('alchimia.sfxVol');
+    localStorage.removeItem('alchimia.vibration');
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()));
+    }
+    window.location.reload();
+  });
+
   document.getElementById("oeuvre-toggle").addEventListener("click", openOeuvre);
   document.getElementById("oeuvre-close").addEventListener("click", ()=>{
     document.getElementById("oeuvre-modal").classList.remove("show");

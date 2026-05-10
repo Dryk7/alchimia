@@ -74,10 +74,14 @@ body{
 #stage{
   position:fixed; inset:0;
   background:
-    radial-gradient(ellipse 50% 30% at 18% 4%, rgba(232,160,80,.13), transparent 60%),
-    radial-gradient(ellipse 50% 30% at 82% 4%, rgba(232,160,80,.13), transparent 60%),
-    radial-gradient(ellipse 80% 60% at 50% 50%, rgba(120,80,40,.18), transparent 70%),
-    radial-gradient(ellipse 110% 90% at 50% 50%, transparent 40%, rgba(0,0,0,.78) 100%),
+    /* Vignette FORTE — bord noir profond */
+    radial-gradient(ellipse 90% 70% at 50% 50%, transparent 30%, rgba(0,0,0,.55) 60%, rgba(0,0,0,.92) 100%),
+    /* Halos chauds des deux bougies */
+    radial-gradient(ellipse 55% 32% at 18% 4%, rgba(232,160,80,.16), transparent 60%),
+    radial-gradient(ellipse 55% 32% at 82% 4%, rgba(232,160,80,.16), transparent 60%),
+    /* Lueur centrale très douce */
+    radial-gradient(ellipse 80% 60% at 50% 50%, rgba(150,90,50,.14), transparent 70%),
+    /* Veines du bois */
     repeating-linear-gradient(91deg,
       #1a0f0a 0px, #1a0f0a 2px,
       #150c08 2px, #150c08 4px,
@@ -86,6 +90,14 @@ body{
     #120906;
   display:flex; flex-direction:column;
   transition:filter 1.2s ease;
+}
+/* Sigils alchimiques en filigrane sur le stage (très opaques) */
+#stage::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='800'><g fill='none' stroke='%23c9a25a' stroke-width='1.2' opacity='.025'><polygon points='160,80 110,180 210,180'/><line x1='160' y1='180' x2='160' y2='240'/><line x1='140' y1='220' x2='180' y2='220'/><circle cx='160' cy='150' r='90'/><circle cx='600' cy='620' r='70'/><line x1='540' y1='620' x2='660' y2='620'/><polygon points='600,560 540,690 660,690'/><circle cx='200' cy='640' r='55'/><circle cx='200' cy='640' r='2.5' fill='%23c9a25a'/><polygon points='620,150 580,230 660,230' transform='rotate(180 620 190)'/><line x1='580' y1='185' x2='660' y2='185'/></g></svg>");
+  background-repeat:no-repeat; background-size:cover; background-position:center;
+  z-index:1;
 }
 /* Phases de fond selon palier max global atteint */
 #stage[data-phase="0"]{filter:none}
@@ -128,11 +140,13 @@ header{
 }
 #menu-toggle:hover, #menu-toggle:active{color:var(--gold-bright)}
 #menu-toggle svg{width:22px; height:22px}
-.brand{display:flex; align-items:center; gap:8px}
-.brand .fleur{width:18px; height:18px; color:var(--gold); flex-shrink:0; opacity:.9}
+.brand{display:flex; align-items:center; gap:10px; position:relative}
+.brand .fleur{width:24px; height:24px; color:var(--gold-light); flex-shrink:0; filter:drop-shadow(0 0 4px var(--gold-glow))}
+.brand .fleur g{transform-origin:center; animation:rotateOuro 80s linear infinite}
+.brand .name-wrap{position:relative; padding:0 4px}
 .brand .name{
   font-family:"Cinzel", serif; font-weight:900;
-  letter-spacing:.20em; font-size:15px;
+  letter-spacing:.22em; font-size:15px;
   color:var(--gold-bright);
   text-shadow:0 0 12px var(--gold-glow), 0 1px 0 #000;
   line-height:1;
@@ -143,28 +157,50 @@ header{
   letter-spacing:.28em; color:var(--gold); opacity:.7;
   margin-top:2px;
 }
+/* Soulignage typographique du logo : trait + sceaux aux extrémités */
+.brand .name-wrap::before{
+  content:""; position:absolute; left:0; right:0; bottom:-2px; height:1px;
+  background:linear-gradient(90deg, transparent, var(--gold) 15%, var(--gold) 85%, transparent);
+  opacity:.55;
+}
+.brand .name-wrap::after{
+  content:""; position:absolute; left:50%; bottom:-5px;
+  width:4px; height:4px; background:var(--gold-light);
+  transform:translateX(-50%) rotate(45deg);
+  box-shadow:0 0 4px var(--gold-glow);
+}
 
 .stats{display:flex; gap:8px; justify-content:flex-end; align-items:center}
 .stat{
   display:flex; align-items:center; gap:5px;
-  padding:4px 8px;
-  background:linear-gradient(180deg, #1a1014, #0e0708);
-  border:1px solid var(--gold-dark);
-  border-radius:2px;
+  padding:5px 10px 5px 8px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(232,200,120,.10), transparent 70%),
+    linear-gradient(180deg, #2a1f1a, #0e0708);
+  border:1px solid var(--gold);
+  border-radius:0;
   font-family:"VT323", monospace;
   font-size:18px; line-height:1;
   color:var(--gold-bright);
   text-shadow:0 0 6px var(--gold-glow);
   min-width:70px;
   position:relative;
+  box-shadow:inset 0 0 8px rgba(0,0,0,.6), 0 0 6px rgba(232,200,120,.08);
 }
-.stat::before, .stat::after{
-  content:""; position:absolute; width:5px; height:5px;
-  border:1px solid var(--gold);
+/* Cartouche : 4 picots aux coins + double trait intérieur */
+.stat::before{
+  content:""; position:absolute; inset:2px;
+  border:1px solid var(--gold-dark);
+  pointer-events:none;
+  opacity:.7;
 }
-.stat::before{top:-1px; left:-1px; border-right:none; border-bottom:none}
-.stat::after{bottom:-1px; right:-1px; border-left:none; border-top:none}
-.stat .icon{width:16px; height:16px; display:inline-block; flex-shrink:0}
+.stat::after{
+  content:""; position:absolute; left:50%; top:-3px;
+  width:4px; height:4px; background:var(--gold-light);
+  transform:translateX(-50%) rotate(45deg);
+  box-shadow:0 0 4px var(--gold-glow);
+}
+.stat .icon{width:16px; height:16px; display:inline-block; flex-shrink:0; filter:drop-shadow(0 0 3px currentColor)}
 
 /* ================ GAME ================ */
 #play{
@@ -186,31 +222,36 @@ header{
 #grid-frame{
   position:relative;
   background:
-    radial-gradient(ellipse 70% 50% at 50% 50%, rgba(232,200,120,.07), transparent 70%),
-    linear-gradient(180deg, #1a1218, #0d090c);
-  border:2px solid var(--gold-dark);
-  border-radius:3px;
+    /* Texture de pierre/parchemin sous la grille */
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2'/><feColorMatrix values='0 0 0 0 0.55  0 0 0 0 0.43  0 0 0 0 0.25  0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
+    radial-gradient(ellipse 70% 50% at 50% 50%, rgba(232,200,120,.09), transparent 70%),
+    linear-gradient(180deg, #1d1418, #0d090c);
+  border:1px solid var(--gold-dark);
+  border-radius:2px;
   padding:8px;
   width:min(94vw, calc((100vh - 280px) * 5 / 6));
   aspect-ratio: 5 / 6;
   max-width:520px;
   box-shadow:
-    inset 0 0 30px rgba(0,0,0,.7),
-    inset 0 0 0 1px rgba(232,200,120,.08),
+    inset 0 0 40px rgba(0,0,0,.85),
+    inset 0 0 0 1px rgba(232,200,120,.10),
+    inset 0 0 0 3px rgba(10,7,9,.85),
+    inset 0 0 0 4px rgba(154,120,66,.4),
     0 0 0 1px var(--ink),
-    0 0 0 2px var(--gold-dark),
-    0 10px 40px rgba(0,0,0,.6);
+    0 0 0 2px var(--gold),
+    0 0 24px rgba(232,200,120,.12),
+    0 12px 50px rgba(0,0,0,.75);
 }
 /* Coins ornementés baroques (SVG décoratif) */
 .frame-corner{
-  position:absolute; width:22px; height:22px;
+  position:absolute; width:34px; height:34px;
   color:var(--gold); pointer-events:none;
   filter:drop-shadow(0 0 4px var(--gold-glow));
 }
-.frame-corner.tl{top:-9px; left:-9px}
-.frame-corner.tr{top:-9px; right:-9px; transform:scaleX(-1)}
-.frame-corner.bl{bottom:-9px; left:-9px; transform:scaleY(-1)}
-.frame-corner.br{bottom:-9px; right:-9px; transform:scale(-1,-1)}
+.frame-corner.tl{top:-13px; left:-13px}
+.frame-corner.tr{top:-13px; right:-13px; transform:scaleX(-1)}
+.frame-corner.bl{bottom:-13px; left:-13px; transform:scaleY(-1)}
+.frame-corner.br{bottom:-13px; right:-13px; transform:scale(-1,-1)}
 
 #grid{
   display:grid;
@@ -222,11 +263,20 @@ header{
   position:relative;
   aspect-ratio:1/1;
   background:
-    radial-gradient(ellipse at 50% 30%, rgba(232,200,120,.04), transparent 70%),
-    linear-gradient(180deg, #0a0608, #050304);
-  border:1px solid #2a1f24;
-  border-radius:2px;
-  box-shadow:inset 0 1px 0 rgba(232,200,120,.05), inset 0 -1px 2px rgba(0,0,0,.5);
+    radial-gradient(ellipse at 50% 30%, rgba(232,200,120,.06), transparent 65%),
+    linear-gradient(180deg, #0e090b 0%, #060304 100%);
+  border:1px solid rgba(154,120,66,.18);
+  border-radius:1px;
+  box-shadow:
+    inset 0 1px 0 rgba(232,200,120,.05),
+    inset 0 -1px 2px rgba(0,0,0,.5),
+    inset 0 0 18px rgba(0,0,0,.6);
+}
+/* Subtil cadre intérieur sur les cellules : trait or fin */
+.cell::before{
+  content:""; position:absolute; inset:2px;
+  border:1px solid rgba(154,120,66,.08);
+  pointer-events:none; border-radius:1px;
 }
 .cell.drop{
   border-color:var(--gold-bright);
@@ -474,23 +524,34 @@ header{
 
 .drawer h2{
   font-family:"Cinzel", serif; font-weight:900;
-  letter-spacing:.20em; font-size:14px;
+  letter-spacing:.32em; font-size:16px;
   color:var(--gold-bright); margin:0 0 4px;
   text-align:center;
-  text-shadow:0 0 12px var(--gold-glow);
+  text-shadow:0 0 14px var(--gold-glow), 0 1px 0 #000;
+  position:relative;
+  padding:0 28px;
 }
+.drawer h2::before, .drawer h2::after{
+  content:""; position:absolute; top:50%;
+  width:6px; height:6px; background:var(--gold-light);
+  transform:translateY(-50%) rotate(45deg);
+  box-shadow:0 0 4px var(--gold-glow);
+}
+.drawer h2::before{left:6px}
+.drawer h2::after{right:6px}
+
 .drawer .subtitle{
   font-family:"Cormorant Garamond", serif; font-style:italic;
-  font-size:12px; color:var(--gold); opacity:.75;
+  font-size:12px; color:var(--gold); opacity:.85;
   text-align:center; margin-bottom:8px;
-  letter-spacing:.18em;
+  letter-spacing:.22em;
 }
 .drawer .divider{
-  height:18px; margin:8px 0;
+  height:22px; margin:10px 0;
   display:flex; align-items:center; justify-content:center;
-  color:var(--gold); opacity:.7;
+  color:var(--gold-light); opacity:.85;
 }
-.drawer .divider svg{width:120px; height:14px}
+.drawer .divider svg{width:200px; height:18px; filter:drop-shadow(0 0 4px var(--gold-glow))}
 .drawer-body{flex:1; overflow-y:auto; padding-right:4px}
 .drawer-body::-webkit-scrollbar{width:4px}
 .drawer-body::-webkit-scrollbar-thumb{background:var(--gold-dark); border-radius:2px}
@@ -1297,6 +1358,50 @@ header{
   font-size:12px; color:var(--parchment-2);
 }
 
+/* Épigraphe en exergue du Grimoire */
+.epigraph{
+  margin:0 0 14px;
+  padding:8px 0 12px;
+  text-align:center;
+  border-bottom:1px solid var(--gold-dark);
+  position:relative;
+}
+.epigraph::after{
+  content:""; position:absolute; left:50%; bottom:-3px;
+  width:5px; height:5px; background:var(--gold);
+  transform:translateX(-50%) rotate(45deg);
+}
+.epigraph .epi-text{
+  display:block;
+  font-family:"Cormorant Garamond", serif;
+  font-style:italic; font-size:18px;
+  color:var(--gold-light);
+  letter-spacing:.03em;
+  text-shadow:0 0 8px var(--gold-glow);
+}
+.epigraph .epi-attr{
+  display:block;
+  font-family:"Cinzel", serif; font-weight:500;
+  font-size:9px; letter-spacing:.34em;
+  color:var(--gold); opacity:.7;
+  margin-top:6px;
+  text-transform:uppercase;
+}
+
+/* Lettrines enluminées */
+.dropcap{
+  float:left;
+  font-family:"Cinzel", serif; font-weight:900;
+  font-size:42px; line-height:.85;
+  padding:4px 6px 0 0;
+  margin:2px 6px 0 0;
+  color:var(--gold-bright);
+  text-shadow:0 0 12px var(--gold-glow), 0 1px 0 #000;
+  background:
+    radial-gradient(ellipse at 30% 30%, rgba(232,200,120,.15), transparent 70%);
+}
+.dropcap::first-letter{font-style:normal}
+
 /* Grimoire / Settings sections */
 .grimoire-body, .settings-body, .credits-body{ padding-right:6px }
 .grim-sec{
@@ -1310,7 +1415,24 @@ header{
   font-size:11px; letter-spacing:.22em;
   color:var(--gold-bright);
   text-transform:uppercase;
-  margin:0 0 6px;
+  margin:0 0 8px;
+  position:relative;
+  padding-left:18px;
+  text-shadow:0 0 6px var(--gold-glow);
+}
+/* Petit losange devant chaque titre de section du grimoire */
+.grim-sec h3::before{
+  content:""; position:absolute; left:0; top:50%;
+  width:7px; height:7px;
+  background:var(--gold);
+  transform:translateY(-50%) rotate(45deg);
+  box-shadow:0 0 5px var(--gold-glow);
+}
+/* Mini-trait après le titre */
+.grim-sec h3::after{
+  content:""; position:absolute; left:18px; right:0; bottom:-3px;
+  height:1px;
+  background:linear-gradient(90deg, var(--gold-dark), transparent);
 }
 .grim-sec p{
   font-family:"Cormorant Garamond", serif;
@@ -1415,14 +1537,21 @@ header{
   position:relative;
   width:min(94vw, 460px); max-height:85vh;
   background:
+    /* Sigil alchimique en filigrane (sulfur stylisé) très subtil */
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g fill='none' stroke='%23c9a25a' stroke-width='1.2' opacity='.05'><polygon points='100,40 60,110 140,110'/><line x1='100' y1='110' x2='100' y2='160'/><line x1='80' y1='140' x2='120' y2='140'/><circle cx='100' cy='100' r='80'/></g></svg>") center/240px no-repeat,
     radial-gradient(ellipse 60% 30% at 50% 0%, rgba(232,160,80,.10), transparent 60%),
+    radial-gradient(ellipse 80% 100% at 50% 50%, rgba(40,28,32,.6), transparent 80%),
     linear-gradient(180deg, #1a1218, #0a0608);
   border:1px solid var(--gold-bright);
   padding:14px 14px 16px;
   display:flex; flex-direction:column;
-  box-shadow:0 0 40px var(--gold-glow), 0 14px 60px rgba(0,0,0,.8);
+  box-shadow:0 0 40px var(--gold-glow), 0 14px 60px rgba(0,0,0,.85);
   transform:scale(.96) translateY(8px);
   transition:transform .35s cubic-bezier(.2,.9,.2,1.2);
+}
+/* Filigrane intérieur de la modal : double border with gold inset */
+.modal-card{
+  border-image: linear-gradient(135deg, var(--gold-bright) 0%, var(--gold) 50%, var(--gold-bright) 100%) 1;
 }
 .modal.show .modal-card{transform:scale(1) translateY(0)}
 .modal-card::before, .modal-card::after,
@@ -1434,23 +1563,35 @@ header{
 .modal-card::after{bottom:-1.5px; right:-1.5px; border-left:none; border-top:none}
 .modal-card h2{
   font-family:"Cinzel", serif; font-weight:900;
-  letter-spacing:.22em; font-size:15px;
+  letter-spacing:.32em; font-size:17px;
   color:var(--gold-bright); margin:0 0 4px;
   text-align:center;
-  text-shadow:0 0 12px var(--gold-glow);
+  text-shadow:0 0 14px var(--gold-glow), 0 1px 0 #000;
+  position:relative;
+  padding:0 28px;
 }
+/* Petits triangles ornementaux flanquant le titre */
+.modal-card h2::before, .modal-card h2::after{
+  content:""; position:absolute; top:50%;
+  width:6px; height:6px; background:var(--gold-light);
+  transform:translateY(-50%) rotate(45deg);
+  box-shadow:0 0 4px var(--gold-glow);
+}
+.modal-card h2::before{left:6px}
+.modal-card h2::after{right:6px}
+
 .modal-subtitle{
   font-family:"Cormorant Garamond", serif; font-style:italic;
-  font-size:12px; color:var(--gold); opacity:.75;
+  font-size:12px; color:var(--gold); opacity:.85;
   text-align:center; margin-bottom:6px;
-  letter-spacing:.18em;
+  letter-spacing:.22em;
 }
 .modal-card .divider{
-  height:18px; margin:6px 0 8px;
+  height:22px; margin:8px 0 10px;
   display:flex; align-items:center; justify-content:center;
-  color:var(--gold); opacity:.7;
+  color:var(--gold-light); opacity:.85;
 }
-.modal-card .divider svg{width:160px; height:14px}
+.modal-card .divider svg{width:220px; height:18px; filter:drop-shadow(0 0 4px var(--gold-glow))}
 .modal-close{
   position:absolute; top:6px; right:8px;
   width:24px; height:24px; line-height:22px; text-align:center;
@@ -1720,13 +1861,25 @@ header{
       </svg>
     </button>
     <div class="brand">
-      <svg class="fleur" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
-        <path d="M12 3 c-2 3 -2 5 0 7 c-2 -2 -5 -2 -7 0 c3 0 5 2 7 4 c2 -2 4 -4 7 -4 c-2 -2 -5 -2 -7 0 c2 -2 2 -4 0 -7z"/>
-        <path d="M12 14 v6 M9 18 h6"/>
+      <!-- Mini-ouroboros signature -->
+      <svg class="fleur" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round">
+        <g>
+          <circle r="9" stroke-dasharray="2 2.5"/>
+          <circle r="9.6" stroke-width=".6" opacity=".5"/>
+          <!-- petite tête mordant -->
+          <path d="M 8 -3 q 2.5 -1 3.5 1 q -1 2 -3 1.5" fill="currentColor"/>
+          <circle cx="9.5" cy="-2" r=".5" fill="#000" stroke="none"/>
+          <!-- 4 cardinaux -->
+          <circle cx="0" cy="-9.5" r=".8" fill="currentColor" stroke="none"/>
+          <circle cx="0" cy="9.5" r=".8" fill="currentColor" stroke="none"/>
+          <circle cx="-9.5" cy="0" r=".8" fill="currentColor" stroke="none"/>
+        </g>
       </svg>
-      <div class="name">
-        ALCHIMIA
-        <small>LE CABINET DES TROIS VOIES</small>
+      <div class="name-wrap">
+        <div class="name">
+          ALCHIMIA
+          <small>LE CABINET DES TROIS VOIES</small>
+        </div>
       </div>
     </div>
     <div></div>
@@ -1766,30 +1919,64 @@ header{
   <main id="play">
     <div id="grid-wrap">
       <div id="grid-frame">
-        <!-- coins ornés baroques -->
-        <svg class="frame-corner tl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-          <path d="M2 2 H10 M2 2 V10"/>
-          <path d="M2 6 q3 0 4 -2 q1 -2 4 -2"/>
-          <path d="M6 2 q0 3 -2 4 q-2 1 -2 4"/>
-          <circle cx="6" cy="6" r="1.2" fill="currentColor"/>
+        <!-- coins baroques : arabesque florale + cabochon central + acanthe -->
+        <svg class="frame-corner tl" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
+          <!-- L extérieur épais -->
+          <path d="M3 3 H18" stroke-width="1.6"/>
+          <path d="M3 3 V18" stroke-width="1.6"/>
+          <!-- volute principale -->
+          <path d="M3 8 q5 0 7 -2 q2 -2 7 -2"/>
+          <path d="M8 3 q0 5 -2 7 q-2 2 -2 7"/>
+          <!-- vrille intérieure -->
+          <path d="M9 9 q3 -3 6 -1 q2 1 1 4 q-1 2 -3 1 q-1 -1 0 -3"/>
+          <!-- petits acanthes -->
+          <path d="M14 4 q0 2 -2 3"/>
+          <path d="M4 14 q2 0 3 -2"/>
+          <!-- cabochon doré -->
+          <circle cx="9" cy="9" r="1.6" fill="currentColor" stroke="none"/>
+          <circle cx="9" cy="9" r=".5" fill="#000" stroke="none"/>
+          <!-- pointe centrale -->
+          <circle cx="20" cy="3" r=".7" fill="currentColor" stroke="none"/>
+          <circle cx="3" cy="20" r=".7" fill="currentColor" stroke="none"/>
         </svg>
-        <svg class="frame-corner tr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-          <path d="M2 2 H10 M2 2 V10"/>
-          <path d="M2 6 q3 0 4 -2 q1 -2 4 -2"/>
-          <path d="M6 2 q0 3 -2 4 q-2 1 -2 4"/>
-          <circle cx="6" cy="6" r="1.2" fill="currentColor"/>
+        <svg class="frame-corner tr" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 3 H18" stroke-width="1.6"/>
+          <path d="M3 3 V18" stroke-width="1.6"/>
+          <path d="M3 8 q5 0 7 -2 q2 -2 7 -2"/>
+          <path d="M8 3 q0 5 -2 7 q-2 2 -2 7"/>
+          <path d="M9 9 q3 -3 6 -1 q2 1 1 4 q-1 2 -3 1 q-1 -1 0 -3"/>
+          <path d="M14 4 q0 2 -2 3"/>
+          <path d="M4 14 q2 0 3 -2"/>
+          <circle cx="9" cy="9" r="1.6" fill="currentColor" stroke="none"/>
+          <circle cx="9" cy="9" r=".5" fill="#000" stroke="none"/>
+          <circle cx="20" cy="3" r=".7" fill="currentColor" stroke="none"/>
+          <circle cx="3" cy="20" r=".7" fill="currentColor" stroke="none"/>
         </svg>
-        <svg class="frame-corner bl" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-          <path d="M2 2 H10 M2 2 V10"/>
-          <path d="M2 6 q3 0 4 -2 q1 -2 4 -2"/>
-          <path d="M6 2 q0 3 -2 4 q-2 1 -2 4"/>
-          <circle cx="6" cy="6" r="1.2" fill="currentColor"/>
+        <svg class="frame-corner bl" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 3 H18" stroke-width="1.6"/>
+          <path d="M3 3 V18" stroke-width="1.6"/>
+          <path d="M3 8 q5 0 7 -2 q2 -2 7 -2"/>
+          <path d="M8 3 q0 5 -2 7 q-2 2 -2 7"/>
+          <path d="M9 9 q3 -3 6 -1 q2 1 1 4 q-1 2 -3 1 q-1 -1 0 -3"/>
+          <path d="M14 4 q0 2 -2 3"/>
+          <path d="M4 14 q2 0 3 -2"/>
+          <circle cx="9" cy="9" r="1.6" fill="currentColor" stroke="none"/>
+          <circle cx="9" cy="9" r=".5" fill="#000" stroke="none"/>
+          <circle cx="20" cy="3" r=".7" fill="currentColor" stroke="none"/>
+          <circle cx="3" cy="20" r=".7" fill="currentColor" stroke="none"/>
         </svg>
-        <svg class="frame-corner br" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-          <path d="M2 2 H10 M2 2 V10"/>
-          <path d="M2 6 q3 0 4 -2 q1 -2 4 -2"/>
-          <path d="M6 2 q0 3 -2 4 q-2 1 -2 4"/>
-          <circle cx="6" cy="6" r="1.2" fill="currentColor"/>
+        <svg class="frame-corner br" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 3 H18" stroke-width="1.6"/>
+          <path d="M3 3 V18" stroke-width="1.6"/>
+          <path d="M3 8 q5 0 7 -2 q2 -2 7 -2"/>
+          <path d="M8 3 q0 5 -2 7 q-2 2 -2 7"/>
+          <path d="M9 9 q3 -3 6 -1 q2 1 1 4 q-1 2 -3 1 q-1 -1 0 -3"/>
+          <path d="M14 4 q0 2 -2 3"/>
+          <path d="M4 14 q2 0 3 -2"/>
+          <circle cx="9" cy="9" r="1.6" fill="currentColor" stroke="none"/>
+          <circle cx="9" cy="9" r=".5" fill="#000" stroke="none"/>
+          <circle cx="20" cy="3" r=".7" fill="currentColor" stroke="none"/>
+          <circle cx="3" cy="20" r=".7" fill="currentColor" stroke="none"/>
         </svg>
         <div id="grid"></div>
       </div>
@@ -1848,10 +2035,19 @@ header{
     <h2 style="color:#c84a2a">EFFACER ?</h2>
     <div class="modal-subtitle">— sceau brisé —</div>
     <div class="divider">
-      <svg viewBox="0 0 200 16" fill="none" stroke="currentColor" stroke-width=".8">
-        <path d="M0 8 H80 M120 8 H200"/>
-        <path d="M88 8 q4 -6 8 0 q4 6 8 0"/>
-        <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
+      <svg viewBox="0 0 240 18" fill="none" stroke="currentColor" stroke-width=".8" stroke-linecap="round" preserveAspectRatio="xMidYMid meet">
+        <path d="M2 9 q14 0 22 -2 q8 -2 16 0 q6 1.5 12 1.5 q8 0 16 -3"/>
+        <path d="M 238 9 q -14 0 -22 -2 q -8 -2 -16 0 q -6 1.5 -12 1.5 q -8 0 -16 -3"/>
+        <g transform="translate(120 9)">
+          <path d="M -10 0 q 4 -5 10 0 q -4 5 -10 0 z"/>
+          <path d="M 10 0 q -4 -5 -10 0 q 4 5 10 0 z"/>
+          <path d="M 0 -7 q -3 4 0 7 q 3 -3 0 -7 z"/>
+          <path d="M 0 7 q -3 -4 0 -7 q 3 3 0 7 z"/>
+          <circle r="2" fill="currentColor" stroke="none"/>
+          <circle r=".6" fill="#0a0709" stroke="none"/>
+        </g>
+        <circle cx="2" cy="9" r="1" fill="currentColor" stroke="none"/>
+        <circle cx="238" cy="9" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </div>
     <p style="font-family:'Cormorant Garamond', serif; font-style:italic; font-size:14px; color:var(--parchment-2); text-align:center; margin:8px 14px;">
@@ -1871,10 +2067,19 @@ header{
     <h2>MENU</h2>
     <div class="modal-subtitle">— le pas de la porte —</div>
     <div class="divider">
-      <svg viewBox="0 0 200 16" fill="none" stroke="currentColor" stroke-width=".8">
-        <path d="M0 8 H80 M120 8 H200"/>
-        <path d="M88 8 q4 -6 8 0 q4 6 8 0"/>
-        <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
+      <svg viewBox="0 0 240 18" fill="none" stroke="currentColor" stroke-width=".8" stroke-linecap="round" preserveAspectRatio="xMidYMid meet">
+        <path d="M2 9 q14 0 22 -2 q8 -2 16 0 q6 1.5 12 1.5 q8 0 16 -3"/>
+        <path d="M 238 9 q -14 0 -22 -2 q -8 -2 -16 0 q -6 1.5 -12 1.5 q -8 0 -16 -3"/>
+        <g transform="translate(120 9)">
+          <path d="M -10 0 q 4 -5 10 0 q -4 5 -10 0 z"/>
+          <path d="M 10 0 q -4 -5 -10 0 q 4 5 10 0 z"/>
+          <path d="M 0 -7 q -3 4 0 7 q 3 -3 0 -7 z"/>
+          <path d="M 0 7 q -3 -4 0 -7 q 3 3 0 7 z"/>
+          <circle r="2" fill="currentColor" stroke="none"/>
+          <circle r=".6" fill="#0a0709" stroke="none"/>
+        </g>
+        <circle cx="2" cy="9" r="1" fill="currentColor" stroke="none"/>
+        <circle cx="238" cy="9" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </div>
     <div class="menu-list">
@@ -1911,25 +2116,38 @@ header{
     <h2>LE GRIMOIRE</h2>
     <div class="modal-subtitle">— manuel de l'alchimiste —</div>
     <div class="divider">
-      <svg viewBox="0 0 200 16" fill="none" stroke="currentColor" stroke-width=".8">
-        <path d="M0 8 H80 M120 8 H200"/>
-        <path d="M88 8 q4 -6 8 0 q4 6 8 0"/>
-        <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
+      <svg viewBox="0 0 240 18" fill="none" stroke="currentColor" stroke-width=".8" stroke-linecap="round" preserveAspectRatio="xMidYMid meet">
+        <path d="M2 9 q14 0 22 -2 q8 -2 16 0 q6 1.5 12 1.5 q8 0 16 -3"/>
+        <path d="M 238 9 q -14 0 -22 -2 q -8 -2 -16 0 q -6 1.5 -12 1.5 q -8 0 -16 -3"/>
+        <g transform="translate(120 9)">
+          <path d="M -10 0 q 4 -5 10 0 q -4 5 -10 0 z"/>
+          <path d="M 10 0 q -4 -5 -10 0 q 4 5 10 0 z"/>
+          <path d="M 0 -7 q -3 4 0 7 q 3 -3 0 -7 z"/>
+          <path d="M 0 7 q -3 -4 0 -7 q 3 3 0 7 z"/>
+          <circle r="2" fill="currentColor" stroke="none"/>
+          <circle r=".6" fill="#0a0709" stroke="none"/>
+        </g>
+        <circle cx="2" cy="9" r="1" fill="currentColor" stroke="none"/>
+        <circle cx="238" cy="9" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </div>
     <div class="stats-body grimoire-body">
+      <blockquote class="epigraph">
+        <span class="epi-text">« Solve et coagula. »</span>
+        <span class="epi-attr">— précepte hermétique</span>
+      </blockquote>
       <section class="grim-sec">
         <h3>Le But</h3>
-        <p>Tu es l'alchimiste. Trois voies te sont ouvertes : la <em style="color:var(--plant-2)">Plante</em>, la <em style="color:var(--mineral-2)">Pierre</em>, l'<em style="color:var(--essence-2)">Essence</em>. Chaque voie monte en huit paliers, du plus humble (Graine, Caillou, Brume) au plus haut (Yggdra, Eternium, Singularité). Ton œuvre est de gravir ces voies, et — si l'art est juste — de les unir en un Grand Œuvre qui dépasse leurs sommes.</p>
+        <p><span class="dropcap">T</span>u es l'alchimiste. Trois voies te sont ouvertes : la <em style="color:var(--plant-2)">Plante</em>, la <em style="color:var(--mineral-2)">Pierre</em>, l'<em style="color:var(--essence-2)">Essence</em>. Chaque voie monte en huit paliers, du plus humble (Graine, Caillou, Brume) au plus haut (Yggdra, Eternium, Singularité). Ton œuvre est de gravir ces voies, et — si l'art est juste — de les unir en un Grand Œuvre qui dépasse leurs sommes.</p>
       </section>
       <section class="grim-sec">
         <h3>Comment Jouer</h3>
-        <p><strong>Invoque</strong> en touchant un cauldron en bas. <strong>Fusionne</strong> en glissant une tuile sur une jumelle (même voie, même palier) — le palier monte d'un cran. Répète. À chaque palier ultime atteint pour la première fois, le Grand Œuvre frappe : cinématique, halo, sub-bass.</p>
+        <p><span class="dropcap">I</span>nvoque en touchant un cauldron en bas. Fusionne en glissant une tuile sur une jumelle (même voie, même palier) — le palier monte d'un cran. Répète. À chaque palier ultime atteint pour la première fois, le Grand Œuvre frappe : cinématique, halo, sub-bass.</p>
         <p>Maintenir une tuile longtemps affiche son nom et sa lore. Tape n'importe où dehors un panneau ouvert pour le fermer.</p>
       </section>
       <section class="grim-sec">
         <h3>Les Trois Économies</h3>
-        <p><strong>L'Étincelle</strong> (gemme rouge) — le coût de toute invocation. Elle se régénère seule. Plus tu progresses, plus la coupe s'élargit.</p>
+        <p><span class="dropcap">L</span>'<strong>Étincelle</strong> (gemme rouge) — le coût de toute invocation. Elle se régénère seule. Plus tu progresses, plus la coupe s'élargit.</p>
         <p><strong>Les Couronnes</strong> (sceau d'or) — le revenu. Elles arrivent par les fusions hautes (V+), les quêtes, les évènements. Elles débloquent l'Athanor (500c), accélèrent les cauldrons, étendent l'étincelle.</p>
         <p><strong>Les Étoiles ★</strong> — la monnaie permanente, gagnée seulement par <em>Transmutation</em>. Elles s'achètent au Sanctum contre des bonus durables.</p>
       </section>
@@ -1943,7 +2161,7 @@ header{
       </section>
       <section class="grim-sec">
         <h3>Le Grand Œuvre</h3>
-        <p>L'atelier des Catalyseurs. Une <em>recette</em> consomme un item de chaque voie au même palier (par exemple : un Bourgeon, un Quartz, une Étincelle pour le Sceau du Concord). Le résultat est un <strong>catalyseur permanent</strong> qui modifie le jeu : +10% d'or, auto-spawn, cooldowns réduits, étincelle plus large. Six catalyseurs au total. Un seul exemplaire par run.</p>
+        <p><span class="dropcap">L</span>'atelier des Catalyseurs. Une <em>recette</em> consomme un item de chaque voie au même palier (par exemple : un Bourgeon, un Quartz, une Étincelle pour le Sceau du Concord). Le résultat est un <strong>catalyseur permanent</strong> qui modifie le jeu : +10% d'or, auto-spawn, cooldowns réduits, étincelle plus large. Six catalyseurs au total. Un seul exemplaire par run.</p>
         <p>C'est <strong>la</strong> raison de pousser tes trois voies en parallèle : elles doivent atteindre un palier commun pour s'unir.</p>
       </section>
       <section class="grim-sec">
@@ -1976,10 +2194,19 @@ header{
     <h2>PARAMÈTRES</h2>
     <div class="modal-subtitle">— l'établi —</div>
     <div class="divider">
-      <svg viewBox="0 0 200 16" fill="none" stroke="currentColor" stroke-width=".8">
-        <path d="M0 8 H80 M120 8 H200"/>
-        <path d="M88 8 q4 -6 8 0 q4 6 8 0"/>
-        <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
+      <svg viewBox="0 0 240 18" fill="none" stroke="currentColor" stroke-width=".8" stroke-linecap="round" preserveAspectRatio="xMidYMid meet">
+        <path d="M2 9 q14 0 22 -2 q8 -2 16 0 q6 1.5 12 1.5 q8 0 16 -3"/>
+        <path d="M 238 9 q -14 0 -22 -2 q -8 -2 -16 0 q -6 1.5 -12 1.5 q -8 0 -16 -3"/>
+        <g transform="translate(120 9)">
+          <path d="M -10 0 q 4 -5 10 0 q -4 5 -10 0 z"/>
+          <path d="M 10 0 q -4 -5 -10 0 q 4 5 10 0 z"/>
+          <path d="M 0 -7 q -3 4 0 7 q 3 -3 0 -7 z"/>
+          <path d="M 0 7 q -3 -4 0 -7 q 3 3 0 7 z"/>
+          <circle r="2" fill="currentColor" stroke="none"/>
+          <circle r=".6" fill="#0a0709" stroke="none"/>
+        </g>
+        <circle cx="2" cy="9" r="1" fill="currentColor" stroke="none"/>
+        <circle cx="238" cy="9" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </div>
     <div class="stats-body settings-body">
@@ -2031,10 +2258,19 @@ header{
     <h2>CRÉDITS</h2>
     <div class="modal-subtitle">— ceux qui ont prêté la matière —</div>
     <div class="divider">
-      <svg viewBox="0 0 200 16" fill="none" stroke="currentColor" stroke-width=".8">
-        <path d="M0 8 H80 M120 8 H200"/>
-        <path d="M88 8 q4 -6 8 0 q4 6 8 0"/>
-        <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
+      <svg viewBox="0 0 240 18" fill="none" stroke="currentColor" stroke-width=".8" stroke-linecap="round" preserveAspectRatio="xMidYMid meet">
+        <path d="M2 9 q14 0 22 -2 q8 -2 16 0 q6 1.5 12 1.5 q8 0 16 -3"/>
+        <path d="M 238 9 q -14 0 -22 -2 q -8 -2 -16 0 q -6 1.5 -12 1.5 q -8 0 -16 -3"/>
+        <g transform="translate(120 9)">
+          <path d="M -10 0 q 4 -5 10 0 q -4 5 -10 0 z"/>
+          <path d="M 10 0 q -4 -5 -10 0 q 4 5 10 0 z"/>
+          <path d="M 0 -7 q -3 4 0 7 q 3 -3 0 -7 z"/>
+          <path d="M 0 7 q -3 -4 0 -7 q 3 3 0 7 z"/>
+          <circle r="2" fill="currentColor" stroke="none"/>
+          <circle r=".6" fill="#0a0709" stroke="none"/>
+        </g>
+        <circle cx="2" cy="9" r="1" fill="currentColor" stroke="none"/>
+        <circle cx="238" cy="9" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </div>
     <div class="stats-body credits-body">
@@ -2065,10 +2301,19 @@ header{
     <h2>GRAND ŒUVRE</h2>
     <div class="modal-subtitle">— l'atelier des catalyseurs —</div>
     <div class="divider">
-      <svg viewBox="0 0 200 16" fill="none" stroke="currentColor" stroke-width=".8">
-        <path d="M0 8 H80 M120 8 H200"/>
-        <path d="M88 8 q4 -6 8 0 q4 6 8 0"/>
-        <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
+      <svg viewBox="0 0 240 18" fill="none" stroke="currentColor" stroke-width=".8" stroke-linecap="round" preserveAspectRatio="xMidYMid meet">
+        <path d="M2 9 q14 0 22 -2 q8 -2 16 0 q6 1.5 12 1.5 q8 0 16 -3"/>
+        <path d="M 238 9 q -14 0 -22 -2 q -8 -2 -16 0 q -6 1.5 -12 1.5 q -8 0 -16 -3"/>
+        <g transform="translate(120 9)">
+          <path d="M -10 0 q 4 -5 10 0 q -4 5 -10 0 z"/>
+          <path d="M 10 0 q -4 -5 -10 0 q 4 5 10 0 z"/>
+          <path d="M 0 -7 q -3 4 0 7 q 3 -3 0 -7 z"/>
+          <path d="M 0 7 q -3 -4 0 -7 q 3 3 0 7 z"/>
+          <circle r="2" fill="currentColor" stroke="none"/>
+          <circle r=".6" fill="#0a0709" stroke="none"/>
+        </g>
+        <circle cx="2" cy="9" r="1" fill="currentColor" stroke="none"/>
+        <circle cx="238" cy="9" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </div>
     <div class="recipe-tagline">Trois voies en une seule chose. Le catalyseur reste, les ingrédients passent.</div>
@@ -2083,10 +2328,19 @@ header{
     <h2>TRANSMUTATIO</h2>
     <div class="modal-subtitle">— le rite des étoiles —</div>
     <div class="divider">
-      <svg viewBox="0 0 200 16" fill="none" stroke="currentColor" stroke-width=".8">
-        <path d="M0 8 H80 M120 8 H200"/>
-        <path d="M88 8 q4 -6 8 0 q4 6 8 0"/>
-        <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
+      <svg viewBox="0 0 240 18" fill="none" stroke="currentColor" stroke-width=".8" stroke-linecap="round" preserveAspectRatio="xMidYMid meet">
+        <path d="M2 9 q14 0 22 -2 q8 -2 16 0 q6 1.5 12 1.5 q8 0 16 -3"/>
+        <path d="M 238 9 q -14 0 -22 -2 q -8 -2 -16 0 q -6 1.5 -12 1.5 q -8 0 -16 -3"/>
+        <g transform="translate(120 9)">
+          <path d="M -10 0 q 4 -5 10 0 q -4 5 -10 0 z"/>
+          <path d="M 10 0 q -4 -5 -10 0 q 4 5 10 0 z"/>
+          <path d="M 0 -7 q -3 4 0 7 q 3 -3 0 -7 z"/>
+          <path d="M 0 7 q -3 -4 0 -7 q 3 3 0 7 z"/>
+          <circle r="2" fill="currentColor" stroke="none"/>
+          <circle r=".6" fill="#0a0709" stroke="none"/>
+        </g>
+        <circle cx="2" cy="9" r="1" fill="currentColor" stroke="none"/>
+        <circle cx="238" cy="9" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </div>
     <div class="stats-body" id="transmute-body"></div>
@@ -2100,10 +2354,19 @@ header{
     <h2>SANCTUM</h2>
     <div class="modal-subtitle">— les graveurs d'étoiles —</div>
     <div class="divider">
-      <svg viewBox="0 0 200 16" fill="none" stroke="currentColor" stroke-width=".8">
-        <path d="M0 8 H80 M120 8 H200"/>
-        <path d="M88 8 q4 -6 8 0 q4 6 8 0"/>
-        <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
+      <svg viewBox="0 0 240 18" fill="none" stroke="currentColor" stroke-width=".8" stroke-linecap="round" preserveAspectRatio="xMidYMid meet">
+        <path d="M2 9 q14 0 22 -2 q8 -2 16 0 q6 1.5 12 1.5 q8 0 16 -3"/>
+        <path d="M 238 9 q -14 0 -22 -2 q -8 -2 -16 0 q -6 1.5 -12 1.5 q -8 0 -16 -3"/>
+        <g transform="translate(120 9)">
+          <path d="M -10 0 q 4 -5 10 0 q -4 5 -10 0 z"/>
+          <path d="M 10 0 q -4 -5 -10 0 q 4 5 10 0 z"/>
+          <path d="M 0 -7 q -3 4 0 7 q 3 -3 0 -7 z"/>
+          <path d="M 0 7 q -3 -4 0 -7 q 3 3 0 7 z"/>
+          <circle r="2" fill="currentColor" stroke="none"/>
+          <circle r=".6" fill="#0a0709" stroke="none"/>
+        </g>
+        <circle cx="2" cy="9" r="1" fill="currentColor" stroke="none"/>
+        <circle cx="238" cy="9" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </div>
     <div class="stats-body" id="sanctum-body"></div>
@@ -2117,10 +2380,19 @@ header{
     <h2>ATHANOR</h2>
     <div class="modal-subtitle">— purification par le feu —</div>
     <div class="divider">
-      <svg viewBox="0 0 200 16" fill="none" stroke="currentColor" stroke-width=".8">
-        <path d="M0 8 H80 M120 8 H200"/>
-        <path d="M88 8 q4 -6 8 0 q4 6 8 0"/>
-        <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
+      <svg viewBox="0 0 240 18" fill="none" stroke="currentColor" stroke-width=".8" stroke-linecap="round" preserveAspectRatio="xMidYMid meet">
+        <path d="M2 9 q14 0 22 -2 q8 -2 16 0 q6 1.5 12 1.5 q8 0 16 -3"/>
+        <path d="M 238 9 q -14 0 -22 -2 q -8 -2 -16 0 q -6 1.5 -12 1.5 q -8 0 -16 -3"/>
+        <g transform="translate(120 9)">
+          <path d="M -10 0 q 4 -5 10 0 q -4 5 -10 0 z"/>
+          <path d="M 10 0 q -4 -5 -10 0 q 4 5 10 0 z"/>
+          <path d="M 0 -7 q -3 4 0 7 q 3 -3 0 -7 z"/>
+          <path d="M 0 7 q -3 -4 0 -7 q 3 3 0 7 z"/>
+          <circle r="2" fill="currentColor" stroke="none"/>
+          <circle r=".6" fill="#0a0709" stroke="none"/>
+        </g>
+        <circle cx="2" cy="9" r="1" fill="currentColor" stroke="none"/>
+        <circle cx="238" cy="9" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </div>
     <div class="ath-tagline">Trois deviennent un. Le palier s'élève.</div>
@@ -2135,10 +2407,19 @@ header{
     <h2>STATISTIQUES</h2>
     <div class="modal-subtitle">— grimoire intime —</div>
     <div class="divider">
-      <svg viewBox="0 0 200 16" fill="none" stroke="currentColor" stroke-width=".8">
-        <path d="M0 8 H80 M120 8 H200"/>
-        <path d="M88 8 q4 -6 8 0 q4 6 8 0"/>
-        <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
+      <svg viewBox="0 0 240 18" fill="none" stroke="currentColor" stroke-width=".8" stroke-linecap="round" preserveAspectRatio="xMidYMid meet">
+        <path d="M2 9 q14 0 22 -2 q8 -2 16 0 q6 1.5 12 1.5 q8 0 16 -3"/>
+        <path d="M 238 9 q -14 0 -22 -2 q -8 -2 -16 0 q -6 1.5 -12 1.5 q -8 0 -16 -3"/>
+        <g transform="translate(120 9)">
+          <path d="M -10 0 q 4 -5 10 0 q -4 5 -10 0 z"/>
+          <path d="M 10 0 q -4 -5 -10 0 q 4 5 10 0 z"/>
+          <path d="M 0 -7 q -3 4 0 7 q 3 -3 0 -7 z"/>
+          <path d="M 0 7 q -3 -4 0 -7 q 3 3 0 7 z"/>
+          <circle r="2" fill="currentColor" stroke="none"/>
+          <circle r=".6" fill="#0a0709" stroke="none"/>
+        </g>
+        <circle cx="2" cy="9" r="1" fill="currentColor" stroke="none"/>
+        <circle cx="238" cy="9" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </div>
     <div class="stats-body" id="stats-body"></div>

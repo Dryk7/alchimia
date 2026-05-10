@@ -1056,17 +1056,19 @@ header{
 #audio-toggle:hover, #audio-toggle.on{opacity:1}
 #audio-toggle svg{width:16px; height:16px}
 
-#stats-toggle, #sanctum-toggle, #transmute-toggle{
+#stats-toggle, #sanctum-toggle, #transmute-toggle, #oeuvre-toggle{
   position:fixed; top:6px; z-index:8;
   background:transparent; border:none; padding:6px;
   cursor:pointer;
   color:var(--gold); opacity:.55;
 }
 #stats-toggle{right:38px}
-#sanctum-toggle{right:68px}
-#transmute-toggle{right:98px}
-#stats-toggle:hover, #sanctum-toggle:hover, #transmute-toggle:hover{opacity:1}
-#stats-toggle svg, #sanctum-toggle svg, #transmute-toggle svg{width:16px; height:16px}
+#oeuvre-toggle{right:68px}
+#sanctum-toggle{right:98px}
+#transmute-toggle{right:128px}
+#stats-toggle:hover, #sanctum-toggle:hover, #transmute-toggle:hover, #oeuvre-toggle:hover{opacity:1}
+#stats-toggle svg, #sanctum-toggle svg, #transmute-toggle svg, #oeuvre-toggle svg{width:16px; height:16px}
+#oeuvre-toggle.has-ready{opacity:1; color:var(--gold-bright); animation:glowStars 2.5s ease-in-out infinite}
 #sanctum-toggle.has-stars{opacity:1; color:var(--gold-bright); animation:glowStars 2.5s ease-in-out infinite}
 #transmute-toggle.ready{opacity:1; color:var(--gold-bright); animation:glowReady 2s ease-in-out infinite}
 @keyframes glowStars{0%,100%{filter:drop-shadow(0 0 4px var(--gold-glow))} 50%{filter:drop-shadow(0 0 10px var(--gold-bright))}}
@@ -1277,6 +1279,114 @@ header{
   transition:color .2s;
 }
 .modal-close:hover{color:var(--gold-bright)}
+
+/* Grand Œuvre — Recettes */
+.recipe-tagline{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:13px; color:var(--gold-light);
+  text-align:center; margin-bottom:8px;
+  letter-spacing:.08em;
+}
+.recipe-row{
+  position:relative;
+  background:linear-gradient(180deg, #2a1f1a, #1a1410);
+  border:1px solid var(--gold-dark);
+  padding:8px 10px;
+  margin-bottom:7px;
+  cursor:pointer;
+  transition:border-color .2s, box-shadow .2s, filter .2s;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:10px;
+  align-items:center;
+}
+.recipe-row::before, .recipe-row::after{
+  content:""; position:absolute; width:6px; height:6px;
+  border:1px solid var(--gold); pointer-events:none;
+}
+.recipe-row::before{top:-1px; left:-1px; border-right:none; border-bottom:none}
+.recipe-row::after{bottom:-1px; right:-1px; border-left:none; border-top:none}
+.recipe-row.unaff{filter:grayscale(.65) brightness(.65); cursor:not-allowed}
+.recipe-row.composed{
+  border-color:var(--gold-bright);
+  background:
+    repeating-linear-gradient(0deg,
+      rgba(216,198,154,.06) 0px, rgba(216,198,154,.06) 1px,
+      transparent 1px, transparent 3px),
+    linear-gradient(180deg, #3d2818, #2a1810);
+  cursor:default;
+}
+.recipe-row:hover:not(.unaff):not(.composed){
+  border-color:var(--gold-bright);
+  box-shadow:0 0 14px var(--gold-glow);
+}
+.recipe-cat{
+  width:48px; height:48px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  filter:drop-shadow(0 0 4px var(--gold-glow));
+}
+.recipe-row.composed .recipe-cat{
+  filter:drop-shadow(0 0 8px var(--gold-bright)) drop-shadow(0 0 14px var(--gold-glow));
+  animation:floaty 3s ease-in-out infinite;
+}
+.recipe-cat svg{width:100%; height:100%; image-rendering:pixelated}
+.recipe-meta{min-width:0}
+.recipe-name{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:11px; letter-spacing:.16em;
+  color:var(--gold-bright);
+  text-transform:uppercase;
+  margin-bottom:2px;
+}
+.recipe-desc{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:12px; color:var(--parchment-2);
+  margin-bottom:4px;
+  line-height:1.25;
+}
+.recipe-ingredients{
+  display:flex; gap:4px; align-items:center;
+  margin-bottom:4px;
+}
+.recipe-ing{
+  width:22px; height:22px;
+  background:#0a0608;
+  border:1px solid #2a1f24;
+  border-radius:1px;
+  position:relative;
+  display:flex; align-items:center; justify-content:center;
+}
+.recipe-ing.have{border-color:var(--gold)}
+.recipe-ing.miss{filter:grayscale(1) brightness(.4)}
+.recipe-ing svg{width:80%; height:80%; image-rendering:pixelated}
+.recipe-ing .ing-tag{
+  position:absolute; bottom:-1px; right:-1px;
+  font-family:"VT323", monospace; font-size:8px;
+  background:#000; color:var(--gold); padding:0 2px;
+}
+.recipe-effect{
+  font-family:"VT323", monospace; font-size:12px;
+  color:var(--gold-light);
+}
+.recipe-row.composed .recipe-effect{color:var(--gold-bright)}
+.recipe-action{
+  display:inline-block;
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:9px; letter-spacing:.22em;
+  color:#000; background:linear-gradient(180deg, var(--gold-bright), var(--gold));
+  padding:3px 7px;
+  text-transform:uppercase;
+  margin-top:3px;
+}
+.recipe-row.unaff .recipe-action{background:#3a2818; color:var(--gold-dark)}
+.recipe-row.composed .recipe-action{display:none}
+.recipe-row.composed .recipe-acquired{
+  display:inline-block;
+  font-family:"Cinzel"; font-weight:700;
+  font-size:9px; letter-spacing:.32em;
+  color:var(--gold-bright); margin-top:3px;
+}
+.recipe-row:not(.composed) .recipe-acquired{display:none}
 
 /* Athanor */
 .ath-tagline{
@@ -1511,6 +1621,13 @@ header{
 <!-- Bande sonore : Forgotten Tomb Ambience par kindland — CC0 — opengameart.org/content/forgoten-tomb-ambience -->
 <audio id="bgm" src="assets/audio/ambient.mp3" loop preload="auto" style="display:none"></audio>
 
+<button id="oeuvre-toggle" title="Grand Œuvre">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+    <circle cx="12" cy="9" r="3.2"/>
+    <circle cx="9" cy="14" r="3.2"/>
+    <circle cx="15" cy="14" r="3.2"/>
+  </svg>
+</button>
 <button id="sanctum-toggle" title="Sanctum">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
     <polygon points="12,3 14,9 20,9.5 15,13.5 17,20 12,16 7,20 9,13.5 4,9.5 10,9"/>
@@ -1536,6 +1653,24 @@ header{
     <path d="M16 8 q3 4 0 8 M19 6 q5 6 0 12"/>
   </svg>
 </button>
+
+<!-- GRAND ŒUVRE (recettes) modal -->
+<div id="oeuvre-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-close" id="oeuvre-close" aria-label="Fermer">×</div>
+    <h2>GRAND ŒUVRE</h2>
+    <div class="modal-subtitle">— l'atelier des catalyseurs —</div>
+    <div class="divider">
+      <svg viewBox="0 0 200 16" fill="none" stroke="currentColor" stroke-width=".8">
+        <path d="M0 8 H80 M120 8 H200"/>
+        <path d="M88 8 q4 -6 8 0 q4 6 8 0"/>
+        <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="recipe-tagline">Trois voies en une seule chose. Le catalyseur reste, les ingrédients passent.</div>
+    <div class="stats-body" id="oeuvre-body"></div>
+  </div>
+</div>
 
 <!-- TRANSMUTATION modal -->
 <div id="transmute-modal" class="modal">
@@ -2777,6 +2912,286 @@ const SPRITES = [
   ],
 ];
 
+/* ================ CATALYSEURS 32×32 ================ */
+/* Items uniques produits par les recettes du Grand Œuvre.
+   Indexé séparément de SPRITES, accédé via CATALYST_SPRITES[id]. */
+const CATALYST_SPRITES = {
+  // 0 : Sceau du Concord (3 anneaux entrelacés vert/bleu/violet, centre or)
+  concord: [
+    "................................",
+    "................................",
+    "...........kkkkkkkk.............",
+    ".........kkqQRRRRQqkk...........",
+    "........kqQRrRRRRrRQqk..........",
+    ".......kQRrRRrRRrRRrRQk.........",
+    "......kQRrRRRRkkkRRRRrRQk.......",
+    ".....kQRrRRRkkjJJjkkRRRrQk......",
+    ".....kQRrRRRkjJlllJjkRRRrQk.....",
+    "....kQRrRRRkjJllLLlJjkRRRrQk....",
+    "....kQRrRRkjJllLZZLllJjkRRRQk...",
+    "....kQRrRkjJllLZWZWZLllJjkRRQk..",
+    "...kQRrRkjJllLZWYWYWZLllJjkRRQk.",
+    "...kQRrRkjJlLZWYNNNYWZLlJjkRRQk.",
+    "...kQRrRkjJlZWYNoOoNYWZLlJjkRRQk",
+    "...kQRrRkjJLZWYNoOoNYWZLlJjkRRQk",
+    "...kQRrRkjJlZWYNoOoNYWZLlJjkRRQk",
+    "...kQRrRkjJlLZWYNNNYWZLlJjkRRQk.",
+    "...kQRrRkjJllLZWYWYWZLlJjkRRQk..",
+    "....kQRrRkjJllLZWZWZLlJjkRRQk...",
+    "....kQRrRRkjJllLZZLllJjkRRRQk...",
+    "....kQRrRRRkjJllLLlJjkRRRrQk....",
+    ".....kQRrRRRkjJlllJjkRRRrQk.....",
+    "......kQRrRRRkkjJjkkRRRrQk......",
+    ".......kQRrRRRRkkkRRRRrQk.......",
+    "........kQRrRRrRRrRRrRQk........",
+    ".........kQRrRRrRRrRRQk.........",
+    "..........kQRrRRRRrRQk..........",
+    "...........kkqQQQQqkk...........",
+    "............kkkkkkkk............",
+    "................................",
+    "................................",
+  ],
+  // 1 : Cœur de Mercure (goutte argentée + runes dorées flottantes)
+  mercure: [
+    "...........kk......kk...........",
+    "..........kgYk....kygk..........",
+    "..........kY*k....k*Yk..........",
+    "..........kgyk....kygk..........",
+    "...........kk......kk...........",
+    "................................",
+    "..............kkkk..............",
+    "............kksXxXskk...........",
+    "..........kkXxxxxXxxxkk.........",
+    "........kkXxXxXsXxXxXXkk........",
+    "......kkXsXxxsXXXsXxXxXxkk......",
+    ".....kxXxXsXXxXXXxXxsXxXsXk.....",
+    "....kXxXxXxsXXxXxXXxxsxxxXxk....",
+    "....kxXsxxXXxxXxXxxXXxxxXxXxk...",
+    "...kXxXxxxXXxxxxxxxxxxxxXxxxXk..",
+    "...kxXxxXxXXxxxxxxxxxxxxxxxxXxk.",
+    "...kxXxXxxXXxxxxxxxxxxxxxxxxXxk.",
+    "...kxXxxXxXXxxxxxxxxxxxxxxxxXxk.",
+    "...kXxxXxxXXxxxxxxxxxxxxXxxxXk..",
+    "....kxXsxxXXxxXxXxxXXxxxXxXxk...",
+    "....kXxXxXxsXXxXxXXxxsxxxXxk....",
+    ".....kxXxXsXXxXXXxXxsXxXsXk.....",
+    "......kkXsXxxsXXXsXxXxXxkk......",
+    "........kkXxXxXsXxXxXXkk........",
+    "..........kkXxxxxXxxxkk.........",
+    "............kksXxXskk...........",
+    "..............kkkk..............",
+    "................................",
+    "...........kk......kk...........",
+    "..........kgyk....kygk..........",
+    "..........kY*k....k*Yk..........",
+    "...........kk......kk...........",
+  ],
+  // 2 : Pierre du Veilleur (œil de pierre, halo gris, iris vert)
+  veilleur: [
+    "................................",
+    ".............kkkkkk.............",
+    "...........kCCxxxxCCk...........",
+    ".........kkCxxxxxxxxCCk.........",
+    "........kCxxxxxxxxxxxxCk........",
+    ".......kCxxxxxxxxxxxxxxCk.......",
+    "......kCxxxxxxxxxxxxxxxCk.......",
+    "......kCxxxxXXXXXXXXxxxxCk......",
+    ".....kCxxxXXxxxxxxxxXXxxxCk.....",
+    ".....kCxxXxxxqQQQQqxxxXxxxCk....",
+    "....kCxxxXxxqQRrrRQqxxXxxxCk....",
+    "....kCxxXxxqQRRkkRRQqxxXxxCk....",
+    "....kCxxXxxqQRkOOkRQqxxXxxCk....",
+    "....kCxxXxxqQRk##kRQqxxXxxCk....",
+    "....kCxxXxxqQRkOOkRQqxxXxxCk....",
+    "....kCxxXxxqQRRkkRRQqxxXxxCk....",
+    "....kCxxxXxxqQRrrRQqxxXxxxCk....",
+    "....kCxxxXxxxqQQQQqxxxXxxxCk....",
+    ".....kCxxxXXxxxxxxxxXXxxxCk.....",
+    ".....kCxxxxXXXXXXXXXXxxxxCk.....",
+    "......kCxxxxxxxxxxxxxxxxCk......",
+    "......kCxxxxxxxxxxxxxxxxCk......",
+    ".......kCxxxxxxxxxxxxxxCk.......",
+    "........kCxxxxxxxxxxxxCk........",
+    ".........kkCxxxxxxxxCCk.........",
+    "...........kCCxxxxCCk...........",
+    ".............kkkkkk.............",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+  ],
+  // 3 : Calice d'Aube (coupe dorée + liquide arc-en-ciel + halo)
+  calice: [
+    "...............ZZ...............",
+    "..............ZWWZ..............",
+    ".............ZWWWWZ.............",
+    "............ZWYYYYWZ............",
+    "..ZZ.......ZYYWWWWYYZ.......ZZ..",
+    "...ZZZ....ZYWWQqQqWWYZ....ZZZ...",
+    ".....ZZ..ZYWQqQRrRQqWYZ..ZZ.....",
+    "......ZZZWQRrRRJlJRrRQWZZZ......",
+    ".......ZWQRrRJlllllJRrQWZ.......",
+    "........ZQRrRJlNonNlJRrQZ.......",
+    "........ZQRrJloNoOoNolJRQZ......",
+    "........ZQRrJlNoOZOoNlJRQZ......",
+    "........ZQRrJlNoOZOoNlJRQZ......",
+    "........ZQRrJlNoOoOoNlJRQZ......",
+    "........ZQRrJloNNoNNolJRQZ......",
+    ".........ZQRrJlNoNoNlJRQZ.......",
+    "..........ZQRrJlNNNlJRQZ........",
+    "...........ZQRrJlllJRQZ.........",
+    "............ZQRrJJJRQZ..........",
+    "............ZkQRRRRQkZ..........",
+    ".............kkGGGGkk...........",
+    ".............kgYWWYgk...........",
+    "............kgYWWWWYgk..........",
+    "...........kgYWWZWWWYgk.........",
+    "..........kgYWWZ##ZWWYgk........",
+    ".........kgYWWWWWWWWWYgk........",
+    ".........kkgYYYYYYYYgkk.........",
+    "..........kkgggggggkk...........",
+    "............kkgggkk.............",
+    "..............kkk...............",
+    "................................",
+    "................................",
+  ],
+  // 4 : Soleil Noir (disque noir, rayons noirs, halo or bouclier)
+  soleil: [
+    "...............k................",
+    "............kk.k.kk.............",
+    ".....k....kY...k...Yk....k......",
+    "..k...kk.kYW...k...WYk.kk...k...",
+    "...k...kkYWY...k...YWYkk...k....",
+    "....k.kkYWWY...k...YWWYkk.k.....",
+    ".....kYWWWWY..kkk..YWWWWYk......",
+    "....kkYWWWWWY.kkk.YWWWWWYkk.....",
+    "...kYWWWWWWWY.kkk.YWWWWWWWYk....",
+    "..kYWWWWWWWWWWkkkWWWWWWWWWWYk...",
+    "..kYWWWWWWkkkkk#kkkkkWWWWWWYk...",
+    ".kYWWWWkkkkk#####kkkkkkWWWWYk...",
+    ".kYWWkkk#kk##kk##kk#kkkkWWYk....",
+    "kYWWkkk###k#kkkkk#k###kkWWWYk...",
+    "kYWkk#####k##kkk##k#####kWWYk...",
+    "kkk##W######kkkkk######W##kkk...",
+    "kkk##W######kkkkk######W##kkk...",
+    "kYWkk#####k##kkk##k#####kWWYk...",
+    "kYWWkk###k#kkkkkkk#k###kkWWWYk..",
+    ".kYWWkkk#kk##kk##kk#kkkkWWYk....",
+    ".kYWWWWkkkkk#####kkkkkkWWWWYk...",
+    "..kYWWWWWWkkkkk#kkkkkWWWWWWYk...",
+    "..kYWWWWWWWWWWkkkWWWWWWWWWWYk...",
+    "...kYWWWWWWWY.kkk.YWWWWWWWYk....",
+    "....kkYWWWWWY.kkk.YWWWWWYkk.....",
+    ".....kYWWWWY..kkk..YWWWWYk......",
+    "....k.kkYWWY...k...YWWYkk.k.....",
+    "...k...kkYWY...k...YWYkk...k....",
+    "..k...kk.kYW...k...WYk.kk...k...",
+    ".....k....kY...k...Yk....k......",
+    "............kk.k.kk.............",
+    "...............k................",
+  ],
+  // 5 : Diadème de l'Œuvre (couronne dorée avec gemmes vert/bleu/violet)
+  diademe: [
+    "................................",
+    "................................",
+    "................................",
+    "............kk....kk............",
+    "...........kQk....kJk...........",
+    ".........kkQrQk..kJlJkk.........",
+    "........kQRrRrQ..kJlllJk........",
+    "..kk...kQRrRRRrQ.kJllLllJk...kk.",
+    ".kNk..kQRRrRRrRQ..kJllLllJk..kNk",
+    "kNoNk.kQRrRRrRRQ..kJllLLllJk.kNo",
+    "kNoONk.kQRrRRrQ....kJllLllJk.kNo",
+    ".kOONk..kQRrRQ......kJllLJk..kON",
+    "..kNNk...kQRQk........kJJk...kNk",
+    "...kNk....kQk..........kk....kk.",
+    "....k.....kk..............k.....",
+    "................................",
+    ".......kkkkkkkkkkkkkkkkkkkk.....",
+    "......kggGGGGGGGGGGGGGGGGGgk....",
+    ".....kggYWyyyyyyyyyyyyyyyYggk...",
+    "....kgGYYWWWWyyyyyyyWWWWYYgGk...",
+    "...kggGGYYYWWyyyyyyyWWYYYGGggk..",
+    "...kgGGggGGYYYWWWWWWYYYGGggGGk..",
+    "...kgGGggGGGggGGGGGGggGGGGggGk..",
+    "...kgGggGGGGggGGGGGGggGGGGGgGk..",
+    "....kgGGggGGggGGGGggGGGGggGgk...",
+    ".....kgGGGGGGGGGGGGGGGGGGGGgk...",
+    "......kggGGGGGGGGGGGGGGGGgk.....",
+    ".......kkkkkkkkkkkkkkkkkkkk.....",
+    "................................",
+    "................................",
+    "................................",
+    "................................",
+  ],
+};
+
+/* ================ RECETTES DU GRAND ŒUVRE ================ */
+const RECIPES = [
+  {
+    id: 'concord',
+    name: 'Sceau du Concord',
+    desc: 'Trois voies tressées en un seul anneau. L\'or pleut.',
+    ingredients: [{chain:0,tier:1},{chain:1,tier:1},{chain:2,tier:1}],
+    effect: { goldMul: 1.10 },
+    effectText: '+10% or sur toutes les fusions et quêtes',
+    color: '#c9a25a',
+  },
+  {
+    id: 'mercure',
+    name: 'Cœur de Mercure',
+    desc: 'Métal vivant qui s\'autoalimente. Une graine, une pierre ou une brume jaillit toutes les 25 secondes.',
+    ingredients: [{chain:0,tier:2},{chain:1,tier:2},{chain:2,tier:2}],
+    effect: { autoSpawnMs: 25000 },
+    effectText: 'spawn auto T0 toutes les 25s',
+    color: '#d8d8e0',
+  },
+  {
+    id: 'veilleur',
+    name: 'Pierre du Veilleur',
+    desc: 'L\'œil ne dort jamais. Les cauldrons brûlent plus vite.',
+    ingredients: [{chain:0,tier:3},{chain:1,tier:3},{chain:2,tier:3}],
+    effect: { recipeCdMul: 0.85 },
+    effectText: 'cooldowns générateurs −15%',
+    color: '#7aa3c8',
+  },
+  {
+    id: 'calice',
+    name: 'Calice d\'Aube',
+    desc: 'L\'aube perle dans la coupe. L\'éther afflue.',
+    ingredients: [{chain:0,tier:4},{chain:1,tier:4},{chain:2,tier:4}],
+    effect: { recipeRegenMul: 1.5 },
+    effectText: 'étincelle régénération ×1.5',
+    color: '#e8c878',
+  },
+  {
+    id: 'soleil',
+    name: 'Soleil Noir',
+    desc: 'L\'astre voilé. Plus d\'éther, et parfois la graine se hisse au palier I.',
+    ingredients: [{chain:0,tier:5},{chain:1,tier:5},{chain:2,tier:5}],
+    effect: { recipeEssenceMaxMul: 1.25, recipeT1Chance: 0.05 },
+    effectText: '+25% étincelle max · 5% spawn T1',
+    color: '#3a3a45',
+  },
+  {
+    id: 'diademe',
+    name: 'Diadème de l\'Œuvre',
+    desc: 'La couronne du Grand Œuvre. Combos doublés en durée, or doublé.',
+    ingredients: [{chain:0,tier:6},{chain:1,tier:6},{chain:2,tier:6}],
+    effect: { goldMul: 1.40, comboWindowMul: 2.0 },
+    effectText: '+40% or · combo doublé en durée',
+    color: '#a070d0',
+  },
+];
+
+function recipeSpriteSVG(id){
+  const grid = CATALYST_SPRITES[id];
+  if(!grid) return '';
+  return spriteSVG(grid);
+}
+
 /* ================ CAULDRONS 32×32 ================ */
 const GEN_SPRITES = [
   // CHAUDRON PLANTE — fer noir, rebord doré, liquide vert clapotant, vapeur verte
@@ -2978,6 +3393,10 @@ const STATE = {
   comboCount: 0,
   lastMergeTime: 0,
   bestCombo: 0,
+
+  // Recettes du Grand Œuvre (Catalyseurs uniques par run, reset au prestige)
+  recipes: {},     // id -> timestamp de composition
+  lastAutoSpawnAt: 0,
   selectedCodex: null,
 };
 
@@ -3131,6 +3550,8 @@ function doTransmute(){
     { chain:3, tier:0, cost:0, cdMs:0,    lastFire:0, unlocked:!!athUnlocked, kind:"athanor", unlockCost:500 },
   ];
   STATE.activeEvents = {};
+  STATE.recipes = {}; // les catalyseurs sont par-run, reset à la transmutation
+  STATE.lastAutoSpawnAt = 0;
   applyEventModifiers();
   rebuildQuests();
   applyUpgrades();
@@ -3144,7 +3565,7 @@ function doTransmute(){
 }
 
 function applyUpgrades(){
-  // Reset aux valeurs de base puis applique upgrades
+  // Reset aux valeurs de base puis applique upgrades persistants (Sanctum) + recettes (catalyseurs)
   let regenMul = 1, essenceMaxMul = 1, cdMul = 1;
   for(const u of UPGRADES){
     if((STATE.upgrades?.[u.id]||0) > 0){
@@ -3154,19 +3575,202 @@ function applyUpgrades(){
       if(e.cdMul) cdMul *= e.cdMul;
     }
   }
+  // Catalyseurs (effets cumulent avec Sanctum)
+  for(const r of RECIPES){
+    if(STATE.recipes?.[r.id]){
+      const e = r.effect;
+      if(e.recipeRegenMul) regenMul *= e.recipeRegenMul;
+      if(e.recipeEssenceMaxMul) essenceMaxMul *= e.recipeEssenceMaxMul;
+      if(e.recipeCdMul) cdMul *= e.recipeCdMul;
+    }
+  }
   STATE.upgradeRegenMul = regenMul;
   STATE.upgradeEssenceMaxMul = essenceMaxMul;
   STATE.upgradeCdMul = cdMul;
 }
 
+function recipeGoldMul(){
+  let m = 1;
+  for(const r of RECIPES){
+    if(STATE.recipes?.[r.id] && r.effect.goldMul) m *= r.effect.goldMul;
+  }
+  return m;
+}
+function recipeT1Chance(){
+  let c = 0;
+  for(const r of RECIPES){
+    if(STATE.recipes?.[r.id] && r.effect.recipeT1Chance) c += r.effect.recipeT1Chance;
+  }
+  return c;
+}
+function recipeComboWindow(){
+  let m = 1;
+  for(const r of RECIPES){
+    if(STATE.recipes?.[r.id] && r.effect.comboWindowMul) m *= r.effect.comboWindowMul;
+  }
+  return COMBO_WINDOW_MS * m;
+}
+function recipeAutoSpawnMs(){
+  for(const r of RECIPES){
+    if(STATE.recipes?.[r.id] && r.effect.autoSpawnMs) return r.effect.autoSpawnMs;
+  }
+  return 0; // 0 = désactivé
+}
+
 function getQuestGoldMul(){
-  return (STATE.upgrades?.sol > 0) ? 1.25 : 1;
+  let m = (STATE.upgrades?.sol > 0) ? 1.25 : 1;
+  m *= recipeGoldMul();
+  return m;
 }
 function getMergeBonusGold(){
   return (STATE.upgrades?.fulmen > 0) ? 3 : 0;
 }
 function getT1SpawnChance(){
-  return (STATE.upgrades?.anima > 0) ? .08 : 0;
+  let c = (STATE.upgrades?.anima > 0) ? .08 : 0;
+  c += recipeT1Chance();
+  return c;
+}
+function getMergeGoldMul(){
+  return recipeGoldMul();
+}
+
+function countOnBoard(chain, tier){
+  let n = 0;
+  for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++){
+    const t = STATE.grid[y][x]; if(t && t.chain===chain && t.tier===tier) n++;
+  }
+  return n;
+}
+
+function recipeCanCompose(r){
+  if(STATE.recipes?.[r.id]) return false;
+  for(const ing of r.ingredients){
+    if(countOnBoard(ing.chain, ing.tier) < 1) return false;
+  }
+  return true;
+}
+
+function recipeReadyCount(){
+  let n = 0;
+  for(const r of RECIPES){ if(recipeCanCompose(r)) n++; }
+  return n;
+}
+
+function openOeuvre(){
+  const modal = document.getElementById("oeuvre-modal");
+  const body = document.getElementById("oeuvre-body");
+  body.innerHTML = "";
+  for(const r of RECIPES){
+    const composed = !!STATE.recipes?.[r.id];
+    const can = recipeCanCompose(r);
+    const div = document.createElement("div");
+    div.className = "recipe-row" + (composed ? " composed" : (can ? "" : " unaff"));
+    // Sprite catalyseur
+    const cat = document.createElement("div");
+    cat.className = "recipe-cat";
+    cat.style.color = r.color;
+    cat.innerHTML = recipeSpriteSVG(r.id);
+    div.appendChild(cat);
+    // Meta
+    const meta = document.createElement("div");
+    meta.className = "recipe-meta";
+    let ingHtml = '';
+    for(const ing of r.ingredients){
+      const ch = CHAINS[ing.chain];
+      const have = countOnBoard(ing.chain, ing.tier) >= 1;
+      ingHtml += `<div class="recipe-ing ${have?'have':'miss'}" style="color:${ch.color}" title="${ch.tiers[ing.tier].n}">
+        ${spriteSVG(SPRITES[ing.chain*TIERS + ing.tier])}
+        <span class="ing-tag">${ROMAN[ing.tier]}</span>
+      </div>`;
+    }
+    meta.innerHTML = `
+      <div class="recipe-name">${r.name}</div>
+      <div class="recipe-desc">${r.desc}</div>
+      <div class="recipe-ingredients">${ingHtml}</div>
+      <div class="recipe-effect">${r.effectText}</div>
+      <span class="recipe-action">${composed ? "" : (can ? "COMPOSER" : "INGRÉDIENTS MANQUANTS")}</span>
+      <span class="recipe-acquired">★ COMPOSÉ ★</span>
+    `;
+    div.appendChild(meta);
+    if(can){ div.addEventListener("click", ()=>compose(r.id)); }
+    body.appendChild(div);
+  }
+  modal.classList.add("show");
+}
+
+function compose(id){
+  const r = RECIPES.find(x=>x.id===id);
+  if(!r || !recipeCanCompose(r)) { sfxDeny(); return; }
+  // Consomme 1 instance de chaque ingrédient
+  const consumedAt = [];
+  for(const ing of r.ingredients){
+    let found = null;
+    for(let y=0;y<ROWS && !found;y++) for(let x=0;x<COLS && !found;x++){
+      const t = STATE.grid[y][x];
+      if(t && t.chain===ing.chain && t.tier===ing.tier) found = [x,y];
+    }
+    if(!found) { sfxDeny(); return; }
+    consumedAt.push(found);
+  }
+  // Animations + flash
+  const cellRects = [];
+  for(const [x,y] of consumedAt){
+    const cell = cellAt(x,y);
+    cell.classList.add("flash");
+    cell.firstChild?.classList.add("merge-out");
+    cellRects.push(cell.getBoundingClientRect());
+  }
+  // FX : éclairs convergents vers le centre du board
+  const gridR = $grid.getBoundingClientRect();
+  const cx = gridR.left + gridR.width/2, cy = gridR.top + gridR.height/2;
+  for(const cr of cellRects){
+    lightning(cr.left+cr.width/2, cr.top+cr.height/2, cx, cy, r.color);
+    particles(cr.left+cr.width/2, cr.top+cr.height/2, r.color, 16, cx, cy);
+  }
+  shockwave(cx, cy, r.color, 6);
+  sfxMerge(6, 0);
+  vibrate([20, 60, 20, 60, 80, 100]);
+  // Marque la recette comme composée + applique effets + flotte texte
+  setTimeout(()=>{
+    for(const [x,y] of consumedAt){
+      STATE.grid[y][x] = null;
+      renderTile(x,y);
+      cellAt(x,y).classList.remove("flash");
+    }
+    STATE.recipes = STATE.recipes || {};
+    STATE.recipes[id] = Date.now();
+    applyUpgrades();
+    applyProgressionBonuses();
+    floating(cx, cy - 30, "✦ " + r.name.toUpperCase(), "tier");
+    sfxClaim();
+    renderStats();
+    renderCodex();
+    refreshQuests();
+    if(typeof checkAchievements === 'function') checkAchievements();
+    // Refresh modal
+    openOeuvre();
+    // Toast event-style
+    eventNotification({ name: r.name, desc: r.effectText }, "Catalyseur acquis");
+  }, 320);
+}
+
+function tickRecipeAutoSpawn(now){
+  const ms = recipeAutoSpawnMs();
+  if(!ms) return;
+  if(!STATE.lastAutoSpawnAt) STATE.lastAutoSpawnAt = now;
+  if(now - STATE.lastAutoSpawnAt < ms) return;
+  STATE.lastAutoSpawnAt = now;
+  const empties = findEmpty();
+  if(!empties.length) return;
+  const [x,y] = empties[Math.floor(Math.random()*empties.length)];
+  const c = Math.floor(Math.random()*3);
+  STATE.grid[y][x] = { id: STATE.nextId++, chain: c, tier: 0 };
+  STATE.totals.produced[c]++;
+  renderTile(x,y);
+  // Petit sparkle silencieux
+  const cell = cellAt(x,y);
+  const r = cell.getBoundingClientRect();
+  particles(r.left + r.width/2, r.top + r.height/2, '#d8d8e0', 8);
 }
 
 function openSanctum(){
@@ -3937,9 +4541,10 @@ function renderStats(){
   else if(maxT >= 2) phase = 1;
   const stage = document.getElementById('stage');
   if(stage && stage.dataset.phase != phase) stage.dataset.phase = phase;
-  // Sanctum + Transmute toggle visibility
+  // Sanctum + Transmute + Œuvre toggle visibility
   const sanc = document.getElementById("sanctum-toggle");
   const trm = document.getElementById("transmute-toggle");
+  const oeu = document.getElementById("oeuvre-toggle");
   if(sanc){
     sanc.style.display = (STATE.transmutations > 0 || STATE.stars > 0) ? "" : "none";
     sanc.classList.toggle("has-stars", (STATE.stars||0) > 0);
@@ -3947,6 +4552,13 @@ function renderStats(){
   if(trm){
     trm.style.display = canTransmute() ? "" : "none";
     trm.classList.toggle("ready", canTransmute());
+  }
+  if(oeu){
+    // Visible dès qu'au moins une recette est faisable, déjà composée, ou T1 atteint sur les 3 voies
+    const minTierAll = Math.min(...(STATE.totals?.maxTier||[0,0,0]));
+    const showOeu = minTierAll >= 1 || Object.keys(STATE.recipes||{}).length > 0;
+    oeu.style.display = showOeu ? "" : "none";
+    oeu.classList.toggle("has-ready", recipeReadyCount() > 0);
   }
 }
 
@@ -3991,6 +4603,13 @@ function renderStatsBody(){
   html.push(`<div class="stats-row"><span class="lbl">Hauts faits</span><span class="val">${achCount}/${ACHIEVEMENTS.length}</span></div>`);
   html.push(`<div class="stats-row"><span class="lbl">Quêtes réclamées</span><span class="val">${STATE.quests.filter(q=>q.claimed).length}/${STATE.quests.length}</span></div>`);
   html.push(`</div>`);
+
+  const composed = Object.keys(STATE.recipes||{}).length;
+  if(composed > 0 || STATE.totals.maxTier.some(t=>t>=1)){
+    html.push(`<div class="stats-section"><h3>Grand Œuvre</h3>`);
+    html.push(`<div class="stats-row"><span class="lbl">Catalyseurs composés</span><span class="val">${composed}/${RECIPES.length}</span></div>`);
+    html.push(`</div>`);
+  }
 
   if((STATE.transmutations||0) > 0 || (STATE.totalStars||0) > 0){
     html.push(`<div class="stats-section"><h3>Transmutations</h3>`);
@@ -4221,9 +4840,9 @@ function endDrag(cx, cy){
 
 const COMBO_WINDOW_MS = 1800;
 function comboTick(){
-  // appelé à chaque merge : si dans la fenêtre, incrémente; sinon reset
   const now = Date.now();
-  if(now - (STATE.lastMergeTime||0) < COMBO_WINDOW_MS) STATE.comboCount = (STATE.comboCount||0) + 1;
+  const win = recipeComboWindow();
+  if(now - (STATE.lastMergeTime||0) < win) STATE.comboCount = (STATE.comboCount||0) + 1;
   else STATE.comboCount = 1;
   STATE.lastMergeTime = now;
   if(STATE.comboCount > (STATE.bestCombo||0)) STATE.bestCombo = STATE.comboCount;
@@ -4311,7 +4930,7 @@ function doMerge(fx, fy, tx, ty){
     // Cinématique Grand Œuvre à chaque palier ultime atteint pour la première fois
     const eventGoldMul = (STATE.activeEvents?.deepnight?.multipliers?.mergeGoldMul) || 1;
     const cMul = comboMultiplier();
-    const goldMul = eventGoldMul * cMul;
+    const goldMul = eventGoldMul * cMul * recipeGoldMul();
     if(newTier >= 5 && (STATE.firstReached[a.chain] || 0) < newTier){
       STATE.firstReached[a.chain] = newTier;
       const reward = Math.floor((TIER_REWARDS[newTier] || 200) * goldMul);
@@ -4991,6 +5610,7 @@ function save(){
       transmutations:STATE.transmutations||0,
       upgrades:STATE.upgrades||{},
       bestCombo:STATE.bestCombo||0,
+      recipes:STATE.recipes||{},
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
   }catch(e){}
@@ -5016,6 +5636,7 @@ function load(){
     STATE.transmutations = s.transmutations ?? 0;
     STATE.upgrades = s.upgrades ?? {};
     STATE.bestCombo = s.bestCombo ?? 0;
+    STATE.recipes = s.recipes ?? {};
     // Restaurer events dont l'expiration n'est pas passée
     if(s.activeEvents){
       const nowT = Date.now();
@@ -5119,6 +5740,13 @@ function boot(){
   document.getElementById("transmute-modal").addEventListener("click", e=>{
     if(e.target.id === "transmute-modal") document.getElementById("transmute-modal").classList.remove("show");
   });
+  document.getElementById("oeuvre-toggle").addEventListener("click", openOeuvre);
+  document.getElementById("oeuvre-close").addEventListener("click", ()=>{
+    document.getElementById("oeuvre-modal").classList.remove("show");
+  });
+  document.getElementById("oeuvre-modal").addEventListener("click", e=>{
+    if(e.target.id === "oeuvre-modal") document.getElementById("oeuvre-modal").classList.remove("show");
+  });
 
   document.getElementById("start-btn").addEventListener("click", ()=>{
     document.getElementById("intro").classList.add("gone");
@@ -5150,6 +5778,7 @@ function boot(){
     safe(tickFX);
     safe(tickCinema);
     safe(()=>tickEvents(now));
+    safe(()=>tickRecipeAutoSpawn(now));
     if(now - lastEventTickRender > 250){ safe(renderActiveEvents); lastEventTickRender = now; }
     requestAnimationFrame(loop);
   }

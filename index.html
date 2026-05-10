@@ -3198,9 +3198,11 @@ function audioInit(){
   A.wet = wet;
 }
 function makeImpulse(seconds=2, decay=2){
-  const r = 44100;
-  const len = r*seconds;
-  const buf = (A.ctx||(new (window.AudioContext||window.webkitAudioContext)())).createBuffer(2, len, r);
+  const ctx = A.ctx;
+  if(!ctx) return null;
+  const r = ctx.sampleRate;
+  const len = Math.floor(r*seconds);
+  const buf = ctx.createBuffer(2, len, r);
   for(let ch=0; ch<2; ch++){
     const data = buf.getChannelData(ch);
     for(let i=0; i<len; i++){
@@ -3259,8 +3261,9 @@ function startDrone(){
   wlfo.start();
 }
 function makeNoiseBuffer(seconds=2){
-  const r = 44100;
-  const buf = A.ctx.createBuffer(1, r*seconds, r);
+  const r = A.ctx.sampleRate;
+  const len = Math.floor(r*seconds);
+  const buf = A.ctx.createBuffer(1, len, r);
   const data = buf.getChannelData(0);
   for(let i=0; i<data.length; i++) data[i] = Math.random()*2-1;
   return buf;
@@ -3825,13 +3828,15 @@ function flashStat(id){
 function tickGenerators(now){
   $gens.querySelectorAll(".gen").forEach((el, i)=>{
     const g = STATE.generators[i];
+    if(!g || g.kind === "athanor") return; // pas de cooldown sur athanor
     const dt = now - g.lastFire;
     const effCd = g.cdMs * (STATE.eventCdMul || 1);
-    const cdPct = Math.min(100, (dt/effCd)*100);
-    el.querySelector(".cd-bar > span").style.width = cdPct + "%";
+    const cdPct = effCd > 0 ? Math.min(100, (dt/effCd)*100) : 100;
+    const bar = el.querySelector(".cd-bar > span");
+    if(bar) bar.style.width = cdPct + "%";
     el.classList.toggle("cooldown", dt < effCd);
   });
-  // bulles canvas
+  // bulles canvas (3 cauldrons seulement)
   $gens.querySelectorAll(".gen-bubbles").forEach((cv, i)=>{
     const ctx = cv.getContext("2d");
     drawCauldronBubbles(ctx, cv.width, cv.height, i, now);
@@ -4644,20 +4649,21 @@ function boot(){
     }
   });
 
-  // boucle principale
+  // boucle principale — résistante aux erreurs (chaque tick est try/catch isolé)
   let last = performance.now();
   let lastEventTickRender = 0;
+  function safe(fn){ try{ fn(); }catch(e){ console.error("[loop]", fn.name||"anon", e); } }
   function loop(now){
     const dt = (now - last)/1000; last = now;
-    STATE.essence = Math.min(STATE.essenceMax, STATE.essence + STATE.essenceRegen * (STATE.eventRegenMul || 1) * dt);
-    renderStats();
-    tickGenerators(now);
-    tickDust();
-    tickCandles(now);
-    tickFX();
-    tickCinema();
-    tickEvents(now);
-    if(now - lastEventTickRender > 250){ renderActiveEvents(); lastEventTickRender = now; }
+    safe(()=>{ STATE.essence = Math.min(STATE.essenceMax, STATE.essence + STATE.essenceRegen * (STATE.eventRegenMul || 1) * dt); });
+    safe(renderStats);
+    safe(()=>tickGenerators(now));
+    safe(tickDust);
+    safe(()=>tickCandles(now));
+    safe(tickFX);
+    safe(tickCinema);
+    safe(()=>tickEvents(now));
+    if(now - lastEventTickRender > 250){ safe(renderActiveEvents); lastEventTickRender = now; }
     requestAnimationFrame(loop);
   }
   requestAnimationFrame(loop);

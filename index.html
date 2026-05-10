@@ -434,6 +434,36 @@ header{
 #codex.drawer.open{transform:translateX(0)}
 #quests.drawer.open{transform:translateX(0)}
 
+.drawer-close{
+  position:absolute; top:8px;
+  width:34px; height:34px; line-height:30px; text-align:center;
+  font-family:"Cormorant Garamond", serif;
+  color:var(--gold); cursor:pointer;
+  font-size:30px;
+  background:rgba(20,14,18,.92);
+  border:1px solid var(--gold);
+  border-radius:50%;
+  z-index:9;
+  transition:color .2s, border-color .2s, transform .2s, background .2s;
+}
+/* Pour le drawer quetes (à droite) → close button à GAUCHE-haut du drawer */
+#quests .drawer-close{ left:8px; right:auto }
+/* Pour le drawer codex (à gauche) → close button à DROITE-haut du drawer */
+#codex .drawer-close{ right:8px; left:auto }
+.drawer-close:hover, .drawer-close:active{
+  color:#000; background:var(--gold-bright); border-color:var(--gold-bright);
+  transform:scale(1.08);
+}
+
+/* Tap-overlay : permet de fermer en tapant en dehors d'un drawer ouvert */
+#drawer-overlay{
+  position:fixed; inset:0; z-index:6;
+  background:rgba(0,0,0,.35);
+  opacity:0; pointer-events:none;
+  transition:opacity .25s;
+}
+#drawer-overlay.show{opacity:1; pointer-events:auto}
+
 .drawer h2{
   font-family:"Cinzel", serif; font-weight:900;
   letter-spacing:.20em; font-size:14px;
@@ -1575,6 +1605,7 @@ header{
   </header>
 
   <div id="active-events"></div>
+  <div id="drawer-overlay"></div>
 
   <main id="play">
     <div id="grid-wrap">
@@ -1750,6 +1781,7 @@ header{
   <span class="label">CODEX</span>
 </button>
 <aside class="drawer" id="codex">
+  <div class="drawer-close" data-drawer="codex" aria-label="Fermer">×</div>
   <h2>CODEX</h2>
   <div class="subtitle">— LES TROIS VOIES —</div>
   <div class="divider">
@@ -1773,6 +1805,7 @@ header{
   <span class="label">QUÊTES</span>
 </button>
 <aside class="drawer" id="quests">
+  <div class="drawer-close" data-drawer="quests" aria-label="Fermer">×</div>
   <h2>QUÊTES</h2>
   <div class="subtitle">— LE GRAND ŒUVRE —</div>
   <div class="divider">
@@ -3467,6 +3500,7 @@ const UPGRADES = [
   { id:"sol",     name:"Sol Aurum",       cost:16, desc:"L'or solaire afflue. Quêtes : récompense +25%.",              effect:{questGoldMul:1.25} },
   { id:"fulmen",  name:"Fulmen",          cost:22, desc:"La foudre paie. Chaque fusion T2+ rapporte +3 couronnes.",    effect:{mergeBonus:3} },
   { id:"anima",   name:"Anima Mundi",     cost:30, desc:"L'âme du monde s'incarne. 8% de chance de spawn directement à T1.", effect:{t1Chance:.08} },
+  { id:"iungens", name:"Spiritus Iungens",cost:18, desc:"L'esprit qui joint. Toutes les 12 secondes, deux items adjacents identiques fusionnent d'eux-mêmes.", effect:{autoMergeMs:12000} },
 ];
 
 function calcTransmuteStars(){
@@ -3752,6 +3786,38 @@ function compose(id){
     // Toast event-style
     eventNotification({ name: r.name, desc: r.effectText }, "Catalyseur acquis");
   }, 320);
+}
+
+function getAutoMergeMs(){
+  return (STATE.upgrades?.iungens > 0) ? 12000 : 0;
+}
+
+let _lastAutoMergeAt = 0;
+function tickAutoMerge(now){
+  const ms = getAutoMergeMs();
+  if(!ms) return;
+  if(!_lastAutoMergeAt) _lastAutoMergeAt = now;
+  if(now - _lastAutoMergeAt < ms) return;
+  _lastAutoMergeAt = now;
+  // Trouve la paire identique adjacente avec le tier le plus bas (priorité au nettoyage)
+  let best = null;
+  for(let y=0;y<ROWS;y++){
+    for(let x=0;x<COLS;x++){
+      const t = STATE.grid[y][x];
+      if(!t || t.tier >= TIERS-1) continue;
+      const tries = [[1,0],[0,1]];
+      for(const [dx,dy] of tries){
+        const nx = x+dx, ny = y+dy;
+        if(nx>=COLS || ny>=ROWS) continue;
+        const u = STATE.grid[ny][nx];
+        if(u && u.chain === t.chain && u.tier === t.tier){
+          if(!best || t.tier < best.tier) best = { fx:x, fy:y, tx:nx, ty:ny, tier:t.tier };
+        }
+      }
+    }
+  }
+  if(!best) return;
+  doMerge(best.fx, best.fy, best.tx, best.ty);
 }
 
 function tickRecipeAutoSpawn(now){
@@ -5689,14 +5755,32 @@ function boot(){
   checkAchievements();
   // Offline progress toast (déclenché dans le start-btn pour éviter d'apparaître avant l'intro)
 
+  function syncDrawerOverlay(){
+    const open = document.querySelector('.drawer.open');
+    document.getElementById('drawer-overlay').classList.toggle('show', !!open);
+  }
   document.getElementById("quest-toggle").addEventListener("click", ()=>{
     document.getElementById("quests").classList.toggle("open");
     document.getElementById("codex").classList.remove("open");
+    syncDrawerOverlay();
   });
   document.getElementById("claim-all").addEventListener("click", claimAll);
   document.getElementById("codex-toggle").addEventListener("click", ()=>{
     document.getElementById("codex").classList.toggle("open");
     document.getElementById("quests").classList.remove("open");
+    syncDrawerOverlay();
+  });
+  document.querySelectorAll(".drawer-close").forEach(btn=>{
+    btn.addEventListener("click", e=>{
+      e.stopPropagation();
+      const id = btn.dataset.drawer;
+      document.getElementById(id).classList.remove("open");
+      syncDrawerOverlay();
+    });
+  });
+  document.getElementById("drawer-overlay").addEventListener("click", ()=>{
+    document.querySelectorAll('.drawer.open').forEach(d=>d.classList.remove('open'));
+    syncDrawerOverlay();
   });
   document.getElementById("audio-toggle").addEventListener("click", ()=>{
     STATE.audio = !STATE.audio;
@@ -5779,6 +5863,7 @@ function boot(){
     safe(tickCinema);
     safe(()=>tickEvents(now));
     safe(()=>tickRecipeAutoSpawn(now));
+    safe(()=>tickAutoMerge(now));
     if(now - lastEventTickRender > 250){ safe(renderActiveEvents); lastEventTickRender = now; }
     requestAnimationFrame(loop);
   }

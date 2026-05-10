@@ -1,10 +1,12 @@
 // Service Worker — Alchimia
-const CACHE = 'alchimia-v1';
+const CACHE = 'alchimia-v2';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
   './assets/audio/ambient.mp3',
+  './assets/audio/ambient_mid.mp3',
+  './assets/audio/ambient_cosmic.mp3',
   './assets/icon-192.png',
   './assets/icon-512.png',
   './assets/icon-maskable-512.png',

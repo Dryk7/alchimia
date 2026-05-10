@@ -2306,8 +2306,13 @@ header{
 <canvas id="fx"></canvas>
 <canvas id="cinema"></canvas>
 
-<!-- Bande sonore : Forgotten Tomb Ambience par kindland — CC0 — opengameart.org/content/forgoten-tomb-ambience -->
+<!-- Bandes sonores adaptatives — 3 phases sonores qui se relaient selon la progression -->
+<!-- Phase 0 (early, mt 0-3) — Forgotten Tomb Ambience par kindland — CC0 -->
 <audio id="bgm" src="assets/audio/ambient.mp3" loop preload="auto" style="display:none"></audio>
+<!-- Phase 1 (mid, mt 4-5) — Long Note Three par Kevin MacLeod — CC BY 4.0 — incompetech.com -->
+<audio id="bgm-mid" src="assets/audio/ambient_mid.mp3" loop preload="none" style="display:none"></audio>
+<!-- Phase 2 (cosmic, mt 6-7) — chargé dynamiquement -->
+<audio id="bgm-cosmic" src="assets/audio/ambient_cosmic.mp3" loop preload="none" style="display:none"></audio>
 
 <!-- Toggles d'action conservés (handlers actifs) mais cachés du DOM visible : tout passe désormais par le menu hamburger pour ne pas chevaucher les compteurs -->
 <button id="oeuvre-toggle" hidden></button>
@@ -2595,8 +2600,8 @@ header{
       </section>
       <section class="grim-sec">
         <h3>À propos</h3>
-        <p class="set-help">Alchimia v3 — single-HTML, mobile-first, jouable hors ligne après la première visite.</p>
-        <p class="set-help">Bande sonore : <em>Forgotten Tomb Ambience</em> par <strong>kindland</strong> — CC0 — opengameart.org</p>
+        <p class="set-help">Alchimia v4 — single-HTML, mobile-first, jouable hors ligne après la première visite.</p>
+        <p class="set-help">Bande sonore adaptative : Forgotten Tomb (kindland, CC0) · Long Note Three (Kevin MacLeod, CC BY) · Space Music (HitCtrl, CC BY). Détails dans les Crédits.</p>
       </section>
     </div>
   </div>
@@ -2630,8 +2635,11 @@ header{
         <p>Florent <em>Dryk</em> Rouxel — direction artistique, mécaniques, équilibrage.<br>Co-auteur : Claude (Anthropic) — implémentation, sprites pixel art, synthèse audio.</p>
       </section>
       <section class="grim-sec">
-        <h3>Bande sonore</h3>
-        <p><strong>Forgotten Tomb Ambience</strong> — <em>kindland</em><br>Licence : CC0 (domaine public)<br><a href="https://opengameart.org/content/forgoten-tomb-ambience" target="_blank" rel="noopener">opengameart.org</a></p>
+        <h3>Bande sonore adaptative</h3>
+        <p>Trois pistes qui se relaient selon ta progression :</p>
+        <p><strong>Phase 0–1 · Forgotten Tomb Ambience</strong> — <em>kindland</em> · CC0 · <a href="https://opengameart.org/content/forgoten-tomb-ambience" target="_blank" rel="noopener">opengameart.org</a></p>
+        <p><strong>Phase 2–3 · Long Note Three</strong> — <em>Kevin MacLeod</em> · CC BY 4.0 · <a href="https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100424" target="_blank" rel="noopener">incompetech.com</a></p>
+        <p><strong>Phase 4 (cosmique) · Space Music</strong> — <em>HitCtrl</em> · CC BY 3.0 · <a href="https://opengameart.org/content/space-music-2" target="_blank" rel="noopener">opengameart.org</a></p>
       </section>
       <section class="grim-sec">
         <h3>Typographie</h3>
@@ -5417,7 +5425,9 @@ function tickEvents(now){
 }
 
 /* ================ AUDIO ================ */
-const A = { ctx:null, master:null, drone:null, droneOn:false, reverb:null, bgm:null, bgmStarted:false };
+const A = { ctx:null, master:null, drone:null, droneOn:false, reverb:null,
+            bgm:null, bgmMid:null, bgmCosmic:null,
+            bgmActiveId:null, bgmStarted:false };
 const BGM_VOLUME = .55; // volume de la musique d'ambiance
 function audioInit(){
   if(A.ctx) return;
@@ -5433,11 +5443,12 @@ function audioInit(){
   A.reverb.connect(wet).connect(A.master);
   A.master.connect(A.ctx.destination);
   A.wet = wet;
-  // Musique d'ambiance (HTMLAudioElement)
+  // Musiques d'ambiance (3 HTMLAudioElement qui se relaient)
   A.bgm = document.getElementById('bgm');
-  if(A.bgm){
-    const userMul = (STATE.bgmUserVolume ?? 1);
-    A.bgm.volume = STATE.audio ? (BGM_VOLUME * userMul) : 0;
+  A.bgmMid = document.getElementById('bgm-mid');
+  A.bgmCosmic = document.getElementById('bgm-cosmic');
+  for(const el of [A.bgm, A.bgmMid, A.bgmCosmic]){
+    if(el){ el.volume = 0; }
   }
   // Master gain pour SFX, ajusté par le slider utilisateur
   if(A.master){
@@ -5445,32 +5456,90 @@ function audioInit(){
     A.master.gain.value = STATE.audio ? sfxMul : 0;
   }
 }
+
+/* Mapping palier max global → ID du track audio à jouer
+   Phase audio 0 (mt 0-3) : Forgotten Tomb
+   Phase audio 1 (mt 4-5) : Long Note Three
+   Phase audio 2 (mt 6-7) : Cosmic */
+function audioPhaseFor(maxT){
+  if(maxT >= 6) return 'cosmic';
+  if(maxT >= 4) return 'mid';
+  return 'base';
+}
+function bgmElementFor(id){
+  return id === 'base' ? A.bgm : (id === 'mid' ? A.bgmMid : A.bgmCosmic);
+}
+
+let _bgmFadeTimers = new Map();
+function fadeAudio(el, targetVol, durationMs){
+  if(!el) return;
+  // Cancel previous fade
+  if(_bgmFadeTimers.has(el)){ clearInterval(_bgmFadeTimers.get(el)); }
+  const start = el.volume;
+  const t0 = performance.now();
+  const ticker = setInterval(()=>{
+    const dt = Math.min(1, (performance.now() - t0) / durationMs);
+    el.volume = Math.max(0, Math.min(1, start + (targetVol - start) * dt));
+    if(dt >= 1){
+      clearInterval(ticker);
+      _bgmFadeTimers.delete(el);
+      if(targetVol === 0){ try{ el.pause(); }catch(e){} }
+    }
+  }, 50);
+  _bgmFadeTimers.set(el, ticker);
+}
+
+function setBgmPhase(phaseId){
+  if(!A.bgm) return; // pas encore initialisé
+  if(A.bgmActiveId === phaseId) return; // déjà sur cette phase
+  const target = bgmElementFor(phaseId);
+  if(!target) return;
+  const userMul = (STATE.bgmUserVolume ?? 1);
+  const targetVol = STATE.audio ? (BGM_VOLUME * userMul) : 0;
+  // Fade out tous les autres
+  for(const el of [A.bgm, A.bgmMid, A.bgmCosmic]){
+    if(el !== target && el && !el.paused){
+      fadeAudio(el, 0, 2200);
+    }
+  }
+  // Fade in cible
+  if(targetVol > 0){
+    // Démarre à un offset aléatoire si pas encore démarré
+    try{
+      if(target.paused){
+        const dur = target.duration;
+        if(dur && isFinite(dur)) target.currentTime = Math.random() * dur * .6;
+        const p = target.play();
+        if(p && p.catch) p.catch(()=>{}); // ignore autoplay errors
+      }
+    }catch(e){}
+    fadeAudio(target, targetVol, 2200);
+  }
+  A.bgmActiveId = phaseId;
+}
 function setBgmVolume(on){
   if(!A.bgm) return;
   const userMul = (STATE.bgmUserVolume ?? 1);
-  const target = on ? (BGM_VOLUME * userMul) : 0;
-  const start = A.bgm.volume;
-  const t0 = performance.now();
-  const dur = 600;
-  function step(){
-    const dt = Math.min(1, (performance.now()-t0)/dur);
-    A.bgm.volume = start + (target - start) * dt;
-    if(dt < 1) requestAnimationFrame(step);
+  const targetVol = on ? (BGM_VOLUME * userMul) : 0;
+  // Applique au track actif
+  const active = bgmElementFor(A.bgmActiveId || 'base');
+  if(active && !active.paused){
+    fadeAudio(active, targetVol, 600);
   }
-  step();
 }
 function bgmPlay(){
-  if(!A.bgm || A.bgmStarted) return;
-  // Démarrer à un endroit aléatoire pour éviter que tout le monde entende le même début
-  try{
-    const dur = A.bgm.duration;
-    if(dur && isFinite(dur)) A.bgm.currentTime = Math.random() * dur * .8;
-  }catch(e){}
-  const p = A.bgm.play();
-  if(p && p.then) p.then(()=>{ A.bgmStarted = true; }).catch(()=>{});
-  else A.bgmStarted = true;
+  if(A.bgmStarted) return;
+  // Détermine la phase en fonction de l'état actuel
+  const maxT = Math.max(...(STATE.totals?.maxTier || [0]));
+  const phase = audioPhaseFor(maxT);
+  setBgmPhase(phase);
+  A.bgmStarted = true;
 }
-function bgmPause(){ if(A.bgm) A.bgm.pause(); }
+function bgmPause(){
+  for(const el of [A.bgm, A.bgmMid, A.bgmCosmic]){
+    if(el) try{ el.pause(); }catch(e){}
+  }
+}
 function makeImpulse(seconds=2, decay=2){
   const ctx = A.ctx;
   if(!ctx) return null;
@@ -6012,7 +6081,7 @@ function renderStats(){
   $gold.title = STATE.gold + " couronnes";
   const modal = document.getElementById("stats-modal");
   if(modal && modal.classList.contains("show")) renderStatsBody();
-  // Phase de fond : 0=normal, 1@T2, 2@T4, 3@T6, 4@T7
+  // Phase visuelle de fond : 0=normal, 1@T2, 2@T4, 3@T6, 4@T7
   const maxT = Math.max(...(STATE.totals?.maxTier || [0]));
   let phase = 0;
   if(maxT >= 7) phase = 4;
@@ -6021,6 +6090,11 @@ function renderStats(){
   else if(maxT >= 2) phase = 1;
   const stage = document.getElementById('stage');
   if(stage && stage.dataset.phase != phase) stage.dataset.phase = phase;
+  // Phase audio adaptative (3 tracks pour 3 plages de progression)
+  if(A.bgmStarted){
+    const audPhase = audioPhaseFor(maxT);
+    if(audPhase !== A.bgmActiveId) setBgmPhase(audPhase);
+  }
   // Visibilité & badges des items du Menu (ils sont les vrais points d'entrée maintenant)
   const menuOeuvre = document.getElementById('menu-oeuvre');
   const menuSanc = document.getElementById('menu-sanctum');

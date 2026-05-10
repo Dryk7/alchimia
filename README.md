@@ -43,7 +43,12 @@ Chaque palier ultime atteint pour la 1ère fois déclenche une cinématique « G
 - HTML / CSS / JS vanilla, single-file (~5000 lignes)
 - Sprites pixel art SVG 32×32 (24 items + 4 générateurs + ornements)
 - Canvas pour poussière flottante, bougies animées avec flicker, bulles de cauldron, FX (foudre de fusion, particules attractives, shockwave, cinématique)
-- Bande sonore : *Forgotten Tomb Ambience* par **kindland** ([CC0](https://creativecommons.org/publicdomain/zero/1.0/) — [opengameart.org](https://opengameart.org/content/forgoten-tomb-ambience)) ; SFX synthétisés via Web Audio (cloches harmoniques, sub-bass cinématique, reverb par convolution)
+- Bande sonore adaptative (3 tracks qui se relaient avec crossfade selon le palier max atteint) :
+  - Phase 0–1 (early) : *Forgotten Tomb Ambience* par **kindland** ([CC0](https://creativecommons.org/publicdomain/zero/1.0/) — [opengameart.org](https://opengameart.org/content/forgoten-tomb-ambience))
+  - Phase 2–3 (mid–late) : *Long Note Three* par **Kevin MacLeod** ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) — [incompetech.com](https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100424))
+  - Phase 4 (cosmic) : *Space Music* par **HitCtrl** ([CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) — [opengameart.org](https://opengameart.org/content/space-music-2))
+
+  SFX synthétisés via Web Audio (cloches harmoniques, sub-bass cinématique, reverb par convolution)
 - Vibration API mobile
 - LocalStorage save (auto toutes les 4s)
 

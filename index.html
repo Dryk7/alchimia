@@ -1374,6 +1374,9 @@ header{
 <canvas id="fx"></canvas>
 <canvas id="cinema"></canvas>
 
+<!-- Bande sonore : Forgotten Tomb Ambience par kindland — CC0 — opengameart.org/content/forgoten-tomb-ambience -->
+<audio id="bgm" src="assets/audio/ambient.mp3" loop preload="auto" style="display:none"></audio>
+
 <button id="sanctum-toggle" title="Sanctum">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
     <polygon points="12,3 14,9 20,9.5 15,13.5 17,20 12,16 7,20 9,13.5 4,9.5 10,9"/>
@@ -3181,7 +3184,8 @@ function tickEvents(now){
 }
 
 /* ================ AUDIO ================ */
-const A = { ctx:null, master:null, drone:null, droneOn:false, reverb:null };
+const A = { ctx:null, master:null, drone:null, droneOn:false, reverb:null, bgm:null, bgmStarted:false };
+const BGM_VOLUME = .55; // volume de la musique d'ambiance
 function audioInit(){
   if(A.ctx) return;
   A.ctx = new (window.AudioContext||window.webkitAudioContext)();
@@ -3196,7 +3200,38 @@ function audioInit(){
   A.reverb.connect(wet).connect(A.master);
   A.master.connect(A.ctx.destination);
   A.wet = wet;
+  // Musique d'ambiance (HTMLAudioElement)
+  A.bgm = document.getElementById('bgm');
+  if(A.bgm){
+    A.bgm.volume = STATE.audio ? BGM_VOLUME : 0;
+  }
 }
+function setBgmVolume(on){
+  if(!A.bgm) return;
+  // Fade doux pour éviter les clicks
+  const target = on ? BGM_VOLUME : 0;
+  const start = A.bgm.volume;
+  const t0 = performance.now();
+  const dur = 600;
+  function step(){
+    const dt = Math.min(1, (performance.now()-t0)/dur);
+    A.bgm.volume = start + (target - start) * dt;
+    if(dt < 1) requestAnimationFrame(step);
+  }
+  step();
+}
+function bgmPlay(){
+  if(!A.bgm || A.bgmStarted) return;
+  // Démarrer à un endroit aléatoire pour éviter que tout le monde entende le même début
+  try{
+    const dur = A.bgm.duration;
+    if(dur && isFinite(dur)) A.bgm.currentTime = Math.random() * dur * .8;
+  }catch(e){}
+  const p = A.bgm.play();
+  if(p && p.then) p.then(()=>{ A.bgmStarted = true; }).catch(()=>{});
+  else A.bgmStarted = true;
+}
+function bgmPause(){ if(A.bgm) A.bgm.pause(); }
 function makeImpulse(seconds=2, decay=2){
   const ctx = A.ctx;
   if(!ctx) return null;
@@ -3986,6 +4021,10 @@ function endDrag(cx, cy){
 
 function doMerge(fx, fy, tx, ty){
   const a = STATE.grid[fy][fx], b = STATE.grid[ty][tx];
+  if(!a || !b || a.chain !== b.chain || a.tier !== b.tier || b.tier >= TIERS-1){
+    // garde défensive : merge invalide (tier max ou tuiles incompatibles)
+    renderTile(fx, fy); renderTile(tx, ty); return;
+  }
   let newTier = b.tier + 1;
   // Comet boost : saute un palier supplémentaire (max TIERS-1)
   if(STATE.cometBoost > 0 && newTier < TIERS-1){
@@ -4090,7 +4129,30 @@ function applyProgressionBonuses(){
 }
 
 /* ================ GRAND ŒUVRE CINEMATIC ================ */
+function bgmDuck(target=.18, restoreDelayMs=4000){
+  if(!A.bgm) return;
+  const orig = A.bgm.volume;
+  const t0 = performance.now(); const dur = 400;
+  function down(){
+    const dt = Math.min(1,(performance.now()-t0)/dur);
+    A.bgm.volume = orig + (target - orig) * dt;
+    if(dt<1) requestAnimationFrame(down);
+  }
+  down();
+  setTimeout(()=>{
+    if(!STATE.audio) return;
+    const t1 = performance.now(); const start = A.bgm.volume;
+    function up(){
+      const dt = Math.min(1,(performance.now()-t1)/600);
+      A.bgm.volume = start + (BGM_VOLUME - start) * dt;
+      if(dt<1) requestAnimationFrame(up);
+    }
+    up();
+  }, restoreDelayMs);
+}
+
 function grandOeuvre(chain, tier){
+  bgmDuck(.18, tier >= 7 ? 5000 : 3800);
   const overlay = document.getElementById("grand-oeuvre");
   const labels = {
     5: ["GRAND ŒUVRE", "le sceau du Grand Œuvre est posé"],
@@ -4599,6 +4661,8 @@ function boot(){
   document.getElementById("audio-toggle").addEventListener("click", ()=>{
     STATE.audio = !STATE.audio;
     if(A.master) A.master.gain.value = STATE.audio ? .35 : 0;
+    setBgmVolume(STATE.audio);
+    if(STATE.audio && A.bgm && A.bgm.paused) bgmPlay();
     document.getElementById("audio-toggle").classList.toggle("on", STATE.audio);
   });
   document.getElementById("audio-toggle").classList.toggle("on", STATE.audio);
@@ -4641,7 +4705,7 @@ function boot(){
     document.getElementById("intro").classList.add("gone");
     audioInit();
     if(A.ctx && A.ctx.state === "suspended") A.ctx.resume();
-    startDrone();
+    bgmPlay();
     // Affiche toast offline si applicable
     if(STATE.pendingOfflineToast){
       const p = STATE.pendingOfflineToast;

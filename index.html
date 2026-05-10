@@ -1357,6 +1357,19 @@ header{
   font-family:"Cormorant Garamond", serif; font-style:italic;
   font-size:12px; color:var(--parchment-2);
 }
+.menu-item .mi-badge{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:10px; letter-spacing:.14em;
+  color:#000; background:linear-gradient(180deg, var(--gold-bright), var(--gold));
+  padding:3px 7px;
+  margin-left:4px;
+  flex-shrink:0;
+}
+.menu-item.ready{
+  border-color:var(--gold-bright);
+  box-shadow:0 0 14px var(--gold-glow);
+  animation:pulseGold 1.8s ease-in-out infinite;
+}
 
 /* Épigraphe en exergue du Grimoire */
 .epigraph{
@@ -1995,31 +2008,11 @@ header{
 <!-- Bande sonore : Forgotten Tomb Ambience par kindland — CC0 — opengameart.org/content/forgoten-tomb-ambience -->
 <audio id="bgm" src="assets/audio/ambient.mp3" loop preload="auto" style="display:none"></audio>
 
-<button id="oeuvre-toggle" title="Grand Œuvre">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
-    <circle cx="12" cy="9" r="3.2"/>
-    <circle cx="9" cy="14" r="3.2"/>
-    <circle cx="15" cy="14" r="3.2"/>
-  </svg>
-</button>
-<button id="sanctum-toggle" title="Sanctum">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
-    <polygon points="12,3 14,9 20,9.5 15,13.5 17,20 12,16 7,20 9,13.5 4,9.5 10,9"/>
-  </svg>
-</button>
-<button id="transmute-toggle" title="Transmutation">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
-    <circle cx="12" cy="12" r="9"/>
-    <path d="M12 4 L12 20 M4 12 L20 12 M6 6 L18 18 M6 18 L18 6"/>
-  </svg>
-</button>
-<button id="stats-toggle" title="Statistiques">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
-    <rect x="4" y="13" width="3" height="7"/>
-    <rect x="10.5" y="9" width="3" height="11"/>
-    <rect x="17" y="5" width="3" height="15"/>
-  </svg>
-</button>
+<!-- Toggles d'action conservés (handlers actifs) mais cachés du DOM visible : tout passe désormais par le menu hamburger pour ne pas chevaucher les compteurs -->
+<button id="oeuvre-toggle" hidden></button>
+<button id="sanctum-toggle" hidden></button>
+<button id="transmute-toggle" hidden></button>
+<button id="stats-toggle" hidden></button>
 
 <button id="audio-toggle" title="Son">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">
@@ -2090,6 +2083,37 @@ header{
           <path d="M7 9 h3 M14 9 h3 M7 13 h3 M14 13 h3 M7 17 h3 M14 17 h3"/>
         </svg>
         <div class="mi-meta"><div class="mi-title">Le Grimoire</div><div class="mi-sub">comprendre les voies, les économies, les rituels</div></div>
+      </button>
+      <button class="menu-item" data-action="oeuvre" id="menu-oeuvre">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <circle cx="12" cy="9" r="3.2"/>
+          <circle cx="9" cy="14" r="3.2"/>
+          <circle cx="15" cy="14" r="3.2"/>
+        </svg>
+        <div class="mi-meta"><div class="mi-title">Grand Œuvre</div><div class="mi-sub">composer les catalyseurs cross-voies</div></div>
+        <span class="mi-badge" id="menu-oeuvre-badge"></span>
+      </button>
+      <button class="menu-item" data-action="sanctum" id="menu-sanctum">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <polygon points="12,3 14,9 20,9.5 15,13.5 17,20 12,16 7,20 9,13.5 4,9.5 10,9"/>
+        </svg>
+        <div class="mi-meta"><div class="mi-title">Sanctum</div><div class="mi-sub">graver les étoiles dans la pierre</div></div>
+        <span class="mi-badge" id="menu-sanctum-badge"></span>
+      </button>
+      <button class="menu-item" data-action="transmute" id="menu-transmute">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M12 4 L12 20 M4 12 L20 12 M6 6 L18 18 M6 18 L18 6"/>
+        </svg>
+        <div class="mi-meta"><div class="mi-title">Transmutation</div><div class="mi-sub">le rite des étoiles</div></div>
+      </button>
+      <button class="menu-item" data-action="stats">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <rect x="4" y="13" width="3" height="7"/>
+          <rect x="10.5" y="9" width="3" height="11"/>
+          <rect x="17" y="5" width="3" height="15"/>
+        </svg>
+        <div class="mi-meta"><div class="mi-title">Statistiques</div><div class="mi-sub">temps de jeu, totaux, records</div></div>
       </button>
       <button class="menu-item" data-target="settings-modal">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
@@ -5268,24 +5292,36 @@ function renderStats(){
   else if(maxT >= 2) phase = 1;
   const stage = document.getElementById('stage');
   if(stage && stage.dataset.phase != phase) stage.dataset.phase = phase;
-  // Sanctum + Transmute + Œuvre toggle visibility
-  const sanc = document.getElementById("sanctum-toggle");
-  const trm = document.getElementById("transmute-toggle");
-  const oeu = document.getElementById("oeuvre-toggle");
-  if(sanc){
-    sanc.style.display = (STATE.transmutations > 0 || STATE.stars > 0) ? "" : "none";
-    sanc.classList.toggle("has-stars", (STATE.stars||0) > 0);
-  }
-  if(trm){
-    trm.style.display = canTransmute() ? "" : "none";
-    trm.classList.toggle("ready", canTransmute());
-  }
-  if(oeu){
-    // Visible dès qu'au moins une recette est faisable, déjà composée, ou T1 atteint sur les 3 voies
+  // Visibilité & badges des items du Menu (ils sont les vrais points d'entrée maintenant)
+  const menuOeuvre = document.getElementById('menu-oeuvre');
+  const menuSanc = document.getElementById('menu-sanctum');
+  const menuTrm = document.getElementById('menu-transmute');
+  const menuOeuvreBadge = document.getElementById('menu-oeuvre-badge');
+  const menuSancBadge = document.getElementById('menu-sanctum-badge');
+  if(menuOeuvre){
     const minTierAll = Math.min(...(STATE.totals?.maxTier||[0,0,0]));
     const showOeu = minTierAll >= 1 || Object.keys(STATE.recipes||{}).length > 0;
-    oeu.style.display = showOeu ? "" : "none";
-    oeu.classList.toggle("has-ready", recipeReadyCount() > 0);
+    menuOeuvre.style.display = showOeu ? "" : "none";
+    const ready = recipeReadyCount();
+    menuOeuvre.classList.toggle("ready", ready > 0);
+    if(menuOeuvreBadge){
+      menuOeuvreBadge.textContent = ready > 0 ? ready : '';
+      menuOeuvreBadge.style.display = ready > 0 ? '' : 'none';
+    }
+  }
+  if(menuSanc){
+    const showSanc = (STATE.transmutations > 0 || STATE.stars > 0);
+    menuSanc.style.display = showSanc ? "" : "none";
+    const stars = STATE.stars||0;
+    menuSanc.classList.toggle("ready", stars > 0);
+    if(menuSancBadge){
+      menuSancBadge.textContent = stars > 0 ? (stars + '★') : '';
+      menuSancBadge.style.display = stars > 0 ? '' : 'none';
+    }
+  }
+  if(menuTrm){
+    menuTrm.style.display = canTransmute() ? "" : "none";
+    menuTrm.classList.toggle("ready", canTransmute());
   }
 }
 
@@ -6499,12 +6535,19 @@ function boot(){
   bindModalClose('grimoire-modal','grimoire-close');
   bindModalClose('settings-modal','settings-close');
   bindModalClose('credits-modal','credits-close');
-  // Menu items naviguent vers leurs cibles
+  // Menu items naviguent vers leurs cibles ou exécutent une action
   document.querySelectorAll('.menu-item').forEach(btn=>{
     btn.addEventListener('click', ()=>{
+      const action = btn.dataset.action;
       const target = btn.dataset.target;
       closeModal('menu-modal');
-      setTimeout(()=>openModal(target), 200);
+      setTimeout(()=>{
+        if(target) openModal(target);
+        else if(action === 'oeuvre') openOeuvre();
+        else if(action === 'sanctum') openSanctum();
+        else if(action === 'transmute') openTransmute();
+        else if(action === 'stats'){ renderStatsBody(); openModal('stats-modal'); }
+      }, 200);
     });
   });
   // Volume musique slider

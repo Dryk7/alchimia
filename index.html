@@ -200,7 +200,24 @@ header{
   transform:translateX(-50%) rotate(45deg);
   box-shadow:0 0 4px var(--gold-glow);
 }
-.stat .icon{width:16px; height:16px; display:inline-block; flex-shrink:0; filter:drop-shadow(0 0 3px currentColor)}
+.stat .icon{width:18px; height:18px; display:inline-block; flex-shrink:0; filter:drop-shadow(0 0 3px currentColor)}
+.stat .stat-stack{display:flex; flex-direction:column; line-height:1; align-items:flex-start; gap:1px}
+.stat .stat-lbl{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:7px; letter-spacing:.2em;
+  color:var(--gold); opacity:.85;
+  text-transform:uppercase;
+}
+.stat .stat-val{
+  font-family:"VT323", monospace;
+  font-size:17px;
+  color:var(--gold-bright);
+  text-shadow:0 0 6px var(--gold-glow);
+}
+@media (min-width: 600px){
+  .stat .stat-lbl{font-size:8px}
+  .stat .stat-val{font-size:20px}
+}
 
 /* ================ GAME ================ */
 #play{
@@ -286,11 +303,16 @@ header{
     0 0 12px var(--gold-glow);
 }
 .cell.merge-target{
-  border-color:#fff;
+  border-color:var(--gold-bright);
   box-shadow:
-    inset 0 0 0 1px #fff,
-    inset 0 0 16px #fff,
-    0 0 18px #fff;
+    inset 0 0 0 2px var(--gold-bright),
+    inset 0 0 22px rgba(232,200,120,.5),
+    0 0 24px var(--gold-bright);
+  animation:mergeReady 1s ease-in-out infinite;
+}
+@keyframes mergeReady{
+  0%,100%{box-shadow:inset 0 0 0 2px var(--gold-bright), inset 0 0 18px rgba(232,200,120,.4), 0 0 18px var(--gold-bright)}
+  50%{box-shadow:inset 0 0 0 2px #fff, inset 0 0 28px rgba(255,255,255,.6), 0 0 32px #fff}
 }
 .cell.flash{
   animation:cellFlash .35s ease-out;
@@ -513,10 +535,11 @@ header{
   transform:scale(1.08);
 }
 
-/* Tap-overlay : permet de fermer en tapant en dehors d'un drawer ouvert */
+/* Tap-overlay : permet de fermer en tapant en dehors d'un drawer ouvert.
+   Volontairement très subtil : on ne masque pas le board pour suivre la progression. */
 #drawer-overlay{
   position:fixed; inset:0; z-index:6;
-  background:rgba(0,0,0,.35);
+  background:rgba(0,0,0,.18);
   opacity:0; pointer-events:none;
   transition:opacity .25s;
 }
@@ -1023,6 +1046,49 @@ header{
   100%{transform:scale(1.3); opacity:0}
 }
 
+/* ================ PREMIÈRE FUSION CÉLÉBRATION ================ */
+.first-celebration{
+  position:fixed; top:80px; left:50%;
+  transform:translate(-50%, -200%);
+  z-index:88;
+  width:min(92vw, 360px);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(232,200,120,.22), transparent 70%),
+    linear-gradient(180deg, #2a1f1a, #150d0a);
+  border:1.5px solid var(--gold-bright);
+  padding:9px 14px 11px;
+  text-align:center;
+  pointer-events:none;
+  box-shadow:0 0 32px var(--gold-glow), 0 12px 40px rgba(0,0,0,.7);
+  transition:transform .55s cubic-bezier(.2,.9,.2,1.2);
+}
+.first-celebration::before, .first-celebration::after{
+  content:""; position:absolute; width:8px; height:8px;
+  border:1.5px solid var(--gold-bright); pointer-events:none;
+}
+.first-celebration::before{top:-1.5px; left:-1.5px; border-right:none; border-bottom:none}
+.first-celebration::after{bottom:-1.5px; right:-1.5px; border-left:none; border-top:none}
+.first-celebration.show{transform:translate(-50%, 0)}
+.first-celebration .fc-banner{
+  font-family:"Cinzel", serif; font-weight:900;
+  letter-spacing:.34em; font-size:9px;
+  color:var(--gold);
+  margin-bottom:2px;
+}
+.first-celebration .fc-name{
+  font-family:"Cinzel", serif; font-weight:900;
+  letter-spacing:.22em; font-size:18px;
+  color:var(--gold-bright);
+  text-shadow:0 0 12px var(--gold-glow);
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+.first-celebration .fc-tip{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:13px; color:var(--parchment-2);
+  line-height:1.3;
+}
+
 /* ================ COMBO BADGE ================ */
 .combo-badge{
   position:fixed; pointer-events:none; z-index:78;
@@ -1145,15 +1211,28 @@ header{
 @keyframes fadeIn{to{opacity:1}}
 
 /* ================ TOP-RIGHT TOGGLES ================ */
-#audio-toggle{
-  position:fixed; top:6px; right:8px; z-index:8;
+#audio-toggle, #help-toggle{
+  position:fixed; top:6px; z-index:8;
   background:transparent; border:none; padding:6px;
   cursor:pointer;
-  color:var(--gold); opacity:.55;
+  color:var(--gold); opacity:.6;
   display:flex; align-items:center; gap:3px;
+  transition:color .2s, opacity .2s, transform .15s;
 }
-#audio-toggle:hover, #audio-toggle.on{opacity:1}
-#audio-toggle svg{width:16px; height:16px}
+#audio-toggle{right:8px}
+#help-toggle{right:36px}
+#audio-toggle:hover, #audio-toggle.on, #help-toggle:hover{opacity:1; color:var(--gold-bright)}
+#help-toggle:active{transform:scale(.9)}
+#audio-toggle svg, #help-toggle svg{width:18px; height:18px}
+/* Pulse subtil sur l'aide pour attirer l'œil au tout début */
+#help-toggle.intro-pulse{
+  opacity:1; color:var(--gold-bright);
+  animation:helpPulse 2.4s ease-in-out infinite;
+}
+@keyframes helpPulse{
+  0%,100%{filter:drop-shadow(0 0 0 transparent)}
+  50%{filter:drop-shadow(0 0 8px var(--gold-bright))}
+}
 
 #stats-toggle, #sanctum-toggle, #transmute-toggle, #oeuvre-toggle{
   position:fixed; top:6px; z-index:8;
@@ -1897,7 +1976,7 @@ header{
     </div>
     <div></div>
     <div class="stats">
-      <div class="stat" id="stat-essence" title="Étincelle — coût des invocations">
+      <div class="stat" id="stat-essence" title="Étincelle — coût des invocations, regen automatique">
         <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges">
           <rect x="7" y="2" width="2" height="2" fill="#e8c878"/>
           <rect x="6" y="4" width="4" height="1" fill="#e8a050"/>
@@ -1907,9 +1986,12 @@ header{
           <rect x="6" y="10" width="4" height="2" fill="#8a2a2a"/>
           <rect x="7" y="12" width="2" height="1" fill="#8a2a2a"/>
         </svg>
-        <span id="essence-val">0</span>
+        <span class="stat-stack">
+          <span class="stat-lbl">Étincelle</span>
+          <span class="stat-val" id="essence-val">0</span>
+        </span>
       </div>
-      <div class="stat" id="stat-gold" title="Couronnes — récompense des quêtes">
+      <div class="stat" id="stat-gold" title="Couronnes — récompense des quêtes et fusions">
         <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges">
           <rect x="3" y="3" width="2" height="2" fill="#e8c878"/>
           <rect x="7" y="2" width="2" height="2" fill="#fff"/>
@@ -1921,7 +2003,10 @@ header{
           <rect x="6" y="8" width="1" height="3" fill="#5a4528"/>
           <rect x="9" y="8" width="1" height="3" fill="#5a4528"/>
         </svg>
-        <span id="gold-val">0</span>
+        <span class="stat-stack">
+          <span class="stat-lbl">Couronnes</span>
+          <span class="stat-val" id="gold-val">0</span>
+        </span>
       </div>
     </div>
   </header>
@@ -2014,6 +2099,13 @@ header{
 <button id="transmute-toggle" hidden></button>
 <button id="stats-toggle" hidden></button>
 
+<button id="help-toggle" title="Aide" aria-label="Ouvrir le Grimoire">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+    <circle cx="12" cy="12" r="9"/>
+    <path d="M9 9 a3 3 0 0 1 6 0 c0 2 -3 2 -3 4"/>
+    <circle cx="12" cy="17" r=".7" fill="currentColor"/>
+  </svg>
+</button>
 <button id="audio-toggle" title="Son">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round">
     <path d="M5 9 v6 h3 l5 4 V5 l-5 4z" fill="currentColor"/>
@@ -2734,9 +2826,21 @@ function processAchToastQueue(){
     setTimeout(()=>blip(1320, .22, "sine", .26, .6), 180);
   }
   vibrate([14, 30, 14, 30, 80]);
+  // Sparkles autour du toast
+  setTimeout(()=>{
+    const r = el.getBoundingClientRect();
+    const cx = r.left + r.width/2, cy = r.top + r.height/2;
+    for(let i=0;i<10;i++){
+      setTimeout(()=>{
+        const ang = (i / 10) * Math.PI * 2;
+        const rd = 90 + Math.random()*40;
+        particles(cx + Math.cos(ang)*rd, cy + Math.sin(ang)*rd, '#e8c878', 4);
+      }, i * 80);
+    }
+  }, 200);
   setTimeout(()=>el.classList.add("show"), 30);
-  setTimeout(()=>el.classList.remove("show"), 3500);
-  setTimeout(()=>{ el.remove(); processAchToastQueue(); }, 4100);
+  setTimeout(()=>el.classList.remove("show"), 4500);
+  setTimeout(()=>{ el.remove(); processAchToastQueue(); }, 5100);
 }
 
 /* ================ PALETTE ================ */
@@ -4077,9 +4181,9 @@ const STATE = {
   grid: Array.from({length:ROWS},()=>Array(COLS).fill(null)),
   nextId: 1,
   generators:[
-    { chain:0, tier:0, cost:3, cdMs:1500, lastFire:0, unlocked:true, kind:"cauldron" },
-    { chain:1, tier:0, cost:5, cdMs:2200, lastFire:0, unlocked:true, kind:"cauldron" },
-    { chain:2, tier:0, cost:8, cdMs:3000, lastFire:0, unlocked:true, kind:"cauldron" },
+    { chain:0, tier:0, cost:3, cdMs:900,  lastFire:0, unlocked:true, kind:"cauldron" },
+    { chain:1, tier:0, cost:5, cdMs:1400, lastFire:0, unlocked:true, kind:"cauldron" },
+    { chain:2, tier:0, cost:8, cdMs:2000, lastFire:0, unlocked:true, kind:"cauldron" },
     { chain:3, tier:0, cost:0, cdMs:0,    lastFire:0, unlocked:false, kind:"athanor", unlockCost:500 },
   ],
   quests: [],
@@ -4256,9 +4360,9 @@ function doTransmute(){
   // Reset générateurs niveaux/cooldown mais garde l'unlock Athanor (durable)
   const athUnlocked = STATE.generators[3]?.unlocked;
   STATE.generators = [
-    { chain:0, tier:0, cost:3, cdMs:1500, lastFire:0, unlocked:true, kind:"cauldron" },
-    { chain:1, tier:0, cost:5, cdMs:2200, lastFire:0, unlocked:true, kind:"cauldron" },
-    { chain:2, tier:0, cost:8, cdMs:3000, lastFire:0, unlocked:true, kind:"cauldron" },
+    { chain:0, tier:0, cost:3, cdMs:900,  lastFire:0, unlocked:true, kind:"cauldron" },
+    { chain:1, tier:0, cost:5, cdMs:1400, lastFire:0, unlocked:true, kind:"cauldron" },
+    { chain:2, tier:0, cost:8, cdMs:2000, lastFire:0, unlocked:true, kind:"cauldron" },
     { chain:3, tier:0, cost:0, cdMs:0,    lastFire:0, unlocked:!!athUnlocked, kind:"athanor", unlockCost:500 },
   ];
   STATE.activeEvents = {};
@@ -5424,6 +5528,7 @@ function fireGenerator(idx, el){
   vibrate(8);
   audioInit();
   if(typeof checkAchievements === 'function') checkAchievements();
+  if(typeof tutorialOnSpawn === 'function') tutorialOnSpawn(g.chain);
   // burst from cauldron
   const r = el.getBoundingClientRect();
   particles(r.left + r.width/2, r.top + 14, CHAINS[g.chain].color, 14);
@@ -5704,9 +5809,14 @@ function doMerge(fx, fy, tx, ty){
       STATE.gold += reward;
       floating(bx, by + 10, "+"+reward, "gain");
       sfxClaim();
-    } else if(goldMul > 1 && newTier >= 2){
-      const bonus = Math.floor((newTier * 2) * (goldMul - 1));
-      if(bonus > 0){ STATE.gold += bonus; floating(bx, by + 10, "+"+bonus, "gain"); }
+    } else {
+      // Or de base sur chaque fusion : 1, 2, 4, 8, 16 selon le tier (T1, T2, T3, T4)
+      const baseGold = [0, 1, 2, 4, 8, 16][newTier] || 0;
+      if(baseGold > 0){
+        const reward = Math.floor(baseGold * goldMul);
+        STATE.gold += reward;
+        if(reward >= 4 || cMul > 1){ floating(bx, by + 10, "+"+reward, "gain"); }
+      }
     }
     // Upgrade Fulmen : +N couronnes par fusion T2+
     if(newTier >= 2){
@@ -5715,8 +5825,16 @@ function doMerge(fx, fy, tx, ty){
     }
     // Affichage du combo
     showCombo(bx, by, combo);
-    // Hook achievements
+    // Premier T1 sur n'importe quelle voie : mini-célébration
+    if(newTier === 1 && (STATE.totals.maxTier[a.chain] === 1) && !STATE._celebratedT1){
+      STATE._celebratedT1 = true;
+      // arrête le pulse du bouton aide
+      document.getElementById('help-toggle')?.classList.remove('intro-pulse');
+      celebrateFirstT1(a.chain, bx, by);
+    }
+    // Hooks
     if(typeof checkAchievements === 'function') checkAchievements();
+    if(typeof tutorialOnMerge === 'function') tutorialOnMerge();
     renderStats();
   }, 280);
 }
@@ -5742,8 +5860,9 @@ function claimQuest(q){
 function applyProgressionBonuses(){
   const factor = Math.max(.4, 1 - STATE.gold/4000);
   const upgradeCdMul = STATE.upgradeCdMul || 1;
+  // Cooldowns plus rapides au démarrage : 900 / 1400 / 2000ms (au lieu de 1500/2200/3000)
   for(let i=0; i<3; i++){
-    if(STATE.generators[i]) STATE.generators[i].cdMs = [1500, 2200, 3000][i] * factor * upgradeCdMul;
+    if(STATE.generators[i]) STATE.generators[i].cdMs = [900, 1400, 2000][i] * factor * upgradeCdMul;
   }
   let baseMax = 60, baseRegen = 1;
   if(STATE.gold >= 200){ baseMax = 80;  baseRegen = 1.4; }
@@ -6194,77 +6313,150 @@ function floating(x, y, txt, kind="gain"){
 }
 
 /* ================ ONBOARDING ================ */
+/* Tutoriel piloté par les actions du joueur — on avance quand l'objectif est atteint, pas par timer.
+   Chaque étape a un check() qui dit si elle est validée et permet le passage à la suivante. */
 const TUTORIAL_STEPS = [
-  { id:'spawn', title:'PREMIER GESTE', text:'Tape un cauldron pour invoquer une graine, un caillou ou une brume.', target:'.gen[data-chain="0"]', position:'above' },
-  { id:'merge', title:'FUSION', text:'Glisse une tuile sur une jumelle pour la fusionner — le palier s\'élève.', target:'#grid', position:'inside' },
-  { id:'quests', title:'QUÊTES', text:'Le parchemin de droite affiche tes quêtes. Réclame leurs couronnes.', target:'#quest-toggle', position:'left' },
+  {
+    id:'spawn', title:'PREMIER GESTE',
+    text:'Tape le cauldron <strong style="color:var(--plant-2)">vert</strong> pour invoquer une <em>graine</em>. Coût : 3 étincelle.',
+    target:'.gen[data-chain="0"]', position:'above',
+    advanceOn:'spawn', // avance après un fireGenerator réussi
+    minDelay: 0,
+  },
+  {
+    id:'spawn2', title:'ENCORE',
+    text:'Bien. Invoque une <strong>seconde</strong> graine pour préparer une fusion.',
+    target:'.gen[data-chain="0"]', position:'above',
+    advanceOn:'spawn2', // 2ème spawn plante
+    minDelay: 800,
+  },
+  {
+    id:'merge', title:'FUSIONNER',
+    text:'Maintenant, <strong>glisse une graine sur l\'autre</strong>. Elles fusionnent en un Bourgeon.',
+    target:'#grid-frame', position:'overlay',
+    advanceOn:'merge',
+    minDelay: 800,
+  },
+  {
+    id:'help', title:'LE GRIMOIRE',
+    text:'À tout moment, le <strong>?</strong> en haut à droite ouvre le manuel complet du jeu. Lis-le quand tu veux comprendre une mécanique.',
+    target:'#help-toggle', position:'left',
+    advanceOn:'click', // n'importe quel click avance
+    minDelay: 2000,
+  },
+  {
+    id:'menu', title:'LE MENU',
+    text:'Le <strong>☰</strong> en haut à gauche regroupe le Grand Œuvre, le Sanctum, les statistiques et les paramètres. Tu y reviendras souvent.',
+    target:'#menu-toggle', position:'right',
+    advanceOn:'click',
+    minDelay: 2500,
+  },
 ];
+
+let _tutorialStep = -1;
+let _tutorialActive = false;
+let _tutorialEvents = { spawnPlant:0, mergeAny:0, anyClick:0 };
 
 function startTutorial(){
   if(localStorage.getItem('alchimia.tutorialDone')) return;
-  let step = 0;
-  function showStep(){
-    if(step >= TUTORIAL_STEPS.length){ localStorage.setItem('alchimia.tutorialDone','1'); return; }
-    const s = TUTORIAL_STEPS[step];
-    const target = document.querySelector(s.target);
-    if(!target){ step++; showStep(); return; }
-    const r = target.getBoundingClientRect();
-    const hint = document.createElement('div');
-    hint.className = 'hint';
-    let arrowClass = '';
-    let left = r.left + r.width/2;
-    let top;
-    if(s.position === 'above'){
-      hint.classList.add('bottom-arrow');
-      top = r.top - 12;
-    } else if(s.position === 'left'){
-      hint.classList.add('top-arrow');
-      top = r.top + r.height + 12;
-    } else { // inside : centre du target
-      top = r.top + r.height/2;
-    }
-    hint.style.left = '0px'; hint.style.top = top + 'px';
-    hint.innerHTML = `
-      <div class="hint-title">${s.title}</div>
-      <div class="hint-text">${s.text}</div>
-      <div class="hint-arrow"></div>
-    `;
-    document.body.appendChild(hint);
-    // Reposition après measurement
-    requestAnimationFrame(()=>{
-      const hr = hint.getBoundingClientRect();
-      let hl = left - hr.width/2;
-      hl = Math.max(8, Math.min(window.innerWidth - hr.width - 8, hl));
-      hint.style.left = hl + 'px';
-      if(s.position === 'inside') hint.style.top = (top - hr.height/2) + 'px';
-      else if(s.position === 'above') hint.style.top = (top - hr.height) + 'px';
-      hint.classList.add('show');
-    });
-    // Pulse halo on target (sauf pour 'inside')
-    let pulse = null;
-    if(s.position !== 'inside'){
-      pulse = document.createElement('div');
-      pulse.className = 'hint-pulse';
-      pulse.style.position = 'fixed';
-      pulse.style.left = (r.left + r.width/2 - 40) + 'px';
-      pulse.style.top = (r.top + r.height/2 - 40) + 'px';
-      pulse.style.zIndex = 78;
-      pulse.style.pointerEvents = 'none';
-      document.body.appendChild(pulse);
-    }
-    // Avance après timeout ou si user interagit avec target
-    let advanced = false;
-    function advance(){
-      if(advanced) return; advanced = true;
-      hint.classList.remove('show');
-      setTimeout(()=>{ hint.remove(); pulse?.remove(); }, 350);
-      step++;
-      setTimeout(showStep, 400);
-    }
-    setTimeout(advance, 6000);
-    target.addEventListener('pointerdown', advance, {once:true});
+  if(_tutorialActive) return;
+  _tutorialActive = true;
+  _tutorialStep = -1;
+  setTimeout(advanceTutorial, 1400);
+}
+
+function advanceTutorial(){
+  if(!_tutorialActive) return;
+  // Cleanup current hint
+  document.querySelectorAll('.hint, .hint-pulse').forEach(e=>e.remove());
+  _tutorialStep++;
+  if(_tutorialStep >= TUTORIAL_STEPS.length){
+    _tutorialActive = false;
+    localStorage.setItem('alchimia.tutorialDone','1');
+    return;
   }
-  setTimeout(showStep, 1200);
+  const s = TUTORIAL_STEPS[_tutorialStep];
+  setTimeout(()=>showTutorialStep(s), s.minDelay || 0);
+}
+
+function showTutorialStep(s){
+  if(!_tutorialActive) return;
+  const target = document.querySelector(s.target);
+  if(!target){ advanceTutorial(); return; }
+  const r = target.getBoundingClientRect();
+  const hint = document.createElement('div');
+  hint.className = 'hint';
+  let left = r.left + r.width/2;
+  let top;
+  if(s.position === 'above'){
+    hint.classList.add('bottom-arrow');
+    top = r.top - 12;
+  } else if(s.position === 'left'){
+    hint.classList.add('top-arrow');
+    top = r.top + r.height + 12;
+    left = r.left + r.width/2;
+  } else if(s.position === 'right'){
+    hint.classList.add('top-arrow');
+    top = r.top + r.height + 12;
+    left = r.left + r.width/2;
+  } else if(s.position === 'overlay'){
+    top = r.top + r.height/2;
+  } else {
+    top = r.top + r.height/2;
+  }
+  hint.style.left = '0px'; hint.style.top = top + 'px';
+  hint.innerHTML = `
+    <div class="hint-title">${s.title}</div>
+    <div class="hint-text">${s.text}</div>
+    <div class="hint-arrow"></div>
+  `;
+  document.body.appendChild(hint);
+  requestAnimationFrame(()=>{
+    const hr = hint.getBoundingClientRect();
+    let hl = left - hr.width/2;
+    hl = Math.max(8, Math.min(window.innerWidth - hr.width - 8, hl));
+    hint.style.left = hl + 'px';
+    if(s.position === 'overlay') hint.style.top = (top - hr.height/2) + 'px';
+    else if(s.position === 'above') hint.style.top = (top - hr.height) + 'px';
+    hint.classList.add('show');
+  });
+  // Pulse halo (sauf pour overlay)
+  if(s.position !== 'overlay'){
+    const pulse = document.createElement('div');
+    pulse.className = 'hint-pulse';
+    pulse.style.position = 'fixed';
+    pulse.style.left = (r.left + r.width/2 - 40) + 'px';
+    pulse.style.top = (r.top + r.height/2 - 40) + 'px';
+    pulse.style.zIndex = 78;
+    pulse.style.pointerEvents = 'none';
+    document.body.appendChild(pulse);
+  }
+}
+
+// Hooks appelés quand les actions surviennent
+function tutorialOnSpawn(chain){
+  if(!_tutorialActive) return;
+  if(chain === 0) _tutorialEvents.spawnPlant++;
+  const cur = TUTORIAL_STEPS[_tutorialStep];
+  if(!cur) return;
+  if(cur.advanceOn === 'spawn' && _tutorialEvents.spawnPlant >= 1) advanceTutorial();
+  else if(cur.advanceOn === 'spawn2' && _tutorialEvents.spawnPlant >= 2) advanceTutorial();
+}
+function tutorialOnMerge(){
+  if(!_tutorialActive) return;
+  _tutorialEvents.mergeAny++;
+  const cur = TUTORIAL_STEPS[_tutorialStep];
+  if(cur && cur.advanceOn === 'merge') advanceTutorial();
+}
+function tutorialOnHelpClick(){
+  if(!_tutorialActive) return;
+  const cur = TUTORIAL_STEPS[_tutorialStep];
+  if(cur && cur.id === 'help') advanceTutorial();
+}
+function tutorialOnMenuClick(){
+  if(!_tutorialActive) return;
+  const cur = TUTORIAL_STEPS[_tutorialStep];
+  if(cur && cur.id === 'menu') advanceTutorial();
 }
 
 function renderActiveEvents(){
@@ -6282,6 +6474,28 @@ function renderActiveEvents(){
     div.className = "active-event";
     div.innerHTML = `${a.name} <span class="ev-time">${s}s</span>`;
     wrap.appendChild(div);
+  }
+}
+
+function celebrateFirstT1(chain, x, y){
+  const ch = CHAINS[chain];
+  // Toast élégant qui descend du haut
+  const el = document.createElement('div');
+  el.className = 'first-celebration';
+  el.innerHTML = `
+    <div class="fc-banner">PREMIÈRE FUSION</div>
+    <div class="fc-name">${ch.tiers[1].n}</div>
+    <div class="fc-tip">Glisse deux ${ch.tiers[1].n.toLowerCase()}s ensemble pour le palier supérieur.</div>
+  `;
+  document.body.appendChild(el);
+  setTimeout(()=>el.classList.add('show'), 30);
+  setTimeout(()=>el.classList.remove('show'), 4500);
+  setTimeout(()=>el.remove(), 5200);
+  // particules dorées
+  for(let i=0;i<24;i++){
+    setTimeout(()=>{
+      particles(x + (Math.random()-.5)*40, y + (Math.random()-.5)*40, ch.color, 6);
+    }, i * 50);
   }
 }
 
@@ -6530,7 +6744,20 @@ function boot(){
     document.getElementById(closeId).addEventListener('click', ()=>m.classList.remove('show'));
     m.addEventListener('click', e=>{ if(e.target.id === modalId) m.classList.remove('show'); });
   }
-  document.getElementById('menu-toggle').addEventListener('click', ()=>openModal('menu-modal'));
+  document.getElementById('menu-toggle').addEventListener('click', ()=>{
+    openModal('menu-modal');
+    if(typeof tutorialOnMenuClick === 'function') tutorialOnMenuClick();
+  });
+  // Bouton aide rapide → Grimoire en 1 tap
+  document.getElementById('help-toggle').addEventListener('click', ()=>{
+    document.getElementById('help-toggle').classList.remove('intro-pulse');
+    openModal('grimoire-modal');
+    if(typeof tutorialOnHelpClick === 'function') tutorialOnHelpClick();
+  });
+  // Pulser le bouton d'aide tant que le joueur n'a rien fusionné (jusqu'à découverte naturelle)
+  if(sumMerged(STATE) === 0){
+    document.getElementById('help-toggle').classList.add('intro-pulse');
+  }
   bindModalClose('menu-modal','menu-close');
   bindModalClose('grimoire-modal','grimoire-close');
   bindModalClose('settings-modal','settings-close');

@@ -1291,6 +1291,22 @@ header{
   letter-spacing:.18em;
   margin-top:4px;
 }
+.trm-stars-preview .trm-breakdown{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:11px; color:var(--parchment-2);
+  margin-top:4px;
+  letter-spacing:.04em;
+}
+.trm-stars-preview .trm-breakdown strong{color:var(--gold-bright); font-weight:700; font-style:normal}
+.trm-tip{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:12px; color:var(--gold-light);
+  text-align:center;
+  margin:6px 8px 10px;
+  padding:6px 8px;
+  background:rgba(232,200,120,.06);
+  border-left:2px solid var(--gold);
+}
 .trm-warn{
   font-family:"Cormorant Garamond", serif; font-style:italic;
   font-size:13px; color:var(--blood);
@@ -1802,6 +1818,115 @@ header{
 }
 .recipe-row:not(.composed) .recipe-acquired{display:none}
 
+/* Marché / Boutique */
+.shop-row{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:10px; align-items:center;
+  padding:7px 9px;
+  background:linear-gradient(180deg, #2a1f1a, #1a1410);
+  border:1px solid var(--gold-dark);
+  margin-bottom:5px;
+  cursor:pointer;
+  transition:border-color .2s, box-shadow .2s, filter .2s;
+  position:relative;
+}
+.shop-row::before, .shop-row::after{
+  content:""; position:absolute; width:5px; height:5px;
+  border:1px solid var(--gold); pointer-events:none;
+}
+.shop-row::before{top:-1px; left:-1px; border-right:none; border-bottom:none}
+.shop-row::after{bottom:-1px; right:-1px; border-left:none; border-top:none}
+.shop-row.unaff{filter:grayscale(.6) brightness(.65); cursor:not-allowed}
+.shop-row:hover:not(.unaff){border-color:var(--gold-bright); box-shadow:0 0 14px var(--gold-glow)}
+.shop-ic{
+  width:34px; height:34px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  filter:drop-shadow(0 0 4px currentColor);
+}
+.shop-ic.shop-ic-glyph{color:var(--gold-bright)}
+.shop-ic svg{width:100%; height:100%; image-rendering:pixelated}
+.shop-meta{min-width:0}
+.shop-name{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:11px; letter-spacing:.16em;
+  color:var(--gold-bright);
+  text-transform:uppercase;
+  margin-bottom:2px;
+}
+.shop-desc{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:12px; color:var(--parchment-2);
+  line-height:1.25;
+}
+.shop-cost{
+  font-family:"VT323", monospace; font-size:14px;
+  color:var(--gold-bright); white-space:nowrap;
+  background:#0a0608;
+  border:1px solid var(--gold-dark);
+  padding:3px 7px;
+}
+.shop-conversion-info{
+  margin-top:14px;
+  padding:8px 12px;
+  background:linear-gradient(180deg, #1a1218, #0a0608);
+  border-left:2px solid var(--gold);
+  font-family:"Cormorant Garamond", serif;
+  font-style:italic;
+  font-size:12px;
+  color:var(--parchment-2);
+  line-height:1.4;
+}
+.shop-conversion-info p{margin:0}
+.shop-conversion-info strong{color:var(--gold-bright); font-style:normal}
+
+/* Sceau choice */
+.seal-body{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:6px;
+  padding:4px;
+}
+.seal-choice{
+  background:linear-gradient(180deg, #2a1f1a, #1a1410);
+  border:1px solid var(--gold-dark);
+  padding:8px 4px;
+  cursor:pointer;
+  text-align:center;
+  font-family:inherit;
+  transition:border-color .2s, box-shadow .2s, transform .15s;
+  position:relative;
+}
+.seal-choice::before, .seal-choice::after{
+  content:""; position:absolute; width:5px; height:5px;
+  border:1px solid var(--gold); pointer-events:none;
+}
+.seal-choice::before{top:-1px; left:-1px; border-right:none; border-bottom:none}
+.seal-choice::after{bottom:-1px; right:-1px; border-left:none; border-top:none}
+.seal-choice:hover, .seal-choice:active{
+  border-color:var(--gold-bright);
+  box-shadow:0 0 12px var(--gold-glow);
+  transform:translateY(-1px);
+}
+.seal-choice .sc-spr{
+  width:42px; height:42px; margin:0 auto 4px;
+  filter:drop-shadow(0 0 4px currentColor);
+}
+.seal-choice .sc-spr svg{width:100%; height:100%; image-rendering:pixelated}
+.seal-choice .sc-name{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:9px; letter-spacing:.14em;
+  color:var(--gold-bright);
+  text-transform:uppercase;
+  line-height:1.2;
+  margin-bottom:2px;
+}
+.seal-choice .sc-voie{
+  font-family:"VT323", monospace; font-size:10px;
+  color:var(--gold);
+  letter-spacing:.05em;
+}
+
 /* Athanor */
 .ath-tagline{
   font-family:"Cormorant Garamond", serif; font-style:italic;
@@ -2176,6 +2301,15 @@ header{
         </svg>
         <div class="mi-meta"><div class="mi-title">Le Grimoire</div><div class="mi-sub">comprendre les voies, les économies, les rituels</div></div>
       </button>
+      <button class="menu-item" data-action="shop" id="menu-shop">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M5 8 H19 L17.5 19 H6.5 z"/>
+          <path d="M9 8 V5 a3 3 0 0 1 6 0 V8"/>
+          <circle cx="9.5" cy="13" r=".8" fill="currentColor"/>
+          <circle cx="14.5" cy="13" r=".8" fill="currentColor"/>
+        </svg>
+        <div class="mi-meta"><div class="mi-title">Le Marché</div><div class="mi-sub">dépenser couronnes : spawns, sceaux, boosts</div></div>
+      </button>
       <button class="menu-item" data-action="oeuvre" id="menu-oeuvre">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
           <circle cx="12" cy="9" r="3.2"/>
@@ -2274,6 +2408,11 @@ header{
       <section class="grim-sec">
         <h3>L'Athanor</h3>
         <p>Le four cubique, débloqué pour 500 couronnes. Il <strong>purifie trois</strong> items du même palier en <strong>un seul</strong> du palier supérieur, contre des couronnes (coût en escalier). Indispensable pour avancer quand le board sature.</p>
+      </section>
+      <section class="grim-sec">
+        <h3>Le Marché</h3>
+        <p>Le marchand vend ce que ton cabinet n'a pas le temps de produire. <strong>Spawns directs</strong> (graine 8c, caillou 14c, brume 22c) pour te débloquer quand un cauldron est en cooldown, <strong>Sceaux</strong> du Marchand / de l'Apprenti / du Mage qui donnent un item palier II/III/IV au choix (250/1000/4000c), et <strong>boosts temporaires</strong> (étincelle pleine, cooldowns ÷2 pendant 60s, or ×2 pendant 60s).</p>
+        <p>Au moment de la <strong>Transmutation</strong>, chaque <strong>2000 couronnes non dépensées</strong> se transforme en 1 étoile permanente. L'or n'est jamais perdu — il devient soit du temps, soit de l'éternité.</p>
       </section>
       <section class="grim-sec">
         <h3>Le Grand Œuvre</h3>
@@ -2407,6 +2546,58 @@ header{
         <p>Les manuscrits alchimiques du XVII<sup>e</sup>, l'Atalanta Fugiens de Maier, le Mutus Liber.<br>Les jeux idle/merge du début 2020 pour la mécanique de base, mais la profondeur cross-voies est de notre fait.</p>
       </section>
     </div>
+  </div>
+</div>
+
+<!-- LE MARCHÉ -->
+<div id="shop-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-close" id="shop-close" aria-label="Fermer">×</div>
+    <h2>LE MARCHÉ</h2>
+    <div class="modal-subtitle">— où l'or se change en temps —</div>
+    <div class="divider">
+      <svg viewBox="0 0 240 18" fill="none" stroke="currentColor" stroke-width=".8" stroke-linecap="round" preserveAspectRatio="xMidYMid meet">
+        <path d="M2 9 q14 0 22 -2 q8 -2 16 0 q6 1.5 12 1.5 q8 0 16 -3"/>
+        <path d="M 238 9 q -14 0 -22 -2 q -8 -2 -16 0 q -6 1.5 -12 1.5 q -8 0 -16 -3"/>
+        <g transform="translate(120 9)">
+          <path d="M -10 0 q 4 -5 10 0 q -4 5 -10 0 z"/>
+          <path d="M 10 0 q -4 -5 -10 0 q 4 5 10 0 z"/>
+          <path d="M 0 -7 q -3 4 0 7 q 3 -3 0 -7 z"/>
+          <path d="M 0 7 q -3 -4 0 -7 q 3 3 0 7 z"/>
+          <circle r="2" fill="currentColor" stroke="none"/>
+          <circle r=".6" fill="#0a0709" stroke="none"/>
+        </g>
+        <circle cx="2" cy="9" r="1" fill="currentColor" stroke="none"/>
+        <circle cx="238" cy="9" r="1" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    <div class="stats-body shop-body" id="shop-body"></div>
+  </div>
+</div>
+
+<!-- SCEAU choice modal -->
+<div id="seal-modal" class="modal">
+  <div class="modal-card" style="max-width:380px">
+    <div class="modal-close" id="seal-close" aria-label="Fermer">×</div>
+    <h2 id="seal-title">SCEAU</h2>
+    <div class="modal-subtitle">— choisis la voie —</div>
+    <div class="divider">
+      <svg viewBox="0 0 240 18" fill="none" stroke="currentColor" stroke-width=".8" stroke-linecap="round" preserveAspectRatio="xMidYMid meet">
+        <path d="M2 9 q14 0 22 -2 q8 -2 16 0 q6 1.5 12 1.5 q8 0 16 -3"/>
+        <path d="M 238 9 q -14 0 -22 -2 q -8 -2 -16 0 q -6 1.5 -12 1.5 q -8 0 -16 -3"/>
+        <g transform="translate(120 9)">
+          <path d="M -10 0 q 4 -5 10 0 q -4 5 -10 0 z"/>
+          <path d="M 10 0 q -4 -5 -10 0 q 4 5 10 0 z"/>
+          <path d="M 0 -7 q -3 4 0 7 q 3 -3 0 -7 z"/>
+          <path d="M 0 7 q -3 -4 0 -7 q 3 3 0 7 z"/>
+          <circle r="2" fill="currentColor" stroke="none"/>
+          <circle r=".6" fill="#0a0709" stroke="none"/>
+        </g>
+        <circle cx="2" cy="9" r="1" fill="currentColor" stroke="none"/>
+        <circle cx="238" cy="9" r="1" fill="currentColor" stroke="none"/>
+      </svg>
+    </div>
+    <div class="seal-body" id="seal-body"></div>
   </div>
 </div>
 
@@ -4299,8 +4490,11 @@ function calcTransmuteStars(){
   stars += Math.floor(Object.keys(STATE.achievements||{}).length / 4);
   // Bonus paliers totaux
   stars += Math.floor(sumProduced(STATE) / 200);
+  // Conversion or non-dépensé : 1 étoile par 2000 couronnes
+  stars += Math.floor((STATE.gold||0) / 2000);
   return Math.max(1, stars);
 }
+function calcGoldToStars(){ return Math.floor((STATE.gold||0) / 2000); }
 
 function canTransmute(){
   // Doit avoir au moins une voie à T6+
@@ -4320,13 +4514,17 @@ function openTransmute(){
     `;
   } else {
     const stars = calcTransmuteStars();
+    const goldStars = calcGoldToStars();
+    const baseStars = stars - goldStars;
     body.innerHTML = `
       <div class="trm-stars-preview">
         <div class="trm-num">${stars}</div>
         <div class="trm-label">étoiles à graver</div>
+        ${goldStars > 0 ? `<div class="trm-breakdown">${baseStars} de progrès + <strong>${goldStars} de tes couronnes restantes</strong></div>` : ''}
       </div>
       <p class="trm-warn">Tu réinitialiseras le cabinet. Ton plateau, tes couronnes, tes générateurs et tes quêtes <em>seront effacés</em>.</p>
       <p class="trm-keep">Conservés : <strong>Hauts Faits</strong>, <strong>Codex</strong>, <strong>statistiques totales</strong>, et tes <strong>${STATE.stars||0} ★</strong> permanents.</p>
+      ${STATE.gold >= 100 ? `<p class="trm-tip">💡 Astuce : passe au Marché avant de transmuter — chaque tranche de 2000 couronnes non dépensées te donne 1 étoile en plus.</p>` : ''}
       <button class="trm-confirm" id="trm-confirm">CONFIRMER LA TRANSMUTATION</button>
       <p class="trm-hint">Toucher en dehors pour annuler.</p>
     `;
@@ -4664,6 +4862,156 @@ function buyUpgrade(id){
   sfxClaim();
   vibrate([15, 30, 15, 60]);
   openSanctum(); // refresh
+}
+
+/* ================ LE MARCHÉ ================ */
+/* L'or n'est plus un compteur passif. Le marchand vend du temps, des ingrédients, des boosts. */
+const SHOP_ITEMS = [
+  // === Spawns directs (économie de l'attente) ===
+  { id:'spawn0_0', section:'Invocations directes', name:'Graine', desc:'Une graine en plus, sur-le-champ.',  cost:8,   icon:0, perform:()=>shopSpawn(0, 0) },
+  { id:'spawn1_0', section:'Invocations directes', name:'Caillou',desc:'Un caillou en plus, sur-le-champ.', cost:14,  icon:1, perform:()=>shopSpawn(1, 0) },
+  { id:'spawn2_0', section:'Invocations directes', name:'Brume',  desc:'Une brume en plus, sur-le-champ.',  cost:22,  icon:2, perform:()=>shopSpawn(2, 0) },
+
+  // === Sceaux : items au palier choisi par le joueur ===
+  { id:'seal_t2', section:'Sceaux du Marchand', name:'Sceau du Marchand', desc:'Un item palier II au choix (Mandragore, Améthyste ou Flamme Bleue).',
+    cost:250, kind:'seal', tier:2, perform:()=>shopOpenSeal(2) },
+  { id:'seal_t3', section:'Sceaux du Marchand', name:'Sceau de l\'Apprenti', desc:'Un item palier III au choix.',
+    cost:1000, kind:'seal', tier:3, perform:()=>shopOpenSeal(3) },
+  { id:'seal_t4', section:'Sceaux du Marchand', name:'Sceau du Mage', desc:'Un item palier IV au choix.',
+    cost:4000, kind:'seal', tier:4, perform:()=>shopOpenSeal(4) },
+
+  // === Boosts temporaires (actifs comme un event) ===
+  { id:'boost_essence', section:'Boosts', name:'Sang d\'Étincelle', desc:'Étincelle remplie immédiatement.',
+    cost:50, kind:'boost', perform:()=>{ STATE.essence = STATE.essenceMax; renderStats(); floating(window.innerWidth/2, 100, "✦ Étincelle pleine", "tier"); } },
+  { id:'boost_cool', section:'Boosts', name:'Souffle Régent', desc:'Cooldowns des cauldrons ÷2 pendant 60 secondes.',
+    cost:120, kind:'boost', perform:()=>shopActivateEvent('souffle', 60000, { cdMul:.5 }, 'Souffle Régent') },
+  { id:'boost_gold',    section:'Boosts', name:'Pluie d\'Or',    desc:'Or des fusions ×2 pendant 60 secondes.',
+    cost:180, kind:'boost', perform:()=>shopActivateEvent('pluiedor', 60000, { mergeGoldMul:2 }, 'Pluie d\'Or') },
+];
+
+function shopSpawn(chain, tier){
+  const empties = findEmpty();
+  if(!empties.length){ floating(window.innerWidth/2, 100, "Cabinet plein", "lose"); return false; }
+  const [x,y] = empties[Math.floor(Math.random()*empties.length)];
+  STATE.grid[y][x] = { id: STATE.nextId++, chain, tier };
+  STATE.totals.produced[chain]++;
+  STATE.totals.maxTier[chain] = Math.max(STATE.totals.maxTier[chain], tier);
+  renderTile(x,y);
+  sfxSpawn(chain);
+  vibrate(8);
+  particles(window.innerWidth/2, window.innerHeight - 100, CHAINS[chain].color, 14);
+  return true;
+}
+
+function shopActivateEvent(id, duration, multipliers, name){
+  STATE.activeEvents = STATE.activeEvents || {};
+  STATE.activeEvents[id] = { id, name, expiresAt: Date.now()+duration, multipliers };
+  applyEventModifiers();
+  renderActiveEvents();
+}
+
+function shopOpenSeal(tier){
+  // Modal de choix : 3 boutons, un par voie
+  const modal = document.getElementById('seal-modal');
+  const body = document.getElementById('seal-body');
+  document.getElementById('seal-title').textContent = `SCEAU PALIER ${ROMAN[tier]}`;
+  body.innerHTML = '';
+  for(let c=0; c<3; c++){
+    const ch = CHAINS[c];
+    const btn = document.createElement('button');
+    btn.className = 'seal-choice';
+    btn.style.color = ch.color;
+    btn.innerHTML = `
+      <div class="sc-spr">${spriteSVG(SPRITES[c*TIERS + tier])}</div>
+      <div class="sc-name">${ch.tiers[tier].n}</div>
+      <div class="sc-voie">${ch.short} · ${ROMAN[tier]}</div>
+    `;
+    btn.addEventListener('click', ()=>{
+      if(shopSpawn(c, tier)){
+        modal.classList.remove('show');
+        floating(window.innerWidth/2, 120, "✦ " + ch.tiers[tier].n, "tier");
+      }
+    });
+    body.appendChild(btn);
+  }
+  modal.classList.add('show');
+}
+
+function buyShopItem(id){
+  const item = SHOP_ITEMS.find(s=>s.id===id);
+  if(!item) return;
+  if(STATE.gold < item.cost){ sfxDeny(); flashStat('gold-val'); return; }
+  STATE.gold -= item.cost;
+  item.perform();
+  sfxClaim();
+  renderStats();
+  renderShop(); // refresh prices/affordability
+}
+
+function renderShop(){
+  const body = document.getElementById('shop-body');
+  if(!body) return;
+  body.innerHTML = '';
+  // group by section
+  const sections = {};
+  for(const item of SHOP_ITEMS){
+    if(!sections[item.section]) sections[item.section] = [];
+    sections[item.section].push(item);
+  }
+  // affichage
+  for(const sectionName in sections){
+    const sec = document.createElement('section');
+    sec.className = 'grim-sec';
+    sec.innerHTML = `<h3>${sectionName}</h3>`;
+    for(const item of sections[sectionName]){
+      const can = STATE.gold >= item.cost;
+      const row = document.createElement('div');
+      row.className = 'shop-row' + (can ? '' : ' unaff');
+      // icône : sprite si spawn, sinon glyph
+      let iconHtml = '';
+      if(typeof item.icon === 'number'){
+        const ch = CHAINS[item.icon];
+        iconHtml = `<div class="shop-ic" style="color:${ch.color}">${spriteSVG(SPRITES[item.icon*TIERS + 0])}</div>`;
+      } else {
+        iconHtml = `<div class="shop-ic shop-ic-glyph">${shopGlyph(item.id)}</div>`;
+      }
+      row.innerHTML = `
+        ${iconHtml}
+        <div class="shop-meta">
+          <div class="shop-name">${item.name}</div>
+          <div class="shop-desc">${item.desc}</div>
+        </div>
+        <div class="shop-cost">
+          <svg viewBox="0 0 16 16" shape-rendering="crispEdges" style="width:11px;height:11px;vertical-align:-1px"><rect x="3" y="5" width="10" height="2" fill="#c9a25a"/><rect x="3" y="7" width="10" height="5" fill="#9a7842"/></svg>
+          ${item.cost}
+        </div>
+      `;
+      if(can) row.addEventListener('click', ()=>buyShopItem(item.id));
+      sec.appendChild(row);
+    }
+    body.appendChild(sec);
+  }
+  // Conversion or→étoiles annoncée
+  const minTier = Math.max(...(STATE.totals?.maxTier||[0,0,0]));
+  if(minTier >= 6){
+    const starsAt = Math.floor(STATE.gold / 2000);
+    const div = document.createElement('div');
+    div.className = 'shop-conversion-info';
+    div.innerHTML = `
+      <p>À la prochaine <strong>Transmutation</strong>, ton or restant se changera en étoiles à raison de <strong>1 ★ pour 2000 couronnes</strong>.
+      Au taux actuel, tu obtiendrais <strong>+${starsAt} ★</strong> en plus.</p>
+    `;
+    body.appendChild(div);
+  }
+}
+
+function shopGlyph(id){
+  // Petits SVG pour les boosts/sceaux
+  if(id.startsWith('seal_')) return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M8 12 l2.5 2.5 L16 9"/></svg>`;
+  if(id === 'boost_essence') return `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 L4 14 h7 L11 22 L20 10 h-7 z"/></svg>`;
+  if(id === 'boost_cool') return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 7 v5 l3 2"/><circle cx="12" cy="12" r="9"/></svg>`;
+  if(id === 'boost_gold') return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 8 v10 h18 V8"/><path d="M3 8 l9 -5 l9 5"/><path d="M9 14 h6 M12 11 v6"/></svg>`;
+  return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="6"/></svg>`;
 }
 
 /* ================ ÉVÈNEMENTS ALÉATOIRES ================ */
@@ -6762,6 +7110,8 @@ function boot(){
   bindModalClose('grimoire-modal','grimoire-close');
   bindModalClose('settings-modal','settings-close');
   bindModalClose('credits-modal','credits-close');
+  bindModalClose('shop-modal','shop-close');
+  bindModalClose('seal-modal','seal-close');
   // Menu items naviguent vers leurs cibles ou exécutent une action
   document.querySelectorAll('.menu-item').forEach(btn=>{
     btn.addEventListener('click', ()=>{
@@ -6773,6 +7123,7 @@ function boot(){
         else if(action === 'oeuvre') openOeuvre();
         else if(action === 'sanctum') openSanctum();
         else if(action === 'transmute') openTransmute();
+        else if(action === 'shop'){ renderShop(); openModal('shop-modal'); }
         else if(action === 'stats'){ renderStatsBody(); openModal('stats-modal'); }
       }, 200);
     });

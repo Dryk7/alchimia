@@ -1841,6 +1841,29 @@ header{
   </svg>
 </button>
 
+<!-- CONFIRM RESET -->
+<div id="reset-confirm-modal" class="modal">
+  <div class="modal-card" style="max-width:340px">
+    <div class="modal-close" id="reset-confirm-close" aria-label="Fermer">×</div>
+    <h2 style="color:#c84a2a">EFFACER ?</h2>
+    <div class="modal-subtitle">— sceau brisé —</div>
+    <div class="divider">
+      <svg viewBox="0 0 200 16" fill="none" stroke="currentColor" stroke-width=".8">
+        <path d="M0 8 H80 M120 8 H200"/>
+        <path d="M88 8 q4 -6 8 0 q4 6 8 0"/>
+        <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
+      </svg>
+    </div>
+    <p style="font-family:'Cormorant Garamond', serif; font-style:italic; font-size:14px; color:var(--parchment-2); text-align:center; margin:8px 14px;">
+      Cette action est <strong style="color:#c84a2a">irréversible</strong>. Ta sauvegarde, tes Étoiles, tes Hauts Faits, tes catalyseurs — tout sera effacé. Le cabinet rouvrira ses portes comme au premier jour.
+    </p>
+    <div style="display:flex; gap:8px; padding:6px 10px 10px;">
+      <button class="set-btn" id="reset-cancel">Annuler</button>
+      <button class="set-btn danger" id="reset-confirm-yes" style="flex:1">OUI, TOUT EFFACER</button>
+    </div>
+  </div>
+</div>
+
 <!-- MENU principal -->
 <div id="menu-modal" class="modal">
   <div class="modal-card menu-card">
@@ -1990,6 +2013,7 @@ header{
         <div class="setting-row" style="margin-top:8px">
           <button class="set-btn danger" id="set-reset">Effacer toute la sauvegarde</button>
         </div>
+        <p class="set-help" id="set-save-status" style="margin-top:6px; font-size:11px; opacity:.6"></p>
       </section>
       <section class="grim-sec">
         <h3>À propos</h3>
@@ -6009,6 +6033,7 @@ function showOfflineToast(offlineMs, gold){
 
 /* ================ SAVE / LOAD ================ */
 function save(){
+  if(STATE._resetting) return; // bloque les sauvegardes pendant le reset complet
   try{
     const now = Date.now();
     STATE.sessionMs = now - STATE.sessionStartMs;
@@ -6266,30 +6291,48 @@ function boot(){
       setTimeout(()=>window.location.reload(), 800);
     }catch(e){ floating(window.innerWidth/2, window.innerHeight/2, "Code invalide", "lose"); }
   });
-  // Reset complet (avec double confirmation)
+  // Reset complet : ouvre un dialogue de confirmation explicite
   document.getElementById('set-reset').addEventListener('click', ()=>{
-    const btn = document.getElementById('set-reset');
-    if(btn.dataset.armed !== '1'){
-      btn.dataset.armed = '1';
-      btn.textContent = 'CONFIRMER — TOUT EFFACER';
-      setTimeout(()=>{
-        if(btn.dataset.armed === '1'){
-          btn.dataset.armed = '0';
-          btn.textContent = 'Effacer toute la sauvegarde';
-        }
-      }, 5000);
-      return;
-    }
-    // Confirmé : tout reset
-    localStorage.removeItem('alchimia.save');
-    localStorage.removeItem('alchimia.tutorialDone');
-    localStorage.removeItem('alchimia.bgmVol');
-    localStorage.removeItem('alchimia.sfxVol');
-    localStorage.removeItem('alchimia.vibration');
-    if('serviceWorker' in navigator){
-      navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()));
-    }
-    window.location.reload();
+    closeModal('settings-modal');
+    setTimeout(()=>openModal('reset-confirm-modal'), 200);
+  });
+  bindModalClose('reset-confirm-modal','reset-confirm-close');
+  document.getElementById('reset-cancel').addEventListener('click', ()=>{
+    closeModal('reset-confirm-modal');
+    setTimeout(()=>openModal('settings-modal'), 200);
+  });
+  document.getElementById('reset-confirm-yes').addEventListener('click', async ()=>{
+    const status = document.getElementById('set-save-status');
+    if(status) status.textContent = "Effacement en cours…";
+    const btn = document.getElementById('reset-confirm-yes');
+    btn.disabled = true; btn.textContent = "EFFACEMENT…";
+    // Bloquer toute sauvegarde jusqu'au reload
+    STATE._resetting = true;
+    // Effacer toutes les clés Alchimia
+    try{
+      const keys = Object.keys(localStorage).filter(k => k.startsWith('alchimia.'));
+      for(const k of keys) localStorage.removeItem(k);
+    }catch(e){}
+    // Désinscrire le service worker pour ne pas servir le cache
+    try{
+      if('serviceWorker' in navigator){
+        const regs = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(regs.map(r => r.unregister()));
+      }
+    }catch(e){}
+    // Vider les caches HTTP
+    try{
+      if('caches' in window){
+        const names = await caches.keys();
+        await Promise.all(names.map(n => caches.delete(n)));
+      }
+    }catch(e){}
+    floating(window.innerWidth/2, window.innerHeight/2 - 30, "✦ Sauvegarde effacée", "tier");
+    // Reload franc en bypassant le cache
+    setTimeout(()=>{
+      try{ window.location.replace(window.location.pathname + '?cleared=' + Date.now()); }
+      catch(e){ window.location.reload(); }
+    }, 700);
   });
 
   document.getElementById("oeuvre-toggle").addEventListener("click", openOeuvre);

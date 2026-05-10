@@ -80,7 +80,14 @@ body{
       #160d09 7px, #160d09 10px),
     #120906;
   display:flex; flex-direction:column;
+  transition:filter 1.2s ease;
 }
+/* Phases de fond selon palier max global atteint */
+#stage[data-phase="0"]{filter:none}
+#stage[data-phase="1"]{filter:hue-rotate(-8deg) saturate(1.05) brightness(.96)} /* twilight */
+#stage[data-phase="2"]{filter:hue-rotate(-15deg) saturate(1.10) brightness(.90)} /* dusk purple */
+#stage[data-phase="3"]{filter:hue-rotate(-25deg) saturate(1.15) brightness(.85) contrast(1.05)} /* deep purple night */
+#stage[data-phase="4"]{filter:hue-rotate(-35deg) saturate(1.25) brightness(.78) contrast(1.1)} /* cosmic */
 
 /* couches canvas plein-écran */
 #dust{position:fixed; inset:0; pointer-events:none; z-index:2}
@@ -433,6 +440,27 @@ header{
 .drawer-body::-webkit-scrollbar-thumb{background:var(--gold-dark); border-radius:2px}
 
 /* QUETES */
+.claim-all-btn{
+  display:block; width:100%;
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:11px; letter-spacing:.22em;
+  color:#000; background:linear-gradient(180deg, var(--gold-bright), var(--gold));
+  border:1px solid var(--gold-bright);
+  padding:8px;
+  cursor:pointer;
+  text-transform:uppercase;
+  margin-bottom:8px;
+  position:relative;
+  box-shadow:0 0 16px var(--gold-glow);
+  animation:pulseGold 1.6s ease-in-out infinite;
+}
+.claim-all-btn::before, .claim-all-btn::after{
+  content:""; position:absolute; width:6px; height:6px;
+  border:1px solid var(--gold-bright); pointer-events:none;
+}
+.claim-all-btn::before{top:-2px; left:-2px; border-right:none; border-bottom:none}
+.claim-all-btn::after{bottom:-2px; right:-2px; border-left:none; border-top:none}
+
 .quest{
   position:relative;
   background:
@@ -826,6 +854,43 @@ header{
 .achievement-toast .ach-reward{
   font-family:"VT323", monospace; font-size:14px;
   color:var(--gold-bright);
+}
+
+/* ================ COMBO BADGE ================ */
+.combo-badge{
+  position:fixed; pointer-events:none; z-index:78;
+  transform:translate(-50%,-50%) scale(.7);
+  opacity:0;
+  background:radial-gradient(ellipse at 50% 50%, rgba(232,200,120,.22), rgba(232,200,120,.05) 60%, transparent 80%);
+  border:1px solid var(--gold-bright);
+  padding:4px 10px;
+  text-align:center;
+  font-family:"Cinzel", serif; font-weight:700;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  white-space:nowrap;
+  box-shadow:0 0 18px var(--gold-glow);
+  transition:opacity .18s, transform .35s cubic-bezier(.2,.9,.2,1.4);
+}
+.combo-badge::before, .combo-badge::after{
+  content:""; position:absolute; width:5px; height:5px;
+  border:1px solid var(--gold-bright); pointer-events:none;
+}
+.combo-badge::before{top:-1px; left:-1px; border-right:none; border-bottom:none}
+.combo-badge::after{bottom:-1px; right:-1px; border-left:none; border-top:none}
+.combo-badge.show{opacity:1; transform:translate(-50%,-50%) scale(1)}
+.combo-badge .combo-x{
+  display:block;
+  color:#fff;
+  font-size:18px;
+  text-shadow:0 0 10px var(--gold-bright);
+}
+.combo-badge .combo-mul{
+  display:block;
+  color:var(--gold-bright);
+  font-size:9px;
+  margin-top:1px;
+  letter-spacing:.22em;
 }
 
 /* ================ TOAST ================ */
@@ -1513,6 +1578,7 @@ header{
       <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
     </svg>
   </div>
+  <button id="claim-all" class="claim-all-btn" style="display:none">Tout Réclamer (<span id="claim-all-sum">0</span> couronnes)</button>
   <div class="drawer-body" id="quest-list"></div>
 </aside>
 
@@ -2838,6 +2904,11 @@ const STATE = {
   totalStars: 0,       // lifetime stars gagnées
   transmutations: 0,   // nombre de transmutations effectuées
   upgrades: {},        // id -> niveau acheté (0 ou 1)
+
+  // Combo system
+  comboCount: 0,
+  lastMergeTime: 0,
+  bestCombo: 0,
   selectedCodex: null,
 };
 
@@ -3607,6 +3678,7 @@ function renderQuests(){
   const list = document.getElementById("quest-list");
   list.innerHTML = "";
   let claimable = 0;
+  let claimableSum = 0;
   for(const q of STATE.quests){
     if(q.claimed) continue;
     const el = document.createElement("div");
@@ -3627,6 +3699,7 @@ function renderQuests(){
     `;
     if(q.done){
       claimable++;
+      claimableSum += q.reward;
       el.addEventListener("click", ()=>claimQuest(q));
     }
     list.appendChild(el);
@@ -3634,6 +3707,38 @@ function renderQuests(){
   const badge = document.getElementById("quest-badge");
   badge.textContent = claimable;
   badge.classList.toggle("show", claimable > 0);
+  // Bouton "Tout Réclamer"
+  const claimAllBtn = document.getElementById("claim-all");
+  if(claimAllBtn){
+    if(claimable >= 2){
+      claimAllBtn.style.display = "block";
+      // Calcul avec multipliers actifs (event Souffle d'Or + upgrade Sol Aurum)
+      const eventGoldMul = (STATE.activeEvents?.goldbreath?.multipliers?.goldMul) || 1;
+      const upgGoldMul = getQuestGoldMul();
+      document.getElementById("claim-all-sum").textContent = Math.floor(claimableSum * eventGoldMul * upgGoldMul);
+    } else {
+      claimAllBtn.style.display = "none";
+    }
+  }
+}
+
+function claimAll(){
+  const done = STATE.quests.filter(q => q.done && !q.claimed);
+  if(!done.length) return;
+  for(const q of done){
+    q.claimed = true;
+    const eventGoldMul = (STATE.activeEvents?.goldbreath?.multipliers?.goldMul) || 1;
+    const upgGoldMul = getQuestGoldMul();
+    STATE.gold += Math.floor(q.reward * eventGoldMul * upgGoldMul);
+  }
+  sfxClaim();
+  vibrate([15, 30, 15, 30, 80]);
+  const r = document.getElementById("quests").getBoundingClientRect();
+  floating(r.left + r.width/2, r.top + 80, "+"+done.length+" quêtes !", "tier");
+  renderStats();
+  refreshQuests();
+  applyProgressionBonuses();
+  if(typeof checkAchievements === 'function') checkAchievements();
 }
 
 function chainSym(chain){
@@ -3738,6 +3843,15 @@ function renderStats(){
   $gold.title = STATE.gold + " couronnes";
   const modal = document.getElementById("stats-modal");
   if(modal && modal.classList.contains("show")) renderStatsBody();
+  // Phase de fond : 0=normal, 1@T2, 2@T4, 3@T6, 4@T7
+  const maxT = Math.max(...(STATE.totals?.maxTier || [0]));
+  let phase = 0;
+  if(maxT >= 7) phase = 4;
+  else if(maxT >= 6) phase = 3;
+  else if(maxT >= 4) phase = 2;
+  else if(maxT >= 2) phase = 1;
+  const stage = document.getElementById('stage');
+  if(stage && stage.dataset.phase != phase) stage.dataset.phase = phase;
   // Sanctum + Transmute toggle visibility
   const sanc = document.getElementById("sanctum-toggle");
   const trm = document.getElementById("transmute-toggle");
@@ -3788,6 +3902,7 @@ function renderStatsBody(){
   html.push(`<div class="stats-section"><h3>Totaux</h3>`);
   html.push(`<div class="stats-row"><span class="lbl">Items produits (total)</span><span class="val">${totalProduced}</span></div>`);
   html.push(`<div class="stats-row"><span class="lbl">Fusions (total)</span><span class="val">${totalMerged}</span></div>`);
+  if((STATE.bestCombo||0) > 1) html.push(`<div class="stats-row"><span class="lbl">Meilleur combo</span><span class="val">×${STATE.bestCombo}</span></div>`);
   html.push(`<div class="stats-row"><span class="lbl">Hauts faits</span><span class="val">${achCount}/${ACHIEVEMENTS.length}</span></div>`);
   html.push(`<div class="stats-row"><span class="lbl">Quêtes réclamées</span><span class="val">${STATE.quests.filter(q=>q.claimed).length}/${STATE.quests.length}</span></div>`);
   html.push(`</div>`);
@@ -4019,12 +4134,52 @@ function endDrag(cx, cy){
   }
 }
 
+const COMBO_WINDOW_MS = 1800;
+function comboTick(){
+  // appelé à chaque merge : si dans la fenêtre, incrémente; sinon reset
+  const now = Date.now();
+  if(now - (STATE.lastMergeTime||0) < COMBO_WINDOW_MS) STATE.comboCount = (STATE.comboCount||0) + 1;
+  else STATE.comboCount = 1;
+  STATE.lastMergeTime = now;
+  if(STATE.comboCount > (STATE.bestCombo||0)) STATE.bestCombo = STATE.comboCount;
+  return STATE.comboCount;
+}
+function comboMultiplier(){
+  // combo 1 = 1x, 3 = 1.5x, 5 = 2x, 8 = 3x, 12+ = 4x
+  const c = STATE.comboCount || 1;
+  if(c >= 12) return 4;
+  if(c >= 8) return 3;
+  if(c >= 5) return 2;
+  if(c >= 3) return 1.5;
+  return 1;
+}
+function showCombo(x, y, count){
+  if(count < 2) return;
+  const mul = comboMultiplier();
+  const el = document.createElement("div");
+  el.className = "combo-badge";
+  el.style.left = x + "px"; el.style.top = (y - 56) + "px";
+  el.innerHTML = `<span class="combo-x">×${count}</span><span class="combo-mul">${mul.toFixed(mul%1?1:0)}× or</span>`;
+  document.body.appendChild(el);
+  setTimeout(()=>el.classList.add("show"), 10);
+  setTimeout(()=>el.classList.remove("show"), 900);
+  setTimeout(()=>el.remove(), 1200);
+  // SFX combo : monte avec le combo
+  if(A.ctx){
+    const base = 440 + (count-2) * 60;
+    blip(base, .08, "triangle", .14, .3);
+    if(count >= 5) setTimeout(()=>blip(base*1.5, .12, "sine", .12, .4), 60);
+    if(count >= 8) setTimeout(()=>blip(base*2, .14, "sine", .1, .5), 120);
+  }
+}
+
 function doMerge(fx, fy, tx, ty){
   const a = STATE.grid[fy][fx], b = STATE.grid[ty][tx];
   if(!a || !b || a.chain !== b.chain || a.tier !== b.tier || b.tier >= TIERS-1){
     // garde défensive : merge invalide (tier max ou tuiles incompatibles)
     renderTile(fx, fy); renderTile(tx, ty); return;
   }
+  const combo = comboTick();
   let newTier = b.tier + 1;
   // Comet boost : saute un palier supplémentaire (max TIERS-1)
   if(STATE.cometBoost > 0 && newTier < TIERS-1){
@@ -4069,7 +4224,9 @@ function doMerge(fx, fy, tx, ty){
     renderCodex();
 
     // Cinématique Grand Œuvre à chaque palier ultime atteint pour la première fois
-    const goldMul = (STATE.activeEvents?.deepnight?.multipliers?.mergeGoldMul) || 1;
+    const eventGoldMul = (STATE.activeEvents?.deepnight?.multipliers?.mergeGoldMul) || 1;
+    const cMul = comboMultiplier();
+    const goldMul = eventGoldMul * cMul;
     if(newTier >= 5 && (STATE.firstReached[a.chain] || 0) < newTier){
       STATE.firstReached[a.chain] = newTier;
       const reward = Math.floor((TIER_REWARDS[newTier] || 200) * goldMul);
@@ -4081,15 +4238,16 @@ function doMerge(fx, fy, tx, ty){
       floating(bx, by + 10, "+"+reward, "gain");
       sfxClaim();
     } else if(goldMul > 1 && newTier >= 2){
-      // bonus or sur fusions intermédiaires pendant Nuit Profonde
       const bonus = Math.floor((newTier * 2) * (goldMul - 1));
       if(bonus > 0){ STATE.gold += bonus; floating(bx, by + 10, "+"+bonus, "gain"); }
     }
     // Upgrade Fulmen : +N couronnes par fusion T2+
     if(newTier >= 2){
       const fulmen = getMergeBonusGold();
-      if(fulmen > 0){ STATE.gold += fulmen; }
+      if(fulmen > 0){ STATE.gold += Math.floor(fulmen * cMul); }
     }
+    // Affichage du combo
+    showCombo(bx, by, combo);
     // Hook achievements
     if(typeof checkAchievements === 'function') checkAchievements();
     renderStats();
@@ -4574,6 +4732,7 @@ function save(){
       stars:STATE.stars||0, totalStars:STATE.totalStars||0,
       transmutations:STATE.transmutations||0,
       upgrades:STATE.upgrades||{},
+      bestCombo:STATE.bestCombo||0,
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
   }catch(e){}
@@ -4598,6 +4757,7 @@ function load(){
     STATE.totalStars = s.totalStars ?? 0;
     STATE.transmutations = s.transmutations ?? 0;
     STATE.upgrades = s.upgrades ?? {};
+    STATE.bestCombo = s.bestCombo ?? 0;
     // Restaurer events dont l'expiration n'est pas passée
     if(s.activeEvents){
       const nowT = Date.now();
@@ -4654,6 +4814,7 @@ function boot(){
     document.getElementById("quests").classList.toggle("open");
     document.getElementById("codex").classList.remove("open");
   });
+  document.getElementById("claim-all").addEventListener("click", claimAll);
   document.getElementById("codex-toggle").addEventListener("click", ()=>{
     document.getElementById("codex").classList.toggle("open");
     document.getElementById("quests").classList.remove("open");

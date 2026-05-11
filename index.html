@@ -419,6 +419,141 @@ header{
   100%{transform:scale(1); opacity:1; filter:brightness(1)}
 }
 
+/* ================ MASTER QUEST WIDGET ================ */
+#master-quest-widget{
+  background:
+    radial-gradient(ellipse 60% 30% at 50% 0%, rgba(232,200,120,.10), transparent 70%),
+    linear-gradient(180deg, #2a1f1a, #150d0a);
+  border:1px solid var(--gold-dark);
+  padding:6px 10px 7px;
+  position:relative;
+  margin:0 2px;
+}
+#master-quest-widget::before, #master-quest-widget::after{
+  content:""; position:absolute; width:5px; height:5px;
+  border:1px solid var(--gold); pointer-events:none;
+}
+#master-quest-widget::before{top:-1px; left:-1px; border-right:none; border-bottom:none}
+#master-quest-widget::after{bottom:-1px; right:-1px; border-left:none; border-top:none}
+.mq-head{
+  display:flex; justify-content:space-between; align-items:baseline;
+  margin-bottom:2px;
+}
+.mq-label{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:8px; letter-spacing:.24em;
+  color:var(--gold); opacity:.85;
+  text-transform:uppercase;
+}
+.mq-count{
+  font-family:"VT323", monospace; font-size:11px;
+  color:var(--gold-bright);
+}
+.mq-title{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:12px; letter-spacing:.14em;
+  color:var(--gold-bright);
+  text-shadow:0 0 6px var(--gold-glow);
+  margin-bottom:1px;
+}
+.mq-desc{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:11px; color:var(--parchment-2);
+  line-height:1.2;
+  margin-bottom:5px;
+}
+.mq-bar{
+  height:4px; background:#0a0608;
+  border:1px solid var(--gold-dark);
+  overflow:hidden;
+}
+.mq-bar > span{
+  display:block; height:100%; width:0%;
+  background:linear-gradient(90deg, var(--gold-dark), var(--gold-bright));
+  box-shadow:0 0 6px var(--gold-glow);
+  transition:width .4s;
+}
+.mq-done{text-align:center; padding:6px 0}
+.mq-done-icon{
+  font-family:"Cinzel"; font-size:18px; color:var(--gold-bright);
+  text-shadow:0 0 14px var(--gold-bright);
+}
+.mq-done-text{
+  font-family:"Cormorant Garamond"; font-style:italic;
+  font-size:13px; color:var(--gold-light);
+  letter-spacing:.1em;
+}
+
+/* Master Quest reveal overlay (cinematic) */
+.master-reveal-overlay{
+  position:fixed; inset:0; z-index:94;
+  background:radial-gradient(ellipse at 50% 50%, rgba(20,14,18,.92), rgba(0,0,0,.96));
+  display:flex; align-items:center; justify-content:center;
+  padding:20px;
+  opacity:0; pointer-events:none;
+  transition:opacity .6s;
+}
+.master-reveal-overlay.show{opacity:1; pointer-events:auto}
+.master-reveal-card{
+  width:min(94vw, 480px);
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g fill='none' stroke='%23c9a25a' stroke-width='1.2' opacity='.06'><circle cx='100' cy='100' r='80'/><circle cx='100' cy='100' r='55' stroke-dasharray='3 5'/></g></svg>") center/280px no-repeat,
+    radial-gradient(ellipse 80% 40% at 50% 0%, rgba(232,200,120,.18), transparent 70%),
+    linear-gradient(180deg, #1a1218, #0a0608);
+  border:1px solid var(--gold-bright);
+  padding:24px 20px;
+  text-align:center;
+  position:relative;
+  box-shadow:0 0 50px var(--gold-glow), 0 20px 80px rgba(0,0,0,.85);
+  transform:scale(.85) translateY(20px);
+  transition:transform .8s cubic-bezier(.2,.9,.2,1.2);
+}
+.master-reveal-overlay.show .master-reveal-card{transform:scale(1) translateY(0)}
+.master-reveal-card::before, .master-reveal-card::after{
+  content:""; position:absolute; width:14px; height:14px;
+  border:1.5px solid var(--gold-bright); pointer-events:none;
+}
+.master-reveal-card::before{top:-2px; left:-2px; border-right:none; border-bottom:none}
+.master-reveal-card::after{bottom:-2px; right:-2px; border-left:none; border-top:none}
+.mr-step{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:9px; letter-spacing:.36em;
+  color:var(--gold); opacity:.8;
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+.mr-title{
+  font-family:"Cinzel", serif; font-weight:900;
+  font-size:24px; letter-spacing:.18em;
+  color:var(--gold-bright);
+  text-shadow:0 0 18px var(--gold-glow), 0 1px 0 #000;
+  text-transform:uppercase;
+  margin-bottom:10px;
+  line-height:1.1;
+}
+.mr-decor{ color:var(--gold-light); opacity:.85; margin:6px auto 14px }
+.mr-decor svg{ width:200px; height:18px; filter:drop-shadow(0 0 6px var(--gold-glow)) }
+.mr-revelation, .mr-revelation p{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:15px; color:var(--parchment);
+  line-height:1.5;
+  margin:0 0 12px;
+  text-align:center;
+}
+.mr-continue{
+  margin-top:6px;
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:11px; letter-spacing:.34em;
+  color:#000;
+  background:linear-gradient(180deg, var(--gold-bright), var(--gold));
+  border:1px solid var(--gold-bright);
+  padding:9px 22px;
+  cursor:pointer;
+  text-transform:uppercase;
+  box-shadow:0 0 20px var(--gold-glow);
+}
+.mr-continue:hover{filter:brightness(1.1)}
+
 /* ================ GENERATEURS ================ */
 #generators{
   display:grid;
@@ -988,6 +1123,54 @@ header{
   font-family:"Cinzel", serif; font-size:9px;
   letter-spacing:.3em;
   color:var(--gold); opacity:.7;
+}
+
+/* ================ UPGRADE DIFF TOAST ================ */
+.upgrade-diff-toast{
+  position:fixed; top:90px; left:50%;
+  transform:translate(-50%,-100px);
+  z-index:88;
+  width:min(94vw, 360px);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(232,200,120,.20), transparent 70%),
+    linear-gradient(180deg, #2a1f1a, #150d0a);
+  border:1.5px solid var(--gold-bright);
+  padding:9px 14px 11px;
+  text-align:center;
+  pointer-events:none;
+  box-shadow:0 0 28px var(--gold-glow), 0 12px 40px rgba(0,0,0,.7);
+  transition:transform .55s cubic-bezier(.2,.9,.2,1.2);
+}
+.upgrade-diff-toast::before, .upgrade-diff-toast::after{
+  content:""; position:absolute; width:8px; height:8px;
+  border:1.5px solid var(--gold-bright); pointer-events:none;
+}
+.upgrade-diff-toast::before{top:-1.5px; left:-1.5px; border-right:none; border-bottom:none}
+.upgrade-diff-toast::after{bottom:-1.5px; right:-1.5px; border-left:none; border-top:none}
+.upgrade-diff-toast.show{transform:translate(-50%, 0)}
+.ud-banner{
+  font-family:"Cinzel", serif; font-weight:900;
+  letter-spacing:.36em; font-size:9px;
+  color:var(--gold); margin-bottom:1px;
+}
+.ud-name{
+  font-family:"Cinzel", serif; font-weight:700;
+  letter-spacing:.18em; font-size:14px;
+  color:var(--gold-bright);
+  text-shadow:0 0 12px var(--gold-glow);
+  text-transform:uppercase;
+  margin-bottom:6px;
+}
+.ud-lines{
+  font-family:"Cormorant Garamond", serif;
+  font-size:13px; color:var(--parchment-2);
+  line-height:1.4;
+}
+.ud-lines strong{
+  font-family:"VT323", monospace;
+  color:var(--gold-bright);
+  font-weight:normal;
+  font-size:15px;
 }
 
 /* ================ ACHIEVEMENT TOAST ================ */
@@ -2110,23 +2293,27 @@ header{
   text-transform:uppercase;
 }
 
-/* Sceau actif badge en header */
+/* Bandeau permanent : sceau actif + recettes composées */
 #active-modifier{
   position:fixed; top:48px; left:50%;
   transform:translateX(-50%);
   z-index:5;
+  max-width:94vw;
   font-family:"Cinzel", serif; font-weight:700;
-  font-size:9px; letter-spacing:.22em;
+  font-size:9px; letter-spacing:.18em;
   padding:3px 10px;
   background:linear-gradient(180deg, rgba(45,34,24,.95), rgba(20,14,18,.95));
   border:1px solid var(--gold-bright);
   color:var(--gold-bright);
   text-transform:uppercase;
-  pointer-events:none;
   text-shadow:0 0 8px var(--gold-glow);
   display:none;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 #active-modifier.show{display:block}
+#active-modifier .am-mod{color:var(--gold-bright)}
+#active-modifier .am-recipe{color:var(--plant-2)}
+#active-modifier .am-sep{margin:0 6px; color:var(--gold-dark)}
 #active-modifier::before, #active-modifier::after{
   content:""; position:absolute; width:4px; height:4px;
   border:1px solid var(--gold-bright); pointer-events:none;
@@ -2521,6 +2708,7 @@ header{
         <div id="grid"></div>
       </div>
     </div>
+    <div id="master-quest-widget"></div>
     <div id="generators"></div>
   </main>
 
@@ -2708,6 +2896,10 @@ header{
         <span class="epi-text">« Solve et coagula. »</span>
         <span class="epi-attr">— précepte hermétique</span>
       </blockquote>
+      <section class="grim-sec">
+        <h3>Le Pacte du Maître</h3>
+        <p><span class="dropcap">U</span>n carnet posé sous le plateau te suit en permanence. Il contient le <strong>Pacte du Maître</strong> : dix étapes scénarisées, de la première graine au <strong>9ème Sceau</strong>. À chaque étape franchie, un fragment du récit du Maître se révèle. Tu joues vers <em>quelque chose</em> — pas dans le vide.</p>
+      </section>
       <section class="grim-sec">
         <h3>Le But</h3>
         <p><span class="dropcap">T</span>u es l'alchimiste. Trois voies te sont ouvertes : la <em style="color:var(--plant-2)">Plante</em>, la <em style="color:var(--mineral-2)">Pierre</em>, l'<em style="color:var(--essence-2)">Essence</em>. Chaque voie monte en huit paliers, du plus humble (Graine, Caillou, Brume) au plus haut (Yggdra, Eternium, Singularité). Ton œuvre est de gravir ces voies, et — si l'art est juste — de les unir en un Grand Œuvre qui dépasse leurs sommes.</p>
@@ -3300,6 +3492,191 @@ const CHAINS = [
 
 const ROMAN = ["","I","II","III","IV","V","VI","VII"];
 const TIER_REWARDS = [0, 0, 0, 0, 0, 0, 200, 800, 3000]; // bonus or à chaque tier atteint en plus de la quête
+
+/* ================ LA QUÊTE PRINCIPALE — LE PACTE DU MAÎTRE ================ */
+/* 10 étapes scénarisées du début à la fin. Chaque étape complétée révèle un
+   fragment de lore qui avance l'histoire du Maître disparu. */
+const MASTER_QUEST = [
+  {
+    id:'awaken',
+    title:'Réveil du Cabinet',
+    desc:'Touche un cauldron pour ta première invocation.',
+    progress:s => Math.min(1, sumProduced(s)),
+    target:1,
+    check:s => sumProduced(s) >= 1,
+    revelation:"Le bocal du Maître t'a écouté. Une graine te répond. C'est commencé."
+  },
+  {
+    id:'first_merge',
+    title:'La Première Œuvre',
+    desc:'Glisse deux items identiques pour les fusionner.',
+    progress:s => Math.min(1, sumMerged(s)),
+    target:1,
+    check:s => sumMerged(s) >= 1,
+    revelation:"Solve et coagula. Tu viens de comprendre par le geste ce que les Anciens enseignaient par les mots."
+  },
+  {
+    id:'trinity_one',
+    title:'Les Trois Voies',
+    desc:'Atteins le palier I sur les trois voies (Bourgeon, Quartz, Étincelle).',
+    progress:s => s.totals.maxTier.filter(t=>t>=1).length,
+    target:3,
+    check:s => s.totals.maxTier.every(t=>t>=1),
+    revelation:"Plante, Pierre, Essence. Trois œuvres parallèles, et bientôt — trois œuvres tressées. L'atelier du Grand Œuvre s'ouvre."
+  },
+  {
+    id:'concord',
+    title:'Le Sceau du Concord',
+    desc:'Compose ton premier catalyseur au Grand Œuvre.',
+    progress:s => Object.keys(s.recipes||{}).length >= 1 ? 1 : 0,
+    target:1,
+    check:s => Object.keys(s.recipes||{}).length >= 1,
+    revelation:"Tu viens de faire ce que personne n'avait fait depuis lui. Un sceau, dont l'or coule désormais entre tes doigts."
+  },
+  {
+    id:'first_panacee',
+    title:"L'Œuvre Rouge",
+    desc:'Atteins le palier V (Panacée, Pierre Philosophale ou Quintessence) sur une voie.',
+    progress:s => s.totals.maxTier.some(t=>t>=5) ? 1 : 0,
+    target:1,
+    check:s => s.totals.maxTier.some(t=>t>=5),
+    revelation:"Le palier V. Ce que le Maître appelait l'Œuvre Rouge. La matière commence à parler dans sa propre langue."
+  },
+  {
+    id:'triple_v',
+    title:'Triple Couronne',
+    desc:'Atteins le palier V sur les trois voies.',
+    progress:s => s.totals.maxTier.filter(t=>t>=5).length,
+    target:3,
+    check:s => s.totals.maxTier.every(t=>t>=5),
+    revelation:"Triple couronne. Le Maître t'aurait passé un café et serait sorti dans le jardin pour pleurer. La Transmutation t'attend."
+  },
+  {
+    id:'first_transmute',
+    title:'Première Transmutation',
+    desc:'Reset ton cabinet contre des Étoiles permanentes (Transmutatio).',
+    progress:s => Math.min(1, s.transmutations||0),
+    target:1,
+    check:s => (s.transmutations||0) >= 1,
+    revelation:"Tu viens de mourir et de renaître. Les étoiles que tu portes désormais sont à toi pour toujours. Les Sceaux Mystiques s'offrent."
+  },
+  {
+    id:'sanctum_three',
+    title:'Le Sanctum se garnit',
+    desc:'Acquiers trois upgrades permanents au Sanctum.',
+    progress:s => Object.keys(s.upgrades||{}).filter(k=>s.upgrades[k]>0).length,
+    target:3,
+    check:s => Object.keys(s.upgrades||{}).filter(k=>s.upgrades[k]>0).length >= 3,
+    revelation:"Le Sanctum t'a reconnu. Tes étoiles sont gravées dans la pierre — elles tiendront, quoi que tu fasses désormais."
+  },
+  {
+    id:'triple_vii',
+    title:"L'Apothéose",
+    desc:'Atteins le palier VII (Yggdra, Eternium, Singularité) sur les trois voies.',
+    progress:s => s.totals.maxTier.filter(t=>t>=7).length,
+    target:3,
+    check:s => s.totals.maxTier.every(t=>t>=7),
+    revelation:"Trois Apothéoses dans la même vie. Le Maître en a eu une, peut-être deux. Tu approches du 9ème Sceau."
+  },
+  {
+    id:'ninth_seal',
+    title:'Le 9ème Sceau',
+    desc:'Compose les six catalyseurs ET atteins T7 sur les trois voies dans la même run.',
+    progress:s => (Object.keys(s.recipes||{}).length >= 6 ? 1 : 0) + (s.totals.maxTier.every(t=>t>=7) ? 1 : 0),
+    target:2,
+    check:s => Object.keys(s.recipes||{}).length >= 6 && s.totals.maxTier.every(t=>t>=7),
+    revelation:"Le 9ème Sceau. Le Maître l'a cherché toute sa vie sans le trouver. Toi, tu viens de poser ta paume dessus. Et il s'est ouvert.\n\nDerrière, il y avait toi — celui que tu étais avant qu'il ne te trouve, dans la cour, à ramasser un caillou."
+  },
+];
+
+function masterQuestCurrentIdx(){
+  if(!STATE.masterQuestDone) STATE.masterQuestDone = {};
+  for(let i=0; i<MASTER_QUEST.length; i++){
+    if(!STATE.masterQuestDone[MASTER_QUEST[i].id]) return i;
+  }
+  return MASTER_QUEST.length; // tout fini
+}
+
+function checkMasterQuest(){
+  if(!STATE.masterQuestDone) STATE.masterQuestDone = {};
+  const idx = masterQuestCurrentIdx();
+  if(idx >= MASTER_QUEST.length) return false; // tout fini
+  const step = MASTER_QUEST[idx];
+  if(step.check(STATE)){
+    STATE.masterQuestDone[step.id] = Date.now();
+    showMasterQuestReveal(step, idx);
+    renderMasterQuestWidget();
+    return true;
+  }
+  return false;
+}
+
+function showMasterQuestReveal(step, idx){
+  const overlay = document.createElement('div');
+  overlay.className = 'master-reveal-overlay';
+  overlay.innerHTML = `
+    <div class="master-reveal-card">
+      <div class="mr-step">Pacte du Maître · ${idx+1} / ${MASTER_QUEST.length}</div>
+      <div class="mr-title">${step.title}</div>
+      <div class="mr-decor">
+        <svg viewBox="0 0 240 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+          <path d="M2 9 q14 0 22 -2 q8 -2 16 0 q6 1.5 12 1.5 q8 0 16 -3"/>
+          <path d="M 238 9 q -14 0 -22 -2 q -8 -2 -16 0 q -6 1.5 -12 1.5 q -8 0 -16 -3"/>
+          <g transform="translate(120 9)">
+            <path d="M -10 0 q 4 -5 10 0 q -4 5 -10 0 z"/>
+            <path d="M 10 0 q -4 -5 -10 0 q 4 5 10 0 z"/>
+            <circle r="2" fill="currentColor" stroke="none"/>
+          </g>
+        </svg>
+      </div>
+      <div class="mr-revelation">${step.revelation.replace(/\n\n/g, '</p><p>')}</div>
+      <button class="mr-continue">CONTINUER</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
+  // SFX cinematic léger
+  if(A.ctx){
+    blip(330, .2, "triangle", .22, .5);
+    setTimeout(()=>blip(440, .25, "sine", .22, .55), 100);
+    setTimeout(()=>blip(660, .3, "triangle", .26, .6), 220);
+    setTimeout(()=>blip(880, .35, "sine", .22, .65), 360);
+  }
+  vibrate([20, 60, 20, 60, 100]);
+  setTimeout(()=>overlay.classList.add('show'), 30);
+  const close = ()=>{
+    overlay.classList.remove('show');
+    setTimeout(()=>overlay.remove(), 600);
+  };
+  overlay.querySelector('.mr-continue').addEventListener('click', close);
+  overlay.addEventListener('click', e=>{ if(e.target === overlay) close(); });
+}
+
+function renderMasterQuestWidget(){
+  let widget = document.getElementById('master-quest-widget');
+  if(!widget) return;
+  const idx = masterQuestCurrentIdx();
+  if(idx >= MASTER_QUEST.length){
+    widget.innerHTML = `
+      <div class="mq-done">
+        <div class="mq-done-icon">✦</div>
+        <div class="mq-done-text">Le Pacte du Maître est accompli.</div>
+      </div>
+    `;
+    return;
+  }
+  const step = MASTER_QUEST[idx];
+  const prog = step.progress(STATE);
+  const pct = Math.min(100, (prog / step.target) * 100);
+  widget.innerHTML = `
+    <div class="mq-head">
+      <span class="mq-label">Pacte du Maître · ${idx+1}/${MASTER_QUEST.length}</span>
+      <span class="mq-count">${Math.min(prog, step.target)}/${step.target}</span>
+    </div>
+    <div class="mq-title">${step.title}</div>
+    <div class="mq-desc">${step.desc}</div>
+    <div class="mq-bar"><span style="width:${pct}%"></span></div>
+  `;
+}
 
 /* Génération passive d'or par tuile sur le board (or par seconde).
    La graine ne fait rien. Le Bourgeon, déjà œuvré, commence à rendre.
@@ -5298,11 +5675,21 @@ function doTransmute(){
 function renderActiveModifier(){
   const el = document.getElementById('active-modifier');
   if(!el) return;
-  const id = STATE.activeModifierId;
-  if(!id){ el.classList.remove('show'); return; }
-  const m = MODIFIERS.find(x=>x.id===id);
-  if(!m){ el.classList.remove('show'); return; }
-  el.textContent = "✦ " + m.name;
+  const bits = [];
+  // Sceau Mystique actif
+  if(STATE.activeModifierId){
+    const m = MODIFIERS.find(x=>x.id===STATE.activeModifierId);
+    if(m) bits.push('<span class="am-mod">✦ ' + m.name + '</span>');
+  }
+  // Catalyseurs composés (recettes)
+  const recipes = STATE.recipes || {};
+  for(const r of RECIPES){
+    if(recipes[r.id]){
+      bits.push('<span class="am-recipe" title="' + r.effectText + '">' + r.name + '</span>');
+    }
+  }
+  if(bits.length === 0){ el.classList.remove('show'); el.innerHTML=''; return; }
+  el.innerHTML = bits.join('<span class="am-sep">·</span>');
   el.classList.add('show');
 }
 
@@ -5493,7 +5880,9 @@ function compose(id){
     renderStats();
     renderCodex();
     refreshQuests();
+    renderActiveModifier();
     if(typeof checkAchievements === 'function') checkAchievements();
+  if(typeof checkMasterQuest === 'function') checkMasterQuest();
     // Refresh modal
     openOeuvre();
     // Toast event-style
@@ -5587,14 +5976,46 @@ function openSanctum(){
 function buyUpgrade(id){
   const u = UPGRADES.find(x=>x.id===id);
   if(!u || (STATE.upgrades?.[id]||0)>0 || STATE.stars < u.cost){ sfxDeny(); return; }
+  // Snapshot avant pour comparatif
+  const before = {
+    regen: STATE.essenceRegen,
+    essenceMax: STATE.essenceMax,
+    cd0: Math.round(STATE.generators[0].cdMs),
+  };
   STATE.stars -= u.cost;
   STATE.upgrades = STATE.upgrades || {};
   STATE.upgrades[id] = 1;
   applyUpgrades();
   applyProgressionBonuses();
+  const after = {
+    regen: STATE.essenceRegen,
+    essenceMax: STATE.essenceMax,
+    cd0: Math.round(STATE.generators[0].cdMs),
+  };
+  // Toast comparatif
+  showUpgradeDiff(u, before, after);
   sfxClaim();
   vibrate([15, 30, 15, 60]);
   openSanctum(); // refresh
+}
+
+function showUpgradeDiff(u, before, after){
+  const lines = [];
+  if(before.regen !== after.regen) lines.push(`Étincelle régen : <strong>${before.regen.toFixed(2)}/s → ${after.regen.toFixed(2)}/s</strong>`);
+  if(before.essenceMax !== after.essenceMax) lines.push(`Étincelle max : <strong>${before.essenceMax} → ${after.essenceMax}</strong>`);
+  if(before.cd0 !== after.cd0) lines.push(`Cooldown Plante : <strong>${before.cd0}ms → ${after.cd0}ms</strong>`);
+  if(lines.length === 0) lines.push(`<strong>${u.effectText || 'effet permanent acquis'}</strong>`);
+  const el = document.createElement('div');
+  el.className = 'upgrade-diff-toast';
+  el.innerHTML = `
+    <div class="ud-banner">SCEAU GRAVÉ</div>
+    <div class="ud-name">${u.name}</div>
+    <div class="ud-lines">${lines.join('<br>')}</div>
+  `;
+  document.body.appendChild(el);
+  setTimeout(()=>el.classList.add('show'), 30);
+  setTimeout(()=>el.classList.remove('show'), 3800);
+  setTimeout(()=>el.remove(), 4400);
 }
 
 /* ================ LE MARCHÉ ================ */
@@ -6265,6 +6686,7 @@ function tryUnlockAthanor(){
   // Notification
   eventNotification({ name:"L'Athanor s'éveille", desc:"Le four alchimique brûle de nouveau. Trois items deviennent un, le palier supérieur."}, "");
   if(typeof checkAchievements === 'function') checkAchievements();
+  if(typeof checkMasterQuest === 'function') checkMasterQuest();
 }
 
 function openAthanor(){
@@ -6359,6 +6781,7 @@ function doPurify(chain, tier, cost){
     refreshQuests();
     renderCodex();
     if(typeof checkAchievements === 'function') checkAchievements();
+  if(typeof checkMasterQuest === 'function') checkMasterQuest();
     // Refresh modal
     openAthanor();
   }, 280);
@@ -6429,6 +6852,7 @@ function claimAll(){
   refreshQuests();
   applyProgressionBonuses();
   if(typeof checkAchievements === 'function') checkAchievements();
+  if(typeof checkMasterQuest === 'function') checkMasterQuest();
 }
 
 function chainSym(chain){
@@ -6538,6 +6962,8 @@ function renderStats(){
   $gold.textContent = fmtNumber(STATE.gold);
   // Indication du gold/s à côté quand il y en a
   const ips = STATE._idlePerSec || 0;
+  // Master quest widget en suit le rythme aussi
+  if(typeof renderMasterQuestWidget === 'function') renderMasterQuestWidget();
   if($gold._rateEl){ $gold._rateEl.textContent = ips > 0 ? '+' + (ips < 1 ? ips.toFixed(1) : (ips < 10 ? ips.toFixed(1) : Math.floor(ips))) + '/s' : ''; }
   else if(ips > 0){
     const span = document.createElement('span');
@@ -6783,6 +7209,7 @@ function fireGenerator(idx, el){
   vibrate(14);
   audioInit();
   if(typeof checkAchievements === 'function') checkAchievements();
+  if(typeof checkMasterQuest === 'function') checkMasterQuest();
   if(typeof tutorialOnSpawn === 'function') tutorialOnSpawn(g.chain);
   // burst from cauldron
   const r = el.getBoundingClientRect();
@@ -7099,6 +7526,7 @@ function doMerge(fx, fy, tx, ty){
     }
     // Hooks
     if(typeof checkAchievements === 'function') checkAchievements();
+  if(typeof checkMasterQuest === 'function') checkMasterQuest();
     if(typeof tutorialOnMerge === 'function') tutorialOnMerge();
     renderStats();
   }, 280);
@@ -7121,6 +7549,7 @@ function claimQuest(q){
   refreshQuests();
   applyProgressionBonuses();
   if(typeof checkAchievements === 'function') checkAchievements();
+  if(typeof checkMasterQuest === 'function') checkMasterQuest();
 }
 function applyProgressionBonuses(){
   const factor = Math.max(.4, 1 - STATE.gold/4000);
@@ -7868,6 +8297,7 @@ function save(){
       recipes:STATE.recipes||{},
       activeModifierId:STATE.activeModifierId||null,
       codexUnlocks:STATE.codexUnlocks||{},
+      masterQuestDone:STATE.masterQuestDone||{},
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
   }catch(e){}
@@ -7896,6 +8326,7 @@ function load(){
     STATE.recipes = s.recipes ?? {};
     STATE.activeModifierId = s.activeModifierId ?? null;
     STATE.codexUnlocks = s.codexUnlocks ?? {};
+    STATE.masterQuestDone = s.masterQuestDone ?? {};
     // Migration : si on a maxTier mais pas de codexUnlocks → backfill
     for(let c=0;c<3;c++){
       for(let t=0; t<=STATE.totals.maxTier[c]; t++){
@@ -7953,6 +8384,7 @@ function boot(){
   renderCodex();
   checkAchievements();
   renderActiveModifier();
+  renderMasterQuestWidget();
   // Offline progress toast (déclenché dans le start-btn pour éviter d'apparaître avant l'intro)
 
   function syncDrawerOverlay(){

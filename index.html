@@ -740,6 +740,27 @@ body.frenzy-on #grid-frame{
   display:flex; align-items:center; gap:3px;
 }
 .gen .gen-cost svg{width:10px; height:10px}
+/* Compteur passif +/s par voie : preuve continue qu'on devient plus fort */
+.gen .gen-rate{
+  font-family:"VT323", monospace; font-size:11px;
+  letter-spacing:.04em;
+  color:#5a4528;
+  margin-top:1px; line-height:1;
+  transition:color .3s, text-shadow .3s, transform .25s;
+}
+.gen .gen-rate.on{ color:var(--gold-light); }
+.gen .gen-rate.hot{
+  color:var(--gold-bright);
+  text-shadow:0 0 6px var(--gold-glow);
+}
+.gen .gen-rate.grow{
+  animation:genRateGrow .55s cubic-bezier(.2,.9,.2,1.4);
+}
+@keyframes genRateGrow{
+  0%   { transform:translateY(0)    scale(1);   }
+  35%  { transform:translateY(-3px) scale(1.18); color:#fff; text-shadow:0 0 10px var(--gold-bright); }
+  100% { transform:translateY(0)    scale(1);   }
+}
 .gen .cd-bar{
   position:absolute; left:2px; right:2px; bottom:5px; height:3px;
   background:rgba(0,0,0,.6); border-radius:1px; overflow:hidden;
@@ -2683,6 +2704,80 @@ body.frenzy-on #grid-frame{
   30%  { background:rgba(255,240,180,.30); box-shadow:0 0 30px var(--gold-bright), inset 0 0 18px rgba(232,200,120,.30); transform:scale(1.01); }
   100% { background:transparent; box-shadow:0 0 0 transparent, inset 0 0 0 transparent; transform:scale(1); }
 }
+
+/* Power Spike : annonce de palier intermédiaire — "tu deviens plus puissant" */
+.power-spike{
+  position:fixed; top:35%; left:50%;
+  transform:translate(-50%, -50%) scale(.6);
+  z-index:90;
+  width:min(86vw, 360px);
+  background:
+    radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--chain-color) 30%, transparent), transparent 70%),
+    linear-gradient(180deg, #2a1d18, #1a0e0a);
+  border:2px solid var(--gold-bright);
+  padding:14px 16px 14px;
+  pointer-events:none;
+  box-shadow:0 0 40px var(--gold-glow), 0 14px 50px rgba(0,0,0,.7);
+  opacity:0;
+  transition:transform .55s cubic-bezier(.2,.9,.2,1.4), opacity .35s;
+  overflow:hidden;
+}
+.power-spike.show{ opacity:1; transform:translate(-50%, -50%) scale(1); }
+.power-spike::before, .power-spike::after{
+  content:""; position:absolute; width:12px; height:12px;
+  border:2px solid var(--gold-bright); pointer-events:none;
+}
+.power-spike::before{ top:-3px; left:-3px; border-right:none; border-bottom:none }
+.power-spike::after{ bottom:-3px; right:-3px; border-left:none; border-top:none }
+.ps-flash{
+  position:absolute; inset:0;
+  background:linear-gradient(90deg, transparent, rgba(232,200,120,.35), transparent);
+  transform:translateX(-100%);
+  animation:psFlash 1.1s ease-out 0.15s;
+}
+@keyframes psFlash{
+  0% { transform:translateX(-100%); }
+  100% { transform:translateX(100%); }
+}
+.ps-row{ display:flex; gap:14px; align-items:center; position:relative; z-index:1; }
+.ps-spr{
+  width:56px; height:56px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  background:radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--chain-color) 25%, transparent), transparent 70%);
+  filter:drop-shadow(0 0 12px var(--chain-color));
+}
+.ps-spr svg{ width:100%; height:100%; image-rendering:pixelated; }
+.ps-text{ min-width:0; flex:1 }
+.ps-banner{
+  font-family:"Cinzel", serif; font-weight:700;
+  letter-spacing:.24em; font-size:9px;
+  color:var(--gold-dark);
+  text-transform:uppercase;
+  margin-bottom:1px;
+}
+.ps-name{
+  font-family:"Cinzel", serif; font-weight:900;
+  letter-spacing:.10em; font-size:18px;
+  color:var(--gold-bright);
+  text-shadow:0 0 14px var(--gold-glow);
+  margin-bottom:5px;
+  text-transform:uppercase;
+}
+.ps-stat{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:14px; color:var(--gold-light);
+  margin-bottom:2px;
+}
+.ps-stat .ps-sub{
+  font-style:normal; font-size:11px; opacity:.65;
+  font-family:"IM Fell English", serif;
+}
+.ps-rates{
+  font-family:"VT323", monospace; font-size:14px;
+  color:var(--gold);
+  letter-spacing:.04em;
+}
+.ps-rates .ps-arrow{ color:var(--gold-bright); margin:0 4px; }
 
 /* Achat épique (mag 5) : flash global bref */
 body.shop-epic-flash::after{
@@ -6574,11 +6669,11 @@ const SHOP_ITEMS = [
   { id:'spawn2_1', section:'Invocations directes', name:'Étincelle Vraie', desc:'Une Étincelle (palier II) directement.', cost:160, icon:2, perform:()=>shopSpawn(2, 1) },
 
   // === Sceaux : items au palier choisi par le joueur ===
-  { id:'seal_t2', section:'Sceaux du Marchand', name:'Sceau du Marchand', desc:'Un item palier III au choix (Mandragore, Améthyste ou Flamme Bleue).',
+  { id:'seal_t2', section:'Sceaux du Marchand', name:'Sceau du Marchand', desc:'Un item palier II au choix (Mandragore, Améthyste ou Flamme Bleue).',
     cost:250, kind:'seal', tier:2, perform:()=>shopOpenSeal(2) },
-  { id:'seal_t3', section:'Sceaux du Marchand', name:'Sceau de l\'Apprenti', desc:'Un item palier IV au choix.',
+  { id:'seal_t3', section:'Sceaux du Marchand', name:'Sceau de l\'Apprenti', desc:'Un item palier III au choix.',
     cost:1000, kind:'seal', tier:3, perform:()=>shopOpenSeal(3) },
-  { id:'seal_t4', section:'Sceaux du Marchand', name:'Sceau du Mage', desc:'Un item palier V au choix.',
+  { id:'seal_t4', section:'Sceaux du Marchand', name:'Sceau du Mage', desc:'Un item palier IV au choix.',
     cost:4000, kind:'seal', tier:4, perform:()=>shopOpenSeal(4) },
 
   // === Boosts temporaires (actifs comme un event) ===
@@ -7473,6 +7568,11 @@ function renderGenerators(){
       cd.className = "cd-bar";
       cd.innerHTML = "<span></span>";
       div.appendChild(cd);
+      // Compteur +/s passif de cette voie — visible en permanence
+      const rate = document.createElement("div");
+      rate.className = "gen-rate";
+      rate.textContent = "+0 /s";
+      div.appendChild(rate);
     }
 
     div.addEventListener("pointerdown", e=>{
@@ -8162,6 +8262,7 @@ function flashStat(id){
   ], { duration:400 });
 }
 function tickGenerators(now){
+  const rates = STATE._idlePerSecByChain || [0, 0, 0];
   $gens.querySelectorAll(".gen").forEach((el, i)=>{
     const g = STATE.generators[i];
     if(!g || g.kind === "athanor") return; // pas de cooldown sur athanor
@@ -8171,6 +8272,27 @@ function tickGenerators(now){
     const bar = el.querySelector(".cd-bar > span");
     if(bar) bar.style.width = cdPct + "%";
     el.classList.toggle("cooldown", dt < effCd);
+    // Compteur +/s passif par voie (mise à jour douce)
+    const rateEl = el.querySelector(".gen-rate");
+    if(rateEl){
+      const r = rates[g.chain] || 0;
+      const txt = r === 0 ? "+0 /s" : (r < 1 ? "+" + r.toFixed(1) + " /s" : "+" + Math.floor(r) + " /s");
+      if(rateEl._lastTxt !== txt){
+        // Pulse quand la valeur augmente
+        const prev = rateEl._lastVal || 0;
+        if(r > prev + 0.001){
+          rateEl.classList.remove('grow');
+          // Reflow trick
+          void rateEl.offsetWidth;
+          rateEl.classList.add('grow');
+        }
+        rateEl._lastTxt = txt;
+        rateEl._lastVal = r;
+        rateEl.textContent = txt;
+        rateEl.classList.toggle('hot', r >= 10);
+        rateEl.classList.toggle('on', r > 0);
+      }
+    }
   });
   // bulles canvas (3 cauldrons seulement)
   $gens.querySelectorAll(".gen-bubbles").forEach((cv, i)=>{
@@ -8524,6 +8646,11 @@ function doMerge(fx, fy, tx, ty){
     refreshQuests();
     renderCodex();
 
+    // Power-spike banner sur les paliers intermédiaires (T2/T3/T4) atteints pour la 1ère fois
+    if(newTier >= 2 && newTier <= 4 && (STATE.firstReached[a.chain] || 0) < newTier){
+      STATE.firstReached[a.chain] = newTier;
+      showPowerSpike(a.chain, newTier);
+    }
     // Cinématique Grand Œuvre à chaque palier ultime atteint pour la première fois
     const eventGoldMul = (STATE.activeEvents?.deepnight?.multipliers?.mergeGoldMul) || 1;
     const cMul = comboMultiplier();
@@ -8618,6 +8745,56 @@ function applyProgressionBonuses(){
   if(STATE.gold >= 2500){ baseMax = 220; baseRegen = 4; }
   STATE.essenceMax = Math.floor(baseMax * (STATE.upgradeEssenceMaxMul || 1) * modEssenceMaxMul());
   STATE.essenceRegen = baseRegen * (STATE.upgradeRegenMul || 1) * modRegenMul();
+}
+
+/* ================ POWER SPIKE BANNER ================ */
+/* Quand un palier intermédiaire (T2/T3/T4) est atteint pour la 1ère fois sur une voie,
+   on annonce EXPLICITEMENT le saut de puissance. Le joueur sent qu'il devient plus fort. */
+function showPowerSpike(chain, newTier){
+  const ch = CHAINS[chain];
+  if(!ch || !ch.tiers[newTier]) return;
+  const fromRate = IDLE_GOLD_PER_TIER[newTier - 1] || 0.01;
+  const toRate = IDLE_GOLD_PER_TIER[newTier] || 0;
+  const mul = toRate / Math.max(0.001, fromRate);
+  const mulTxt = mul >= 10 ? mul.toFixed(0) : mul.toFixed(1);
+  const itemName = ch.tiers[newTier].n;
+  const roman = ROMAN[newTier];
+  const el = document.createElement('div');
+  el.className = 'power-spike';
+  el.style.setProperty('--chain-color', ch.color);
+  el.innerHTML = `
+    <div class="ps-flash"></div>
+    <div class="ps-row">
+      <div class="ps-spr">${spriteSVG(SPRITES[chain*TIERS + newTier])}</div>
+      <div class="ps-text">
+        <div class="ps-banner">PALIER ${roman} · ${ch.short}</div>
+        <div class="ps-name">${itemName}</div>
+        <div class="ps-stat">or passif × ${mulTxt} <span class="ps-sub">par tuile</span></div>
+        <div class="ps-rates">${fromRate}/s <span class="ps-arrow">→</span> ${toRate}/s</div>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(el);
+  // Slide-in
+  setTimeout(()=>el.classList.add('show'), 30);
+  setTimeout(()=>el.classList.remove('show'), 3200);
+  setTimeout(()=>el.remove(), 3700);
+  // SFX et haptique : ascendant, victorieux mais bref
+  if(A.ctx){
+    blip(220, .15, "triangle", .22, .55);
+    setTimeout(()=>blip(330, .18, "sine", .22, .6), 90);
+    setTimeout(()=>blip(440, .2, "triangle", .25, .65), 200);
+    setTimeout(()=>blip(660, .25, "sine", .25, .7), 320);
+    setTimeout(()=>blip(880, .3, "triangle", .22, .7), 460);
+  }
+  vibrate([20, 40, 30, 40, 60]);
+  // Particules à la couleur de la voie depuis le centre
+  const cx = window.innerWidth / 2;
+  const cy = 180;
+  for(let i=0; i<3; i++){
+    setTimeout(()=>particles(cx, cy, ch.color, 14), i*120);
+  }
+  setTimeout(()=>particles(cx, cy, '#e8c878', 18), 380);
 }
 
 /* ================ GRAND ŒUVRE CINEMATIC ================ */
@@ -9719,15 +9896,18 @@ function boot(){
     // Génération passive d'or par les items sur le board (T1+)
     safe(()=>{
       let perSec = 0;
+      const perSecByChain = [0, 0, 0];
       let bestTile = null, bestRate = 0;
       for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++){
         const t = STATE.grid[y][x]; if(!t) continue;
         const rate = IDLE_GOLD_PER_TIER[t.tier] || 0;
         if(rate > 0){
           perSec += rate;
+          perSecByChain[t.chain] += rate;
           if(rate > bestRate){ bestRate = rate; bestTile = {x,y,tier:t.tier,chain:t.chain}; }
         }
       }
+      STATE._idlePerSecByChain = perSecByChain;
       if(perSec > 0){
         const gain = perSec * dt * (recipeGoldMul ? recipeGoldMul() : 1) * (modGoldMul ? modGoldMul() : 1);
         STATE.gold += gain;

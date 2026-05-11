@@ -2575,9 +2575,94 @@ body.frenzy-on #grid-frame{
   font-size:14px; color:var(--gold-light);
 }
 
+/* Bandeau "prochain achat" — la boucle dopamine du marché */
+#shop-hint{
+  position:fixed; top:96px; left:50%;
+  transform:translateX(-50%);
+  z-index:5;
+  max-width:94vw;
+  display:none;
+  align-items:center; gap:8px;
+  padding:4px 14px 5px;
+  background:linear-gradient(180deg, rgba(45,34,24,.95), rgba(20,14,18,.95));
+  border:1px solid var(--gold-dark);
+  cursor:pointer;
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:9px; letter-spacing:.18em;
+  color:var(--gold-light);
+  text-transform:uppercase;
+  white-space:nowrap;
+  transition:border-color .2s, box-shadow .2s, transform .2s;
+}
+#shop-hint.show{display:inline-flex}
+#shop-hint.affordable{
+  border-color:var(--gold-bright);
+  box-shadow:0 0 12px var(--gold-glow), inset 0 0 8px rgba(232,200,120,.12);
+  color:var(--gold-bright);
+  animation:shopPulse 1.6s ease-in-out infinite;
+}
+@keyframes shopPulse{
+  0%,100%{ box-shadow:0 0 10px var(--gold-glow), inset 0 0 6px rgba(232,200,120,.10); }
+  50%   { box-shadow:0 0 20px var(--gold-bright), inset 0 0 14px rgba(232,200,120,.22); }
+}
+#shop-hint:active{ transform:translateX(-50%) scale(.96) }
+#shop-hint::before, #shop-hint::after{
+  content:""; position:absolute; width:4px; height:4px;
+  border:1px solid var(--gold); pointer-events:none;
+}
+#shop-hint::before{top:-1px; left:-1px; border-right:none; border-bottom:none}
+#shop-hint::after{bottom:-1px; right:-1px; border-left:none; border-top:none}
+.sh-arrow{ color:var(--gold-bright); font-size:11px; opacity:.85 }
+.sh-name{ font-family:"Cormorant Garamond", serif; font-style:italic; font-size:11px; letter-spacing:.04em; text-transform:none; color:inherit }
+.sh-cost{
+  display:inline-flex; align-items:center; gap:3px;
+  font-family:"VT323", monospace; font-size:13px; letter-spacing:0;
+  color:var(--gold-bright);
+}
+.sh-cost svg{ width:10px; height:10px; vertical-align:-1px }
+.sh-bar{
+  display:inline-block; height:3px; width:46px; min-width:46px;
+  background:#0a0608; border:1px solid var(--gold-dark);
+  overflow:hidden; vertical-align:middle;
+}
+.sh-bar > span{
+  display:block; height:100%; width:0%;
+  background:linear-gradient(90deg, var(--gold-dark), var(--gold-bright));
+  transition:width .25s;
+}
+.sh-count{
+  display:inline-flex; align-items:center; justify-content:center;
+  min-width:14px; height:14px; padding:0 3px;
+  background:var(--gold-bright); color:#000;
+  font-family:"VT323", monospace; font-size:11px; line-height:1;
+  border-radius:1px;
+}
+
+/* Badge "achats dispos" sur menu Marché */
+.menu-item .mi-shop-badge{
+  position:absolute; top:8px; right:10px;
+  min-width:18px; height:18px; padding:0 5px;
+  display:none; align-items:center; justify-content:center;
+  background:var(--gold-bright); color:#000;
+  font-family:"VT323", monospace; font-weight:700; font-size:12px;
+  border-radius:2px;
+  box-shadow:0 0 10px var(--gold-glow);
+  pointer-events:none;
+}
+.menu-item .mi-shop-badge.show{ display:inline-flex }
+
+/* Section affordable mise en avant dans le shop modal */
+.shop-section-hot{
+  border:1px solid var(--gold-bright);
+  background:linear-gradient(180deg, rgba(45,34,24,.55), rgba(20,14,18,.55));
+  padding:6px 8px 8px;
+  margin-bottom:8px;
+}
+.shop-section-hot > h3{ color:var(--gold-bright) !important }
+
 /* Bandeau permanent : sceau actif + recettes composées */
 #active-modifier{
-  position:fixed; top:96px; left:50%;
+  position:fixed; top:130px; left:50%;
   transform:translateX(-50%);
   z-index:5;
   max-width:94vw;
@@ -2922,6 +3007,7 @@ body.frenzy-on #grid-frame{
   </header>
 
   <div id="alch-level"></div>
+  <div id="shop-hint" role="button" aria-label="Ouvrir le Marché"></div>
   <div id="active-events"></div>
   <div id="active-modifier"></div>
   <div id="drawer-overlay"></div>
@@ -3102,6 +3188,7 @@ body.frenzy-on #grid-frame{
           <circle cx="14.5" cy="13" r=".8" fill="currentColor"/>
         </svg>
         <div class="mi-meta"><div class="mi-title">Le Marché</div><div class="mi-sub">dépenser couronnes : spawns, sceaux, boosts</div></div>
+        <span class="mi-shop-badge" id="menu-shop-badge"></span>
       </button>
       <button class="menu-item" data-action="oeuvre" id="menu-oeuvre">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
@@ -6429,27 +6516,81 @@ function showUpgradeDiff(u, before, after){
 /* ================ LE MARCHÉ ================ */
 /* L'or n'est plus un compteur passif. Le marchand vend du temps, des ingrédients, des boosts. */
 const SHOP_ITEMS = [
+  // === Coups d'éclat (achats fréquents, peu chers — la boucle dopamine) ===
+  { id:'cd_reset', section:"Coups d'éclat", name:'Coup d\'Éclat', desc:'Tous les cooldowns de chaudières remis à zéro. Tu peux re-fire tout de suite.',
+    cost:35, kind:'instant', perform:()=>shopResetCooldowns() },
+  { id:'starfall_mini', section:"Coups d'éclat", name:'Pluie Mineure', desc:'5 items palier I tombent dans le cabinet, voies aléatoires.',
+    cost:65, kind:'instant', perform:()=>shopMiniStarfall(5) },
+  { id:'boost_essence', section:"Coups d'éclat", name:'Sang d\'Étincelle', desc:'Étincelle remplie immédiatement.',
+    cost:50, kind:'instant', perform:()=>{ STATE.essence = STATE.essenceMax; renderStats(); floating(window.innerWidth/2, 100, "✦ Étincelle pleine", "tier"); } },
+  { id:'spectral_force', section:"Coups d'éclat", name:'Cible Forcée', desc:'Invoque une Cible Spectrale immédiatement. Touche-la pour +200 à +400 couronnes.',
+    cost:180, kind:'instant', perform:()=>{ spawnSpectralTarget(); _nextSpectralAt = Date.now() + 45000 + Math.random()*45000; } },
+  { id:'frenzy_force', section:"Coups d'éclat", name:'Pacte de Frénésie', desc:'Déclenche Frenzy 10s — or ×1.5 sur tes fusions.',
+    cost:320, kind:'instant', perform:()=>startFrenzy() },
+
   // === Spawns directs (économie de l'attente) ===
   { id:'spawn0_0', section:'Invocations directes', name:'Graine', desc:'Une graine en plus, sur-le-champ.',  cost:8,   icon:0, perform:()=>shopSpawn(0, 0) },
   { id:'spawn1_0', section:'Invocations directes', name:'Caillou',desc:'Un caillou en plus, sur-le-champ.', cost:14,  icon:1, perform:()=>shopSpawn(1, 0) },
   { id:'spawn2_0', section:'Invocations directes', name:'Brume',  desc:'Une brume en plus, sur-le-champ.',  cost:22,  icon:2, perform:()=>shopSpawn(2, 0) },
+  { id:'spawn0_1', section:'Invocations directes', name:'Bourgeon', desc:'Un Bourgeon (palier II) directement.', cost:90,  icon:0, perform:()=>shopSpawn(0, 1) },
+  { id:'spawn1_1', section:'Invocations directes', name:'Quartz',   desc:'Un Quartz (palier II) directement.',  cost:120, icon:1, perform:()=>shopSpawn(1, 1) },
+  { id:'spawn2_1', section:'Invocations directes', name:'Étincelle Vraie', desc:'Une Étincelle (palier II) directement.', cost:160, icon:2, perform:()=>shopSpawn(2, 1) },
 
   // === Sceaux : items au palier choisi par le joueur ===
-  { id:'seal_t2', section:'Sceaux du Marchand', name:'Sceau du Marchand', desc:'Un item palier II au choix (Mandragore, Améthyste ou Flamme Bleue).',
+  { id:'seal_t2', section:'Sceaux du Marchand', name:'Sceau du Marchand', desc:'Un item palier III au choix (Mandragore, Améthyste ou Flamme Bleue).',
     cost:250, kind:'seal', tier:2, perform:()=>shopOpenSeal(2) },
-  { id:'seal_t3', section:'Sceaux du Marchand', name:'Sceau de l\'Apprenti', desc:'Un item palier III au choix.',
+  { id:'seal_t3', section:'Sceaux du Marchand', name:'Sceau de l\'Apprenti', desc:'Un item palier IV au choix.',
     cost:1000, kind:'seal', tier:3, perform:()=>shopOpenSeal(3) },
-  { id:'seal_t4', section:'Sceaux du Marchand', name:'Sceau du Mage', desc:'Un item palier IV au choix.',
+  { id:'seal_t4', section:'Sceaux du Marchand', name:'Sceau du Mage', desc:'Un item palier V au choix.',
     cost:4000, kind:'seal', tier:4, perform:()=>shopOpenSeal(4) },
 
   // === Boosts temporaires (actifs comme un event) ===
-  { id:'boost_essence', section:'Boosts', name:'Sang d\'Étincelle', desc:'Étincelle remplie immédiatement.',
-    cost:50, kind:'boost', perform:()=>{ STATE.essence = STATE.essenceMax; renderStats(); floating(window.innerWidth/2, 100, "✦ Étincelle pleine", "tier"); } },
-  { id:'boost_cool', section:'Boosts', name:'Souffle Régent', desc:'Cooldowns des cauldrons ÷2 pendant 60 secondes.',
+  { id:'boost_cool', section:'Boosts prolongés', name:'Souffle Régent', desc:'Cooldowns des cauldrons ÷2 pendant 60 secondes.',
     cost:120, kind:'boost', perform:()=>shopActivateEvent('souffle', 60000, { cdMul:.5 }, 'Souffle Régent') },
-  { id:'boost_gold',    section:'Boosts', name:'Pluie d\'Or',    desc:'Or des fusions ×2 pendant 60 secondes.',
+  { id:'boost_gold',    section:'Boosts prolongés', name:'Pluie d\'Or',    desc:'Or des fusions ×2 pendant 60 secondes.',
     cost:180, kind:'boost', perform:()=>shopActivateEvent('pluiedor', 60000, { mergeGoldMul:2 }, 'Pluie d\'Or') },
+  { id:'boost_goldx3', section:'Boosts prolongés', name:'Or Cristallisé', desc:'Or des fusions ×3 pendant 90 secondes.',
+    cost:550, kind:'boost', perform:()=>shopActivateEvent('orcristal', 90000, { mergeGoldMul:3 }, 'Or Cristallisé') },
+  { id:'boost_regen', section:'Boosts prolongés', name:'Marée Intérieure', desc:'Étincelle régénère ×3 pendant 90 secondes.',
+    cost:240, kind:'boost', perform:()=>shopActivateEvent('mareeshop', 90000, { regenMul:3 }, 'Marée Intérieure') },
 ];
+
+/* Réinitialise tous les cooldowns des chaudières */
+function shopResetCooldowns(){
+  if(!STATE.generators) return;
+  const now = Date.now();
+  let resetCount = 0;
+  STATE.generators.forEach(g => {
+    if(!g || g.kind === 'athanor') return;
+    if(!g.unlocked) return;
+    // Forcer cd à zéro : lastFire = now - cdMs (donc dt >= cdMs)
+    g.lastFire = now - g.cdMs - 1;
+    resetCount++;
+  });
+  floating(window.innerWidth/2, 120, "✦ Cooldowns réinitialisés", "tier");
+  if(A.ctx) blip(1320, .18, "triangle", .2, .6);
+}
+
+/* Pluie mineure : N items palier 1 (T0) répartis aléatoirement */
+function shopMiniStarfall(n){
+  const empties = findEmpty();
+  let placed = 0;
+  for(let i=0; i<n && empties.length; i++){
+    const idx = Math.floor(Math.random()*empties.length);
+    const [x,y] = empties.splice(idx, 1)[0];
+    const c = Math.floor(Math.random()*3);
+    STATE.grid[y][x] = { id: STATE.nextId++, chain:c, tier:0 };
+    STATE.totals.produced[c]++;
+    renderTile(x,y);
+    placed++;
+  }
+  if(placed === 0){
+    floating(window.innerWidth/2, 100, "Cabinet plein", "lose");
+    return;
+  }
+  floating(window.innerWidth/2, 100, "✦ +" + placed + " items", "tier");
+  if(A.ctx) blip(880, .2, "sine", .2, .5);
+}
 
 function shopSpawn(chain, tier){
   const empties = findEmpty();
@@ -6522,10 +6663,41 @@ function renderShop(){
     if(!sections[item.section]) sections[item.section] = [];
     sections[item.section].push(item);
   }
+  // Compteur global "X / Y achats abordables"
+  const allItems = SHOP_ITEMS;
+  const affordable = allItems.filter(i => STATE.gold >= i.cost);
+  if(allItems.length > 0){
+    const header = document.createElement('div');
+    header.className = 'shop-conversion-info';
+    if(affordable.length > 0){
+      header.innerHTML = `<p><strong>${affordable.length}</strong> achat${affordable.length>1?'s':''} disponible${affordable.length>1?'s':''} sur ${allItems.length}. <span style="opacity:.75">L'or qui dort, c'est du Grand Œuvre qui patiente.</span></p>`;
+    } else {
+      const sorted = allItems.slice().sort((a,b)=>a.cost-b.cost);
+      const next = sorted.find(i => STATE.gold < i.cost);
+      if(next) header.innerHTML = `<p>Prochain achat possible : <strong>${next.name}</strong> à <strong>${next.cost}</strong> couronnes (manque ${next.cost - Math.floor(STATE.gold)}).</p>`;
+    }
+    body.appendChild(header);
+  }
+  // Ordre : sections qui contiennent au moins UN item abordable en premier
+  const sectionNames = Object.keys(sections).sort((a, b)=>{
+    const aHas = sections[a].some(i => STATE.gold >= i.cost) ? 1 : 0;
+    const bHas = sections[b].some(i => STATE.gold >= i.cost) ? 1 : 0;
+    return bHas - aHas;
+  });
+  // Au sein d'une section : abordables d'abord, puis par coût croissant
+  for(const sectionName of sectionNames){
+    sections[sectionName].sort((a, b)=>{
+      const aCan = STATE.gold >= a.cost ? 0 : 1;
+      const bCan = STATE.gold >= b.cost ? 0 : 1;
+      if(aCan !== bCan) return aCan - bCan;
+      return a.cost - b.cost;
+    });
+  }
   // affichage
-  for(const sectionName in sections){
+  for(const sectionName of sectionNames){
     const sec = document.createElement('section');
-    sec.className = 'grim-sec';
+    const sectionAffordable = sections[sectionName].some(i => STATE.gold >= i.cost);
+    sec.className = 'grim-sec' + (sectionAffordable ? ' shop-section-hot' : '');
     sec.innerHTML = `<h3>${sectionName}</h3>`;
     for(const item of sections[sectionName]){
       const can = STATE.gold >= item.cost;
@@ -6570,11 +6742,17 @@ function renderShop(){
 }
 
 function shopGlyph(id){
-  // Petits SVG pour les boosts/sceaux
+  // Petits SVG pour les boosts/sceaux/coups d'éclat
   if(id.startsWith('seal_')) return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><path d="M8 12 l2.5 2.5 L16 9"/></svg>`;
   if(id === 'boost_essence') return `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 L4 14 h7 L11 22 L20 10 h-7 z"/></svg>`;
   if(id === 'boost_cool') return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M12 7 v5 l3 2"/><circle cx="12" cy="12" r="9"/></svg>`;
   if(id === 'boost_gold') return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M3 8 v10 h18 V8"/><path d="M3 8 l9 -5 l9 5"/><path d="M9 14 h6 M12 11 v6"/></svg>`;
+  if(id === 'boost_goldx3') return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="8"/><path d="M12 4 v16 M4 12 h16"/><path d="M7 7 l10 10 M7 17 l10 -10" opacity=".6"/></svg>`;
+  if(id === 'boost_regen') return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 14 Q12 4 19 14"/><path d="M5 14 Q12 24 19 14"/><circle cx="12" cy="14" r="1.4" fill="currentColor"/></svg>`;
+  if(id === 'cd_reset') return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M20 12 a8 8 0 1 1 -2.34 -5.66"/><path d="M20 4 v5 h-5"/></svg>`;
+  if(id === 'starfall_mini') return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 4 v3 M5 18 v3 M19 5 v2 M19 16 v3 M3 11 h2 M21 11 h-2"/><circle cx="12" cy="11" r="4"/><path d="M12 7 l1 2 l2 .3 l-1.5 1.5 l.4 2.2 l-1.9 -1 l-1.9 1 l.4 -2.2 l-1.5 -1.5 l2 -.3 z" fill="currentColor"/></svg>`;
+  if(id === 'spectral_force') return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/></svg>`;
+  if(id === 'frenzy_force') return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M13 2 L4 14 h6 L9 22 L20 10 h-6 z" fill="currentColor"/></svg>`;
   return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="12" cy="12" r="6"/></svg>`;
 }
 
@@ -7533,6 +7711,93 @@ function renderStats(){
     menuTrm.style.display = canTransmute() ? "" : "none";
     menuTrm.classList.toggle("ready", canTransmute());
   }
+  renderShopHint();
+}
+
+/* ---- Marché actif : bandeau "prochain achat" + badge "X dispos" ---- */
+function shopAffordableItems(){
+  if(typeof SHOP_ITEMS === 'undefined') return [];
+  if(typeof modShopDisabled === 'function' && modShopDisabled()) return [];
+  return SHOP_ITEMS.filter(i => STATE.gold >= i.cost);
+}
+function shopNextItem(){
+  // Logique :
+  //  - Si au moins 1 item est abordable → mode "ready" sur le PLUS CHER abordable
+  //  - Sinon → mode "progress" sur le moins cher non-abordable
+  if(typeof SHOP_ITEMS === 'undefined') return null;
+  if(typeof modShopDisabled === 'function' && modShopDisabled()) return null;
+  const sorted = SHOP_ITEMS.slice().sort((a,b)=>a.cost-b.cost);
+  const affordable = sorted.filter(i => STATE.gold >= i.cost);
+  if(affordable.length > 0){
+    // On affiche le plus cher abordable (le plus "fort" achat possible) — sauf si tout est abordable
+    return { item: affordable[affordable.length - 1], affordable: true, count: affordable.length };
+  }
+  // Aucun item abordable : progresse vers le moins cher
+  const next = sorted[0];
+  if(next) return { item: next, affordable: false };
+  return null;
+}
+function shopCoinSVG(){
+  return `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><rect x="3" y="5" width="10" height="2" fill="#c9a25a"/><rect x="3" y="7" width="10" height="5" fill="#9a7842"/><rect x="4" y="6" width="8" height="1" fill="#e8c878"/></svg>`;
+}
+function renderShopHint(){
+  const el = document.getElementById('shop-hint');
+  const badge = document.getElementById('menu-shop-badge');
+  if(!el) return;
+  // Pas affiché tant que pas de première fusion (évite spam initial)
+  const playedABit = (sumProduced(STATE) >= 4) || (STATE.gold >= 5);
+  const disabled = (typeof modShopDisabled === 'function' && modShopDisabled());
+  if(!playedABit || disabled){
+    el.classList.remove('show', 'affordable');
+    if(badge) badge.classList.remove('show');
+    return;
+  }
+  const next = shopNextItem();
+  if(!next){ el.classList.remove('show', 'affordable'); if(badge) badge.classList.remove('show'); return; }
+  const { item, affordable, count } = next;
+  el.classList.add('show');
+  el.classList.toggle('affordable', affordable);
+  if(affordable){
+    const countTxt = count && count > 1 ? `<span class="sh-count">${count}</span>` : '';
+    el.innerHTML = `
+      <span class="sh-arrow">✦</span>
+      ${countTxt}
+      <span class="sh-name">Marché — ${item.name}</span>
+      <span class="sh-cost">${shopCoinSVG()}${item.cost}</span>
+    `;
+  } else {
+    const pct = Math.max(0, Math.min(100, (STATE.gold / item.cost) * 100));
+    el.innerHTML = `
+      <span class="sh-arrow">→</span>
+      <span class="sh-name">${item.name}</span>
+      <span class="sh-bar"><span style="width:${pct.toFixed(1)}%"></span></span>
+      <span class="sh-cost">${Math.floor(STATE.gold)}/${item.cost}</span>
+    `;
+  }
+  // Badge "X achats dispos" sur le menu Marché
+  const aff = shopAffordableItems();
+  if(badge){
+    if(aff.length > 0){
+      badge.textContent = aff.length;
+      badge.classList.add('show');
+    } else {
+      badge.classList.remove('show');
+    }
+  }
+  // Petit chime quand un NOUVEAU palier d'achat se débloque (1→2, 2→3, etc.)
+  if(STATE._lastShopAffordable === undefined) STATE._lastShopAffordable = aff.length;
+  if(aff.length > STATE._lastShopAffordable){
+    if(A?.ctx) blip(1320, .12, "triangle", .14, .35);
+    // Le tout premier achat dispo : pulse plus marqué
+    if(STATE._lastShopAffordable === 0 && aff.length >= 1){
+      const rect = el.getBoundingClientRect();
+      if(rect && rect.width > 0){
+        particles(rect.left + rect.width/2, rect.top + rect.height/2, '#e8c878', 12);
+      }
+      vibrate(8);
+    }
+  }
+  STATE._lastShopAffordable = aff.length;
 }
 
 function renderStatsBody(){
@@ -9155,6 +9420,12 @@ function boot(){
   bindModalClose('settings-modal','settings-close');
   bindModalClose('credits-modal','credits-close');
   bindModalClose('shop-modal','shop-close');
+  // Bandeau "prochain achat" → ouvre directement le Marché
+  document.getElementById('shop-hint')?.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    if(typeof renderShop === 'function') renderShop();
+    openModal('shop-modal');
+  });
   bindModalClose('seal-modal','seal-close');
   bindModalClose('codex-page-modal','codex-page-close');
   document.getElementById('codex-page-prev').addEventListener('click', e=>{ e.stopPropagation(); navCodexPage(-1); });

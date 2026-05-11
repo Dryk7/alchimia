@@ -2660,6 +2660,43 @@ body.frenzy-on #grid-frame{
 }
 .shop-section-hot > h3{ color:var(--gold-bright) !important }
 
+/* Crescendo : quand l'achat ciblé arrive à 90%+ */
+#shop-hint.almost-ready{
+  border-color:var(--gold);
+  color:var(--gold-bright);
+  animation:shopPulseFast .55s ease-in-out infinite;
+}
+@keyframes shopPulseFast{
+  0%,100%{ box-shadow:0 0 6px var(--gold-glow); }
+  50%   { box-shadow:0 0 18px var(--gold-bright); }
+}
+
+/* Flash épique sur la row achetée */
+.shop-row-buy{
+  animation:shopRowBuy .85s ease-out;
+  border-color:#fff !important;
+  position:relative;
+  z-index:2;
+}
+@keyframes shopRowBuy{
+  0%   { background:rgba(255,240,180,.55); box-shadow:0 0 40px var(--gold-bright), inset 0 0 30px rgba(255,255,255,.4); transform:scale(1.02); }
+  30%  { background:rgba(255,240,180,.30); box-shadow:0 0 30px var(--gold-bright), inset 0 0 18px rgba(232,200,120,.30); transform:scale(1.01); }
+  100% { background:transparent; box-shadow:0 0 0 transparent, inset 0 0 0 transparent; transform:scale(1); }
+}
+
+/* Achat épique (mag 5) : flash global bref */
+body.shop-epic-flash::after{
+  content:""; position:fixed; inset:0; z-index:84;
+  background:radial-gradient(ellipse at 50% 30%, rgba(232,200,120,.32), rgba(0,0,0,0) 60%);
+  pointer-events:none;
+  animation:epicShopFlash .7s ease-out forwards;
+}
+@keyframes epicShopFlash{
+  0%   { opacity:0; }
+  20%  { opacity:1; }
+  100% { opacity:0; }
+}
+
 /* Bandeau permanent : sceau actif + recettes composées */
 #active-modifier{
   position:fixed; top:130px; left:50%;
@@ -6640,17 +6677,102 @@ function shopOpenSeal(tier){
   modal.classList.add('show');
 }
 
-function buyShopItem(id){
+function buyShopItem(id, ev){
   const item = SHOP_ITEMS.find(s=>s.id===id);
   if(!item) return;
   // Vœu de Pauvreté : Marché scellé
   if(modShopDisabled()){ sfxDeny(); floating(window.innerWidth/2, 100, "Le Marché est scellé", "lose"); return; }
   if(STATE.gold < item.cost){ sfxDeny(); flashStat('gold-val'); return; }
   STATE.gold -= item.cost;
+  // === Célébration d'achat scalée par le coût ===
+  // mag 1..5 : 1=trivial (Graine 8), 5=epic (Sceau du Mage 4000)
+  const mag = item.cost < 50 ? 1
+            : item.cost < 200 ? 2
+            : item.cost < 600 ? 3
+            : item.cost < 2000 ? 4
+            : 5;
+  // Source visuelle : row cliquée (si on a l'event) sinon centre écran
+  const row = ev && ev.currentTarget && ev.currentTarget.classList.contains('shop-row')
+              ? ev.currentTarget
+              : document.querySelector(`.shop-row[data-id="${id}"]`);
+  if(row){
+    row.classList.add('shop-row-buy');
+    setTimeout(()=>row.classList.remove('shop-row-buy'), 850);
+  }
+  const rect = row ? row.getBoundingClientRect() : null;
+  const cx = rect ? rect.left + rect.width/2 : window.innerWidth/2;
+  const cy = rect ? rect.top + rect.height/2 : 200;
+  // Pluie de pièces qui s'élève + shockwave doré
+  particles(cx, cy, '#e8c878', 10 + mag*6);
+  if(typeof shockwave === 'function') shockwave(cx, cy, '#e8c878', mag);
+  // Pour les gros achats : double rideau de particules différé (effet jackpot)
+  if(mag >= 3){
+    setTimeout(()=>particles(cx, cy, '#fff', 6 + mag*4), 140);
+    setTimeout(()=>particles(cx, cy - 20, '#e8c878', 6 + mag*3), 280);
+  }
+  if(mag >= 5){
+    // Screen darken bref + zoom sur la row pour les achats epic
+    document.body.classList.add('shop-epic-flash');
+    setTimeout(()=>document.body.classList.remove('shop-epic-flash'), 700);
+  }
+  // SFX scalé
+  sfxBuyScaled(mag);
+  // Punch haptique
+  if(mag === 1) vibrate(12);
+  else if(mag === 2) vibrate(20);
+  else if(mag === 3) vibrate([15, 30, 15]);
+  else if(mag === 4) vibrate([20, 40, 20, 40, 30]);
+  else vibrate([30, 50, 30, 50, 30, 60, 80]);
+  // Compteur d'or qui "encaisse" le coup
+  punchGoldCounter();
+  // Performer l'effet de l'item
   item.perform();
-  sfxClaim();
   renderStats();
   renderShop(); // refresh prices/affordability
+}
+
+function sfxBuyScaled(mag){
+  if(!A.ctx) return;
+  if(mag === 1){
+    blip(659, .14, "triangle", .22, .4);
+    setTimeout(()=>blip(880, .18, "sine", .18, .5), 80);
+  } else if(mag === 2){
+    blip(523, .14, "triangle", .22, .4);
+    setTimeout(()=>blip(659, .14, "triangle", .22, .4), 80);
+    setTimeout(()=>blip(784, .22, "sine", .26, .5), 170);
+  } else if(mag === 3){
+    blip(440, .18, "triangle", .24, .5);
+    setTimeout(()=>blip(659, .18, "triangle", .24, .5), 90);
+    setTimeout(()=>blip(880, .25, "sine", .26, .55), 190);
+    setTimeout(()=>blip(1320, .2, "triangle", .2, .55), 290);
+  } else if(mag === 4){
+    blip(110, .35, "sine", .3, .6);    // bass thump
+    blip(440, .2, "triangle", .25, .5);
+    setTimeout(()=>blip(659, .22, "sine", .25, .55), 100);
+    setTimeout(()=>blip(880, .26, "triangle", .26, .6), 220);
+    setTimeout(()=>blip(1320, .3, "sine", .22, .65), 340);
+    setTimeout(()=>blip(1760, .3, "triangle", .18, .7), 460);
+  } else { // mag 5 : Sceau du Mage etc.
+    blip(55, .7, "sine", .35, .7);
+    blip(110, .55, "sine", .3, .7);
+    setTimeout(()=>blip(220, .3, "sine", .26, .65), 60);
+    setTimeout(()=>blip(440, .25, "triangle", .25, .65), 140);
+    setTimeout(()=>blip(880, .3, "sine", .28, .7), 260);
+    setTimeout(()=>blip(1320, .35, "triangle", .26, .72), 400);
+    setTimeout(()=>blip(1760, .4, "sine", .24, .75), 540);
+    setTimeout(()=>blip(2640, .3, "triangle", .18, .78), 680);
+  }
+}
+
+function punchGoldCounter(){
+  const el = document.getElementById('gold-val');
+  if(!el) return;
+  el.animate([
+    { transform:'scale(1)',    color:'var(--gold-bright)' },
+    { transform:'scale(.82)',  color:'#c84a2a' },
+    { transform:'scale(1.10)', color:'#fff' },
+    { transform:'scale(1)',    color:'var(--gold-bright)' },
+  ], { duration:380, easing:'ease-out' });
 }
 
 function renderShop(){
@@ -6703,6 +6825,7 @@ function renderShop(){
       const can = STATE.gold >= item.cost;
       const row = document.createElement('div');
       row.className = 'shop-row' + (can ? '' : ' unaff');
+      row.dataset.id = item.id;
       // icône : sprite si spawn, sinon glyph
       let iconHtml = '';
       if(typeof item.icon === 'number'){
@@ -6722,7 +6845,7 @@ function renderShop(){
           ${item.cost}
         </div>
       `;
-      if(can) row.addEventListener('click', ()=>buyShopItem(item.id));
+      if(can) row.addEventListener('click', (ev)=>buyShopItem(item.id, ev));
       sec.appendChild(row);
     }
     body.appendChild(sec);
@@ -7767,13 +7890,20 @@ function renderShopHint(){
     `;
   } else {
     const pct = Math.max(0, Math.min(100, (STATE.gold / item.cost) * 100));
+    el.classList.toggle('almost-ready', pct >= 90);
     el.innerHTML = `
       <span class="sh-arrow">→</span>
       <span class="sh-name">${item.name}</span>
       <span class="sh-bar"><span style="width:${pct.toFixed(1)}%"></span></span>
       <span class="sh-cost">${Math.floor(STATE.gold)}/${item.cost}</span>
     `;
+    // Tic discret quand on franchit le 90%
+    if(pct >= 90 && !STATE._lastAlmostReady){
+      if(A?.ctx) blip(1100, .08, "sine", .1, .25);
+    }
+    STATE._lastAlmostReady = pct >= 90;
   }
+  if(affordable) el.classList.remove('almost-ready');
   // Badge "X achats dispos" sur le menu Marché
   const aff = shopAffordableItems();
   if(badge){

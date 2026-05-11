@@ -515,6 +515,68 @@ header{
   font-size:13px; color:var(--gold-light);
   letter-spacing:.1em;
 }
+.mq-spectral-row{
+  margin-top:5px; padding-top:4px;
+  border-top:1px dashed rgba(154,120,66,.25);
+  text-align:right;
+}
+.mq-spectral{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:8px; letter-spacing:.2em;
+  color:var(--gold); opacity:.7;
+  text-transform:uppercase;
+}
+.mq-spectral.mq-spectral-active{
+  color:#fff; opacity:1;
+  text-shadow:0 0 8px var(--gold-bright);
+  animation:spectralBlink .8s ease-in-out infinite;
+}
+@keyframes spectralBlink{
+  0%,100%{opacity:1}
+  50%{opacity:.5}
+}
+
+/* Master Quest toast léger (étapes 1-2) */
+.master-toast-lite{
+  position:fixed; top:130px; left:50%;
+  transform:translate(-50%,-200%);
+  z-index:84;
+  width:min(94vw, 360px);
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(232,200,120,.18), transparent 70%),
+    linear-gradient(180deg, #2a1f1a, #1a0e0a);
+  border:1.5px solid var(--gold-bright);
+  padding:8px 14px 10px;
+  text-align:center;
+  pointer-events:none;
+  box-shadow:0 0 24px var(--gold-glow), 0 12px 30px rgba(0,0,0,.6);
+  transition:transform .5s cubic-bezier(.2,.9,.2,1.2);
+}
+.master-toast-lite::before, .master-toast-lite::after{
+  content:""; position:absolute; width:6px; height:6px;
+  border:1.5px solid var(--gold-bright); pointer-events:none;
+}
+.master-toast-lite::before{top:-1.5px; left:-1.5px; border-right:none; border-bottom:none}
+.master-toast-lite::after{bottom:-1.5px; right:-1.5px; border-left:none; border-top:none}
+.master-toast-lite.show{transform:translate(-50%, 0)}
+.mtl-banner{
+  font-family:"Cinzel", serif; font-weight:900;
+  letter-spacing:.32em; font-size:8px;
+  color:var(--gold); margin-bottom:2px;
+}
+.mtl-title{
+  font-family:"Cinzel", serif; font-weight:700;
+  letter-spacing:.18em; font-size:13px;
+  color:var(--gold-bright);
+  text-shadow:0 0 10px var(--gold-glow);
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+.mtl-reveal{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:13px; color:var(--parchment-2);
+  line-height:1.3;
+}
 
 /* Master Quest reveal overlay (cinematic) */
 .master-reveal-overlay{
@@ -585,6 +647,51 @@ header{
   box-shadow:0 0 20px var(--gold-glow);
 }
 .mr-continue:hover{filter:brightness(1.1)}
+
+/* ================ FRENZY MODE ================ */
+body.frenzy-on{
+  animation:frenzyPulse 1.2s ease-in-out infinite;
+}
+@keyframes frenzyPulse{
+  0%,100%{box-shadow: inset 0 0 60px rgba(232,200,120,.15)}
+  50%{box-shadow: inset 0 0 120px rgba(232,200,120,.4), inset 0 0 200px rgba(232,200,120,.2)}
+}
+body.frenzy-on #grid-frame{
+  border-color:var(--gold-bright);
+  box-shadow:
+    inset 0 0 40px rgba(0,0,0,.85),
+    inset 0 0 0 2px var(--gold-bright),
+    0 0 60px rgba(232,200,120,.5),
+    0 12px 50px rgba(0,0,0,.75);
+  animation:frenzyFrame .8s ease-in-out infinite;
+}
+@keyframes frenzyFrame{
+  0%,100%{filter:drop-shadow(0 0 8px var(--gold-bright))}
+  50%{filter:drop-shadow(0 0 18px #fff)}
+}
+.frenzy-toast{
+  position:fixed; top:130px; left:50%;
+  transform:translate(-50%,-30px);
+  z-index:60;
+  background:linear-gradient(180deg, var(--gold-bright), var(--gold));
+  color:#000;
+  padding:6px 16px;
+  border:2px solid #fff;
+  pointer-events:none;
+  font-family:"Cinzel", serif; font-weight:900;
+  letter-spacing:.32em; font-size:11px;
+  text-transform:uppercase;
+  text-shadow:0 0 8px #fff;
+  box-shadow:0 0 30px var(--gold-bright), 0 0 60px #fff;
+  opacity:0;
+  animation:frenzyToastIn .4s cubic-bezier(.2,.9,.2,1.4) forwards, frenzyToastPulse 1s ease-in-out infinite 1s;
+}
+.frenzy-toast.show{opacity:1; transform:translate(-50%,0)}
+@keyframes frenzyToastIn{to{opacity:1; transform:translate(-50%,0)}}
+@keyframes frenzyToastPulse{
+  0%,100%{filter:brightness(1)}
+  50%{filter:brightness(1.3)}
+}
 
 /* ================ GENERATEURS ================ */
 #generators{
@@ -1425,6 +1532,18 @@ header{
   font-size:9px;
   margin-top:1px;
   letter-spacing:.22em;
+}
+
+/* Gold droplet — particule dorée qui flotte de tuile vers compteur or */
+.gold-droplet{
+  position:fixed; z-index:78; pointer-events:none;
+  width:6px; height:6px;
+  background:radial-gradient(circle, var(--gold-bright), var(--gold) 60%, transparent);
+  border-radius:50%;
+  box-shadow:0 0 6px var(--gold-bright);
+  transition:transform .85s cubic-bezier(.4,.1,.6,1), opacity .85s ease-in;
+  transform:translate(0,0) scale(1);
+  margin-left:-3px; margin-top:-3px;
 }
 
 /* ================ TOAST ================ */
@@ -2369,9 +2488,96 @@ header{
   text-transform:uppercase;
 }
 
+/* Widget niveau d'alchimiste (badge + barre XP) */
+#alch-level{
+  position:fixed; top:64px; left:50%;
+  transform:translateX(-50%);
+  z-index:4;
+  background:linear-gradient(180deg, rgba(45,34,24,.95), rgba(20,14,18,.95));
+  border:1px solid var(--gold-dark);
+  padding:3px 12px 4px;
+  min-width:150px;
+  pointer-events:none;
+}
+#alch-level::before, #alch-level::after{
+  content:""; position:absolute; width:4px; height:4px;
+  border:1px solid var(--gold); pointer-events:none;
+}
+#alch-level::before{top:-1px; left:-1px; border-right:none; border-bottom:none}
+#alch-level::after{bottom:-1px; right:-1px; border-left:none; border-top:none}
+.al-lvl-row{
+  display:flex; justify-content:space-between; align-items:baseline;
+  gap:8px; margin-bottom:2px;
+}
+.al-lvl{
+  font-family:"Cinzel", serif; font-weight:700;
+  font-size:9px; letter-spacing:.18em;
+  color:var(--gold-bright);
+  text-transform:uppercase;
+}
+.al-title{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:11px; color:var(--gold-light);
+}
+.al-bar{
+  height:2px; background:#0a0608;
+  border:1px solid var(--gold-dark);
+  overflow:hidden;
+}
+.al-bar > span{
+  display:block; height:100%; width:0%;
+  background:linear-gradient(90deg, var(--gold-dark), var(--gold-bright));
+  box-shadow:0 0 4px var(--gold-glow);
+  transition:width .3s;
+}
+
+/* Level-up toast */
+.levelup-toast{
+  position:fixed; top:30%; left:50%;
+  transform:translate(-50%,-50%) scale(.7);
+  z-index:88;
+  width:min(80vw, 280px);
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(232,200,120,.30), rgba(232,200,120,.10) 60%, transparent 90%),
+    linear-gradient(180deg, #2a1f1a, #1a0e0a);
+  border:2px solid var(--gold-bright);
+  padding:14px 18px;
+  text-align:center;
+  pointer-events:none;
+  box-shadow:0 0 40px var(--gold-glow), 0 14px 50px rgba(0,0,0,.7);
+  opacity:0;
+  transition:transform .5s cubic-bezier(.2,.9,.2,1.4), opacity .3s;
+}
+.levelup-toast::before, .levelup-toast::after{
+  content:""; position:absolute; width:10px; height:10px;
+  border:1.5px solid var(--gold-bright); pointer-events:none;
+}
+.levelup-toast::before{top:-2px; left:-2px; border-right:none; border-bottom:none}
+.levelup-toast::after{bottom:-2px; right:-2px; border-left:none; border-top:none}
+.levelup-toast.show{opacity:1; transform:translate(-50%,-50%) scale(1)}
+.lu-banner{
+  font-family:"Cinzel", serif; font-weight:900;
+  letter-spacing:.32em; font-size:11px;
+  color:var(--gold);
+  margin-bottom:3px;
+  text-shadow:0 0 12px var(--gold-bright);
+}
+.lu-title{
+  font-family:"Cinzel", serif; font-weight:900;
+  letter-spacing:.22em; font-size:22px;
+  color:var(--gold-bright);
+  text-shadow:0 0 16px var(--gold-glow);
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+.lu-bonus{
+  font-family:"VT323", monospace;
+  font-size:14px; color:var(--gold-light);
+}
+
 /* Bandeau permanent : sceau actif + recettes composées */
 #active-modifier{
-  position:fixed; top:48px; left:50%;
+  position:fixed; top:96px; left:50%;
   transform:translateX(-50%);
   z-index:5;
   max-width:94vw;
@@ -2715,6 +2921,7 @@ header{
     </div>
   </header>
 
+  <div id="alch-level"></div>
   <div id="active-events"></div>
   <div id="active-modifier"></div>
   <div id="drawer-overlay"></div>
@@ -3698,6 +3905,26 @@ function checkMasterQuest(){
 }
 
 function showMasterQuestReveal(step, idx){
+  // Étapes 1 et 2 (idx 0, 1) : juste un toast doré élégant, pas un overlay plein écran
+  if(idx < 2){
+    const toast = document.createElement('div');
+    toast.className = 'master-toast-lite';
+    toast.innerHTML = `
+      <div class="mtl-banner">PACTE · ${idx+1}/10</div>
+      <div class="mtl-title">${step.title}</div>
+      <div class="mtl-reveal">${step.revelation}</div>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(()=>toast.classList.add('show'), 30);
+    setTimeout(()=>toast.classList.remove('show'), 4200);
+    setTimeout(()=>toast.remove(), 4800);
+    if(A.ctx){
+      blip(440, .15, "triangle", .2, .5);
+      setTimeout(()=>blip(660, .2, "sine", .22, .55), 100);
+    }
+    vibrate([15, 30, 60]);
+    return;
+  }
   const overlay = document.createElement('div');
   overlay.className = 'master-reveal-overlay';
   overlay.innerHTML = `
@@ -3741,12 +3968,22 @@ function renderMasterQuestWidget(){
   let widget = document.getElementById('master-quest-widget');
   if(!widget) return;
   const idx = masterQuestCurrentIdx();
+  // Compteur Cible Spectrale
+  let spectralBit = '';
+  if(_spectralEndsAt > 0){
+    const remain = Math.max(0, Math.ceil((_spectralEndsAt - Date.now())/1000));
+    spectralBit = `<span class="mq-spectral mq-spectral-active">✦ CIBLE ${remain}s</span>`;
+  } else if(_nextSpectralAt > 0){
+    const remain = Math.max(0, Math.ceil((_nextSpectralAt - performance.now())/1000));
+    spectralBit = `<span class="mq-spectral">cible : ${remain}s</span>`;
+  }
   if(idx >= MASTER_QUEST.length){
     widget.innerHTML = `
       <div class="mq-done">
         <div class="mq-done-icon">✦</div>
         <div class="mq-done-text">Le Pacte du Maître est accompli.</div>
       </div>
+      ${spectralBit ? `<div class="mq-spectral-row">${spectralBit}</div>` : ''}
     `;
     return;
   }
@@ -3761,6 +3998,7 @@ function renderMasterQuestWidget(){
     <div class="mq-title">${step.title}</div>
     <div class="mq-desc">${step.desc}</div>
     <div class="mq-bar"><span style="width:${pct}%"></span></div>
+    ${spectralBit ? `<div class="mq-spectral-row">${spectralBit}</div>` : ''}
   `;
 }
 
@@ -3768,6 +4006,90 @@ function renderMasterQuestWidget(){
    La graine ne fait rien. Le Bourgeon, déjà œuvré, commence à rendre.
    Chaque palier multiplie environ par 3-4× — c'est la VRAIE raison de fusionner. */
 const IDLE_GOLD_PER_TIER = [0, 0.1, 0.4, 1.5, 4, 10, 30, 100];
+
+/* ================ NIVEAU D'ALCHIMISTE — XP global du joueur ================ */
+/* XP gagnée à chaque action. Niveau qui monte avec courbe progressive.
+   Titres évolutifs et bonus passif +1% or par niveau. */
+const ALCH_TITLES = [
+  [0, 'Novice'], [3, 'Apprenti'], [6, 'Initié'], [10, 'Adepte'],
+  [15, 'Magister'], [21, 'Maître'], [28, 'Maître Suprême'],
+  [36, 'Hiérophante'], [45, 'Ouroboros'], [55, 'Alchimiste-Roi'],
+  [70, 'Voix de l\'Œuvre'], [90, 'Lapis Vivant'],
+];
+function xpForLevel(level){ return Math.floor(50 * Math.pow(1.18, level-1)); } // niveau 1→59, niveau 10→260, niveau 30→9700, etc.
+function totalXpForLevel(level){
+  let total = 0;
+  for(let i=1; i<level; i++) total += xpForLevel(i);
+  return total;
+}
+function alchLevel(){
+  return STATE.alchLevel || 1;
+}
+function alchTitle(){
+  const lvl = alchLevel();
+  let title = 'Novice';
+  for(const [minLvl, t] of ALCH_TITLES){ if(lvl >= minLvl) title = t; }
+  return title;
+}
+function alchProgress(){
+  const lvl = alchLevel();
+  const xpInLvl = (STATE.alchXp||0) - totalXpForLevel(lvl);
+  const xpNeeded = xpForLevel(lvl);
+  return { pct: Math.min(100, (xpInLvl/xpNeeded)*100), inLvl: xpInLvl, need: xpNeeded };
+}
+function alchGoldMul(){
+  // +1% gold par niveau acquis
+  return 1 + (alchLevel() - 1) * 0.01;
+}
+function gainXp(amount){
+  if(!amount) return;
+  STATE.alchXp = (STATE.alchXp||0) + amount;
+  const oldLvl = STATE.alchLevel || 1;
+  let newLvl = oldLvl;
+  while(STATE.alchXp >= totalXpForLevel(newLvl + 1)) newLvl++;
+  if(newLvl > oldLvl){
+    STATE.alchLevel = newLvl;
+    // Level up !
+    const oldTitle = ALCH_TITLES.filter(t=>t[0]<=oldLvl).slice(-1)[0]?.[1] || 'Novice';
+    const newTitle = alchTitle();
+    showLevelUp(newLvl, oldTitle !== newTitle ? newTitle : null);
+  }
+  renderAlchLevel();
+}
+function showLevelUp(newLevel, newTitle){
+  const el = document.createElement('div');
+  el.className = 'levelup-toast';
+  el.innerHTML = `
+    <div class="lu-banner">NIVEAU ${newLevel}</div>
+    ${newTitle ? `<div class="lu-title">${newTitle}</div>` : ''}
+    <div class="lu-bonus">+${((newLevel-1) * 1).toFixed(0)}% or permanent</div>
+  `;
+  document.body.appendChild(el);
+  setTimeout(()=>el.classList.add('show'), 30);
+  setTimeout(()=>el.classList.remove('show'), 3200);
+  setTimeout(()=>el.remove(), 3800);
+  if(A.ctx){
+    blip(220, .15, "sine", .22, .6);
+    setTimeout(()=>blip(330, .15, "triangle", .2, .6), 80);
+    setTimeout(()=>blip(440, .2, "sine", .22, .65), 180);
+    setTimeout(()=>blip(660, .25, "triangle", .25, .7), 280);
+  }
+  vibrate([18, 40, 18, 40, 18, 40, 80]);
+}
+function renderAlchLevel(){
+  const el = document.getElementById('alch-level');
+  if(!el) return;
+  const lvl = alchLevel();
+  const title = alchTitle();
+  const p = alchProgress();
+  el.innerHTML = `
+    <div class="al-lvl-row">
+      <span class="al-lvl">Niv ${lvl}</span>
+      <span class="al-title">${title}</span>
+    </div>
+    <div class="al-bar"><span style="width:${p.pct}%"></span></div>
+  `;
+}
 
 /* ================ CODEX NARRATIF — 24 pages du Grand Œuvre ================ */
 /* Chaque palier des 3 voies a sa page : épigraphe latine, lore (fragment de récit),
@@ -5407,9 +5729,9 @@ const STATE = {
   grid: Array.from({length:ROWS},()=>Array(COLS).fill(null)),
   nextId: 1,
   generators:[
-    { chain:0, tier:0, cost:3, cdMs:900,  lastFire:0, unlocked:true, kind:"cauldron" },
-    { chain:1, tier:0, cost:5, cdMs:1400, lastFire:0, unlocked:true, kind:"cauldron" },
-    { chain:2, tier:0, cost:8, cdMs:2000, lastFire:0, unlocked:true, kind:"cauldron" },
+    { chain:0, tier:0, cost:3, cdMs:700,  lastFire:0, unlocked:true, kind:"cauldron" },
+    { chain:1, tier:0, cost:5, cdMs:1100, lastFire:0, unlocked:true, kind:"cauldron" },
+    { chain:2, tier:0, cost:8, cdMs:1600, lastFire:0, unlocked:true, kind:"cauldron" },
     { chain:3, tier:0, cost:0, cdMs:0,    lastFire:0, unlocked:false, kind:"athanor", unlockCost:500 },
   ],
   quests: [],
@@ -5730,9 +6052,9 @@ function doTransmute(){
   // Reset générateurs niveaux/cooldown mais garde l'unlock Athanor (durable)
   const athUnlocked = STATE.generators[3]?.unlocked;
   STATE.generators = [
-    { chain:0, tier:0, cost:3, cdMs:900,  lastFire:0, unlocked:true, kind:"cauldron" },
-    { chain:1, tier:0, cost:5, cdMs:1400, lastFire:0, unlocked:true, kind:"cauldron" },
-    { chain:2, tier:0, cost:8, cdMs:2000, lastFire:0, unlocked:true, kind:"cauldron" },
+    { chain:0, tier:0, cost:3, cdMs:700,  lastFire:0, unlocked:true, kind:"cauldron" },
+    { chain:1, tier:0, cost:5, cdMs:1100, lastFire:0, unlocked:true, kind:"cauldron" },
+    { chain:2, tier:0, cost:8, cdMs:1600, lastFire:0, unlocked:true, kind:"cauldron" },
     { chain:3, tier:0, cost:0, cdMs:0,    lastFire:0, unlocked:!!athUnlocked, kind:"athanor", unlockCost:500 },
   ];
   STATE.activeEvents = {};
@@ -5851,7 +6173,7 @@ function getT1SpawnChance(){
   return c;
 }
 function getMergeGoldMul(){
-  return recipeGoldMul() * modGoldMul();
+  return recipeGoldMul() * modGoldMul() * alchGoldMul();
 }
 
 function countOnBoard(chain, tier){
@@ -7399,6 +7721,7 @@ function fireGenerator(idx, el){
   const before = STATE.totals.maxTier[g.chain];
   STATE.totals.maxTier[g.chain] = Math.max(before, spawnTier);
   if(spawnTier > before) recordCodexUnlock(g.chain, spawnTier);
+  gainXp(1 + spawnTier); // XP par spawn
   renderTile(x,y);
   renderStats();
   refreshQuests();
@@ -7676,6 +7999,54 @@ function triggerComboExplosion(cx, cy, chain, comboCount){
   setTimeout(()=>el.remove(), 3500);
 }
 
+/* ================ FRENZY MODE — 10 merges en 5s ================ */
+let _frenzyMergeTimes = []; // timestamps des dernières fusions
+let _frenzyEndsAt = 0;
+function comboTimeline(){
+  // À chaque merge on l'appelle ; détecte 10 fusions en 5s pour déclencher frenzy
+  const now = Date.now();
+  _frenzyMergeTimes.push(now);
+  _frenzyMergeTimes = _frenzyMergeTimes.filter(t => now - t < 5000);
+  if(_frenzyMergeTimes.length >= 10 && _frenzyEndsAt < now){
+    startFrenzy();
+  }
+}
+function startFrenzy(){
+  _frenzyEndsAt = Date.now() + 10000;
+  document.body.classList.add('frenzy-on');
+  if(A.bgm){
+    try{ A.bgm.playbackRate = 1.15; }catch(e){}
+    if(A.bgmMid) try{ A.bgmMid.playbackRate = 1.15; }catch(e){}
+    if(A.bgmCosmic) try{ A.bgmCosmic.playbackRate = 1.15; }catch(e){}
+  }
+  if(A.ctx){
+    blip(55, .5, "sine", .35, .7);
+    blip(110, .5, "triangle", .25, .7);
+    setTimeout(()=>blip(440, .25, "sine", .2, .7), 60);
+    setTimeout(()=>blip(880, .25, "triangle", .18, .7), 130);
+  }
+  vibrate([30, 60, 30, 60, 100]);
+  // Bandeau frenzy
+  const el = document.createElement('div');
+  el.className = 'frenzy-toast';
+  el.id = 'frenzy-toast';
+  el.innerHTML = `<div class="fz-banner">FRENZY ! 10s · or ×1.5</div>`;
+  document.body.appendChild(el);
+  setTimeout(()=>el.classList.add('show'), 30);
+  // Timer pour fin
+  setTimeout(endFrenzy, 10000);
+}
+function endFrenzy(){
+  _frenzyEndsAt = 0;
+  document.body.classList.remove('frenzy-on');
+  if(A.bgm) try{ A.bgm.playbackRate = 1; }catch(e){}
+  if(A.bgmMid) try{ A.bgmMid.playbackRate = 1; }catch(e){}
+  if(A.bgmCosmic) try{ A.bgmCosmic.playbackRate = 1; }catch(e){}
+  document.getElementById('frenzy-toast')?.remove();
+}
+function isFrenzyActive(){ return Date.now() < _frenzyEndsAt; }
+function frenzyGoldMul(){ return isFrenzyActive() ? 1.5 : 1; }
+
 function showCombo(x, y, count){
   if(count < 2) return;
   const mul = comboMultiplier();
@@ -7712,6 +8083,7 @@ function doMerge(fx, fy, tx, ty){
   // Check cible spectrale (succès)
   checkSpectralHit(tx, ty);
   const combo = comboTick();
+  comboTimeline();
   let newTier = b.tier + 1;
   // Comet boost : saute un palier supplémentaire (max TIERS-1)
   if(STATE.cometBoost > 0 && newTier < TIERS-1){
@@ -7749,6 +8121,7 @@ function doMerge(fx, fy, tx, ty){
     const wasMaxBefore = STATE.totals.maxTier[a.chain];
     STATE.totals.maxTier[a.chain] = Math.max(wasMaxBefore, newTier);
     if(newTier > wasMaxBefore) recordCodexUnlock(a.chain, newTier);
+    gainXp(2 + newTier * 3); // XP par fusion (+ palier)
     renderTile(fx, fy);
     renderTile(tx, ty);
     const nt = cellAt(tx,ty).firstChild;
@@ -7761,13 +8134,14 @@ function doMerge(fx, fy, tx, ty){
     const cMul = comboMultiplier();
     const goldMul = eventGoldMul * cMul * recipeGoldMul() * modGoldMul();
     const cinematicMul = modCinematicGoldMul();
+    const frenzyMul = frenzyGoldMul();
     if(newTier >= 5 && (STATE.firstReached[a.chain] || 0) < newTier){
       STATE.firstReached[a.chain] = newTier;
-      const reward = Math.floor((TIER_REWARDS[newTier] || 200) * goldMul * cinematicMul);
+      const reward = Math.floor((TIER_REWARDS[newTier] || 200) * goldMul * cinematicMul * frenzyMul);
       STATE.gold += reward;
       grandOeuvre(a.chain, newTier);
     } else if(newTier >= 5){
-      const reward = Math.floor((TIER_REWARDS[newTier] || 200) * .25 * goldMul * cinematicMul);
+      const reward = Math.floor((TIER_REWARDS[newTier] || 200) * .25 * goldMul * cinematicMul * frenzyMul);
       STATE.gold += reward;
       floating(bx, by + 10, "+"+reward, "gain");
       sfxClaim();
@@ -7779,7 +8153,7 @@ function doMerge(fx, fy, tx, ty){
       } else {
         const baseGold = [0, 1, 2, 4, 8, 16][newTier] || 0;
         if(baseGold > 0){
-          const reward = Math.floor(baseGold * goldMul);
+          const reward = Math.floor(baseGold * goldMul * frenzyMul);
           STATE.gold += reward;
           if(reward >= 4 || cMul > 1){ floating(bx, by + 10, "+"+reward, "gain"); }
         }
@@ -7835,19 +8209,18 @@ function applyProgressionBonuses(){
   const upgradeCdMul = STATE.upgradeCdMul || 1;
   const mCd = modCdMul();
   for(let i=0; i<3; i++){
-    if(STATE.generators[i]) STATE.generators[i].cdMs = [900, 1400, 2000][i] * factor * upgradeCdMul * mCd;
-    // Coût ajusté par modificateur (Cœur de Givre, Sceau de l'Adepte)
+    if(STATE.generators[i]) STATE.generators[i].cdMs = [700, 1100, 1600][i] * factor * upgradeCdMul * mCd;
     if(STATE.generators[i]){
       const baseCost = [3,5,8][i];
       STATE.generators[i].cost = Math.ceil(baseCost * modCostMul());
-      // Sceau de l'Adepte fait spawn directement à T1
       STATE.generators[i].tier = modGeneratorTier();
     }
   }
-  let baseMax = 60, baseRegen = 1;
-  if(STATE.gold >= 200){ baseMax = 80;  baseRegen = 1.4; }
-  if(STATE.gold >= 800){ baseMax = 120; baseRegen = 2; }
-  if(STATE.gold >= 2500){ baseMax = 200; baseRegen = 3; }
+  // Regen early game plus rapide : 1.5/s au lieu de 1
+  let baseMax = 60, baseRegen = 1.5;
+  if(STATE.gold >= 200){ baseMax = 90;  baseRegen = 2; }
+  if(STATE.gold >= 800){ baseMax = 140; baseRegen = 2.8; }
+  if(STATE.gold >= 2500){ baseMax = 220; baseRegen = 4; }
   STATE.essenceMax = Math.floor(baseMax * (STATE.upgradeEssenceMaxMul || 1) * modEssenceMaxMul());
   STATE.essenceRegen = baseRegen * (STATE.upgradeRegenMul || 1) * modRegenMul();
 }
@@ -8283,6 +8656,21 @@ function tickCinema(){
   cnCtx.globalAlpha = 1;
 }
 
+function spawnGoldDroplet(sx, sy, tx, ty){
+  // Petit point doré qui flotte de la tuile vers le compteur or
+  const el = document.createElement('div');
+  el.className = 'gold-droplet';
+  el.style.left = sx + 'px'; el.style.top = sy + 'px';
+  document.body.appendChild(el);
+  // Animation : translate via CSS variable
+  const dx = tx - sx, dy = ty - sy;
+  requestAnimationFrame(()=>{
+    el.style.transform = `translate(${dx}px, ${dy}px) scale(.3)`;
+    el.style.opacity = '0';
+  });
+  setTimeout(()=>el.remove(), 900);
+}
+
 function floating(x, y, txt, kind="gain"){
   const f = document.createElement("div");
   f.className = "float " + kind;
@@ -8577,6 +8965,8 @@ function save(){
       activeModifierId:STATE.activeModifierId||null,
       codexUnlocks:STATE.codexUnlocks||{},
       masterQuestDone:STATE.masterQuestDone||{},
+      alchXp:STATE.alchXp||0,
+      alchLevel:STATE.alchLevel||1,
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
   }catch(e){}
@@ -8606,6 +8996,8 @@ function load(){
     STATE.activeModifierId = s.activeModifierId ?? null;
     STATE.codexUnlocks = s.codexUnlocks ?? {};
     STATE.masterQuestDone = s.masterQuestDone ?? {};
+    STATE.alchXp = s.alchXp ?? 0;
+    STATE.alchLevel = s.alchLevel ?? 1;
     // Migration : si on a maxTier mais pas de codexUnlocks → backfill
     for(let c=0;c<3;c++){
       for(let t=0; t<=STATE.totals.maxTier[c]; t++){
@@ -8664,6 +9056,7 @@ function boot(){
   checkAchievements();
   renderActiveModifier();
   renderMasterQuestWidget();
+  renderAlchLevel();
   // Offline progress toast (déclenché dans le start-btn pour éviter d'apparaître avant l'intro)
 
   function syncDrawerOverlay(){
@@ -8946,6 +9339,17 @@ function boot(){
             const r = cell.getBoundingClientRect();
             const accumulated = Math.max(1, Math.floor(IDLE_GOLD_PER_TIER[bestTile.tier] * 2.5));
             floating(r.left + r.width/2, r.top + 6, "+"+accumulated, "gain");
+          }
+        }
+        // Pluie d'or : particules qui convergent vers le compteur or (toutes 600ms si gen)
+        if(bestTile && now - (window._lastGoldRainAt||0) > 600){
+          window._lastGoldRainAt = now;
+          const cell = cellAt(bestTile.x, bestTile.y);
+          const goldEl = document.getElementById('gold-val');
+          if(cell && goldEl){
+            const rs = cell.getBoundingClientRect();
+            const rg = goldEl.getBoundingClientRect();
+            spawnGoldDroplet(rs.left + rs.width/2, rs.top + rs.height/2, rg.left + rg.width/2, rg.top + rg.height/2);
           }
         }
       } else {

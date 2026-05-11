@@ -214,6 +214,15 @@ header{
   color:var(--gold-bright);
   text-shadow:0 0 6px var(--gold-glow);
 }
+.stat .stat-rate{
+  font-family:"VT323", monospace;
+  font-size:11px;
+  color:var(--plant-2);
+  margin-left:6px;
+  white-space:nowrap;
+  text-shadow:0 0 5px var(--plant-glow);
+  align-self:center;
+}
 @media (min-width: 600px){
   .stat .stat-lbl{font-size:8px}
   .stat .stat-val{font-size:20px}
@@ -844,6 +853,22 @@ header{
   font-family:"Cormorant Garamond", serif; font-style:italic;
   font-size:13px; color:var(--parchment-2);
   line-height:1.3;
+}
+.item-tooltip .it-idle{
+  margin-top:6px; padding-top:5px;
+  border-top:1px dashed rgba(154,120,66,.3);
+  font-family:"VT323", monospace;
+  font-size:13px;
+  color:var(--gold-bright);
+  text-align:center;
+}
+.item-tooltip .it-idle.muted{
+  color:var(--parchment-3); font-family:"Cormorant Garamond", serif;
+  font-style:italic; font-size:12px;
+}
+.item-tooltip .it-idle-val{
+  font-weight:700;
+  text-shadow:0 0 6px var(--gold-glow);
 }
 
 /* ================ EVENT TOAST ================ */
@@ -2693,6 +2718,19 @@ header{
         <p>Maintenir une tuile longtemps affiche son nom et sa lore. Tape n'importe où dehors un panneau ouvert pour le fermer.</p>
       </section>
       <section class="grim-sec">
+        <h3>Pourquoi Fusionner ?</h3>
+        <p><span class="dropcap">C</span>haque item posé sur ton plateau, à partir du palier <strong>I</strong>, te rapporte de l'or <strong>passivement</strong>, seconde après seconde. La matière brute (Graine, Caillou, Brume — T0) ne donne rien : elle est inerte. Mais à partir du Bourgeon, du Quartz, de l'Étincelle, la transmutation a commencé : la matière œuvre.</p>
+        <p><strong>Le rendement multiplie ×3-4 à chaque palier</strong> :</p>
+        <p style="font-family:'VT323', monospace; font-size:14px; color:var(--gold-light); line-height:1.5">
+          T1 — 0.1 or/s par tuile<br>
+          T2 — 0.4 or/s · T3 — 1.5 or/s<br>
+          T4 — 4 or/s · T5 — 10 or/s<br>
+          T6 — 30 or/s · T7 — <strong>100 or/s</strong>
+        </p>
+        <p>Tu <em>veux</em> garder une Yggdra sur ton plateau : à elle seule elle rapporte 100 couronnes par seconde, soit 6 000 par minute. La vraie raison de fusionner, c'est cette rente qui pousse à mesure que tu pousses.</p>
+        <p style="font-family:'Cormorant Garamond';font-style:italic;font-size:13px;color:var(--gold);opacity:.8">Touche longue sur une tuile pour voir son rendement exact.</p>
+      </section>
+      <section class="grim-sec">
         <h3>Les Trois Économies</h3>
         <p><span class="dropcap">L</span>'<strong>Étincelle</strong> (gemme rouge) — le coût de toute invocation. Elle se régénère seule. Plus tu progresses, plus la coupe s'élargit.</p>
         <p><strong>Les Couronnes</strong> (sceau d'or) — le revenu. Elles arrivent par les fusions hautes (V+), les quêtes, les évènements. Elles débloquent l'Athanor (500c), accélèrent les cauldrons, étendent l'étincelle.</p>
@@ -3262,6 +3300,11 @@ const CHAINS = [
 
 const ROMAN = ["","I","II","III","IV","V","VI","VII"];
 const TIER_REWARDS = [0, 0, 0, 0, 0, 0, 200, 800, 3000]; // bonus or à chaque tier atteint en plus de la quête
+
+/* Génération passive d'or par tuile sur le board (or par seconde).
+   La graine ne fait rien. Le Bourgeon, déjà œuvré, commence à rendre.
+   Chaque palier multiplie environ par 3-4× — c'est la VRAIE raison de fusionner. */
+const IDLE_GOLD_PER_TIER = [0, 0.1, 0.4, 1.5, 4, 10, 30, 100];
 
 /* ================ CODEX NARRATIF — 24 pages du Grand Œuvre ================ */
 /* Chaque palier des 3 voies a sa page : épigraphe latine, lore (fragment de récit),
@@ -6484,6 +6527,7 @@ function achIconSVG(kind, size=14){
 }
 
 function fmtNumber(n){
+  n = Math.floor(n);
   if(n >= 1_000_000) return (n/1_000_000).toFixed(n>=10_000_000?0:1) + "M";
   if(n >= 10_000)    return (n/1000).toFixed(0) + "k";
   if(n >= 1000)      return (n/1000).toFixed(1) + "k";
@@ -6492,7 +6536,17 @@ function fmtNumber(n){
 function renderStats(){
   $essence.textContent = Math.floor(STATE.essence) + "/" + STATE.essenceMax;
   $gold.textContent = fmtNumber(STATE.gold);
-  $gold.title = STATE.gold + " couronnes";
+  // Indication du gold/s à côté quand il y en a
+  const ips = STATE._idlePerSec || 0;
+  if($gold._rateEl){ $gold._rateEl.textContent = ips > 0 ? '+' + (ips < 1 ? ips.toFixed(1) : (ips < 10 ? ips.toFixed(1) : Math.floor(ips))) + '/s' : ''; }
+  else if(ips > 0){
+    const span = document.createElement('span');
+    span.className = 'stat-rate';
+    span.textContent = '+' + (ips < 1 ? ips.toFixed(1) : Math.floor(ips)) + '/s';
+    $gold.parentElement.appendChild(span);
+    $gold._rateEl = span;
+  }
+  $gold.title = Math.floor(STATE.gold) + " couronnes" + (ips > 0 ? ` (+${ips.toFixed(1)}/s)` : '');
   const modal = document.getElementById("stats-modal");
   if(modal && modal.classList.contains("show")) renderStatsBody();
   // Phase visuelle de fond : 0=normal, 1@T2, 2@T4, 3@T6, 4@T7
@@ -7721,6 +7775,10 @@ function showItemTooltip(tile, x, y){
   hideItemTooltip();
   const ch = CHAINS[tile.chain];
   const t = ch.tiers[tile.tier];
+  const idleRate = IDLE_GOLD_PER_TIER[tile.tier] || 0;
+  const idleHtml = idleRate > 0
+    ? `<div class="it-idle"><span class="it-idle-val">+${idleRate < 1 ? idleRate.toFixed(1) : Math.floor(idleRate)}</span> couronnes / seconde</div>`
+    : `<div class="it-idle muted">— ne rapporte rien tant qu'inerte — fusionne-la</div>`;
   const el = document.createElement("div");
   el.className = "item-tooltip";
   el.id = "item-tooltip";
@@ -7733,6 +7791,7 @@ function showItemTooltip(tile, x, y){
       </div>
     </div>
     <div class="it-desc">${t.d}</div>
+    ${idleHtml}
   `;
   document.body.appendChild(el);
   // Position au-dessus du doigt
@@ -8147,10 +8206,41 @@ function boot(){
   // boucle principale — résistante aux erreurs (chaque tick est try/catch isolé)
   let last = performance.now();
   let lastEventTickRender = 0;
+  let lastIdleParticleAt = 0;
   function safe(fn){ try{ fn(); }catch(e){ console.error("[loop]", fn.name||"anon", e); } }
   function loop(now){
     const dt = (now - last)/1000; last = now;
     safe(()=>{ STATE.essence = Math.min(STATE.essenceMax, STATE.essence + STATE.essenceRegen * (STATE.eventRegenMul || 1) * dt); });
+    // Génération passive d'or par les items sur le board (T1+)
+    safe(()=>{
+      let perSec = 0;
+      let bestTile = null, bestRate = 0;
+      for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++){
+        const t = STATE.grid[y][x]; if(!t) continue;
+        const rate = IDLE_GOLD_PER_TIER[t.tier] || 0;
+        if(rate > 0){
+          perSec += rate;
+          if(rate > bestRate){ bestRate = rate; bestTile = {x,y,tier:t.tier,chain:t.chain}; }
+        }
+      }
+      if(perSec > 0){
+        const gain = perSec * dt * (recipeGoldMul ? recipeGoldMul() : 1) * (modGoldMul ? modGoldMul() : 1);
+        STATE.gold += gain;
+        STATE._idlePerSec = perSec; // pour affichage tooltip ou stat
+        // Floating "+N" sur la tuile qui rapporte le plus, toutes les 2.5s
+        if(bestTile && now - lastIdleParticleAt > 2500){
+          lastIdleParticleAt = now;
+          const cell = cellAt(bestTile.x, bestTile.y);
+          if(cell){
+            const r = cell.getBoundingClientRect();
+            const accumulated = Math.max(1, Math.floor(IDLE_GOLD_PER_TIER[bestTile.tier] * 2.5));
+            floating(r.left + r.width/2, r.top + 6, "+"+accumulated, "gain");
+          }
+        }
+      } else {
+        STATE._idlePerSec = 0;
+      }
+    });
     safe(renderStats);
     safe(()=>tickGenerators(now));
     safe(tickDust);

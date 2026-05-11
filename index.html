@@ -326,6 +326,38 @@ header{
 .cell.flash{
   animation:cellFlash .35s ease-out;
 }
+/* Cellule spectrale (cible) — pulse blanc-or */
+.cell.spectral-target{
+  border-color:#fff;
+  box-shadow:
+    inset 0 0 0 2px #fff,
+    inset 0 0 28px rgba(255,255,255,.6),
+    0 0 32px #fff;
+  animation:spectralPulse .6s ease-in-out infinite;
+}
+@keyframes spectralPulse{
+  0%,100%{box-shadow:inset 0 0 0 2px #fff, inset 0 0 22px rgba(255,255,255,.4), 0 0 22px #fff}
+  50%{box-shadow:inset 0 0 0 2px #e8c878, inset 0 0 32px rgba(232,200,120,.8), 0 0 40px var(--gold-bright)}
+}
+/* Cellule cendrée (échec de cible) — sombre, désactivée */
+.cell.ash-cell{
+  background:
+    repeating-linear-gradient(45deg,
+      #2a1a1a 0, #2a1a1a 3px,
+      #1a0a0a 3px, #1a0a0a 6px);
+  border-color:#3a1a1a;
+  filter:brightness(.6);
+  box-shadow:inset 0 0 18px rgba(50,15,10,.8);
+}
+.cell.ash-cell::after{
+  content:""; position:absolute; inset:25%;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 3 C 8 6 6 9 6 12 C 6 14 8 16 12 16 C 16 16 18 14 18 12 C 18 9 16 6 12 3 Z M12 7 L14 11 L12 13 L10 11 Z' fill='%23c84a2a' opacity='.4'/></svg>") center/contain no-repeat;
+  animation:ashFlicker 1.4s ease-in-out infinite;
+}
+@keyframes ashFlicker{
+  0%,100%{opacity:.5}
+  50%{opacity:.8}
+}
 @keyframes cellFlash{
   0%{box-shadow:inset 0 0 0 0 #fff}
   50%{box-shadow:inset 0 0 24px #fff, 0 0 24px #fff}
@@ -1312,6 +1344,50 @@ header{
   font-family:"Cormorant Garamond", serif; font-style:italic;
   font-size:13px; color:var(--parchment-2);
   line-height:1.3;
+}
+
+/* ================ COMBO EXPLOSION (Supernova) ================ */
+.combo-explosion-toast{
+  position:fixed; top:30%; left:50%;
+  transform:translate(-50%,-50%) scale(.6);
+  z-index:90;
+  width:min(94vw, 360px);
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(255,240,180,.35), rgba(232,200,120,.15) 60%, transparent 90%),
+    linear-gradient(180deg, #3a2818, #1a0e0a);
+  border:2px solid var(--gold-bright);
+  padding:14px 18px 16px;
+  text-align:center;
+  pointer-events:none;
+  box-shadow:0 0 60px var(--gold-bright), 0 0 120px var(--gold-glow), 0 14px 50px rgba(0,0,0,.8);
+  opacity:0;
+  transition:transform .5s cubic-bezier(.2,.9,.2,1.4), opacity .3s;
+}
+.combo-explosion-toast::before, .combo-explosion-toast::after{
+  content:""; position:absolute; width:12px; height:12px;
+  border:2px solid var(--gold-bright); pointer-events:none;
+}
+.combo-explosion-toast::before{top:-2px; left:-2px; border-right:none; border-bottom:none}
+.combo-explosion-toast::after{bottom:-2px; right:-2px; border-left:none; border-top:none}
+.combo-explosion-toast.show{opacity:1; transform:translate(-50%,-50%) scale(1)}
+.cx-banner{
+  font-family:"Cinzel", serif; font-weight:900;
+  letter-spacing:.4em; font-size:11px;
+  color:var(--gold-bright);
+  text-shadow:0 0 14px #fff, 0 0 22px var(--gold-bright);
+  margin-bottom:6px;
+}
+.cx-bonus{
+  font-family:"Cinzel", serif; font-weight:900;
+  font-size:24px; letter-spacing:.18em;
+  color:#fff;
+  text-shadow:0 0 18px var(--gold-bright), 0 0 30px #fff;
+  margin-bottom:4px;
+}
+.cx-sub{
+  font-family:"Cormorant Garamond", serif; font-style:italic;
+  font-size:13px; color:var(--gold-light);
+  letter-spacing:.12em;
 }
 
 /* ================ COMBO BADGE ================ */
@@ -2929,8 +3005,18 @@ header{
         <p><strong>Les Étoiles ★</strong> — la monnaie permanente, gagnée seulement par <em>Transmutation</em>. Elles s'achètent au Sanctum contre des bonus durables.</p>
       </section>
       <section class="grim-sec">
-        <h3>Le Combo</h3>
+        <h3>Le Combo &amp; la Supernova</h3>
         <p>Fusionner deux fois en moins de 1.8 secondes déclenche un combo (×1.5, ×2, ×3, ×4 d'or selon la longueur). Une chaîne de cinq fusions rapides paie autant que dix lentes. Le Diadème de l'Œuvre double cette fenêtre.</p>
+        <p>À la 6ᵉ fusion consécutive d'un combo, l'œuvre <strong>déflagre</strong> : onde de choc dorée, +500 couronnes minimum, et <strong>trois items palier I</strong> jaillissent dans des cellules vides. Tous les 6 dans le combo, la supernova rejoue.</p>
+      </section>
+      <section class="grim-sec">
+        <h3>Cibles Spectrales &amp; Cendres</h3>
+        <p>Toutes les 45 à 90 secondes, une cellule du plateau s'<strong>illumine en blanc</strong> pendant 8 secondes — c'est une Cible Spectrale. Si tu réalises une fusion qui termine sur cette cellule dans le temps imparti, <strong>+200 à 400 couronnes</strong> immédiates, particules blanches et son cristallin.</p>
+        <p>Si tu rates, la cellule devient <em>cendrée</em> pendant 25 secondes : impossible d'y fusionner. Croise les bras ou paye le prix de l'inattention.</p>
+      </section>
+      <section class="grim-sec">
+        <h3>Le Coup de Chance</h3>
+        <p>3% de chance qu'un cauldron invoque directement un item <strong>palier II</strong> au lieu de la matière brute — à condition que tu aies déjà atteint palier II sur cette voie. C'est gratuit, c'est rare, et c'est exactement ce qu'il fallait à ce moment-là.</p>
       </section>
       <section class="grim-sec">
         <h3>L'Athanor</h3>
@@ -6286,6 +6372,111 @@ function applyEventModifiers(){
   STATE.eventRegenMul = regenMul;
 }
 
+/* ================ CIBLES SPECTRALES — micro-défis ================ */
+/* Toutes les 45-90s, une cellule s'illumine pendant 8s.
+   Si une fusion termine sur cette cellule dans le temps imparti :
+   pluie d'or + son. Sinon, la cellule devient cendrée 25s. */
+let _nextSpectralAt = 0;
+let _spectralEndsAt = 0;
+let _spectralX = -1, _spectralY = -1;
+let _ashEndsAt = 0;
+let _ashX = -1, _ashY = -1;
+
+function maybeFireSpectral(now){
+  // Première fois : tirer dans 45-90s
+  if(_nextSpectralAt === 0){
+    _nextSpectralAt = now + 45000 + Math.random()*45000;
+    return;
+  }
+  // Si une cible est en cours, gère l'expiration
+  if(_spectralEndsAt > 0){
+    if(Date.now() >= _spectralEndsAt){
+      // Échec : devient cendres
+      const sx = _spectralX, sy = _spectralY;
+      _spectralEndsAt = 0; _spectralX = -1; _spectralY = -1;
+      const cell = cellAt(sx, sy);
+      if(cell){
+        cell.classList.remove('spectral-target');
+        cell.classList.add('ash-cell');
+        _ashEndsAt = Date.now() + 25000;
+        _ashX = sx; _ashY = sy;
+      }
+      // Léger feedback échec
+      sfxDeny();
+      const r = cell?.getBoundingClientRect();
+      if(r) floating(r.left + r.width/2, r.top + r.height/2, "✦ raté", "lose");
+    }
+    return;
+  }
+  // Si cendres en cours, gère l'expiration
+  if(_ashEndsAt > 0 && Date.now() >= _ashEndsAt){
+    const cell = cellAt(_ashX, _ashY);
+    if(cell) cell.classList.remove('ash-cell');
+    _ashEndsAt = 0; _ashX = -1; _ashY = -1;
+  }
+  // Si pas en cours et c'est l'heure : lance une nouvelle cible
+  if(now >= _nextSpectralAt && Math.max(...(STATE.totals?.maxTier||[0])) >= 1){
+    spawnSpectralTarget();
+    _nextSpectralAt = now + 45000 + Math.random()*45000;
+  }
+}
+
+function spawnSpectralTarget(){
+  // Choisit une cellule (de préférence non vide pour forcer une fusion dessus)
+  const candidates = [];
+  for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++){
+    if(x===_ashX && y===_ashY) continue;
+    const t = STATE.grid[y][x];
+    if(t && t.tier < TIERS-1) candidates.push([x,y]);
+  }
+  if(!candidates.length) return;
+  const [x,y] = candidates[Math.floor(Math.random()*candidates.length)];
+  _spectralX = x; _spectralY = y;
+  _spectralEndsAt = Date.now() + 8000;
+  const cell = cellAt(x,y);
+  if(cell) cell.classList.add('spectral-target');
+  // Notification courte
+  const r = cell?.getBoundingClientRect();
+  if(r){
+    floating(r.left + r.width/2, r.top - 12, "✦ CIBLE SPECTRALE — 8s", "tier");
+    particles(r.left + r.width/2, r.top + r.height/2, '#fff', 16);
+  }
+  if(A.ctx){
+    blip(880, .15, "sine", .2, .5);
+    setTimeout(()=>blip(1320, .15, "triangle", .15, .6), 80);
+  }
+  vibrate([15, 30, 15]);
+}
+
+function checkSpectralHit(x, y){
+  // Appelé à chaque doMerge avec la cellule cible
+  if(_spectralEndsAt > 0 && x === _spectralX && y === _spectralY){
+    // RÉUSSI !
+    _spectralEndsAt = 0;
+    const cell = cellAt(x,y);
+    if(cell) cell.classList.remove('spectral-target');
+    const bonus = 200 + Math.floor(Math.random()*200);
+    STATE.gold += bonus;
+    const r = cell?.getBoundingClientRect();
+    if(r){
+      floating(r.left + r.width/2, r.top + r.height/2 - 30, "✦ +" + bonus + " ✦", "tier");
+      for(let i=0;i<20;i++){
+        setTimeout(()=>particles(r.left + r.width/2, r.top + r.height/2, '#fff', 6), i*40);
+      }
+      shockwave(r.left + r.width/2, r.top + r.height/2, '#fff', 6);
+    }
+    if(A.ctx){
+      blip(1320, .25, "triangle", .25, .7);
+      setTimeout(()=>blip(1760, .3, "sine", .22, .7), 60);
+      setTimeout(()=>blip(2640, .3, "sine", .18, .8), 150);
+    }
+    vibrate([20, 30, 20, 30, 60]);
+    _spectralX = -1; _spectralY = -1;
+    return true;
+  }
+  return false;
+}
+
 function tickEvents(now){
   // Expirer les events échus
   const ae = STATE.activeEvents || {};
@@ -7197,6 +7388,12 @@ function fireGenerator(idx, el){
   // Anima Mundi : chance de spawn directement à T1 au lieu de T0
   let spawnTier = g.tier;
   if(spawnTier === 0 && Math.random() < getT1SpawnChance()) spawnTier = 1;
+  // ✦ LUCKY SPAWN : 3% chance de spawn T2 si maxTier de cette voie >= 2
+  let isLucky = false;
+  if(spawnTier === 0 && STATE.totals.maxTier[g.chain] >= 2 && Math.random() < .03){
+    spawnTier = 2;
+    isLucky = true;
+  }
   setTile(x,y,{ id: STATE.nextId++, chain: g.chain, tier: spawnTier });
   STATE.totals.produced[g.chain]++;
   const before = STATE.totals.maxTier[g.chain];
@@ -7214,6 +7411,23 @@ function fireGenerator(idx, el){
   // burst from cauldron
   const r = el.getBoundingClientRect();
   particles(r.left + r.width/2, r.top + 14, CHAINS[g.chain].color, 14);
+  if(isLucky){
+    // FX dédié au lucky spawn
+    const cell = cellAt(x, y);
+    if(cell){
+      const cr = cell.getBoundingClientRect();
+      const cx = cr.left + cr.width/2, cy = cr.top + cr.height/2;
+      shockwave(cx, cy, '#fff', 5);
+      for(let i=0;i<14;i++) particles(cx, cy, '#fff', 4);
+      floating(cx, cy - 14, "✦ CHANCE ! ✦", "tier");
+    }
+    if(A.ctx){
+      blip(1320, .15, "sine", .22, .6);
+      setTimeout(()=>blip(1760, .15, "triangle", .2, .65), 60);
+      setTimeout(()=>blip(2200, .18, "sine", .18, .7), 130);
+    }
+    vibrate([15, 30, 25]);
+  }
 }
 function shake(el){
   el.animate([
@@ -7410,6 +7624,58 @@ function comboMultiplier(){
   if(max >= 6 && c >= 24) return 6;
   return 1;
 }
+function triggerComboExplosion(cx, cy, chain, comboCount){
+  const ch = CHAINS[chain];
+  // Onde de choc + flash écran + bonus or
+  const bonus = 500 + (comboCount - 6) * 200;
+  STATE.gold += bonus;
+  // FX visuels massifs
+  shockwave(cx, cy, ch.color, 7);
+  shockwave(cx, cy, '#fff', 7);
+  for(let i=0;i<40;i++){
+    const a = Math.random()*Math.PI*2;
+    particles(cx + Math.cos(a)*10, cy + Math.sin(a)*10, i%2 ? ch.color : '#e8c878', 8);
+  }
+  cinematicBurst('#fff', 5);
+  // Spawn 3 items T1 random dans des cellules vides (cadeau de la déflagration)
+  const empties = findEmpty();
+  for(let i=0;i<3 && empties.length;i++){
+    const idx = Math.floor(Math.random()*empties.length);
+    const [x,y] = empties.splice(idx,1)[0];
+    const c = Math.floor(Math.random()*3);
+    STATE.grid[y][x] = { id: STATE.nextId++, chain:c, tier:1 };
+    STATE.totals.produced[c]++;
+    STATE.totals.maxTier[c] = Math.max(STATE.totals.maxTier[c], 1);
+    renderTile(x, y);
+    const cell = cellAt(x, y);
+    if(cell){
+      const r = cell.getBoundingClientRect();
+      particles(r.left + r.width/2, r.top + r.height/2, CHAINS[c].color, 12);
+    }
+  }
+  // SFX épique
+  if(A.ctx){
+    blip(110, .6, "sine", .3, .7);
+    blip(220, .5, "triangle", .25, .7);
+    setTimeout(()=>blip(440, .4, "triangle", .2, .8), 80);
+    setTimeout(()=>blip(880, .3, "sine", .15, .8), 160);
+    setTimeout(()=>blip(1320, .25, "sine", .12, .9), 240);
+  }
+  vibrate([40, 60, 40, 60, 100, 60, 40]);
+  // Toast cinematic
+  const el = document.createElement('div');
+  el.className = 'combo-explosion-toast';
+  el.innerHTML = `
+    <div class="cx-banner">SUPERNOVA · ×${comboCount}</div>
+    <div class="cx-bonus">+${bonus} couronnes</div>
+    <div class="cx-sub">L'œuvre prend feu. Trois palier I jaillissent.</div>
+  `;
+  document.body.appendChild(el);
+  setTimeout(()=>el.classList.add('show'), 30);
+  setTimeout(()=>el.classList.remove('show'), 3000);
+  setTimeout(()=>el.remove(), 3500);
+}
+
 function showCombo(x, y, count){
   if(count < 2) return;
   const mul = comboMultiplier();
@@ -7433,9 +7699,18 @@ function showCombo(x, y, count){
 function doMerge(fx, fy, tx, ty){
   const a = STATE.grid[fy][fx], b = STATE.grid[ty][tx];
   if(!a || !b || a.chain !== b.chain || a.tier !== b.tier || b.tier >= TIERS-1){
-    // garde défensive : merge invalide (tier max ou tuiles incompatibles)
     renderTile(fx, fy); renderTile(tx, ty); return;
   }
+  // Cellule cible cendrée → bloque
+  if(tx === _ashX && ty === _ashY){
+    sfxDeny();
+    const cell = cellAt(tx, ty);
+    const r = cell?.getBoundingClientRect();
+    if(r) floating(r.left + r.width/2, r.top - 8, "cendres", "lose");
+    renderTile(fx, fy); renderTile(tx, ty); return;
+  }
+  // Check cible spectrale (succès)
+  checkSpectralHit(tx, ty);
   const combo = comboTick();
   let newTier = b.tier + 1;
   // Comet boost : saute un palier supplémentaire (max TIERS-1)
@@ -7517,6 +7792,10 @@ function doMerge(fx, fy, tx, ty){
     }
     // Affichage du combo
     showCombo(bx, by, combo);
+    // ★ COMBO EXPLOSIF : à combo 6+, déclenche une supernova
+    if(combo === 6 || (combo > 6 && combo % 6 === 0)){
+      triggerComboExplosion(bx, by, a.chain, combo);
+    }
     // Premier T1 sur n'importe quelle voie : mini-célébration
     if(newTier === 1 && (STATE.totals.maxTier[a.chain] === 1) && !STATE._celebratedT1){
       STATE._celebratedT1 = true;
@@ -8681,6 +8960,7 @@ function boot(){
     safe(tickFX);
     safe(tickCinema);
     safe(()=>tickEvents(now));
+    safe(()=>maybeFireSpectral(now));
     safe(()=>tickRecipeAutoSpawn(now));
     safe(()=>tickAutoMerge(now));
     if(now - lastEventTickRender > 250){ safe(renderActiveEvents); lastEventTickRender = now; }

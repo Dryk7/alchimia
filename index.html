@@ -3292,17 +3292,21 @@ body.shop-epic-flash::after{
   <div id="drawer-overlay"></div>
 
   <main id="play">
-    <!-- Le Stade : piste ovale + coureur (design minimaliste) -->
+    <!-- Le Stade : piste ovale + coureur + foule en arrière-plan (design minimaliste) -->
     <div id="runner-stadium">
       <svg id="runner-svg" viewBox="0 0 320 140" preserveAspectRatio="xMidYMid meet">
         <defs>
           <!-- Trajectoire ovale du coureur — pour animateMotion -->
           <path id="rs-path" d="M 50,100 A 110,24 0 0 1 270,100 A 110,24 0 0 1 50,100 Z" fill="none"/>
         </defs>
-        <!-- Fond uni : un seul aplat bleu nuit profond, cohérent avec le grid frame -->
-        <rect x="0" y="0" width="320" height="140" fill="#16223a"/>
-        <!-- Piste ovale en aplat orange/sable — pas de gradient ni vignette -->
-        <ellipse cx="160" cy="100" rx="118" ry="26" fill="#d88030" stroke="#1a1010" stroke-width="2"/>
+        <!-- Ciel : couleur unie qui change via data-time (jour/nuit) -->
+        <rect id="rs-sky-bg" x="0" y="0" width="320" height="140" fill="#16223a"/>
+        <!-- Soleil/lune discret en haut (taille fixe, position selon heure) -->
+        <circle id="rs-celestial" cx="265" cy="22" r="9" fill="#ffd070" opacity=".8"/>
+        <!-- Tribunes : 2 ovales d'arrière-plan + foule de silhouettes (varies par maxTier) -->
+        <g id="rs-crowd"></g>
+        <!-- Piste ovale (couleur dépend de maxTier — terre/tartan) -->
+        <ellipse id="rs-track-ring" cx="160" cy="100" rx="118" ry="26" fill="#d88030" stroke="#1a1010" stroke-width="2"/>
         <!-- Gazon central uni -->
         <ellipse cx="160" cy="100" rx="88" ry="14" fill="#4a7028" stroke="#1a1010" stroke-width="1.5"/>
         <!-- Une seule ligne de couloir blanche pointillée -->
@@ -4355,22 +4359,17 @@ function checkMasterQuest(){
 }
 
 function showMasterQuestReveal(step, idx){
-  // Étapes 1 et 2 (idx 0, 1) : juste un toast doré élégant, pas un overlay plein écran
-  if(idx < 2){
-    const toast = document.createElement('div');
-    toast.className = 'master-toast-lite';
-    toast.innerHTML = `
-      <div class="mtl-banner">PACTE · ${idx+1}/10</div>
-      <div class="mtl-title">${step.title}</div>
-      <div class="mtl-reveal">${step.revelation}</div>
-    `;
-    document.body.appendChild(toast);
-    setTimeout(()=>toast.classList.add('show'), 30);
-    setTimeout(()=>toast.classList.remove('show'), 4200);
-    setTimeout(()=>toast.remove(), 4800);
+  // Étapes 1 à 4 : bulle du runner uniquement, pas de toast/overlay
+  // (les étapes 5+ ont des révélations narratives plus longues qui méritent l'overlay)
+  if(idx < 4){
+    if(typeof showRunnerBubble === 'function'){
+      showRunnerBubble("✦ " + step.title);
+    }
+    const body = document.querySelector('.rs-body');
+    if(body){ body.classList.remove('runner-cheer'); void body.offsetWidth; body.classList.add('runner-cheer'); setTimeout(()=>body.classList.remove('runner-cheer'), 720); }
     if(A.ctx){
-      blip(440, .15, "triangle", .2, .5);
-      setTimeout(()=>blip(660, .2, "sine", .22, .55), 100);
+      blip(440, .12, "triangle", .2, .5);
+      setTimeout(()=>blip(660, .15, "sine", .22, .55), 80);
     }
     vibrate([15, 30, 60]);
     return;
@@ -4507,24 +4506,20 @@ function gainXp(amount){
   renderAlchLevel();
 }
 function showLevelUp(newLevel, newTitle){
-  const el = document.createElement('div');
-  el.className = 'levelup-toast';
-  el.innerHTML = `
-    <div class="lu-banner">NIVEAU ${newLevel}</div>
-    ${newTitle ? `<div class="lu-title">${newTitle}</div>` : ''}
-    <div class="lu-bonus">+${((newLevel-1) * 1).toFixed(0)}% or permanent</div>
-  `;
-  document.body.appendChild(el);
-  setTimeout(()=>el.classList.add('show'), 30);
-  setTimeout(()=>el.classList.remove('show'), 3200);
-  setTimeout(()=>el.remove(), 3800);
-  if(A.ctx){
-    blip(220, .15, "sine", .22, .6);
-    setTimeout(()=>blip(330, .15, "triangle", .2, .6), 80);
-    setTimeout(()=>blip(440, .2, "sine", .22, .65), 180);
-    setTimeout(()=>blip(660, .25, "triangle", .25, .7), 280);
+  // Plus de popup plein écran — le runner annonce via bulle
+  if(typeof showRunnerBubble === 'function'){
+    const txt = newTitle ? `Niveau ${newLevel} · ${newTitle}` : `Niveau ${newLevel} !`;
+    showRunnerBubble(txt);
   }
-  vibrate([18, 40, 18, 40, 18, 40, 80]);
+  // Cheer du runner + flash dossard
+  const body = document.querySelector('.rs-body');
+  if(body){ body.classList.remove('runner-cheer'); void body.offsetWidth; body.classList.add('runner-cheer'); setTimeout(()=>body.classList.remove('runner-cheer'), 720); }
+  if(A.ctx){
+    blip(440, .15, "sine", .22, .6);
+    setTimeout(()=>blip(660, .15, "triangle", .2, .6), 80);
+    setTimeout(()=>blip(880, .2, "sine", .22, .65), 180);
+  }
+  vibrate([18, 40, 18, 40, 80]);
 }
 function renderAlchLevel(){
   const el = document.getElementById('alch-level');
@@ -4784,36 +4779,35 @@ function processAchToastQueue(){
   if(!_achToastQueue.length){ _achToastShowing = false; return; }
   _achToastShowing = true;
   const a = _achToastQueue.shift();
-  const el = document.createElement("div");
-  el.className = "achievement-toast";
-  el.innerHTML = `
-    <div class="ach-banner">HAUT FAIT</div>
-    <div class="ach-name">${a.name}</div>
-    <div class="ach-desc">${a.desc}</div>
-    <div class="ach-reward">+${a.reward} médailles</div>
-  `;
-  document.body.appendChild(el);
+  // Plus de toast plein écran — le runner reçoit sa médaille via bulle + flash
+  if(typeof showRunnerBubble === 'function'){
+    showRunnerBubble("★ " + a.name + " · +" + a.reward + " méd");
+  }
+  // Cheer du runner
+  const body = document.querySelector('.rs-body');
+  if(body){ body.classList.remove('runner-cheer'); void body.offsetWidth; body.classList.add('runner-cheer'); setTimeout(()=>body.classList.remove('runner-cheer'), 720); }
+  // Flash doré bref sur le stade + sparkles
+  const stadium = document.getElementById('runner-stadium');
+  if(stadium){
+    stadium.classList.remove('boost'); void stadium.offsetWidth; stadium.classList.add('boost');
+    setTimeout(()=>stadium.classList.remove('boost'), 600);
+    const r = stadium.getBoundingClientRect();
+    const cx = r.left + r.width/2, cy = r.top + r.height/2;
+    for(let i=0;i<6;i++){
+      setTimeout(()=>{
+        const ang = (i/6) * Math.PI * 2;
+        particles(cx + Math.cos(ang)*40, cy + Math.sin(ang)*20, '#ffd070', 3);
+      }, i*60);
+    }
+  }
   if(A.ctx){
     blip(660, .14, "triangle", .22, .5);
     setTimeout(()=>blip(880, .16, "triangle", .22, .5), 80);
     setTimeout(()=>blip(1320, .22, "sine", .26, .6), 180);
   }
   vibrate([14, 30, 14, 30, 80]);
-  // Sparkles autour du toast
-  setTimeout(()=>{
-    const r = el.getBoundingClientRect();
-    const cx = r.left + r.width/2, cy = r.top + r.height/2;
-    for(let i=0;i<10;i++){
-      setTimeout(()=>{
-        const ang = (i / 10) * Math.PI * 2;
-        const rd = 90 + Math.random()*40;
-        particles(cx + Math.cos(ang)*rd, cy + Math.sin(ang)*rd, '#e8c878', 4);
-      }, i * 80);
-    }
-  }, 200);
-  setTimeout(()=>el.classList.add("show"), 30);
-  setTimeout(()=>el.classList.remove("show"), 4500);
-  setTimeout(()=>{ el.remove(); processAchToastQueue(); }, 5100);
+  // Délai entre achievements
+  setTimeout(processAchToastQueue, 2600);
 }
 
 /* ================ PALETTE ================ */
@@ -7733,18 +7727,12 @@ function fireEvent(){
 }
 
 function eventNotification(e, extra){
-  const el = document.createElement("div");
-  el.className = "event-toast";
-  el.innerHTML = `
-    <div class="ev-banner">ÉVÈNEMENT</div>
-    <div class="ev-name">${e.name}</div>
-    <div class="ev-desc">${e.desc}</div>
-    ${extra ? `<div class="ev-extra">${extra}</div>` : ""}
-  `;
-  document.body.appendChild(el);
-  setTimeout(()=>el.classList.add("show"), 30);
-  setTimeout(()=>el.classList.remove("show"), 4500);
-  setTimeout(()=>el.remove(), 5400);
+  // Plus de toast plein écran — le runner annonce l'évènement
+  if(typeof showRunnerBubble === 'function'){
+    const txt = extra ? `${e.name} — ${extra}` : e.name;
+    showRunnerBubble(txt);
+  }
+  // Le bandeau actif #active-events affiche déjà l'événement en cours, ça suffit
 }
 
 function applyEventModifiers(){
@@ -8992,6 +8980,131 @@ function applyRunnerSkin(){
   runner.querySelectorAll('rect[data-skin="hair"]').forEach(r => r.setAttribute('fill', skin.hair));
 }
 
+/* ================ STADE VIVANT ================ */
+/* Foule : silhouettes en arrière-plan qui grandissent avec la progression.
+   Couches par maxTier moyen : T0=quelques, T2=ligne, T4=2 rangs, T6=foule dense, T7=ola. */
+function buildCrowd(){
+  const g = document.getElementById('rs-crowd');
+  if(!g) return;
+  const avgMaxTier = ((STATE.totals?.maxTier||[0,0,0]).reduce((a,b)=>a+b,0)) / 3;
+  // Nombre de spectateurs par côté gauche/droit en fonction du palier moyen
+  const perSide = Math.min(18, Math.floor(2 + avgMaxTier * 2.5));
+  // Couleurs maillots — mix
+  const tones = ['#3e8db8','#d04030','#5a9040','#9080c0','#ffd070','#fff','#a0a0a0'];
+  let html = '';
+  // Tribune gauche (entre x=0 et x=42, derrière la piste)
+  for(let i=0; i<perSide; i++){
+    const row = i % 3;
+    const x = 4 + (i % 6) * 6 + row * 1.5;
+    const y = 56 - row * 4;
+    const c = tones[(i * 3) % tones.length];
+    // Tête
+    html += `<rect x="${x}" y="${y-3}" width="2" height="2" fill="#f0c890"/>`;
+    // Corps (haut)
+    html += `<rect x="${x-1}" y="${y-1}" width="4" height="3" fill="${c}"/>`;
+  }
+  // Tribune droite
+  for(let i=0; i<perSide; i++){
+    const row = i % 3;
+    const x = 280 + (i % 6) * 6 + row * 1.5;
+    const y = 56 - row * 4;
+    const c = tones[(i * 5 + 1) % tones.length];
+    html += `<rect x="${x}" y="${y-3}" width="2" height="2" fill="#f0c890"/>`;
+    html += `<rect x="${x-1}" y="${y-1}" width="4" height="3" fill="${c}"/>`;
+  }
+  g.innerHTML = html;
+}
+
+/* Couleur de la piste selon maxTier global :
+   - 0-1 : terre brune cendrée
+   - 2-3 : terre orange cuite (actuel)
+   - 4-5 : tartan rouge clair
+   - 6+  : tartan olympique vif */
+function updateTrackSurface(){
+  const ring = document.getElementById('rs-track-ring');
+  if(!ring) return;
+  const maxT = Math.max(...(STATE.totals?.maxTier||[0,0,0]));
+  let color = '#a86840';      // terre simple
+  if(maxT >= 2) color = '#d88030'; // terre cuite
+  if(maxT >= 4) color = '#c84030'; // tartan rouge clair
+  if(maxT >= 6) color = '#e02818'; // tartan vif
+  ring.setAttribute('fill', color);
+}
+
+/* Cycle jour/nuit : selon le temps de session.
+   0-5min : aube, 5-15 : matin, 15-30 : midi, 30-50 : après-midi, 50+ : couchant/nuit. */
+function updateSky(){
+  const sky = document.getElementById('rs-sky-bg');
+  const cel = document.getElementById('rs-celestial');
+  if(!sky) return;
+  const sess = (Date.now() - (STATE.sessionStartMs||Date.now())) / 60000; // minutes
+  let bg, sun, sx, sy, sr;
+  if(sess < 5)        { bg = '#3a4878'; sun = '#ffd070'; sx = 260; sy = 30; sr = 9; }   // aube
+  else if(sess < 15)  { bg = '#5a78a8'; sun = '#ffe898'; sx = 240; sy = 22; sr = 10; }  // matin
+  else if(sess < 30)  { bg = '#7090c0'; sun = '#ffffff'; sx = 200; sy = 18; sr = 11; }  // midi
+  else if(sess < 50)  { bg = '#7a6a90'; sun = '#ffa050'; sx = 100; sy = 24; sr = 10; }  // après-midi
+  else if(sess < 75)  { bg = '#4a3868'; sun = '#ff6030'; sx =  55; sy = 30; sr = 9; }   // couchant
+  else                { bg = '#16223a'; sun = '#e0e8f0'; sx = 265; sy = 22; sr = 7; }   // nuit
+  sky.setAttribute('fill', bg);
+  if(cel){
+    cel.setAttribute('cx', sx);
+    cel.setAttribute('cy', sy);
+    cel.setAttribute('r', sr);
+    cel.setAttribute('fill', sun);
+  }
+}
+
+/* Accessoires de coureur — débloqués par palier max sur les voies.
+   Hydra T5+ : bandeau (HYDRA)
+   Énergie T5+ : lunettes
+   Souffle T5+ : casquette */
+function applyRunnerAccessories(){
+  const body = document.querySelector('.rs-body > g');
+  if(!body) return;
+  // Supprimer les anciens accessoires
+  body.querySelectorAll('[data-accessory]').forEach(e => e.remove());
+  const maxT = STATE.totals?.maxTier || [0,0,0];
+  // Bandeau hydra (sur le front)
+  if(maxT[0] >= 5){
+    const b = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    b.setAttribute('x', -4); b.setAttribute('y', -9);
+    b.setAttribute('width', 7); b.setAttribute('height', 1.5);
+    b.setAttribute('fill', '#3e8db8');
+    b.setAttribute('data-accessory', 'headband');
+    body.appendChild(b);
+  }
+  // Lunettes énergie
+  if(maxT[1] >= 5){
+    const l1 = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    l1.setAttribute('x', -3); l1.setAttribute('y', -7.5);
+    l1.setAttribute('width', 2); l1.setAttribute('height', 1.5);
+    l1.setAttribute('fill', '#1a1010');
+    l1.setAttribute('data-accessory', 'glasses');
+    body.appendChild(l1);
+    const l2 = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    l2.setAttribute('x', 0); l2.setAttribute('y', -7.5);
+    l2.setAttribute('width', 2); l2.setAttribute('height', 1.5);
+    l2.setAttribute('fill', '#1a1010');
+    l2.setAttribute('data-accessory', 'glasses');
+    body.appendChild(l2);
+  }
+  // Casquette souffle
+  if(maxT[2] >= 5){
+    const c = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    c.setAttribute('x', -5); c.setAttribute('y', -13);
+    c.setAttribute('width', 9); c.setAttribute('height', 2);
+    c.setAttribute('fill', '#9080c0');
+    c.setAttribute('data-accessory', 'cap');
+    body.appendChild(c);
+    const v = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    v.setAttribute('x', -6); v.setAttribute('y', -11);
+    v.setAttribute('width', 11); v.setAttribute('height', 1);
+    v.setAttribute('fill', '#3a2858');
+    v.setAttribute('data-accessory', 'cap');
+    body.appendChild(v);
+  }
+}
+
 let _runnerMotionDur = 14; // seconds for one lap, lower = faster
 let _runnerLapAt = 0;      // timestamp of last lap completion
 function updateRunner(){
@@ -9016,7 +9129,22 @@ function updateRunner(){
   const expectedSkin = getRunnerSkin();
   if(stadium.dataset.skin !== expectedSkin.name){
     applyRunnerSkin();
+    applyRunnerAccessories();
     stadium.dataset.skin = expectedSkin.name;
+  }
+  // Foule + piste + ciel : recalcule si maxTier a changé
+  const maxT = (STATE.totals?.maxTier||[0,0,0]).join(',');
+  if(stadium.dataset.maxt !== maxT){
+    if(typeof buildCrowd === 'function') buildCrowd();
+    if(typeof updateTrackSurface === 'function') updateTrackSurface();
+    if(typeof applyRunnerAccessories === 'function') applyRunnerAccessories();
+    stadium.dataset.maxt = maxT;
+  }
+  // Ciel jour/nuit refresh toutes les 5 secondes pour éviter spam
+  const now = Date.now();
+  if(!stadium._lastSkyUpdate || now - stadium._lastSkyUpdate > 5000){
+    if(typeof updateSky === 'function') updateSky();
+    stadium._lastSkyUpdate = now;
   }
   if(spdEl){
     const txt = '×' + mul.toFixed(1);
@@ -9456,14 +9584,8 @@ function startFrenzy(){
     setTimeout(()=>blip(880, .25, "triangle", .18, .7), 130);
   }
   vibrate([30, 60, 30, 60, 100]);
-  // Bandeau frenzy
-  const el = document.createElement('div');
-  el.className = 'frenzy-toast';
-  el.id = 'frenzy-toast';
-  el.innerHTML = `<div class="fz-banner">FRENZY ! 10s · or ×1.5</div>`;
-  document.body.appendChild(el);
-  setTimeout(()=>el.classList.add('show'), 30);
-  // Timer pour fin
+  // Plus de toast — le runner parle et l'aura est déjà active via body.frenzy-on
+  if(typeof showRunnerBubble === 'function') showRunnerBubble("FRENZY ! ×1.5 or");
   setTimeout(endFrenzy, 10000);
 }
 function endFrenzy(){

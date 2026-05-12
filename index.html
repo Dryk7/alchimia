@@ -328,6 +328,14 @@ header{
   50%  { transform:translateY(-0.5px); }
   100% { transform:translateY(0); }
 }
+/* Petit saut de joie quand un ravitaillement arrive */
+.rs-body.runner-cheer{ animation:runnerCheer 0.72s ease-out !important; }
+@keyframes runnerCheer{
+  0%   { transform:translateY(0)   scale(1);    }
+  20%  { transform:translateY(-4px) scale(1.10); }
+  45%  { transform:translateY(-2px) scale(1.05); }
+  100% { transform:translateY(0)   scale(1);    }
+}
 /* Speed lines derrière le coureur — visibles quand frenzy ou vitesse élevée */
 .rs-speedlines{
   animation:speedFlicker 0.18s steps(2) infinite;
@@ -356,6 +364,44 @@ body.frenzy-on .rs-speedlines{ animation-duration:0.10s }
 /* Quand vitesse haute (multiplier >= 2), montrer speedlines en permanence */
 #runner-stadium[data-fast="1"] .rs-speedlines{
   animation:speedFlicker 0.14s steps(2) infinite;
+}
+
+/* Bulle de dialogue du coureur — flotte au-dessus du stade */
+.runner-bubble{
+  position:absolute;
+  background:#fff; color:#1a1a1a;
+  font-family:"Cinzel", serif; font-weight:700; font-size:10px;
+  letter-spacing:.06em;
+  padding:4px 10px;
+  border:2px solid #1f3548;
+  border-radius:10px;
+  white-space:nowrap;
+  pointer-events:none;
+  z-index:6;
+  opacity:0;
+  transition:opacity .3s, transform .3s cubic-bezier(.2,.9,.2,1.4);
+  transform:translateY(8px) scale(.7);
+  box-shadow:0 2px 8px rgba(0,0,0,.4);
+}
+.runner-bubble.show{
+  opacity:1; transform:translateY(0) scale(1);
+}
+.runner-bubble::after{
+  content:""; position:absolute;
+  bottom:-7px; left:50%; transform:translateX(-50%);
+  width:0; height:0;
+  border-left:6px solid transparent;
+  border-right:6px solid transparent;
+  border-top:7px solid #1f3548;
+}
+.runner-bubble::before{
+  content:""; position:absolute;
+  bottom:-4px; left:50%; transform:translateX(-50%);
+  width:0; height:0;
+  border-left:5px solid transparent;
+  border-right:5px solid transparent;
+  border-top:5px solid #fff;
+  z-index:1;
 }
 /* Quand boost reçu */
 #runner-stadium.boost{
@@ -3321,15 +3367,15 @@ body.shop-epic-flash::after{
             <g shape-rendering="crispEdges">
               <!-- ombre au sol -->
               <ellipse cx="0" cy="10" rx="6" ry="1.5" fill="#000" opacity=".3"/>
-              <!-- cheveux foncés -->
-              <rect x="-4" y="-12" width="7" height="3" fill="#4a2818"/>
+              <!-- cheveux (data-skin pour change dynamique) -->
+              <rect data-skin="hair" x="-4" y="-12" width="7" height="3" fill="#4a2818"/>
               <!-- tête couleur peau -->
               <rect x="-4" y="-10" width="7" height="6" fill="#f0c890"/>
               <!-- œil -->
               <rect x="1" y="-7" width="1.5" height="1.5" fill="#1a1010"/>
-              <!-- maillot orange -->
-              <rect x="-5" y="-4" width="9" height="6" fill="#e85a30"/>
-              <rect x="-5" y="-4" width="9" height="1" fill="#ffd070"/>
+              <!-- maillot (data-skin) -->
+              <rect data-skin="jersey" x="-5" y="-4" width="9" height="6" fill="#e85a30"/>
+              <rect data-skin="accent" x="-5" y="-4" width="9" height="1" fill="#ffd070"/>
               <!-- numéro de dossard -->
               <rect x="-1" y="-2" width="2" height="3" fill="#fff"/>
               <!-- bras -->
@@ -8628,6 +8674,20 @@ function renderStatsBody(){
     html.push(`<div class="stats-row"><span class="lbl">Dernière absence</span><span class="val">${fmtDuration(STATE.lastOfflineMs)}</span></div>`);
   html.push(`</div>`);
 
+  // === LE COUREUR : sa progression visible explicitement ===
+  const skin = (typeof getRunnerSkin === 'function') ? getRunnerSkin() : null;
+  const mul = (typeof runnerSpeedMultiplier === 'function') ? runnerSpeedMultiplier() : 1;
+  const distanceM = computeRunnerDistance(totalPlay);
+  const distanceTxt = distanceM >= 1000
+    ? (distanceM / 1000).toFixed(distanceM >= 10000 ? 0 : 1) + ' km'
+    : Math.floor(distanceM) + ' m';
+  html.push(`<div class="stats-section"><h3>Le Coureur</h3>`);
+  if(skin) html.push(`<div class="stats-row"><span class="lbl">Statut</span><span class="val">${skin.name}</span></div>`);
+  html.push(`<div class="stats-row"><span class="lbl">Tours bouclés</span><span class="val">${STATE.ascensions || STATE.transmutations || 0}</span></div>`);
+  html.push(`<div class="stats-row"><span class="lbl">Vitesse actuelle</span><span class="val">×${mul.toFixed(2)}</span></div>`);
+  html.push(`<div class="stats-row"><span class="lbl">Distance parcourue</span><span class="val">${distanceTxt}</span></div>`);
+  html.push(`</div>`);
+
   html.push(`<div class="stats-section"><h3>Économie</h3>`);
   html.push(`<div class="stats-row"><span class="lbl">Médailles</span><span class="val">${STATE.gold}</span></div>`);
   html.push(`<div class="stats-row"><span class="lbl">Énergie max</span><span class="val">${STATE.essenceMax}</span></div>`);
@@ -8847,9 +8907,47 @@ function flashStat(id){
    Lap count: dérivé de ascensions + cycles internes. */
 function runnerSpeedMultiplier(){
   const totalMaxTier = (STATE.totals?.maxTier||[0,0,0]).reduce((a,b)=>a+b, 0);
-  const ascensions = STATE.ascensions || 0;
+  const ascensions = STATE.ascensions || STATE.transmutations || 0;
   return 1 + totalMaxTier * 0.15 + ascensions * 0.5;
 }
+
+/* Maillot du coureur — évolue selon le nombre d'ascensions */
+const RUNNER_SKINS = [
+  { jersey:'#e85a30', accent:'#ffd070', hair:'#4a2818', name:'Débutant' },           // 0 — orange
+  { jersey:'#3e8db8', accent:'#7ec8e8', hair:'#4a2818', name:'Confirmé' },           // 1 — bleu
+  { jersey:'#3a8838', accent:'#a8e070', hair:'#4a2818', name:'Habitué' },            // 2 — vert
+  { jersey:'#c83434', accent:'#ffa050', hair:'#4a2818', name:'Vétéran' },            // 3 — rouge
+  { jersey:'#7a4ab0', accent:'#c8a8f0', hair:'#4a2818', name:'Mystique' },           // 4 — violet
+  { jersey:'#d0a830', accent:'#ffe898', hair:'#5a3818', name:'Champion' },           // 5+ — or
+];
+function getRunnerSkin(){
+  const asc = STATE.ascensions || STATE.transmutations || 0;
+  const idx = Math.min(asc, RUNNER_SKINS.length - 1);
+  return RUNNER_SKINS[idx];
+}
+
+/* Distance parcourue par le coureur en mètres.
+   Modèle simple : un tour = 400m. La vitesse de référence boucle 14s/tour
+   en baseline. Distance = (temps_jeu_en_s / 14) * mul_moyen * 400.
+   Pour le mul moyen on prend une approximation : moyenne entre 1 et le mul actuel.
+   Ascensions ajoutent un bonus fixe (chaque tour = 400m). */
+function computeRunnerDistance(totalPlayMs){
+  const totalSec = (totalPlayMs || 0) / 1000;
+  const currentMul = runnerSpeedMultiplier();
+  const avgMul = (1 + currentMul) / 2; // approximation linéaire
+  const lapsFromTime = (totalSec / 14) * avgMul;
+  const fullLaps = (STATE.ascensions || STATE.transmutations || 0);
+  return Math.floor((lapsFromTime + fullLaps) * 400);
+}
+function applyRunnerSkin(){
+  const skin = getRunnerSkin();
+  const runner = document.getElementById('rs-runner');
+  if(!runner) return;
+  runner.querySelectorAll('rect[data-skin="jersey"]').forEach(r => r.setAttribute('fill', skin.jersey));
+  runner.querySelectorAll('rect[data-skin="accent"]').forEach(r => r.setAttribute('fill', skin.accent));
+  runner.querySelectorAll('rect[data-skin="hair"]').forEach(r => r.setAttribute('fill', skin.hair));
+}
+
 let _runnerMotionDur = 14; // seconds for one lap, lower = faster
 let _runnerLapAt = 0;      // timestamp of last lap completion
 function updateRunner(){
@@ -8870,6 +8968,12 @@ function updateRunner(){
   // Toggle "fast" mode pour speed lines persistants
   const fast = mul >= 1.8 ? '1' : '0';
   if(stadium.dataset.fast !== fast) stadium.dataset.fast = fast;
+  // Applique la skin si elle a changé
+  const expectedSkin = getRunnerSkin();
+  if(stadium.dataset.skin !== expectedSkin.name){
+    applyRunnerSkin();
+    stadium.dataset.skin = expectedSkin.name;
+  }
   if(spdEl){
     const txt = '×' + mul.toFixed(1);
     if(spdEl.textContent !== txt){
@@ -8905,6 +9009,125 @@ function pulseRunnerBoost(){
   void stadium.offsetWidth;
   stadium.classList.add('boost');
   setTimeout(()=>stadium.classList.remove('boost'), 520);
+}
+
+/* Le coureur parle occasionnellement — donne de la personnalité.
+   Lignes choisies au hasard, plus poétiques selon les ascensions. */
+const RUNNER_LINES = {
+  default: [
+    "Encore une !",
+    "Plus de jus !",
+    "Allez allez !",
+    "Donne donne !",
+    "Je sens ça !",
+    "Je ne lâche pas.",
+    "Le rythme est bon.",
+    "Foulée légère.",
+    "Une gourde stp !",
+    "On y va.",
+  ],
+  fast: [
+    "Je vole !",
+    "Plus vite encore !",
+    "Mes jambes brûlent !",
+    "Je touche plus le sol !",
+  ],
+  ascended: [
+    "Le tour suivant m'appelle.",
+    "Je suis devenu plus rapide.",
+    "Le vent me reconnaît.",
+    "Encore plus loin.",
+  ],
+};
+let _lastBubbleAt = 0;
+function showRunnerBubble(text){
+  const stadium = document.getElementById('runner-stadium');
+  if(!stadium) return;
+  // Supprime les anciennes
+  stadium.querySelectorAll('.runner-bubble').forEach(b=>b.remove());
+  const bub = document.createElement('div');
+  bub.className = 'runner-bubble';
+  bub.textContent = text;
+  // Positionne au centre-haut du stade
+  const rect = stadium.getBoundingClientRect();
+  bub.style.left = '50%';
+  bub.style.top = '14px';
+  bub.style.transform = 'translateX(-50%) translateY(8px) scale(.7)';
+  stadium.appendChild(bub);
+  // Réajuste pour le transform initial
+  setTimeout(()=>{
+    bub.classList.add('show');
+    bub.style.transform = 'translateX(-50%) translateY(0) scale(1)';
+  }, 20);
+  setTimeout(()=>{
+    bub.classList.remove('show');
+    bub.style.transform = 'translateX(-50%) translateY(-8px) scale(.9)';
+  }, 2400);
+  setTimeout(()=>bub.remove(), 2800);
+}
+function maybeRunnerBubble(){
+  const now = Date.now();
+  if(now - _lastBubbleAt < 18000) return; // pas plus d'une bulle toutes 18s
+  if(Math.random() > 0.35) return;
+  const asc = STATE.ascensions || STATE.transmutations || 0;
+  const speed = runnerSpeedMultiplier();
+  let pool = RUNNER_LINES.default;
+  if(speed >= 2.5) pool = pool.concat(RUNNER_LINES.fast);
+  if(asc >= 1) pool = pool.concat(RUNNER_LINES.ascended);
+  const line = pool[Math.floor(Math.random() * pool.length)];
+  showRunnerBubble(line);
+  _lastBubbleAt = now;
+}
+
+/* Envoie une volée de particules de la tuile fusionnée vers le coureur,
+   simulant le ravitaillement qui "monte" jusqu'à lui. Mage scale la quantité. */
+function fuelRunner(srcX, srcY, color, magnitude=1){
+  const stadium = document.getElementById('runner-stadium');
+  if(!stadium || typeof particles !== 'function') return;
+  // Cible : essaye d'utiliser la position réelle du runner, sinon centre stade
+  const runner = document.getElementById('rs-runner');
+  let tx, ty;
+  if(runner){
+    try{
+      const r = runner.getBoundingClientRect();
+      // Si le bbox est valide (animateMotion peut donner un bbox dégénéré sur certains navigateurs)
+      if(r.width > 0 && r.height > 0){
+        tx = r.left + r.width/2;
+        ty = r.top + r.height/2;
+      }
+    }catch(e){}
+  }
+  if(tx == null){
+    const r = stadium.getBoundingClientRect();
+    tx = r.left + r.width/2;
+    ty = r.top + r.height * 0.7;
+  }
+  // Lancer N particules en plusieurs vagues
+  const N = Math.min(20, 8 + magnitude*3);
+  for(let i=0;i<N;i++){
+    setTimeout(()=>{
+      // Décalage léger pour effet de "flux"
+      const ox = srcX + (Math.random()-.5)*10;
+      const oy = srcY + (Math.random()-.5)*10;
+      particles(ox, oy, color, 1, tx, ty);
+    }, i*22);
+  }
+  // À l'arrivée des dernières particules, réaction du coureur
+  setTimeout(()=>{
+    const body = document.querySelector('.rs-body');
+    if(body){
+      body.classList.remove('runner-cheer');
+      void body.offsetWidth;
+      body.classList.add('runner-cheer');
+      setTimeout(()=>body.classList.remove('runner-cheer'), 720);
+    }
+    // Mini flash blanc sur le runner
+    runner?.animate?.([
+      { filter:'brightness(1)' },
+      { filter:'brightness(2)' },
+      { filter:'brightness(1)' },
+    ], { duration:280, easing:'ease-out' });
+  }, N*22 + 240);
 }
 
 function tickGenerators(now){
@@ -9276,8 +9499,10 @@ function doMerge(fx, fy, tx, ty){
   sfxMerge(newTier, a.chain);
   vibrate([12, 30, 18]);
   floating(bx, by - 30, "▲ " + ch.tiers[newTier].n, "tier");
-  // Le stade vibre : le coureur a reçu son boost
+  // Le stade vibre : le coureur a reçu son boost + flot de particules monte vers lui
   if(typeof pulseRunnerBoost === 'function') pulseRunnerBoost();
+  if(typeof fuelRunner === 'function') fuelRunner(bx, by, ch.color, newTier);
+  if(typeof maybeRunnerBubble === 'function') maybeRunnerBubble();
 
   setTimeout(()=>{
     setTile(fx, fy, null);

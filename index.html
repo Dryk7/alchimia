@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" href="assets/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Alchimia">
-<title>ALCHIMIA — Le Cabinet des Trois Voies</title>
+<title>ALCHIMIA — L'Atelier des Trois Voies</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&family=UnifrakturMaguntia&family=VT323&display=swap" rel="stylesheet">
@@ -23,14 +23,14 @@
    - aucun emoji : tout est SVG inline
    ========================================================= */
 :root{
-  /* Palette réchauffée — moins d'encre noire, plus de bois patiné à la lampe à huile.
-     Conserve l'identité gothique alchimique mais respire au lieu d'étouffer. */
-  --ink:#150d08;          /* anciennement #070506 — bois sombre tiède */
-  --ink-2:#1e150e;        /* anciennement #0e0a0c */
-  --shadow:#241812;       /* anciennement #1a1318 */
-  --panel:#2a1d18;        /* anciennement #1f1620 */
-  --panel-2:#382520;      /* anciennement #2a1f24 */
-  --leather:#4d3528;      /* un peu plus chaud */
+  /* Palette atelier d'alchimiste — bois clair lumineux, accessible.
+     L'identité reste alchimique mais accueillante au lieu d'être austère. */
+  --ink:#2a1c12;          /* bois clair patiné par la lumière du jour */
+  --ink-2:#3a2818;        /* bois moyen */
+  --shadow:#1f1410;       /* ombre réelle (pour cellules en creux) */
+  --panel:#3a2620;        /* panneau de chêne clair */
+  --panel-2:#4a3328;      /* relief du panneau */
+  --leather:#5d4030;      /* cuir des reliures */
 
   --parchment:#e8d6aa;    /* anciennement #d8c69a — plus crème */
   --parchment-2:#c8ad7c;  /* anciennement #b8a072 */
@@ -76,20 +76,20 @@ body{
 #stage{
   position:fixed; inset:0;
   background:
-    /* Vignette adoucie — bord chaud, pas noir total */
-    radial-gradient(ellipse 95% 75% at 50% 50%, transparent 35%, rgba(20,10,4,.35) 65%, rgba(15,8,3,.72) 100%),
-    /* Halos chauds des bougies — plus généreux */
-    radial-gradient(ellipse 65% 38% at 18% 4%, rgba(240,176,96,.24), transparent 62%),
-    radial-gradient(ellipse 65% 38% at 82% 4%, rgba(240,176,96,.24), transparent 62%),
-    /* Lueur centrale chaude — comme une lampe à huile sur la table */
-    radial-gradient(ellipse 85% 65% at 50% 50%, rgba(200,130,70,.20), transparent 72%),
-    /* Veines du bois plus chaudes */
+    /* Vignette très douce — pas d'enfermement */
+    radial-gradient(ellipse 100% 80% at 50% 50%, transparent 45%, rgba(35,22,12,.25) 75%, rgba(30,18,10,.5) 100%),
+    /* Halos chauds plus larges, comme deux fenêtres lumineuses au plafond */
+    radial-gradient(ellipse 75% 45% at 18% 0%, rgba(248,200,128,.32), transparent 65%),
+    radial-gradient(ellipse 75% 45% at 82% 0%, rgba(248,200,128,.32), transparent 65%),
+    /* Lumière centrale de la table — chaude comme un soleil filtré */
+    radial-gradient(ellipse 90% 70% at 50% 50%, rgba(232,176,108,.28), transparent 75%),
+    /* Veines du bois clair et chaud */
     repeating-linear-gradient(91deg,
-      #281a10 0px, #281a10 2px,
-      #221510 2px, #221510 4px,
-      #2c1d12 4px, #2c1d12 7px,
-      #241710 7px, #241710 10px),
-    #1d1108;
+      #4a3024 0px, #4a3024 2px,
+      #422a20 2px, #422a20 4px,
+      #503528 4px, #503528 7px,
+      #452e23 7px, #452e23 10px),
+    #3a2620;
   display:flex; flex-direction:column;
   transition:filter 1.2s ease;
 }
@@ -293,14 +293,14 @@ header{
   position:relative;
   aspect-ratio:1/1;
   background:
-    radial-gradient(ellipse at 50% 30%, rgba(244,217,137,.10), transparent 65%),
-    linear-gradient(180deg, #211510 0%, #15100b 100%);
-  border:1px solid rgba(168,133,85,.26);
-  border-radius:1px;
+    radial-gradient(ellipse at 50% 30%, rgba(248,210,140,.14), transparent 60%),
+    linear-gradient(180deg, #3a2818 0%, #2a1d12 100%);
+  border:1px solid rgba(200,165,100,.30);
+  border-radius:2px;
   box-shadow:
-    inset 0 1px 0 rgba(244,217,137,.08),
-    inset 0 -1px 2px rgba(15,8,3,.45),
-    inset 0 0 18px rgba(15,8,3,.4);
+    inset 0 1px 0 rgba(248,210,140,.12),
+    inset 0 -1px 2px rgba(20,10,4,.35),
+    inset 0 0 14px rgba(20,10,4,.28);
 }
 /* Subtil cadre intérieur sur les cellules : trait or fin */
 .cell::before{
@@ -1618,7 +1618,7 @@ body.frenzy-on #grid-frame{
 /* ================ INTRO ================ */
 #intro{
   position:fixed; inset:0; z-index:95;
-  background:radial-gradient(ellipse at 50% 50%, #2a1d18 0%, #15100b 100%);
+  background:radial-gradient(ellipse at 50% 50%, #4a3328 0%, #2a1c12 100%);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   text-align:center; padding:24px;
   transition:opacity .9s;
@@ -3054,7 +3054,7 @@ body.shop-epic-flash::after{
       <div class="name-wrap">
         <div class="name">
           ALCHIMIA
-          <small>LE CABINET DES TROIS VOIES</small>
+          <small>L'ATELIER DES TROIS VOIES</small>
         </div>
       </div>
     </div>
@@ -3229,7 +3229,7 @@ body.shop-epic-flash::after{
       </svg>
     </div>
     <p style="font-family:'Cormorant Garamond', serif; font-style:italic; font-size:14px; color:var(--parchment-2); text-align:center; margin:8px 14px;">
-      Cette action est <strong style="color:#c84a2a">irréversible</strong>. Ta sauvegarde, tes Étoiles, tes Hauts Faits, tes catalyseurs — tout sera effacé. Le cabinet rouvrira ses portes comme au premier jour.
+      Cette action est <strong style="color:#c84a2a">irréversible</strong>. Ta sauvegarde, tes Étoiles, tes Hauts Faits, tes catalyseurs — tout sera effacé. L'atelier rouvrira ses portes comme au premier jour.
     </p>
     <div style="display:flex; gap:8px; padding:6px 10px 10px;">
       <button class="set-btn" id="reset-cancel">Annuler</button>
@@ -3356,8 +3356,8 @@ body.shop-epic-flash::after{
         <span class="epi-attr">— précepte hermétique</span>
       </blockquote>
       <section class="grim-sec">
-        <h3>Le Pacte du Maître</h3>
-        <p><span class="dropcap">U</span>n carnet posé sous le plateau te suit en permanence. Il contient le <strong>Pacte du Maître</strong> : dix étapes scénarisées, de la première graine au <strong>9ème Sceau</strong>. À chaque étape franchie, un fragment du récit du Maître se révèle. Tu joues vers <em>quelque chose</em> — pas dans le vide.</p>
+        <h3>Le Voyage de l'Alchimiste</h3>
+        <p><span class="dropcap">U</span>n carnet posé sous le plateau te suit en permanence. Il contient le <strong>Voyage de l'Alchimiste</strong> : dix étapes scénarisées, de la première graine au <strong>9ème Sceau</strong>. À chaque étape franchie, un fragment du récit du Maître se révèle. Tu joues vers <em>quelque chose</em> — pas dans le vide.</p>
       </section>
       <section class="grim-sec">
         <h3>Le But</h3>
@@ -3407,7 +3407,7 @@ body.shop-epic-flash::after{
       </section>
       <section class="grim-sec">
         <h3>Le Marché</h3>
-        <p>Le marchand vend ce que ton cabinet n'a pas le temps de produire. <strong>Spawns directs</strong> (graine 8c, caillou 14c, brume 22c) pour te débloquer quand un cauldron est en cooldown, <strong>Sceaux</strong> du Marchand / de l'Apprenti / du Mage qui donnent un item palier II/III/IV au choix (250/1000/4000c), et <strong>boosts temporaires</strong> (étincelle pleine, cooldowns ÷2 pendant 60s, or ×2 pendant 60s).</p>
+        <p>Le marchand vend ce que ton atelier n'a pas le temps de produire. <strong>Spawns directs</strong> (graine 8c, caillou 14c, brume 22c) pour te débloquer quand un cauldron est en cooldown, <strong>Sceaux</strong> du Marchand / de l'Apprenti / du Mage qui donnent un item palier II/III/IV au choix (250/1000/4000c), et <strong>boosts temporaires</strong> (étincelle pleine, cooldowns ÷2 pendant 60s, or ×2 pendant 60s).</p>
         <p>Au moment de la <strong>Transmutation</strong>, chaque <strong>2000 couronnes non dépensées</strong> se transforme en 1 étoile permanente. L'or n'est jamais perdu — il devient soit du temps, soit de l'éternité.</p>
       </section>
       <section class="grim-sec">
@@ -3430,17 +3430,17 @@ body.shop-epic-flash::after{
       </section>
       <section class="grim-sec">
         <h3>Évènements & Quêtes</h3>
-        <p>Toutes les 2-3 minutes environ, un évènement frappe le cabinet : Pluie d'Étoiles, Conjonction, Marée d'Esprit, Souffle d'Or, Comète, Nuit Profonde, Sourire de Lune, Brume Noire, Marchand Errant. Ils durent quelques secondes ou s'inscrivent à droite avec leur compteur.</p>
+        <p>Toutes les 2-3 minutes environ, un évènement frappe l'atelier : Pluie d'Étoiles, Conjonction, Marée d'Esprit, Souffle d'Or, Comète, Nuit Profonde, Sourire de Lune, Brume Noire, Marchand Errant. Ils durent quelques secondes ou s'inscrivent à droite avec leur compteur.</p>
         <p>Le parchemin de droite recense les quêtes — atteindre tel palier, fusionner X fois. Récompense en couronnes. Le bouton <strong>Tout Réclamer</strong> vide le carnet d'un coup quand plusieurs sont prêtes.</p>
       </section>
       <section class="grim-sec">
         <h3>Le Codex Narratif</h3>
-        <p>Le Codex (panneau de gauche) garde la mémoire du Cabinet. Chaque palier que tu découvres ouvre une <strong>page enluminée</strong> : une épigraphe latine, un fragment de récit, une note sur le symbolisme alchimique historique, et la date à laquelle <em>toi</em>, tu l'as découvert. Les 24 pages, mises bout à bout, racontent l'histoire du Maître disparu — celui qui a tenu ce cabinet avant toi.</p>
+        <p>Le Codex (panneau de gauche) garde la mémoire de l'Atelier. Chaque palier que tu découvres ouvre une <strong>page enluminée</strong> : une épigraphe latine, un fragment de récit, une note sur le symbolisme alchimique historique, et la date à laquelle <em>toi</em>, tu l'as découvert. Les 24 pages, mises bout à bout, racontent l'histoire du Maître disparu — celui qui a tenu cet atelier avant toi.</p>
         <p>Pour lire : tape une cellule du Codex (sélection), puis re-tape (ouverture). Ou double-tape.</p>
       </section>
       <section class="grim-sec">
         <h3>Conseil de l'Adepte</h3>
-        <p>Vise au moins <strong>palier I</strong> sur les trois voies dès l'ouverture du cabinet : le Sceau du Concord (10% d'or permanent) ne coûte que trois items basiques et compose le reste de ta partie.</p>
+        <p>Vise au moins <strong>palier I</strong> sur les trois voies dès l'ouverture de l'atelier : le Sceau du Concord (10% d'or permanent) ne coûte que trois items basiques et compose le reste de ta partie.</p>
         <p>Ne purifie pas tes T0 par l'Athanor — fusionne-les à la main. Garde l'Athanor pour les paliers IV+ qu'il devient pénible d'attendre.</p>
         <p>La Transmutation n'a de sens qu'après avoir bu profondément à une voie — vise au moins palier VI sur les trois avant la première remise à zéro.</p>
       </section>
@@ -3871,7 +3871,7 @@ body.shop-epic-flash::after{
   </svg>
   <h1 class="logo">ALCHIMIA</h1>
   <div class="tagline">« Trois voies mènent au Grand Œuvre.<br>Plante, Pierre, Essence — fusionne, transmute, élève. »</div>
-  <button class="start" id="start-btn">Ouvrir le cabinet</button>
+  <button class="start" id="start-btn">Ouvrir l'atelier</button>
   <div class="seal-row">
     <!-- sulfur, mercury, salt, sun, moon -->
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><polygon points="12,4 7,12 17,12"/><line x1="12" y1="12" x2="12" y2="20"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
@@ -3968,7 +3968,7 @@ const TIER_REWARDS = [0, 0, 0, 0, 0, 0, 200, 800, 3000]; // bonus or à chaque t
 const MASTER_QUEST = [
   {
     id:'awaken',
-    title:'Réveil du Cabinet',
+    title:'Réveil de l\'Atelier',
     desc:'Touche un cauldron pour ta première invocation.',
     progress:s => Math.min(1, sumProduced(s)),
     target:1,
@@ -4023,7 +4023,7 @@ const MASTER_QUEST = [
   {
     id:'first_transmute',
     title:'Première Transmutation',
-    desc:'Reset ton cabinet contre des Étoiles permanentes (Transmutatio).',
+    desc:'Reset ton atelier contre des Étoiles permanentes (Transmutatio).',
     progress:s => Math.min(1, s.transmutations||0),
     target:1,
     check:s => (s.transmutations||0) >= 1,
@@ -4105,7 +4105,7 @@ function showMasterQuestReveal(step, idx){
   overlay.className = 'master-reveal-overlay';
   overlay.innerHTML = `
     <div class="master-reveal-card">
-      <div class="mr-step">Pacte du Maître · ${idx+1} / ${MASTER_QUEST.length}</div>
+      <div class="mr-step">Voyage de l'Alchimiste · ${idx+1} / ${MASTER_QUEST.length}</div>
       <div class="mr-title">${step.title}</div>
       <div class="mr-decor">
         <svg viewBox="0 0 240 18" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
@@ -4157,7 +4157,7 @@ function renderMasterQuestWidget(){
     widget.innerHTML = `
       <div class="mq-done">
         <div class="mq-done-icon">✦</div>
-        <div class="mq-done-text">Le Pacte du Maître est accompli.</div>
+        <div class="mq-done-text">Le Voyage de l'Alchimiste est accompli.</div>
       </div>
       ${spectralBit ? `<div class="mq-spectral-row">${spectralBit}</div>` : ''}
     `;
@@ -4168,7 +4168,7 @@ function renderMasterQuestWidget(){
   const pct = Math.min(100, (prog / step.target) * 100);
   widget.innerHTML = `
     <div class="mq-head">
-      <span class="mq-label">Pacte du Maître · ${idx+1}/${MASTER_QUEST.length}</span>
+      <span class="mq-label">Voyage de l'Alchimiste · ${idx+1}/${MASTER_QUEST.length}</span>
       <span class="mq-count">${Math.min(prog, step.target)}/${step.target}</span>
     </div>
     <div class="mq-title">${step.title}</div>
@@ -5919,7 +5919,7 @@ const STATE = {
 
 /* ================ QUETES ================ */
 const QUEST_TEMPLATES = [
-  { type:"produce", chain:0, tier:0, target:5,  reward:8,  name:"Semer", desc:"Produis 5 graines au cabinet vert." },
+  { type:"produce", chain:0, tier:0, target:5,  reward:8,  name:"Semer", desc:"Produis 5 graines au cauldron vert." },
   { type:"reach",   chain:0, tier:1, target:1,  reward:12, name:"Bourgeon", desc:"Atteins le palier du Bourgeon." },
   { type:"merge",   chain:0, tier:1, target:3,  reward:15, name:"Mains vertes", desc:"Réalise 3 fusions de plantes." },
   { type:"reach",   chain:0, tier:2, target:1,  reward:25, name:"Mandragore", desc:"Invoque la Mandragore hurlante." },
@@ -6167,7 +6167,7 @@ function openTransmute(){
         <div class="trm-label">étoiles à graver</div>
         ${goldStars > 0 ? `<div class="trm-breakdown">${baseStars} de progrès + <strong>${goldStars} de tes couronnes restantes</strong></div>` : ''}
       </div>
-      <p class="trm-warn">Tu réinitialiseras le cabinet. Ton plateau, tes couronnes, tes générateurs et tes quêtes <em>seront effacés</em>.</p>
+      <p class="trm-warn">Tu réinitialiseras l'atelier. Ton plateau, tes couronnes, tes générateurs et tes quêtes <em>seront effacés</em>.</p>
       <p class="trm-keep">Conservés : <strong>Hauts Faits</strong>, <strong>Codex</strong>, <strong>statistiques totales</strong>, et tes <strong>${STATE.stars||0} ★</strong> permanents.</p>
       ${STATE.gold >= 100 ? `<p class="trm-tip">💡 Astuce : passe au Marché avant de transmuter — chaque tranche de 2000 couronnes non dépensées te donne 1 étoile en plus.</p>` : ''}
       <button class="trm-confirm" id="trm-confirm">CONFIRMER LA TRANSMUTATION</button>
@@ -6583,7 +6583,7 @@ const SHOP_ITEMS = [
   // === Coups d'éclat (achats fréquents, peu chers — la boucle dopamine) ===
   { id:'cd_reset', section:"Coups d'éclat", name:'Coup d\'Éclat', desc:'Tous les cooldowns de chaudières remis à zéro. Tu peux re-fire tout de suite.',
     cost:35, kind:'instant', perform:()=>shopResetCooldowns() },
-  { id:'starfall_mini', section:"Coups d'éclat", name:'Pluie Mineure', desc:'5 items palier I tombent dans le cabinet, voies aléatoires.',
+  { id:'starfall_mini', section:"Coups d'éclat", name:'Pluie Mineure', desc:'5 items palier I tombent dans l\'atelier, voies aléatoires.',
     cost:65, kind:'instant', perform:()=>shopMiniStarfall(5) },
   { id:'boost_essence', section:"Coups d'éclat", name:'Sang d\'Étincelle', desc:'Étincelle remplie immédiatement.',
     cost:50, kind:'instant', perform:()=>{ STATE.essence = STATE.essenceMax; renderStats(); floating(window.innerWidth/2, 100, "✦ Étincelle pleine", "tier"); } },
@@ -6649,7 +6649,7 @@ function shopMiniStarfall(n){
     placed++;
   }
   if(placed === 0){
-    floating(window.innerWidth/2, 100, "Cabinet plein", "lose");
+    floating(window.innerWidth/2, 100, "Atelier plein", "lose");
     return;
   }
   floating(window.innerWidth/2, 100, "✦ +" + placed + " items", "tier");
@@ -6658,7 +6658,7 @@ function shopMiniStarfall(n){
 
 function shopSpawn(chain, tier){
   const empties = findEmpty();
-  if(!empties.length){ floating(window.innerWidth/2, 100, "Cabinet plein", "lose"); return false; }
+  if(!empties.length){ floating(window.innerWidth/2, 100, "Atelier plein", "lose"); return false; }
   const [x,y] = empties[Math.floor(Math.random()*empties.length)];
   STATE.grid[y][x] = { id: STATE.nextId++, chain, tier };
   STATE.totals.produced[chain]++;
@@ -6909,7 +6909,7 @@ function shopGlyph(id){
 /* ================ ÉVÈNEMENTS ALÉATOIRES ================ */
 const EVENTS = [
   { id:"starfall", name:"Pluie d'Étoiles", duration:0,
-    desc:"Le ciel pleut sur le cabinet. Huit brumes et étincelles tombent.",
+    desc:"Le ciel pleut sur l'atelier. Huit brumes et étincelles tombent.",
     apply:()=>{
       // Spawn 8 items random voies T0 dans cellules vides
       let n = 0;
@@ -6951,7 +6951,7 @@ const EVENTS = [
   { id:"merchant", name:"Marchand Errant", duration:0,
     desc:"Un marchand frappe à la porte. Il offre un Bourgeon, un Quartz et une Étincelle.",
     apply:()=>{
-      const empties = findEmpty(); if(empties.length < 3) return 'le cabinet est trop encombré';
+      const empties = findEmpty(); if(empties.length < 3) return 'l\'atelier est trop encombré';
       // 3 items T1 chacune voie
       for(let c=0; c<3 && empties.length; c++){
         const idx = Math.floor(Math.random()*empties.length);
@@ -7180,7 +7180,11 @@ function audioPhaseFor(maxT){
   return 'base';
 }
 function bgmElementFor(id){
-  return id === 'base' ? A.bgm : (id === 'mid' ? A.bgmMid : A.bgmCosmic);
+  // Mapping repensé pour entrée accueillante :
+  //   'base' (early) → Long Note Three (aérien, neutre, invitant) au lieu de Forgotten Tomb
+  //   'mid'  (mid)   → Forgotten Tomb (l'ambiance gothique se débloque comme un palier)
+  //   'cosmic' (late) → Space Music (inchangé)
+  return id === 'base' ? A.bgmMid : (id === 'mid' ? A.bgm : A.bgmCosmic);
 }
 
 let _bgmFadeTimers = new Map();
@@ -9395,7 +9399,7 @@ function showOfflineToast(offlineMs, gold){
   ov.innerHTML = `
     <div class="of-banner">PENDANT TON ABSENCE</div>
     <div class="of-time">${fmtDuration(offlineMs)}</div>
-    <div class="of-text">Le cabinet a continué de murmurer. La poussière a brillé. L'étincelle s'est rechargée.</div>
+    <div class="of-text">L'atelier a continué de murmurer. La poussière a brillé. L'étincelle s'est rechargée.</div>
     <div class="of-gain">+${gold} <svg viewBox="0 0 16 16" shape-rendering="crispEdges" style="width:11px;height:11px;vertical-align:-2px"><rect x="3" y="5" width="10" height="2" fill="#c9a25a"/><rect x="3" y="7" width="10" height="5" fill="#9a7842"/></svg></div>
     <div class="of-close">Toucher pour fermer</div>
   `;

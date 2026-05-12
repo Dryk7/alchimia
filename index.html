@@ -147,6 +147,9 @@ header{
 #menu-toggle svg{width:22px; height:22px}
 .brand{display:flex; align-items:center; gap:10px; position:relative}
 .brand .fleur{width:24px; height:24px; color:var(--gold-light); flex-shrink:0; filter:drop-shadow(0 0 4px var(--gold-glow))}
+.brand-runner{ image-rendering:pixelated }
+.brand-leg1, .brand-shoe1{ animation:legAlt 0.30s steps(2) infinite }
+.brand-leg2, .brand-shoe2{ animation:legAlt 0.30s steps(2) infinite reverse }
 .brand .fleur g{transform-origin:center; animation:rotateOuro 80s linear infinite}
 .brand .name-wrap{position:relative; padding:0 4px}
 .brand .name{
@@ -3213,18 +3216,31 @@ body.shop-epic-flash::after{
       </svg>
     </button>
     <div class="brand">
-      <!-- Mini-ouroboros signature -->
-      <svg class="fleur" viewBox="-12 -12 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round">
+      <!-- Mini coureur signature -->
+      <svg class="fleur brand-runner" viewBox="-12 -12 24 24" shape-rendering="crispEdges">
         <g>
-          <circle r="9" stroke-dasharray="2 2.5"/>
-          <circle r="9.6" stroke-width=".6" opacity=".5"/>
-          <!-- petite tête mordant -->
-          <path d="M 8 -3 q 2.5 -1 3.5 1 q -1 2 -3 1.5" fill="currentColor"/>
-          <circle cx="9.5" cy="-2" r=".5" fill="#000" stroke="none"/>
-          <!-- 4 cardinaux -->
-          <circle cx="0" cy="-9.5" r=".8" fill="currentColor" stroke="none"/>
-          <circle cx="0" cy="9.5" r=".8" fill="currentColor" stroke="none"/>
-          <circle cx="-9.5" cy="0" r=".8" fill="currentColor" stroke="none"/>
+          <!-- cheveux -->
+          <rect x="-3" y="-9" width="5" height="2" fill="#4a2818"/>
+          <!-- tête -->
+          <rect x="-3" y="-7" width="5" height="4" fill="#f0c890"/>
+          <!-- œil -->
+          <rect x="1" y="-5" width="1" height="1" fill="#1a1010"/>
+          <!-- maillot orange -->
+          <rect x="-4" y="-3" width="7" height="4" fill="#e85a30"/>
+          <rect x="-4" y="-3" width="7" height="1" fill="#ffd070"/>
+          <!-- dossard -->
+          <rect x="-1" y="-1" width="2" height="2" fill="#fff"/>
+          <!-- bras -->
+          <rect x="-6" y="-2" width="2" height="3" fill="#f0c890"/>
+          <rect x="3" y="-2" width="2" height="3" fill="#f0c890"/>
+          <!-- short -->
+          <rect x="-3" y="1" width="5" height="2" fill="#fff"/>
+          <!-- jambes animées -->
+          <rect class="brand-leg1" x="-2" y="3" width="2" height="4" fill="#f0c890"/>
+          <rect class="brand-leg2" x="1" y="3" width="2" height="4" fill="#f0c890"/>
+          <!-- chaussures -->
+          <rect class="brand-shoe1" x="-2.5" y="6" width="2.5" height="1" fill="#1f3548"/>
+          <rect class="brand-shoe2" x="0.5" y="6" width="2.5" height="1" fill="#1f3548"/>
         </g>
       </svg>
       <div class="name-wrap">
@@ -10100,36 +10116,36 @@ function floating(x, y, txt, kind="gain"){
    Chaque étape a un check() qui dit si elle est validée et permet le passage à la suivante. */
 const TUTORIAL_STEPS = [
   {
-    id:'spawn', title:'PREMIER GESTE',
-    text:'Tape le distributeur <strong style="color:var(--plant-2)">vert</strong> pour invoquer une <em>graine</em>. Coût : 3 énergie.',
+    id:'spawn', title:'PREMIER RAVITO',
+    text:'Tape le distributeur <strong style="color:var(--plant-2)">bleu</strong> pour me donner ma première <em>gourde</em>. Coût : 3 énergie.',
     target:'.gen[data-chain="0"]', position:'above',
-    advanceOn:'spawn', // avance après un fireGenerator réussi
+    advanceOn:'spawn',
     minDelay: 0,
   },
   {
     id:'spawn2', title:'UNE SECONDE',
-    text:'Une seconde graine pour pouvoir <strong>la fusionner avec la première</strong>. Re-tape le distributeur vert.',
+    text:'Encore une. <strong>Deux gourdes identiques fusionnent</strong> en bouteille — et je cours plus vite.',
     target:'.gen[data-chain="0"]', position:'above',
     advanceOn:'spawn2',
     minDelay: 600,
   },
   {
     id:'merge', title:'FUSIONNER',
-    text:'Maintenant, <strong>glisse une graine sur l\'autre</strong>. Elles fusionnent en un Bourgeon.',
+    text:'Maintenant, <strong>glisse une gourde sur l\'autre</strong>. Tu verras ma réaction au-dessus de la piste.',
     target:'#grid-frame', position:'overlay',
     advanceOn:'merge',
     minDelay: 800,
   },
   {
-    id:'help', title:'LE GRIMOIRE',
-    text:'À tout moment, le <strong>?</strong> en haut à droite ouvre le manuel complet du jeu. Lis-le quand tu veux comprendre une mécanique.',
+    id:'help', title:'LE MANUEL',
+    text:'Si tu te perds, le <strong>?</strong> en haut à droite te dit tout sur le stade, les distributeurs et l\'ascension.',
     target:'#help-toggle', position:'left',
-    advanceOn:'click', // n'importe quel click avance
+    advanceOn:'click',
     minDelay: 2000,
   },
   {
-    id:'menu', title:'LE MENU',
-    text:'Le <strong>☰</strong> en haut à gauche regroupe le Grand Œuvre, le Vestiaire, les statistiques et les paramètres. Tu y reviendras souvent.',
+    id:'menu', title:'TON VESTIAIRE',
+    text:'Le <strong>☰</strong> en haut à gauche : Banc de Mixage, Vestiaire Doré, stats du coureur, paramètres. Tu y reviendras.',
     target:'#menu-toggle', position:'right',
     advanceOn:'click',
     minDelay: 2500,
@@ -10287,9 +10303,10 @@ function showItemTooltip(tile, x, y){
   const ch = CHAINS[tile.chain];
   const t = ch.tiers[tile.tier];
   const idleRate = IDLE_GOLD_PER_TIER[tile.tier] || 0;
+  const runnerIcon = `<svg viewBox="0 0 14 14" fill="currentColor" style="width:11px;height:11px;vertical-align:-1px"><circle cx="9" cy="2.5" r="1.5"/><path d="M5 5 L9 5 L8 8 L10 11 L8.5 12 L7 9 L4 10 L2.5 7 L4 6.5 L5 5"/></svg>`;
   const idleHtml = idleRate > 0
-    ? `<div class="it-idle"><span class="it-idle-val">+${idleRate < 1 ? idleRate.toFixed(1) : Math.floor(idleRate)}</span> médailles / seconde</div>`
-    : `<div class="it-idle muted">— ne rapporte rien tant qu'inerte — fusionne-la</div>`;
+    ? `<div class="it-idle">${runnerIcon} Donne au coureur : <span class="it-idle-val">+${idleRate < 1 ? idleRate.toFixed(1) : Math.floor(idleRate)}</span> méd / sec</div>`
+    : `<div class="it-idle muted">— fusionne avec sa jumelle pour qu'elle profite au coureur —</div>`;
   const el = document.createElement("div");
   el.className = "item-tooltip";
   el.id = "item-tooltip";
@@ -10757,6 +10774,13 @@ function boot(){
       // Tutoriel pour les premiers joueurs
       startTutorial();
     }
+    // Le coureur salue l'entrée — bulle d'accueil
+    setTimeout(()=>{
+      if(typeof showRunnerBubble === 'function'){
+        const isReturning = (STATE.totalPlayMs||0) > 30000;
+        showRunnerBubble(isReturning ? "Te revoilà !" : "Salut. Prêt à courir ?");
+      }
+    }, 1100);
   });
 
   // boucle principale — résistante aux erreurs (chaque tick est try/catch isolé)

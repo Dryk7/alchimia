@@ -280,29 +280,29 @@ header{
   z-index:5;
 }
 .rs-lap, .rs-niv, .rs-speed{
-  display:flex; flex-direction:column; align-items:center;
+  display:flex; flex-direction:row; align-items:center; gap:5px;
   font-family:"Cinzel", serif;
   color:var(--gold-bright);
   text-shadow:0 0 6px rgba(0,0,0,.85), 0 1px 0 #000;
-  padding:2px 6px;
-  background:rgba(15,10,8,.32);
-  border-radius:2px;
+  padding:2px 8px;
+  background:rgba(15,10,8,.45);
+  border-radius:3px;
   border:1px solid rgba(255,208,112,.35);
   backdrop-filter:blur(2px);
   -webkit-backdrop-filter:blur(2px);
+  white-space:nowrap;
 }
 .rs-lap-lbl, .rs-niv-lbl, .rs-speed-lbl{
-  font-size:7.5px; letter-spacing:.22em; font-weight:700;
-  opacity:.9;
+  font-size:8px; letter-spacing:.18em; font-weight:700;
+  opacity:.85;
   line-height:1;
 }
 .rs-lap-num, .rs-niv-num, .rs-speed-num{
   font-family:"VT323", monospace;
-  font-size:17px; letter-spacing:.04em;
+  font-size:15px; letter-spacing:.02em;
   color:#fff;
-  text-shadow:0 0 8px var(--gold-bright), 0 1px 0 #000;
-  line-height:1.1;
-  margin-top:1px;
+  text-shadow:0 0 6px var(--gold-bright), 0 1px 0 #000;
+  line-height:1;
 }
 .rs-niv{ /* centre légèrement plus prominent */
   border-color:var(--gold-bright);
@@ -1571,37 +1571,35 @@ body.frenzy-on #grid-frame{
 /* ================ ONBOARDING HINTS ================ */
 .hint{
   position:fixed; z-index:79; pointer-events:none;
-  width:min(80vw, 240px);
-  background:linear-gradient(180deg, #2d2218, #1a120e);
-  border:1px solid var(--gold-bright);
-  padding:7px 11px 9px;
+  width:min(82vw, 260px);
+  background:#fff; color:#1a1a1a;
+  border:2px solid #1f3548;
+  border-radius:8px;
+  padding:8px 12px 10px;
   text-align:center;
   opacity:0; transform:translateY(8px) scale(.96);
-  transition:opacity .35s, transform .35s cubic-bezier(.2,.9,.2,1.4);
-  box-shadow:0 0 18px var(--gold-glow), 0 8px 24px rgba(0,0,0,.7);
+  transition:opacity .3s, transform .3s cubic-bezier(.2,.9,.2,1.4);
+  box-shadow:0 4px 14px rgba(0,0,0,.45);
 }
-.hint::before, .hint::after{
-  content:""; position:absolute; width:5px; height:5px;
-  border:1.2px solid var(--gold-bright); pointer-events:none;
-}
-.hint::before{top:-1px; left:-1px; border-right:none; border-bottom:none}
-.hint::after{bottom:-1px; right:-1px; border-left:none; border-top:none}
+.hint::before, .hint::after{ display:none }
 .hint.show{opacity:1; transform:translateY(0) scale(1)}
 .hint .hint-title{
   font-family:"Cinzel", serif; font-weight:700;
-  font-size:9px; letter-spacing:.32em;
-  color:var(--gold);
+  font-size:9px; letter-spacing:.18em;
+  color:#e85a30;
   margin-bottom:3px;
   text-transform:uppercase;
 }
 .hint .hint-text{
-  font-family:"Cormorant Garamond", serif; font-style:italic;
-  font-size:13px; color:var(--parchment-2);
-  line-height:1.3;
+  font-family:"Cinzel", serif;
+  font-size:12px; color:#1a1a1a;
+  line-height:1.35;
 }
 .hint .hint-arrow{
-  position:absolute; width:14px; height:14px;
-  background:linear-gradient(135deg, transparent 50%, var(--gold-bright) 50%);
+  position:absolute; width:12px; height:12px;
+  background:#fff;
+  border-right:2px solid #1f3548;
+  border-bottom:2px solid #1f3548;
   transform:rotate(45deg);
 }
 .hint.bottom-arrow .hint-arrow{ bottom:-7px; left:50%; margin-left:-7px; transform:rotate(225deg)}
@@ -1797,12 +1795,12 @@ body.frenzy-on #grid-frame{
 }
 #intro.gone{opacity:0; pointer-events:none}
 #intro .ouroboros{
-  width:140px; height:140px; color:var(--gold-light);
+  width:200px; height:150px; color:var(--gold-light);
   margin-bottom:14px;
-  filter:drop-shadow(0 0 20px var(--gold-glow));
+  filter:drop-shadow(0 0 16px var(--gold-glow));
   animation:ouroIn 1.6s cubic-bezier(.2,.9,.2,1.2);
 }
-#intro .ouroboros .rotate{transform-origin:0 0; transform-box:view-box}
+#intro .intro-stadium{ image-rendering:pixelated }
 #intro .logo{
   font-family:"Cinzel", serif; font-weight:900;
   font-size:36px; letter-spacing:.32em;
@@ -4085,57 +4083,47 @@ body.shop-epic-flash::after{
 
 <!-- INTRO -->
 <div id="intro">
-  <svg class="ouroboros" viewBox="-50 -50 100 100">
-    <g class="rotate">
-      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="80s" repeatCount="indefinite"/>
-      <!-- corps du serpent : cercle complet -->
-      <circle cx="0" cy="0" r="38" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
-      <!-- écailles : pointillés intérieurs -->
-      <circle cx="0" cy="0" r="38" fill="none" stroke="#3a2818" stroke-width="1.6" stroke-dasharray="3 5"/>
-      <circle cx="0" cy="0" r="34" fill="none" stroke="#5a4528" stroke-width=".6" stroke-dasharray="1 3" opacity=".5"/>
-      <!-- tête (à droite, mordant la queue) -->
-      <g transform="translate(34,-15)">
-        <path d="M 0 0 q 6 -3 10 1 q 2 4 -2 7 q -4 2 -7 -1 q -3 -3 -1 -7 z" fill="currentColor" stroke="#3a2818" stroke-width=".6"/>
-        <circle cx="5" cy="2" r="1.6" fill="#000"/>
-        <circle cx="5" cy="2" r=".6" fill="#fff" opacity=".7"/>
-        <!-- crocs -->
-        <path d="M 1 5 l -1 2 M 3 6 l -1 2" stroke="#fff" stroke-width=".7"/>
+  <!-- Mini piste avec un coureur qui tourne, comme un teaser -->
+  <svg class="ouroboros intro-stadium" viewBox="-50 -36 100 72">
+    <defs>
+      <path id="intro-path" d="M -30,8 A 38,12 0 0 1 30,8 A 38,12 0 0 1 -30,8 Z" fill="none"/>
+    </defs>
+    <!-- piste -->
+    <ellipse cx="0" cy="8" rx="42" ry="14" fill="#d88030" stroke="#1a1010" stroke-width="1.5"/>
+    <ellipse cx="0" cy="8" rx="32" ry="8" fill="#4a7028" stroke="#1a1010" stroke-width="1"/>
+    <ellipse cx="0" cy="8" rx="36" ry="10" fill="none" stroke="#fff" stroke-width=".35" stroke-dasharray="3 4" opacity=".7"/>
+    <!-- ligne d'arrivée -->
+    <line x1="0" y1="-3" x2="0" y2="19" stroke="#fff" stroke-width=".5" stroke-dasharray="1.5 1.5" opacity=".75"/>
+    <!-- runner pixel art qui tourne sur la piste -->
+    <g>
+      <g shape-rendering="crispEdges">
+        <ellipse cx="0" cy="6" rx="3" ry=".8" fill="#000" opacity=".35"/>
+        <rect x="-2" y="-6" width="4" height="1.5" fill="#4a2818"/>
+        <rect x="-2" y="-4.5" width="4" height="3" fill="#f0c890"/>
+        <rect x="-2.5" y="-1.5" width="5" height="3" fill="#e85a30"/>
+        <rect x="-2.5" y="-1.5" width="5" height=".6" fill="#ffd070"/>
+        <rect x="-.5" y="-.5" width="1" height="1.5" fill="#fff"/>
+        <rect x="-3.5" y="-1" width="1" height="2" fill="#f0c890"/>
+        <rect x="2.5" y="-1" width="1" height="2" fill="#f0c890"/>
+        <rect x="-2" y="1.5" width="4" height="2" fill="#fff"/>
+        <rect x="-1.5" y="3.5" width="1.5" height="2.5" fill="#f0c890"/>
+        <rect x="0" y="3.5" width="1.5" height="2.5" fill="#f0c890"/>
       </g>
-      <!-- queue qui rentre dans la bouche -->
-      <g transform="translate(34,-15)">
-        <path d="M 0 0 q -3 -2 -6 -1 q -2 1 0 3" fill="currentColor"/>
-      </g>
-      <!-- écailles décoratives le long du corps -->
-      <g stroke="#3a2818" stroke-width=".7" fill="none" opacity=".7">
-        <path d="M -36 -8 q 3 -1.5 5 0" transform="rotate(-30)"/>
-        <path d="M -36 -8 q 3 -1.5 5 0" transform="rotate(30)"/>
-        <path d="M -36 -8 q 3 -1.5 5 0" transform="rotate(80)"/>
-        <path d="M -36 -8 q 3 -1.5 5 0" transform="rotate(140)"/>
-        <path d="M -36 -8 q 3 -1.5 5 0" transform="rotate(190)"/>
-      </g>
-    </g>
-    <!-- 4 points cardinaux : éléments -->
-    <g fill="currentColor" opacity=".75">
-      <!-- haut : air -->
-      <g transform="translate(0,-44)"><polygon points="-3,3 3,3 0,-3" fill="none" stroke="currentColor" stroke-width="1"/><line x1="-2" y1="0" x2="2" y2="0" stroke="currentColor" stroke-width="1"/></g>
-      <!-- droite : feu -->
-      <g transform="translate(44,0)"><polygon points="-3,3 3,3 0,-3" fill="none" stroke="currentColor" stroke-width="1"/></g>
-      <!-- bas : eau -->
-      <g transform="translate(0,44)"><polygon points="-3,-3 3,-3 0,3" fill="none" stroke="currentColor" stroke-width="1"/></g>
-      <!-- gauche : terre -->
-      <g transform="translate(-44,0)"><polygon points="-3,-3 3,-3 0,3" fill="none" stroke="currentColor" stroke-width="1"/><line x1="-2" y1="0" x2="2" y2="0" stroke="currentColor" stroke-width="1"/></g>
+      <animateMotion dur="6s" repeatCount="indefinite" rotate="auto">
+        <mpath href="#intro-path"/>
+      </animateMotion>
     </g>
   </svg>
   <h1 class="logo">ALCHIMIA</h1>
   <div class="tagline">« Le Marathon Éternel.<br>Hydratation, Énergie, Souffle — fusionne, accélère, ascende. »</div>
   <button class="start" id="start-btn">Entrer dans le Stade</button>
   <div class="seal-row">
-    <!-- sulfur, mercury, salt, sun, moon -->
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><polygon points="12,4 7,12 17,12"/><line x1="12" y1="12" x2="12" y2="20"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M7 7 q5 -4 10 0" /><circle cx="12" cy="12" r="4"/><line x1="12" y1="16" x2="12" y2="22"/><line x1="9" y1="20" x2="15" y2="20"/></svg>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="12" cy="12" r="6"/><line x1="6" y1="12" x2="18" y2="12"/></svg>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/></svg>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M16 5 a8 8 0 1 0 0 14 a6 6 0 1 1 0 -14"/></svg>
+    <!-- Icônes sport : gourde, pomme, masque, médaille, chrono -->
+    <svg viewBox="0 0 24 24" fill="currentColor"><rect x="10" y="3" width="4" height="3"/><rect x="9" y="6" width="6" height="2"/><rect x="7" y="8" width="10" height="13" rx="2"/><rect x="9" y="14" width="6" height="3" fill="#000" opacity=".25"/></svg>
+    <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="14" r="7"/><rect x="11" y="5" width="1.2" height="3"/><path d="M13 4 q5 -1 4 4 q-4 1 -4 -4 z"/></svg>
+    <svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="9" width="2" height="2"/><rect x="19" y="9" width="2" height="2"/><rect x="5" y="8" width="14" height="6" rx="2"/><rect x="9" y="10" width="6" height="3" fill="#000" opacity=".25"/></svg>
+    <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="9,3 12,8 15,3 12,11"/><circle cx="12" cy="16" r="6"/><circle cx="12" cy="16" r="3" fill="#000" opacity=".25"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="13" r="7"/><path d="M12 13 L12 9"/><path d="M12 13 L15 13"/><path d="M10 3 L14 3"/><path d="M12 3 L12 5"/></svg>
   </div>
 </div>
 
@@ -6387,13 +6375,20 @@ const SPRITE_DEFS = [
   ],
   // ============ CHAÎNE 2 : SOUFFLE (violet pâle/blanc/air) ============
   [
-    // T0 — Bandeau
-    `<rect x="6" y="14" width="20" height="5" fill="#3a2858"/>
-     <rect x="7" y="15" width="18" height="3" fill="#c8a8f0"/>
-     <rect x="7" y="15" width="18" height="1" fill="#fff"/>
-     <rect x="11" y="16" width="4" height="1" fill="#3a2858"/>
-     <rect x="17" y="16" width="4" height="1" fill="#3a2858"/>
-     <rect x="7" y="18" width="18" height="1" fill="#9080c0"/>`,
+    // T0 — Bandeau (plus grand et plus lisible)
+    `<rect x="4" y="11" width="24" height="11" fill="#1a1010"/>
+     <rect x="5" y="12" width="22" height="9" fill="#3a2858"/>
+     <rect x="5" y="12" width="22" height="2" fill="#9080c0"/>
+     <rect x="5" y="14" width="22" height="5" fill="#c8a8f0"/>
+     <rect x="5" y="19" width="22" height="2" fill="#9080c0"/>
+     <rect x="5" y="12" width="22" height="1" fill="#fff" opacity=".7"/>
+     <!-- couture / motif -->
+     <rect x="8" y="15" width="3" height="3" fill="#3a2858"/>
+     <rect x="14" y="15" width="4" height="3" fill="#3a2858"/>
+     <rect x="21" y="15" width="3" height="3" fill="#3a2858"/>
+     <rect x="9" y="16" width="1" height="1" fill="#c8a8f0"/>
+     <rect x="15" y="16" width="2" height="1" fill="#c8a8f0"/>
+     <rect x="22" y="16" width="1" height="1" fill="#c8a8f0"/>`,
     // T1 — Foulard
     `<polygon points="8,8 24,8 22,14 10,14" fill="#3a2858"/>
      <polygon points="9,9 23,9 21,13 11,13" fill="#c8a8f0"/>

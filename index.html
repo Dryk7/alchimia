@@ -426,30 +426,32 @@ body.frenzy-on .rs-speedlines{ animation-duration:0.10s }
 #grid-frame{
   position:relative;
   background:
-    /* Texture de pierre/parchemin sous la grille */
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2'/><feColorMatrix values='0 0 0 0 0.55  0 0 0 0 0.43  0 0 0 0 0.25  0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
-    radial-gradient(ellipse 70% 50% at 50% 50%, rgba(232,200,120,.09), transparent 70%),
-    linear-gradient(180deg, #1d1418, #0d090c);
+    /* Lignes de scoreboard horizontales très subtiles */
+    repeating-linear-gradient(180deg,
+      rgba(255,232,168,.022) 0px, rgba(255,232,168,.022) 1px,
+      transparent 1px, transparent 9px),
+    radial-gradient(ellipse 80% 60% at 50% 30%, rgba(126,200,232,.06), transparent 70%),
+    linear-gradient(180deg, #1a2638, #0f1828);
   border:1px solid var(--gold-dark);
-  border-radius:2px;
+  border-radius:4px;
   padding:8px;
   width:min(94vw, calc((100vh - 280px) * 5 / 6));
   aspect-ratio: 5 / 6;
   max-width:520px;
   box-shadow:
-    inset 0 0 40px rgba(0,0,0,.85),
-    inset 0 0 0 1px rgba(232,200,120,.10),
-    inset 0 0 0 3px rgba(10,7,9,.85),
-    inset 0 0 0 4px rgba(154,120,66,.4),
+    inset 0 0 40px rgba(10,15,25,.7),
+    inset 0 0 0 1px rgba(255,208,112,.18),
+    inset 0 0 0 3px rgba(15,20,35,.8),
+    inset 0 0 0 4px rgba(168,133,85,.45),
     0 0 0 1px var(--ink),
     0 0 0 2px var(--gold),
-    0 0 24px rgba(232,200,120,.12),
-    0 12px 50px rgba(0,0,0,.75);
+    0 0 22px rgba(255,208,112,.18),
+    0 10px 40px rgba(0,0,0,.65);
 }
-/* Coins ornementés baroques (SVG décoratif) */
+/* Coins du grid-frame : couloirs de course stylisés */
 .frame-corner{
-  position:absolute; width:34px; height:34px;
-  color:var(--gold); pointer-events:none;
+  position:absolute; width:32px; height:32px;
+  color:var(--gold-bright); pointer-events:none;
   filter:drop-shadow(0 0 4px var(--gold-glow));
 }
 .frame-corner.tl{top:-13px; left:-13px}
@@ -467,14 +469,14 @@ body.frenzy-on .rs-speedlines{ animation-duration:0.10s }
   position:relative;
   aspect-ratio:1/1;
   background:
-    radial-gradient(ellipse at 50% 30%, rgba(255,232,168,.20), transparent 60%),
-    linear-gradient(180deg, #3a2818 0%, #2c1f14 100%);
-  border:1px solid rgba(255,208,112,.35);
-  border-radius:3px;
+    radial-gradient(ellipse at 50% 30%, rgba(126,200,232,.10), transparent 60%),
+    linear-gradient(180deg, #2a3548 0%, #18222e 100%);
+  border:1px solid rgba(255,208,112,.32);
+  border-radius:4px;
   box-shadow:
-    inset 0 1px 0 rgba(255,232,168,.18),
-    inset 0 -1px 2px rgba(20,10,4,.4),
-    inset 0 0 12px rgba(20,10,4,.3);
+    inset 0 1px 0 rgba(255,232,168,.16),
+    inset 0 -1px 2px rgba(8,12,18,.5),
+    inset 0 0 10px rgba(8,12,18,.4);
 }
 /* Subtil cadre intérieur sur les cellules : trait or fin */
 .cell::before{
@@ -3423,64 +3425,59 @@ body.shop-epic-flash::after{
     </div>
     <div id="grid-wrap">
       <div id="grid-frame">
-        <!-- coins baroques : arabesque florale + cabochon central + acanthe -->
-        <svg class="frame-corner tl" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
-          <!-- L extérieur épais -->
-          <path d="M3 3 H18" stroke-width="1.6"/>
-          <path d="M3 3 V18" stroke-width="1.6"/>
-          <!-- volute principale -->
-          <path d="M3 8 q5 0 7 -2 q2 -2 7 -2"/>
-          <path d="M8 3 q0 5 -2 7 q-2 2 -2 7"/>
-          <!-- vrille intérieure -->
-          <path d="M9 9 q3 -3 6 -1 q2 1 1 4 q-1 2 -3 1 q-1 -1 0 -3"/>
-          <!-- petits acanthes -->
-          <path d="M14 4 q0 2 -2 3"/>
-          <path d="M4 14 q2 0 3 -2"/>
-          <!-- cabochon doré -->
-          <circle cx="9" cy="9" r="1.6" fill="currentColor" stroke="none"/>
-          <circle cx="9" cy="9" r=".5" fill="#000" stroke="none"/>
-          <!-- pointe centrale -->
-          <circle cx="20" cy="3" r=".7" fill="currentColor" stroke="none"/>
-          <circle cx="3" cy="20" r=".7" fill="currentColor" stroke="none"/>
+        <!-- Coins sportifs : couloirs de course + chevrons + cible -->
+        <svg class="frame-corner tl" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <!-- L extérieur ferme -->
+          <path d="M3 3 H20" stroke-width="2"/>
+          <path d="M3 3 V20" stroke-width="2"/>
+          <!-- Couloir 1 (proche) -->
+          <path d="M6 6 H17" stroke-width="1"/>
+          <path d="M6 6 V17" stroke-width="1"/>
+          <!-- Couloir 2 -->
+          <path d="M9 9 H14" stroke-width=".8" opacity=".7"/>
+          <path d="M9 9 V14" stroke-width=".8" opacity=".7"/>
+          <!-- Chevron de vitesse -->
+          <path d="M12 4 L 16 4 L 14 6 Z" fill="currentColor" stroke="none" opacity=".9"/>
+          <path d="M4 12 L 4 16 L 6 14 Z" fill="currentColor" stroke="none" opacity=".9"/>
+          <!-- Cible / cabochon -->
+          <circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/>
+          <circle cx="12" cy="12" r="0.8" fill="#1a1010" stroke="none"/>
         </svg>
-        <svg class="frame-corner tr" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 3 H18" stroke-width="1.6"/>
-          <path d="M3 3 V18" stroke-width="1.6"/>
-          <path d="M3 8 q5 0 7 -2 q2 -2 7 -2"/>
-          <path d="M8 3 q0 5 -2 7 q-2 2 -2 7"/>
-          <path d="M9 9 q3 -3 6 -1 q2 1 1 4 q-1 2 -3 1 q-1 -1 0 -3"/>
-          <path d="M14 4 q0 2 -2 3"/>
-          <path d="M4 14 q2 0 3 -2"/>
-          <circle cx="9" cy="9" r="1.6" fill="currentColor" stroke="none"/>
-          <circle cx="9" cy="9" r=".5" fill="#000" stroke="none"/>
-          <circle cx="20" cy="3" r=".7" fill="currentColor" stroke="none"/>
-          <circle cx="3" cy="20" r=".7" fill="currentColor" stroke="none"/>
+        <svg class="frame-corner tr" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 3 H20" stroke-width="2"/>
+          <path d="M3 3 V20" stroke-width="2"/>
+          <path d="M6 6 H17" stroke-width="1"/>
+          <path d="M6 6 V17" stroke-width="1"/>
+          <path d="M9 9 H14" stroke-width=".8" opacity=".7"/>
+          <path d="M9 9 V14" stroke-width=".8" opacity=".7"/>
+          <path d="M12 4 L 16 4 L 14 6 Z" fill="currentColor" stroke="none" opacity=".9"/>
+          <path d="M4 12 L 4 16 L 6 14 Z" fill="currentColor" stroke="none" opacity=".9"/>
+          <circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/>
+          <circle cx="12" cy="12" r="0.8" fill="#1a1010" stroke="none"/>
         </svg>
-        <svg class="frame-corner bl" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 3 H18" stroke-width="1.6"/>
-          <path d="M3 3 V18" stroke-width="1.6"/>
-          <path d="M3 8 q5 0 7 -2 q2 -2 7 -2"/>
-          <path d="M8 3 q0 5 -2 7 q-2 2 -2 7"/>
-          <path d="M9 9 q3 -3 6 -1 q2 1 1 4 q-1 2 -3 1 q-1 -1 0 -3"/>
-          <path d="M14 4 q0 2 -2 3"/>
-          <path d="M4 14 q2 0 3 -2"/>
-          <circle cx="9" cy="9" r="1.6" fill="currentColor" stroke="none"/>
-          <circle cx="9" cy="9" r=".5" fill="#000" stroke="none"/>
-          <circle cx="20" cy="3" r=".7" fill="currentColor" stroke="none"/>
-          <circle cx="3" cy="20" r=".7" fill="currentColor" stroke="none"/>
+        <svg class="frame-corner bl" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 3 H20" stroke-width="2"/>
+          <path d="M3 3 V20" stroke-width="2"/>
+          <path d="M6 6 H17" stroke-width="1"/>
+          <path d="M6 6 V17" stroke-width="1"/>
+          <path d="M9 9 H14" stroke-width=".8" opacity=".7"/>
+          <path d="M9 9 V14" stroke-width=".8" opacity=".7"/>
+          <path d="M12 4 L 16 4 L 14 6 Z" fill="currentColor" stroke="none" opacity=".9"/>
+          <path d="M4 12 L 4 16 L 6 14 Z" fill="currentColor" stroke="none" opacity=".9"/>
+          <circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/>
+          <circle cx="12" cy="12" r="0.8" fill="#1a1010" stroke="none"/>
         </svg>
-        <svg class="frame-corner br" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 3 H18" stroke-width="1.6"/>
-          <path d="M3 3 V18" stroke-width="1.6"/>
-          <path d="M3 8 q5 0 7 -2 q2 -2 7 -2"/>
-          <path d="M8 3 q0 5 -2 7 q-2 2 -2 7"/>
-          <path d="M9 9 q3 -3 6 -1 q2 1 1 4 q-1 2 -3 1 q-1 -1 0 -3"/>
-          <path d="M14 4 q0 2 -2 3"/>
-          <path d="M4 14 q2 0 3 -2"/>
-          <circle cx="9" cy="9" r="1.6" fill="currentColor" stroke="none"/>
-          <circle cx="9" cy="9" r=".5" fill="#000" stroke="none"/>
-          <circle cx="20" cy="3" r=".7" fill="currentColor" stroke="none"/>
-          <circle cx="3" cy="20" r=".7" fill="currentColor" stroke="none"/>
+        <svg class="frame-corner br" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 3 H20" stroke-width="2"/>
+          <path d="M3 3 V20" stroke-width="2"/>
+          <path d="M6 6 H17" stroke-width="1"/>
+          <path d="M6 6 V17" stroke-width="1"/>
+          <path d="M9 9 H14" stroke-width=".8" opacity=".7"/>
+          <path d="M9 9 V14" stroke-width=".8" opacity=".7"/>
+          <path d="M12 4 L 16 4 L 14 6 Z" fill="currentColor" stroke="none" opacity=".9"/>
+          <path d="M4 12 L 4 16 L 6 14 Z" fill="currentColor" stroke="none" opacity=".9"/>
+          <circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/>
+          <circle cx="12" cy="12" r="0.8" fill="#1a1010" stroke="none"/>
         </svg>
         <div id="grid"></div>
       </div>
@@ -6563,6 +6560,159 @@ function themeSprite(chain, tier){
   return `<svg class="sprite" viewBox="0 0 32 32" shape-rendering="crispEdges" preserveAspectRatio="xMidYMid meet">${def}</svg>`;
 }
 
+/* ================ DISTRIBUTEURS DU STADE ================ */
+/* SVG vectoriels pour les générateurs — sport-themed (water cooler, vending,
+   oxygen station, kitchen blender) au lieu des cauldrons alchimiques. */
+const DISPENSER_DEFS = {
+  // CHAIN 0 — Distributeur Hydra : fontaine à eau / refroidisseur
+  0: `
+    <!-- Bouteille d'eau renversée sur le dessus -->
+    <rect x="22" y="4" width="20" height="20" fill="#1f3548"/>
+    <rect x="23" y="5" width="18" height="18" fill="#7ec8e8"/>
+    <rect x="24" y="6" width="16" height="3" fill="#a8d8f0"/>
+    <rect x="24" y="6" width="4" height="14" fill="#d8e8f8" opacity=".7"/>
+    <!-- Col de la bouteille -->
+    <rect x="27" y="24" width="10" height="3" fill="#9a9a9a"/>
+    <rect x="28" y="27" width="8" height="2" fill="#3a3a3a"/>
+    <!-- Corps du distributeur en bleu marine -->
+    <rect x="14" y="28" width="36" height="34" fill="#1f3548"/>
+    <rect x="15" y="29" width="34" height="32" fill="#3e5878"/>
+    <rect x="15" y="29" width="34" height="3" fill="#5a7a98"/>
+    <!-- Écran / panneau -->
+    <rect x="20" y="34" width="24" height="10" fill="#0f1a2a"/>
+    <rect x="21" y="35" width="22" height="8" fill="#7ec8e8" opacity=".7"/>
+    <rect x="23" y="37" width="6" height="2" fill="#fff"/>
+    <rect x="31" y="37" width="3" height="2" fill="#fff" opacity=".5"/>
+    <rect x="23" y="40" width="14" height="1" fill="#fff" opacity=".4"/>
+    <!-- Robinet -->
+    <rect x="30" y="46" width="4" height="6" fill="#a8a8a8"/>
+    <rect x="31" y="50" width="2" height="4" fill="#5a5a5a"/>
+    <!-- Plateau drain en grille -->
+    <rect x="22" y="54" width="20" height="4" fill="#0f1a2a"/>
+    <rect x="24" y="55" width="1" height="2" fill="#5a5a5a"/>
+    <rect x="27" y="55" width="1" height="2" fill="#5a5a5a"/>
+    <rect x="30" y="55" width="1" height="2" fill="#5a5a5a"/>
+    <rect x="33" y="55" width="1" height="2" fill="#5a5a5a"/>
+    <rect x="36" y="55" width="1" height="2" fill="#5a5a5a"/>
+    <rect x="39" y="55" width="1" height="2" fill="#5a5a5a"/>`,
+  // CHAIN 1 — Distributeur Énergie : vending machine / snack stand
+  1: `
+    <!-- Toit du stand -->
+    <rect x="8" y="8" width="48" height="6" fill="#c83434"/>
+    <rect x="8" y="8" width="48" height="2" fill="#e85a30"/>
+    <rect x="6" y="6" width="52" height="2" fill="#a83020"/>
+    <!-- Pancarte avec étoiles -->
+    <rect x="22" y="10" width="20" height="2" fill="#ffd070"/>
+    <polygon points="26,11 27,10 28,11 27,12" fill="#fff"/>
+    <polygon points="32,11 33,10 34,11 33,12" fill="#fff"/>
+    <polygon points="38,11 39,10 40,11 39,12" fill="#fff"/>
+    <!-- Corps de la machine -->
+    <rect x="10" y="14" width="44" height="44" fill="#5a1810"/>
+    <rect x="11" y="15" width="42" height="42" fill="#7a2a18"/>
+    <!-- Vitrine -->
+    <rect x="14" y="18" width="36" height="32" fill="#0a0608"/>
+    <rect x="15" y="19" width="34" height="30" fill="#1a1818"/>
+    <!-- Étagères avec items -->
+    <rect x="15" y="26" width="34" height="1" fill="#3a3a3a"/>
+    <rect x="15" y="34" width="34" height="1" fill="#3a3a3a"/>
+    <rect x="15" y="42" width="34" height="1" fill="#3a3a3a"/>
+    <!-- Items sur étagères : barres, pommes, gels -->
+    <rect x="17" y="20" width="5" height="5" fill="#d04030"/>
+    <rect x="25" y="20" width="5" height="5" fill="#ffd070"/>
+    <rect x="33" y="20" width="5" height="5" fill="#d04030"/>
+    <rect x="41" y="20" width="5" height="5" fill="#ffd070"/>
+    <rect x="17" y="28" width="5" height="5" fill="#a83018"/>
+    <rect x="25" y="28" width="5" height="5" fill="#f0a050"/>
+    <rect x="33" y="28" width="5" height="5" fill="#a83018"/>
+    <rect x="41" y="28" width="5" height="5" fill="#f0a050"/>
+    <rect x="17" y="36" width="5" height="5" fill="#ffd070"/>
+    <rect x="25" y="36" width="5" height="5" fill="#d04030"/>
+    <rect x="33" y="36" width="5" height="5" fill="#ffd070"/>
+    <rect x="41" y="36" width="5" height="5" fill="#d04030"/>
+    <rect x="17" y="44" width="5" height="3" fill="#f0a050"/>
+    <rect x="25" y="44" width="5" height="3" fill="#ffd070"/>
+    <rect x="33" y="44" width="5" height="3" fill="#f0a050"/>
+    <rect x="41" y="44" width="5" height="3" fill="#ffd070"/>
+    <!-- Tray de récupération -->
+    <rect x="14" y="50" width="36" height="6" fill="#0a0608"/>
+    <rect x="20" y="52" width="24" height="3" fill="#1a1818"/>`,
+  // CHAIN 2 — Distributeur Souffle : station d'oxygène / borne respiratoire
+  2: `
+    <!-- Bombonne supérieure -->
+    <rect x="22" y="6" width="20" height="22" fill="#3a2858"/>
+    <rect x="23" y="7" width="18" height="20" fill="#9080c0"/>
+    <rect x="23" y="7" width="4" height="20" fill="#c8a8f0"/>
+    <rect x="24" y="9" width="16" height="2" fill="#3a2858"/>
+    <rect x="24" y="9" width="16" height="1" fill="#fff"/>
+    <!-- Manomètre -->
+    <circle cx="32" cy="18" r="5" fill="#1a1818"/>
+    <circle cx="32" cy="18" r="3.5" fill="#fff"/>
+    <rect x="31.5" y="17" width="1" height="2" fill="#c83434"/>
+    <rect x="30" y="17.5" width="4" height="1" fill="#1f3548"/>
+    <!-- Valve / robinet -->
+    <rect x="29" y="26" width="6" height="3" fill="#5a5258"/>
+    <rect x="31" y="29" width="2" height="3" fill="#3a2858"/>
+    <!-- Corps station -->
+    <rect x="12" y="32" width="40" height="28" fill="#2a1f3a"/>
+    <rect x="13" y="33" width="38" height="26" fill="#3a2858"/>
+    <rect x="13" y="33" width="38" height="3" fill="#5a4878"/>
+    <!-- Tube respiratoire suspendu -->
+    <path d="M 32 32 Q 25 38 22 44 Q 19 50 24 54" stroke="#c8a8f0" stroke-width="2" fill="none"/>
+    <!-- Masque au bout du tube -->
+    <ellipse cx="22" cy="55" rx="6" ry="3" fill="#3a2858"/>
+    <ellipse cx="22" cy="55" rx="5" ry="2" fill="#c8a8f0"/>
+    <rect x="20" y="55" width="4" height="1" fill="#fff"/>
+    <!-- Indicateur LED -->
+    <circle cx="44" cy="44" r="2" fill="#5af070"/>
+    <circle cx="44" cy="44" r="1" fill="#fff"/>
+    <!-- Label sport -->
+    <rect x="36" y="48" width="10" height="6" fill="#fff" opacity=".15"/>
+    <rect x="38" y="50" width="6" height="1" fill="#fff" opacity=".6"/>
+    <rect x="38" y="52" width="4" height="1" fill="#fff" opacity=".4"/>`,
+  // MIXEUR (4ème générateur) : blender de cuisine
+  mixeur: `
+    <!-- Pichet en verre transparent avec couvercle -->
+    <rect x="18" y="6" width="28" height="4" fill="#1a1a1a"/>
+    <rect x="20" y="4" width="24" height="3" fill="#3a3a3a"/>
+    <!-- Pichet (forme légèrement conique) -->
+    <polygon points="18,10 46,10 44,32 20,32" fill="#1f3548" opacity=".4"/>
+    <polygon points="20,11 44,11 42,31 22,31" fill="#7ec8e8" opacity=".3"/>
+    <!-- Smoothie à l'intérieur -->
+    <polygon points="22,18 42,18 40,30 24,30" fill="#d04030"/>
+    <polygon points="22,18 42,18 41,21 23,21" fill="#f0a050"/>
+    <!-- Petits éclats / pulpe -->
+    <rect x="26" y="22" width="2" height="2" fill="#ffd070"/>
+    <rect x="32" y="24" width="2" height="2" fill="#ffd070"/>
+    <rect x="36" y="22" width="2" height="2" fill="#fff" opacity=".7"/>
+    <!-- Bec verseur -->
+    <polygon points="44,10 48,11 48,14 45,13" fill="#1f3548"/>
+    <!-- Cou / connexion -->
+    <rect x="20" y="32" width="24" height="3" fill="#1a1a1a"/>
+    <rect x="21" y="33" width="22" height="1" fill="#3a3a3a"/>
+    <!-- Base / moteur -->
+    <rect x="14" y="35" width="36" height="20" fill="#2a2a2a"/>
+    <rect x="15" y="36" width="34" height="18" fill="#5a5258"/>
+    <rect x="15" y="36" width="34" height="2" fill="#7a7278"/>
+    <!-- Boutons / cadran -->
+    <circle cx="22" cy="46" r="4" fill="#1a1a1a"/>
+    <circle cx="22" cy="46" r="3" fill="#7ec8e8"/>
+    <rect x="21.5" y="44" width="1" height="2" fill="#fff"/>
+    <rect x="32" y="43" width="14" height="2" fill="#1a1a1a"/>
+    <rect x="32" y="46" width="14" height="2" fill="#1a1a1a"/>
+    <rect x="32" y="49" width="14" height="2" fill="#1a1a1a"/>
+    <rect x="33" y="43" width="3" height="2" fill="#d04030"/>
+    <rect x="33" y="46" width="6" height="2" fill="#ffd070"/>
+    <rect x="33" y="49" width="9" height="2" fill="#5af070"/>
+    <!-- Pieds antidérapants -->
+    <rect x="16" y="55" width="3" height="3" fill="#1a1a1a"/>
+    <rect x="45" y="55" width="3" height="3" fill="#1a1a1a"/>`,
+};
+function dispenserSVG(chain, kind){
+  const def = (kind === 'mixeur') ? DISPENSER_DEFS.mixeur : DISPENSER_DEFS[chain];
+  if(!def) return spriteSVG(GEN_SPRITES[chain]); // fallback
+  return `<svg class="sprite" viewBox="0 0 64 64" shape-rendering="crispEdges" preserveAspectRatio="xMidYMid meet">${def}</svg>`;
+}
+
 /* ================ ETAT ================ */
 const STATE = {
   essence: 30,
@@ -8177,7 +8327,7 @@ function renderGenerators(){
     stack.className = "gen-stack";
     const sp = document.createElement("div");
     sp.className = "gen-svg";
-    sp.innerHTML = spriteSVG(GEN_SPRITES[g.chain]);
+    sp.innerHTML = dispenserSVG(g.chain, g.kind);
     stack.appendChild(sp);
     if(g.kind !== "mixeur"){
       const bub = document.createElement("canvas");

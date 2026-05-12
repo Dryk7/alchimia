@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" href="assets/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Alchimia">
-<title>ALCHIMIA — L'Atelier des Trois Voies</title>
+<title>ALCHIMIA — Le Stade des Trois Voies</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&family=UnifrakturMaguntia&family=VT323&display=swap" rel="stylesheet">
@@ -18,47 +18,50 @@
    ALCHIMIA v2 — DA Maximum
    - palette gothique-alchimique, 5 familles (or, parchemin, plante, pierre, essence)
    - 32×32 sprites SVG pixel art
-   - canvas : poussière + bougies + bulles cauldron + FX de fusion
+   - canvas : poussière + bougies + bulles distributeur + FX de fusion
    - cinématique Grand Œuvre
    - aucun emoji : tout est SVG inline
    ========================================================= */
 :root{
-  /* Palette atelier d'alchimiste — bois clair lumineux, accessible.
-     L'identité reste alchimique mais accueillante au lieu d'être austère. */
-  --ink:#2a1c12;          /* bois clair patiné par la lumière du jour */
-  --ink-2:#3a2818;        /* bois moyen */
-  --shadow:#1f1410;       /* ombre réelle (pour cellules en creux) */
-  --panel:#3a2620;        /* panneau de chêne clair */
-  --panel-2:#4a3328;      /* relief du panneau */
-  --leather:#5d4030;      /* cuir des reliures */
+  /* Palette stade ensoleillé — fresh, sportif, accessible.
+     Coureur orange, ciel bleu, herbe verte, sable de piste crème. */
+  --ink:#1a2330;          /* bleu nuit doux (ciel d'avant-aube) */
+  --ink-2:#243245;        /* bleu nuit plus clair */
+  --shadow:#0f1620;
+  --panel:#2c3a52;        /* panneau bleu nuit */
+  --panel-2:#3a4a68;
+  --leather:#7a5234;      /* cuir de chaussure de course */
 
-  --parchment:#e8d6aa;    /* anciennement #d8c69a — plus crème */
-  --parchment-2:#c8ad7c;  /* anciennement #b8a072 */
-  --parchment-3:#9a7a52;  /* anciennement #8a7048 */
+  --parchment:#f4e8c8;    /* sable de piste (crème lumineux) */
+  --parchment-2:#d8c490;
+  --parchment-3:#a89460;
 
-  --gold-dark:#6a5230;
-  --gold:#a88555;
-  --gold-light:#d8b568;
-  --gold-bright:#f4d989;  /* un poil plus lumineux */
-  --gold-glow:rgba(244,217,137,.45);
+  --gold-dark:#a87830;
+  --gold:#e09940;
+  --gold-light:#f5b958;
+  --gold-bright:#ffd070;
+  --gold-glow:rgba(255,208,112,.5);
 
-  --plant:#6aa055;
-  --plant-2:#9ed079;       /* plus vif */
-  --plant-glow:rgba(160,220,130,.65);
+  /* HYDRA = bleu eau */
+  --plant:#3e8db8;        /* (var name kept for compat — c'est la voie HYDRA) */
+  --plant-2:#7ec8e8;
+  --plant-glow:rgba(126,200,232,.7);
 
-  --mineral:#5a82a8;
-  --mineral-2:#9ec8e8;     /* plus clair */
-  --mineral-glow:rgba(155,210,245,.65);
+  /* ÉNERGIE = orange/rouge feu */
+  --mineral:#d06030;      /* (var name kept for compat — voie ÉNERGIE) */
+  --mineral-2:#f0a050;
+  --mineral-glow:rgba(240,160,80,.7);
 
-  --essence:#7a5aa0;
-  --essence-2:#b78ce8;     /* plus chaud */
-  --essence-glow:rgba(195,140,245,.65);
+  /* SOUFFLE = violet pâle/blanc */
+  --essence:#9080c0;      /* (voie SOUFFLE) */
+  --essence-2:#c8a8f0;
+  --essence-glow:rgba(200,168,240,.7);
 
-  --ember:#d8542a;
-  --flame:#f0b060;
-  --flame-glow:rgba(240,176,96,.6);
+  --ember:#e85a30;
+  --flame:#ffb060;
+  --flame-glow:rgba(255,176,96,.7);
 
-  --blood:#9a2e2e;
+  --blood:#c83434;
 }
 
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
@@ -76,20 +79,18 @@ body{
 #stage{
   position:fixed; inset:0;
   background:
-    /* Vignette très douce — pas d'enfermement */
-    radial-gradient(ellipse 100% 80% at 50% 50%, transparent 45%, rgba(35,22,12,.25) 75%, rgba(30,18,10,.5) 100%),
-    /* Halos chauds plus larges, comme deux fenêtres lumineuses au plafond */
-    radial-gradient(ellipse 75% 45% at 18% 0%, rgba(248,200,128,.32), transparent 65%),
-    radial-gradient(ellipse 75% 45% at 82% 0%, rgba(248,200,128,.32), transparent 65%),
-    /* Lumière centrale de la table — chaude comme un soleil filtré */
-    radial-gradient(ellipse 90% 70% at 50% 50%, rgba(232,176,108,.28), transparent 75%),
-    /* Veines du bois clair et chaud */
-    repeating-linear-gradient(91deg,
-      #4a3024 0px, #4a3024 2px,
-      #422a20 2px, #422a20 4px,
-      #503528 4px, #503528 7px,
-      #452e23 7px, #452e23 10px),
-    #3a2620;
+    /* Soleil chaud en haut — comme un matin de course */
+    radial-gradient(ellipse 80% 30% at 50% -5%, rgba(255,208,112,.30), transparent 75%),
+    /* Halo bleu doux sur toute la scène */
+    radial-gradient(ellipse 100% 100% at 50% 30%, rgba(126,200,232,.10), transparent 70%),
+    /* Ciel matinal : haut bleu nuit → bas crème sable */
+    linear-gradient(180deg,
+      #1a2330 0%,
+      #2c3a52 35%,
+      #4a5a78 60%,
+      #6a7090 75%,
+      #b8a878 92%,
+      #a89460 100%);
   display:flex; flex-direction:column;
   transition:filter 1.2s ease;
 }
@@ -105,7 +106,7 @@ body{
    on RÉCHAUFFE et ÉCLAIRE doucement à mesure qu'on progresse,
    plutôt que de plonger le joueur dans une nuit cosmique étouffante */
 #stage[data-phase="0"]{filter:none}
-#stage[data-phase="1"]{filter:saturate(1.08) brightness(1.02)} /* étincelle */
+#stage[data-phase="1"]{filter:saturate(1.08) brightness(1.02)} /* énergie */
 #stage[data-phase="2"]{filter:hue-rotate(-4deg) saturate(1.12) brightness(1.04) contrast(1.02)} /* aube cuivrée */
 #stage[data-phase="3"]{filter:hue-rotate(-8deg) saturate(1.16) brightness(1.06) contrast(1.04)} /* matin doré */
 #stage[data-phase="4"]{filter:hue-rotate(-12deg) saturate(1.22) brightness(1.10) contrast(1.05)} /* plein jour alchimique */
@@ -242,6 +243,74 @@ header{
   min-height:0;
 }
 
+/* ================ LE STADE ================ */
+/* Piste ovale + coureur qui accélère selon la progression. C'est la boucle
+   visuelle principale : merge → boost coureur → tour bouclé → ascension */
+#runner-stadium{
+  position:relative;
+  width:100%;
+  height:18vh; max-height:140px;
+  background:linear-gradient(180deg, #1a2330 0%, #2c3a52 100%);
+  border:2px solid var(--gold);
+  border-radius:4px;
+  overflow:hidden;
+  box-shadow:
+    inset 0 1px 0 rgba(255,232,168,.18),
+    inset 0 -2px 6px rgba(15,15,25,.55),
+    0 2px 12px rgba(0,0,0,.4);
+}
+#runner-stadium::before, #runner-stadium::after{
+  content:""; position:absolute; width:8px; height:8px;
+  border:2px solid var(--gold-bright); pointer-events:none; z-index:2;
+}
+#runner-stadium::before{ top:-2px; left:-2px; border-right:none; border-bottom:none }
+#runner-stadium::after{ bottom:-2px; right:-2px; border-left:none; border-top:none }
+#runner-svg{
+  display:block; width:100%; height:100%;
+}
+/* HUD du stade : tours + vitesse en overlay */
+.rs-hud{
+  position:absolute; top:6px; left:0; right:0;
+  display:flex; justify-content:space-between;
+  padding:0 12px;
+  pointer-events:none;
+  z-index:3;
+}
+.rs-lap, .rs-speed{
+  display:flex; flex-direction:column; align-items:center;
+  font-family:"Cinzel", serif;
+  color:var(--gold-bright);
+  text-shadow:0 0 6px rgba(0,0,0,.7), 0 1px 0 #000;
+}
+.rs-lap-lbl, .rs-speed-lbl{
+  font-size:7.5px; letter-spacing:.24em; font-weight:700;
+  opacity:.85;
+}
+.rs-lap-num, .rs-speed-num{
+  font-family:"VT323", monospace;
+  font-size:18px; letter-spacing:.04em;
+  color:#fff;
+  text-shadow:0 0 8px var(--gold-bright), 0 1px 0 #000;
+  margin-top:-1px;
+}
+/* Animation des jambes du coureur — alternance simple */
+.rs-leg1{ animation:legAlt 0.32s steps(2) infinite }
+.rs-leg2{ animation:legAlt 0.32s steps(2) infinite reverse }
+@keyframes legAlt{
+  0%   { transform:translateY(0); }
+  50%  { transform:translateY(-1.5px); }
+  100% { transform:translateY(0); }
+}
+/* Quand boost reçu */
+#runner-stadium.boost{
+  animation:stadiumBoost .5s ease-out;
+}
+@keyframes stadiumBoost{
+  0%   { box-shadow:0 0 0 0 var(--gold-bright); }
+  30%  { box-shadow:0 0 24px var(--gold-bright), inset 0 0 18px rgba(255,232,168,.30); }
+  100% { box-shadow:0 0 0 0 transparent; }
+}
+
 #grid-wrap{
   flex:1;
   display:flex; align-items:center; justify-content:center;
@@ -293,14 +362,14 @@ header{
   position:relative;
   aspect-ratio:1/1;
   background:
-    radial-gradient(ellipse at 50% 30%, rgba(248,210,140,.14), transparent 60%),
-    linear-gradient(180deg, #3a2818 0%, #2a1d12 100%);
-  border:1px solid rgba(200,165,100,.30);
-  border-radius:2px;
+    radial-gradient(ellipse at 50% 30%, rgba(255,232,168,.20), transparent 60%),
+    linear-gradient(180deg, #3a2818 0%, #2c1f14 100%);
+  border:1px solid rgba(255,208,112,.35);
+  border-radius:3px;
   box-shadow:
-    inset 0 1px 0 rgba(248,210,140,.12),
-    inset 0 -1px 2px rgba(20,10,4,.35),
-    inset 0 0 14px rgba(20,10,4,.28);
+    inset 0 1px 0 rgba(255,232,168,.18),
+    inset 0 -1px 2px rgba(20,10,4,.4),
+    inset 0 0 12px rgba(20,10,4,.3);
 }
 /* Subtil cadre intérieur sur les cellules : trait or fin */
 .cell::before{
@@ -2886,7 +2955,7 @@ body.shop-epic-flash::after{
   letter-spacing:.05em;
 }
 
-/* Athanor */
+/* Mixeur */
 .ath-tagline{
   font-family:"Cormorant Garamond", serif; font-style:italic;
   font-size:13px; color:var(--gold-light);
@@ -2942,12 +3011,12 @@ body.shop-epic-flash::after{
 }
 .ath-row.unaff .ath-action{background:#3a2818; color:var(--gold-dark)}
 
-.gen[data-kind="athanor"]{
+.gen[data-kind="mixeur"]{
   background:
     radial-gradient(ellipse 80% 60% at 50% 40%, rgba(232,80,40,.22), transparent 70%),
     linear-gradient(180deg, #1f1418, #0a0608);
 }
-.gen[data-kind="athanor"]::before{background:linear-gradient(90deg, transparent, var(--ember), var(--flame), var(--ember), transparent)}
+.gen[data-kind="mixeur"]::before{background:linear-gradient(90deg, transparent, var(--ember), var(--flame), var(--ember), transparent)}
 
 .stats-body{flex:1; overflow-y:auto; padding-right:4px}
 .stats-body::-webkit-scrollbar{width:4px}
@@ -3054,13 +3123,13 @@ body.shop-epic-flash::after{
       <div class="name-wrap">
         <div class="name">
           ALCHIMIA
-          <small>L'ATELIER DES TROIS VOIES</small>
+          <small>LE MARATHON ÉTERNEL</small>
         </div>
       </div>
     </div>
     <div></div>
     <div class="stats">
-      <div class="stat" id="stat-essence" title="Étincelle — coût des invocations, regen automatique">
+      <div class="stat" id="stat-essence" title="Énergie — coût des invocations, regen automatique">
         <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges">
           <rect x="7" y="2" width="2" height="2" fill="#e8c878"/>
           <rect x="6" y="4" width="4" height="1" fill="#e8a050"/>
@@ -3071,11 +3140,11 @@ body.shop-epic-flash::after{
           <rect x="7" y="12" width="2" height="1" fill="#8a2a2a"/>
         </svg>
         <span class="stat-stack">
-          <span class="stat-lbl">Étincelle</span>
+          <span class="stat-lbl">Énergie</span>
           <span class="stat-val" id="essence-val">0</span>
         </span>
       </div>
-      <div class="stat" id="stat-gold" title="Couronnes — récompense des quêtes et fusions">
+      <div class="stat" id="stat-gold" title="Médailles — récompense des quêtes et fusions">
         <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges">
           <rect x="3" y="3" width="2" height="2" fill="#e8c878"/>
           <rect x="7" y="2" width="2" height="2" fill="#fff"/>
@@ -3088,7 +3157,7 @@ body.shop-epic-flash::after{
           <rect x="9" y="8" width="1" height="3" fill="#5a4528"/>
         </svg>
         <span class="stat-stack">
-          <span class="stat-lbl">Couronnes</span>
+          <span class="stat-lbl">Médailles</span>
           <span class="stat-val" id="gold-val">0</span>
         </span>
       </div>
@@ -3102,6 +3171,77 @@ body.shop-epic-flash::after{
   <div id="drawer-overlay"></div>
 
   <main id="play">
+    <!-- Le Stade : piste ovale + coureur qui accélère selon ta progression -->
+    <div id="runner-stadium">
+      <svg id="runner-svg" viewBox="0 0 320 100" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <!-- Le ciel matinal -->
+          <linearGradient id="rs-sky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#3a4a78"/>
+            <stop offset="55%" stop-color="#7a90b0"/>
+            <stop offset="100%" stop-color="#b8a878"/>
+          </linearGradient>
+          <!-- Sable de piste -->
+          <linearGradient id="rs-track" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#e09940"/>
+            <stop offset="100%" stop-color="#a86820"/>
+          </linearGradient>
+          <!-- Trajectoire ovale du coureur -->
+          <path id="rs-path" d="M 50,72 A 110,16 0 0 1 270,72 A 110,16 0 0 1 50,72 Z" fill="none"/>
+        </defs>
+        <!-- Ciel -->
+        <rect x="0" y="0" width="320" height="100" fill="url(#rs-sky)"/>
+        <!-- Soleil -->
+        <circle cx="260" cy="22" r="11" fill="#ffd070" opacity=".9"/>
+        <circle cx="260" cy="22" r="15" fill="#ffd070" opacity=".25"/>
+        <!-- Collines distantes -->
+        <path d="M 0,55 Q 60,42 120,52 Q 180,62 240,48 Q 300,42 320,55 L 320,72 L 0,72 Z" fill="#3a5a68" opacity=".55"/>
+        <path d="M 0,62 Q 80,52 160,60 Q 240,68 320,58 L 320,72 L 0,72 Z" fill="#4a6a78" opacity=".65"/>
+        <!-- Arbres pixelisés simples -->
+        <g shape-rendering="crispEdges" opacity=".75">
+          <rect x="18" y="58" width="1.5" height="5" fill="#3a2818"/>
+          <rect x="16" y="54" width="5.5" height="5" fill="#2a4a30"/>
+          <rect x="290" y="56" width="1.5" height="6" fill="#3a2818"/>
+          <rect x="288" y="51" width="5.5" height="6" fill="#2a4a30"/>
+        </g>
+        <!-- Piste ovale en sable -->
+        <ellipse cx="160" cy="72" rx="118" ry="18" fill="url(#rs-track)" stroke="#5a3818" stroke-width="1.5"/>
+        <ellipse cx="160" cy="72" rx="92" ry="11" fill="#3a5a32" stroke="#2a4a22" stroke-width="1"/>
+        <!-- Lignes de couloir (3 traits) -->
+        <ellipse cx="160" cy="72" rx="105" ry="14.5" fill="none" stroke="#fff" stroke-width=".4" stroke-dasharray="3 4" opacity=".5"/>
+        <ellipse cx="160" cy="72" rx="111" ry="16.2" fill="none" stroke="#fff" stroke-width=".4" stroke-dasharray="2 3" opacity=".4"/>
+        <!-- Ligne de départ/arrivée -->
+        <line x1="160" y1="56" x2="160" y2="58" stroke="#fff" stroke-width="1.4"/>
+        <line x1="160" y1="86" x2="160" y2="88" stroke="#fff" stroke-width="1.4"/>
+        <!-- LE COUREUR : groupe animé qui suit la trajectoire -->
+        <g id="rs-runner">
+          <!-- Sprite pixel art du coureur orange (8x12 px) -->
+          <g shape-rendering="crispEdges">
+            <!-- tête -->
+            <rect x="-3" y="-8" width="5" height="5" fill="#f0c890"/>
+            <!-- cheveux -->
+            <rect x="-3" y="-9" width="5" height="2" fill="#5a3820"/>
+            <!-- maillot -->
+            <rect x="-4" y="-3" width="7" height="4" fill="#e85a30"/>
+            <!-- short -->
+            <rect x="-3" y="1" width="5" height="2" fill="#fff"/>
+            <!-- jambes (animation alternée via CSS) -->
+            <rect class="rs-leg1" x="-3" y="3" width="2" height="3" fill="#f0c890"/>
+            <rect class="rs-leg2" x="1" y="3" width="2" height="3" fill="#f0c890"/>
+            <!-- bras -->
+            <rect x="-5" y="-2" width="1.5" height="3" fill="#f0c890"/>
+            <rect x="3" y="-2" width="1.5" height="3" fill="#f0c890"/>
+          </g>
+          <animateMotion id="rs-motion" dur="14s" repeatCount="indefinite" rotate="auto">
+            <mpath href="#rs-path"/>
+          </animateMotion>
+        </g>
+      </svg>
+      <div class="rs-hud">
+        <div class="rs-lap"><span class="rs-lap-lbl">TOURS</span><span class="rs-lap-num" id="rs-lap-num">0</span></div>
+        <div class="rs-speed"><span class="rs-speed-lbl">VITESSE</span><span class="rs-speed-num" id="rs-speed-num">×1.0</span></div>
+      </div>
+    </div>
     <div id="grid-wrap">
       <div id="grid-frame">
         <!-- coins baroques : arabesque florale + cabochon central + acanthe -->
@@ -3229,7 +3369,7 @@ body.shop-epic-flash::after{
       </svg>
     </div>
     <p style="font-family:'Cormorant Garamond', serif; font-style:italic; font-size:14px; color:var(--parchment-2); text-align:center; margin:8px 14px;">
-      Cette action est <strong style="color:#c84a2a">irréversible</strong>. Ta sauvegarde, tes Étoiles, tes Hauts Faits, tes catalyseurs — tout sera effacé. L'atelier rouvrira ses portes comme au premier jour.
+      Cette action est <strong style="color:#c84a2a">irréversible</strong>. Ta sauvegarde, tes Étoiles, tes Hauts Faits, tes catalyseurs — tout sera effacé. L'stade rouvrira ses portes comme au premier jour.
     </p>
     <div style="display:flex; gap:8px; padding:6px 10px 10px;">
       <button class="set-btn" id="reset-cancel">Annuler</button>
@@ -3276,7 +3416,7 @@ body.shop-epic-flash::after{
           <circle cx="9.5" cy="13" r=".8" fill="currentColor"/>
           <circle cx="14.5" cy="13" r=".8" fill="currentColor"/>
         </svg>
-        <div class="mi-meta"><div class="mi-title">Le Marché</div><div class="mi-sub">dépenser couronnes : spawns, sceaux, boosts</div></div>
+        <div class="mi-meta"><div class="mi-title">Le Marché</div><div class="mi-sub">dépenser médailles : spawns, sceaux, boosts</div></div>
         <span class="mi-shop-badge" id="menu-shop-badge"></span>
       </button>
       <button class="menu-item" data-action="oeuvre" id="menu-oeuvre">
@@ -3292,7 +3432,7 @@ body.shop-epic-flash::after{
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
           <polygon points="12,3 14,9 20,9.5 15,13.5 17,20 12,16 7,20 9,13.5 4,9.5 10,9"/>
         </svg>
-        <div class="mi-meta"><div class="mi-title">Sanctum</div><div class="mi-sub">graver les étoiles dans la pierre</div></div>
+        <div class="mi-meta"><div class="mi-title">Vestiaire</div><div class="mi-sub">graver les étoiles dans la pierre</div></div>
         <span class="mi-badge" id="menu-sanctum-badge"></span>
       </button>
       <button class="menu-item" data-action="transmute" id="menu-transmute">
@@ -3300,7 +3440,7 @@ body.shop-epic-flash::after{
           <circle cx="12" cy="12" r="9"/>
           <path d="M12 4 L12 20 M4 12 L20 12 M6 6 L18 18 M6 18 L18 6"/>
         </svg>
-        <div class="mi-meta"><div class="mi-title">Transmutation</div><div class="mi-sub">le rite des étoiles</div></div>
+        <div class="mi-meta"><div class="mi-title">Ascension</div><div class="mi-sub">le rite des étoiles</div></div>
       </button>
       <button class="menu-item" data-action="stats">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
@@ -3365,12 +3505,12 @@ body.shop-epic-flash::after{
       </section>
       <section class="grim-sec">
         <h3>Comment Jouer</h3>
-        <p><span class="dropcap">I</span>nvoque en touchant un cauldron en bas. Fusionne en glissant une tuile sur une jumelle (même voie, même palier) — le palier monte d'un cran. Répète. À chaque palier ultime atteint pour la première fois, le Grand Œuvre frappe : cinématique, halo, sub-bass.</p>
+        <p><span class="dropcap">I</span>nvoque en touchant un distributeur en bas. Fusionne en glissant une tuile sur une jumelle (même voie, même palier) — le palier monte d'un cran. Répète. À chaque palier ultime atteint pour la première fois, le Grand Œuvre frappe : cinématique, halo, sub-bass.</p>
         <p>Maintenir une tuile longtemps affiche son nom et sa lore. Tape n'importe où dehors un panneau ouvert pour le fermer.</p>
       </section>
       <section class="grim-sec">
         <h3>Pourquoi Fusionner ?</h3>
-        <p><span class="dropcap">C</span>haque item posé sur ton plateau, à partir du palier <strong>I</strong>, te rapporte de l'or <strong>passivement</strong>, seconde après seconde. La matière brute (Graine, Caillou, Brume — T0) ne donne rien : elle est inerte. Mais à partir du Bourgeon, du Quartz, de l'Étincelle, la transmutation a commencé : la matière œuvre.</p>
+        <p><span class="dropcap">C</span>haque item posé sur ton plateau, à partir du palier <strong>I</strong>, te rapporte de l'or <strong>passivement</strong>, seconde après seconde. La matière brute (Graine, Caillou, Brume — T0) ne donne rien : elle est inerte. Mais à partir du Bourgeon, du Quartz, de l'Énergie, la ascension a commencé : la matière œuvre.</p>
         <p><strong>Le rendement multiplie ×3-4 à chaque palier</strong> :</p>
         <p style="font-family:'VT323', monospace; font-size:14px; color:var(--gold-light); line-height:1.5">
           T1 — 0.1 or/s par tuile<br>
@@ -3378,71 +3518,71 @@ body.shop-epic-flash::after{
           T4 — 4 or/s · T5 — 10 or/s<br>
           T6 — 30 or/s · T7 — <strong>100 or/s</strong>
         </p>
-        <p>Tu <em>veux</em> garder une Yggdra sur ton plateau : à elle seule elle rapporte 100 couronnes par seconde, soit 6 000 par minute. La vraie raison de fusionner, c'est cette rente qui pousse à mesure que tu pousses.</p>
+        <p>Tu <em>veux</em> garder une Yggdra sur ton plateau : à elle seule elle rapporte 100 médailles par seconde, soit 6 000 par minute. La vraie raison de fusionner, c'est cette rente qui pousse à mesure que tu pousses.</p>
         <p style="font-family:'Cormorant Garamond';font-style:italic;font-size:13px;color:var(--gold);opacity:.8">Touche longue sur une tuile pour voir son rendement exact.</p>
       </section>
       <section class="grim-sec">
         <h3>Les Trois Économies</h3>
-        <p><span class="dropcap">L</span>'<strong>Étincelle</strong> (gemme rouge) — le coût de toute invocation. Elle se régénère seule. Plus tu progresses, plus la coupe s'élargit.</p>
-        <p><strong>Les Couronnes</strong> (sceau d'or) — le revenu. Elles arrivent par les fusions hautes (V+), les quêtes, les évènements. Elles débloquent l'Athanor (500c), accélèrent les cauldrons, étendent l'étincelle.</p>
-        <p><strong>Les Étoiles ★</strong> — la monnaie permanente, gagnée seulement par <em>Transmutation</em>. Elles s'achètent au Sanctum contre des bonus durables.</p>
+        <p><span class="dropcap">L</span>'<strong>Énergie</strong> (gemme rouge) — le coût de toute invocation. Elle se régénère seule. Plus tu progresses, plus la coupe s'élargit.</p>
+        <p><strong>Les Médailles</strong> (sceau d'or) — le revenu. Elles arrivent par les fusions hautes (V+), les quêtes, les évènements. Elles débloquent l'Mixeur (500c), accélèrent les distributeurs, étendent l'énergie.</p>
+        <p><strong>Les Étoiles ★</strong> — la monnaie permanente, gagnée seulement par <em>Ascension</em>. Elles s'achètent au Vestiaire contre des bonus durables.</p>
       </section>
       <section class="grim-sec">
         <h3>Le Combo &amp; la Supernova</h3>
         <p>Fusionner deux fois en moins de 1.8 secondes déclenche un combo (×1.5, ×2, ×3, ×4 d'or selon la longueur). Une chaîne de cinq fusions rapides paie autant que dix lentes. Le Diadème de l'Œuvre double cette fenêtre.</p>
-        <p>À la 6ᵉ fusion consécutive d'un combo, l'œuvre <strong>déflagre</strong> : onde de choc dorée, +500 couronnes minimum, et <strong>trois items palier I</strong> jaillissent dans des cellules vides. Tous les 6 dans le combo, la supernova rejoue.</p>
+        <p>À la 6ᵉ fusion consécutive d'un combo, l'œuvre <strong>déflagre</strong> : onde de choc dorée, +500 médailles minimum, et <strong>trois items palier I</strong> jaillissent dans des cellules vides. Tous les 6 dans le combo, la supernova rejoue.</p>
       </section>
       <section class="grim-sec">
         <h3>Cibles Spectrales &amp; Cendres</h3>
-        <p>Toutes les 45 à 90 secondes, une cellule du plateau s'<strong>illumine en blanc</strong> pendant 8 secondes — c'est une Cible Spectrale. Si tu réalises une fusion qui termine sur cette cellule dans le temps imparti, <strong>+200 à 400 couronnes</strong> immédiates, particules blanches et son cristallin.</p>
+        <p>Toutes les 45 à 90 secondes, une cellule du plateau s'<strong>illumine en blanc</strong> pendant 8 secondes — c'est une Cible Spectrale. Si tu réalises une fusion qui termine sur cette cellule dans le temps imparti, <strong>+200 à 400 médailles</strong> immédiates, particules blanches et son cristallin.</p>
         <p>Si tu rates, la cellule devient <em>cendrée</em> pendant 25 secondes : impossible d'y fusionner. Croise les bras ou paye le prix de l'inattention.</p>
       </section>
       <section class="grim-sec">
         <h3>Le Coup de Chance</h3>
-        <p>3% de chance qu'un cauldron invoque directement un item <strong>palier II</strong> au lieu de la matière brute — à condition que tu aies déjà atteint palier II sur cette voie. C'est gratuit, c'est rare, et c'est exactement ce qu'il fallait à ce moment-là.</p>
+        <p>3% de chance qu'un distributeur invoque directement un item <strong>palier II</strong> au lieu de la matière brute — à condition que tu aies déjà atteint palier II sur cette voie. C'est gratuit, c'est rare, et c'est exactement ce qu'il fallait à ce moment-là.</p>
       </section>
       <section class="grim-sec">
-        <h3>L'Athanor</h3>
-        <p>Le four cubique, débloqué pour 500 couronnes. Il <strong>purifie trois</strong> items du même palier en <strong>un seul</strong> du palier supérieur, contre des couronnes (coût en escalier). Indispensable pour avancer quand le board sature.</p>
+        <h3>L'Mixeur</h3>
+        <p>Le four cubique, débloqué pour 500 médailles. Il <strong>purifie trois</strong> items du même palier en <strong>un seul</strong> du palier supérieur, contre des médailles (coût en escalier). Indispensable pour avancer quand le board sature.</p>
       </section>
       <section class="grim-sec">
         <h3>Le Marché</h3>
-        <p>Le marchand vend ce que ton atelier n'a pas le temps de produire. <strong>Spawns directs</strong> (graine 8c, caillou 14c, brume 22c) pour te débloquer quand un cauldron est en cooldown, <strong>Sceaux</strong> du Marchand / de l'Apprenti / du Mage qui donnent un item palier II/III/IV au choix (250/1000/4000c), et <strong>boosts temporaires</strong> (étincelle pleine, cooldowns ÷2 pendant 60s, or ×2 pendant 60s).</p>
-        <p>Au moment de la <strong>Transmutation</strong>, chaque <strong>2000 couronnes non dépensées</strong> se transforme en 1 étoile permanente. L'or n'est jamais perdu — il devient soit du temps, soit de l'éternité.</p>
+        <p>Le marchand vend ce que ton stade n'a pas le temps de produire. <strong>Spawns directs</strong> (graine 8c, caillou 14c, brume 22c) pour te débloquer quand un distributeur est en cooldown, <strong>Sceaux</strong> du Marchand / de l'Apprenti / du Mage qui donnent un item palier II/III/IV au choix (250/1000/4000c), et <strong>boosts temporaires</strong> (énergie pleine, cooldowns ÷2 pendant 60s, or ×2 pendant 60s).</p>
+        <p>Au moment de la <strong>Ascension</strong>, chaque <strong>2000 médailles non dépensées</strong> se transforme en 1 étoile permanente. L'or n'est jamais perdu — il devient soit du temps, soit de l'éternité.</p>
       </section>
       <section class="grim-sec">
         <h3>Le Grand Œuvre</h3>
-        <p><span class="dropcap">L</span>'atelier des Catalyseurs. Une <em>recette</em> consomme un item de chaque voie au même palier (par exemple : un Bourgeon, un Quartz, une Étincelle pour le Sceau du Concord). Le résultat est un <strong>catalyseur permanent</strong> qui modifie le jeu : +10% d'or, auto-spawn, cooldowns réduits, étincelle plus large. Six catalyseurs au total. Un seul exemplaire par run.</p>
+        <p><span class="dropcap">L</span>'stade des Catalyseurs. Une <em>recette</em> consomme un item de chaque voie au même palier (par exemple : un Bourgeon, un Quartz, une Énergie pour le Sceau du Concord). Le résultat est un <strong>catalyseur permanent</strong> qui modifie le jeu : +10% d'or, auto-spawn, cooldowns réduits, énergie plus large. Six catalyseurs au total. Un seul exemplaire par run.</p>
         <p>C'est <strong>la</strong> raison de pousser tes trois voies en parallèle : elles doivent atteindre un palier commun pour s'unir.</p>
       </section>
       <section class="grim-sec">
-        <h3>La Transmutation (Prestige)</h3>
-        <p>Quand au moins une voie atteint le palier <strong>VI</strong>, la <em>Transmutatio</em> s'éveille. Elle réinitialise ton plateau, tes couronnes, tes générateurs et tes quêtes — mais te grave un nombre d'<strong>Étoiles</strong> proportionnel à ton parcours, et conserve ton Codex et tes Hauts Faits. Plus la fin de partie est haute, plus la moisson d'étoiles est abondante.</p>
+        <h3>La Ascension (Prestige)</h3>
+        <p>Quand au moins une voie atteint le palier <strong>VI</strong>, la <em>Transmutatio</em> s'éveille. Elle réinitialise ton plateau, tes médailles, tes générateurs et tes quêtes — mais te grave un nombre d'<strong>Étoiles</strong> proportionnel à ton parcours, et conserve ton Codex et tes Hauts Faits. Plus la fin de partie est haute, plus la moisson d'étoiles est abondante.</p>
       </section>
       <section class="grim-sec">
         <h3>Les Sceaux Mystiques</h3>
-        <p>Après chaque <strong>Transmutation</strong>, trois sceaux te sont offerts au hasard parmi huit. Tu en choisis <strong>un</strong> qui guidera la run suivante. Chacun a un <em style="color:var(--plant-2)">Bonus</em> et un <em style="color:#e8a050">Malus</em> taillés pour changer ta façon de jouer : Cœur de Givre accélère les cauldrons mais coûte plus, Sang du Phœnix paie l'or à prix d'or mais étouffe l'étincelle, Vœu de Pauvreté triple les étoiles mais scelle le Marché, Sceau de l'Adepte fait spawn directement à T1, etc.</p>
+        <p>Après chaque <strong>Ascension</strong>, trois sceaux te sont offerts au hasard parmi huit. Tu en choisis <strong>un</strong> qui guidera la run suivante. Chacun a un <em style="color:var(--plant-2)">Bonus</em> et un <em style="color:#e8a050">Malus</em> taillés pour changer ta façon de jouer : Cœur de Givre accélère les distributeurs mais coûte plus, Sang du Phœnix paie l'or à prix d'or mais étouffe l'énergie, Vœu de Pauvreté triple les étoiles mais scelle le Marché, Sceau de l'Adepte fait spawn directement à T1, etc.</p>
         <p>Les sceaux changent profondément la stratégie. Une run avec Foudre Bleue privilégie les paliers hauts ; une run avec Souffle de Mercure laisse couler ; une run avec Vœu de Pauvreté force la maîtrise du métier seul.</p>
       </section>
       <section class="grim-sec">
-        <h3>Le Sanctum</h3>
-        <p>Sept upgrades permanents s'achètent contre les Étoiles : régénération, capacité d'étincelle, cooldowns, or des quêtes, fulgurance, anima, et le <em>Spiritus Iungens</em> qui auto-fusionne les paires basses du board. Ces effets persistent à travers toutes les transmutations.</p>
+        <h3>Le Vestiaire</h3>
+        <p>Sept upgrades permanents s'achètent contre les Étoiles : régénération, capacité d'énergie, cooldowns, or des quêtes, fulgurance, anima, et le <em>Spiritus Iungens</em> qui auto-fusionne les paires basses du board. Ces effets persistent à travers toutes les ascensions.</p>
       </section>
       <section class="grim-sec">
         <h3>Évènements & Quêtes</h3>
-        <p>Toutes les 2-3 minutes environ, un évènement frappe l'atelier : Pluie d'Étoiles, Conjonction, Marée d'Esprit, Souffle d'Or, Comète, Nuit Profonde, Sourire de Lune, Brume Noire, Marchand Errant. Ils durent quelques secondes ou s'inscrivent à droite avec leur compteur.</p>
-        <p>Le parchemin de droite recense les quêtes — atteindre tel palier, fusionner X fois. Récompense en couronnes. Le bouton <strong>Tout Réclamer</strong> vide le carnet d'un coup quand plusieurs sont prêtes.</p>
+        <p>Toutes les 2-3 minutes environ, un évènement frappe le stade : Pluie d'Étoiles, Conjonction, Marée d'Esprit, Souffle d'Or, Comète, Nuit Profonde, Sourire de Lune, Brume Noire, Marchand Errant. Ils durent quelques secondes ou s'inscrivent à droite avec leur compteur.</p>
+        <p>Le parchemin de droite recense les quêtes — atteindre tel palier, fusionner X fois. Récompense en médailles. Le bouton <strong>Tout Réclamer</strong> vide le carnet d'un coup quand plusieurs sont prêtes.</p>
       </section>
       <section class="grim-sec">
         <h3>Le Codex Narratif</h3>
-        <p>Le Codex (panneau de gauche) garde la mémoire de l'Atelier. Chaque palier que tu découvres ouvre une <strong>page enluminée</strong> : une épigraphe latine, un fragment de récit, une note sur le symbolisme alchimique historique, et la date à laquelle <em>toi</em>, tu l'as découvert. Les 24 pages, mises bout à bout, racontent l'histoire du Maître disparu — celui qui a tenu cet atelier avant toi.</p>
+        <p>Le Codex (panneau de gauche) garde la mémoire du Stade. Chaque palier que tu découvres ouvre une <strong>page enluminée</strong> : une épigraphe latine, un fragment de récit, et la date à laquelle <em>toi</em>, tu l'as découvert. Les 24 pages, mises bout à bout, racontent l'histoire du Coureur — celui qui court depuis toujours autour de cette piste, et que tu nourris.</p>
         <p>Pour lire : tape une cellule du Codex (sélection), puis re-tape (ouverture). Ou double-tape.</p>
       </section>
       <section class="grim-sec">
         <h3>Conseil de l'Adepte</h3>
-        <p>Vise au moins <strong>palier I</strong> sur les trois voies dès l'ouverture de l'atelier : le Sceau du Concord (10% d'or permanent) ne coûte que trois items basiques et compose le reste de ta partie.</p>
-        <p>Ne purifie pas tes T0 par l'Athanor — fusionne-les à la main. Garde l'Athanor pour les paliers IV+ qu'il devient pénible d'attendre.</p>
-        <p>La Transmutation n'a de sens qu'après avoir bu profondément à une voie — vise au moins palier VI sur les trois avant la première remise à zéro.</p>
+        <p>Vise au moins <strong>palier I</strong> sur les trois voies dès l'ouverture du Stade : le Sceau du Concord (10% d'or permanent) ne coûte que trois items basiques et compose le reste de ta partie.</p>
+        <p>Ne purifie pas tes T0 par l'Mixeur — fusionne-les à la main. Garde l'Mixeur pour les paliers IV+ qu'il devient pénible d'attendre.</p>
+        <p>La Ascension n'a de sens qu'après avoir bu profondément à une voie — vise au moins palier VI sur les trois avant la première remise à zéro.</p>
       </section>
     </div>
   </div>
@@ -3569,7 +3709,7 @@ body.shop-epic-flash::after{
   </div>
 </div>
 
-<!-- SCEAU MYSTIQUE choice (post-Transmutation) -->
+<!-- SCEAU MYSTIQUE choice (post-Ascension) -->
 <div id="modifier-modal" class="modal">
   <div class="modal-card" style="max-width:420px">
     <h2>SCEAU MYSTIQUE</h2>
@@ -3590,7 +3730,7 @@ body.shop-epic-flash::after{
         <circle cx="238" cy="9" r="1" fill="currentColor" stroke="none"/>
       </svg>
     </div>
-    <p class="recipe-tagline">Trois sceaux te sont offerts. Choisis-en un — il scellera ta route jusqu'à la prochaine Transmutation.</p>
+    <p class="recipe-tagline">Trois sceaux te sont offerts. Choisis-en un — il scellera ta route jusqu'à la prochaine Ascension.</p>
     <div class="stats-body" id="modifier-body"></div>
   </div>
 </div>
@@ -3652,7 +3792,7 @@ body.shop-epic-flash::after{
   <div class="modal-card">
     <div class="modal-close" id="oeuvre-close" aria-label="Fermer">×</div>
     <h2>GRAND ŒUVRE</h2>
-    <div class="modal-subtitle">— l'atelier des catalyseurs —</div>
+    <div class="modal-subtitle">— le stade des catalyseurs —</div>
     <div class="divider">
       <svg viewBox="0 0 240 18" fill="none" stroke="currentColor" stroke-width=".8" stroke-linecap="round" preserveAspectRatio="xMidYMid meet">
         <path d="M2 9 q14 0 22 -2 q8 -2 16 0 q6 1.5 12 1.5 q8 0 16 -3"/>
@@ -3727,9 +3867,9 @@ body.shop-epic-flash::after{
 </div>
 
 <!-- ATHANOR modal -->
-<div id="athanor-modal" class="modal">
+<div id="mixeur-modal" class="modal">
   <div class="modal-card">
-    <div class="modal-close" id="athanor-close" aria-label="Fermer">×</div>
+    <div class="modal-close" id="mixeur-close" aria-label="Fermer">×</div>
     <h2>ATHANOR</h2>
     <div class="modal-subtitle">— purification par le feu —</div>
     <div class="divider">
@@ -3749,7 +3889,7 @@ body.shop-epic-flash::after{
       </svg>
     </div>
     <div class="ath-tagline">Trois deviennent un. Le palier s'élève.</div>
-    <div class="stats-body" id="athanor-body"></div>
+    <div class="stats-body" id="mixeur-body"></div>
   </div>
 </div>
 
@@ -3822,7 +3962,7 @@ body.shop-epic-flash::after{
       <circle cx="100" cy="8" r="1.6" fill="currentColor"/>
     </svg>
   </div>
-  <button id="claim-all" class="claim-all-btn" style="display:none">Tout Réclamer (<span id="claim-all-sum">0</span> couronnes)</button>
+  <button id="claim-all" class="claim-all-btn" style="display:none">Tout Réclamer (<span id="claim-all-sum">0</span> médailles)</button>
   <div class="drawer-body" id="quest-list"></div>
 </aside>
 
@@ -3870,8 +4010,8 @@ body.shop-epic-flash::after{
     </g>
   </svg>
   <h1 class="logo">ALCHIMIA</h1>
-  <div class="tagline">« Trois voies mènent au Grand Œuvre.<br>Plante, Pierre, Essence — fusionne, transmute, élève. »</div>
-  <button class="start" id="start-btn">Ouvrir l'atelier</button>
+  <div class="tagline">« Le Marathon Éternel.<br>Hydratation, Énergie, Souffle — fusionne, accélère, ascende. »</div>
+  <button class="start" id="start-btn">Entrer dans le Stade</button>
   <div class="seal-row">
     <!-- sulfur, mercury, salt, sun, moon -->
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><polygon points="12,4 7,12 17,12"/><line x1="12" y1="12" x2="12" y2="20"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
@@ -3918,44 +4058,44 @@ const COLS = 5, ROWS = 6;
 const TIERS = 8; // T0..T7
 
 const CHAINS = [
-  { id:0, name:"Voie de la Plante",   short:"Plante",  latin:"VIA VEGETABILIS",
-    color:"#7ab36a", glow:"plant",
+  { id:0, name:"Voie de l'Hydratation",   short:"Hydra",  latin:"VIA AQUARUM",
+    color:"#7ec8e8", glow:"mineral",
     sym:"sulfur",
     tiers:[
-      {n:"Graine",            d:"Semence patiente, lourde de promesses."},
-      {n:"Bourgeon",           d:"La sève ose le jour."},
-      {n:"Mandragore",         d:"Cri sous la lune, racine humaine."},
-      {n:"Fleur Sépulcrale",   d:"Calice noir, sentinelle des veilleurs."},
-      {n:"Élixir d'Aube",      d:"Sève condensée des prophètes."},
-      {n:"Panacée",            d:"Le souffle qui guérit toute chose."},
-      {n:"Arbre-Monde",        d:"Le grand axis mundi, cime des cimes."},
-      {n:"Yggdra",             d:"L'arbre des arbres, cosmos en ramure."},
+      {n:"Gourde",             d:"Petite gourde de cuir. L'essentiel."},
+      {n:"Bouteille",          d:"Plastique cabossé, bien rempli."},
+      {n:"Bidon Iso",          d:"Boisson isotonique tiède, mais ça aide."},
+      {n:"Élixir Glacé",       d:"Le froid descend, les jambes remercient."},
+      {n:"Source d'Altitude",  d:"Eau de roche, minéralisée par les sommets."},
+      {n:"Eau Bénie",          d:"Bénie par les coachs et les vieux marathoniens."},
+      {n:"Ambroisie Liquide",  d:"Réservée aux finishers d'ultra."},
+      {n:"Eau de Vie",         d:"Une gorgée et tu ne fatigues plus."},
     ]},
-  { id:1, name:"Voie de la Pierre",   short:"Pierre",  latin:"VIA MINERALIS",
-    color:"#7aa3c8", glow:"mineral",
+  { id:1, name:"Voie de l'Énergie",   short:"Énergie",  latin:"VIA VIRIBUS",
+    color:"#f0a050", glow:"plant",
     sym:"salt",
     tiers:[
-      {n:"Caillou",            d:"Une larme pétrifiée du monde."},
-      {n:"Quartz",             d:"Lumière en cage, géométrie pure."},
-      {n:"Améthyste",          d:"Sang violet de la terre."},
-      {n:"Géode",              d:"Sanctuaire en miniature."},
-      {n:"Pierre Runique",     d:"Mots gravés par les anciens."},
-      {n:"Pierre Philosophale",d:"L'œuvre rouge, transmutation absolue."},
-      {n:"Étoile Polaire",     d:"Cristal-boussole de l'éternité."},
-      {n:"Eternium",           d:"Métal qui n'oublie pas."},
+      {n:"Pomme",              d:"Croquante, sucre rapide."},
+      {n:"Barre",              d:"Avoine, miel, noix. Le grand classique."},
+      {n:"Gel",                d:"Direct dans le sang en 90 secondes."},
+      {n:"Miel Brut",          d:"Doré, lent, parfait pour la fin."},
+      {n:"Smoothie",           d:"Banane fraise glucose. Le délice."},
+      {n:"Carburant",          d:"Mix protéiné maison du champion."},
+      {n:"Élixir d'Or",        d:"Le carburant des dieux du stade."},
+      {n:"Nectar",             d:"On dit qu'une gorgée vaut un tour."},
     ]},
-  { id:2, name:"Voie de l'Essence",   short:"Essence", latin:"VIA SPIRITUALIS",
-    color:"#a070d0", glow:"essence",
+  { id:2, name:"Voie du Souffle",   short:"Souffle", latin:"VIA AERIS",
+    color:"#c8a8f0", glow:"essence",
     sym:"mercury",
     tiers:[
-      {n:"Brume",              d:"Souffle errant des matins humides."},
-      {n:"Étincelle",          d:"Mémoire fossile d'une étoile."},
-      {n:"Flamme Bleue",       d:"Cœur d'astre, feu sans fumée."},
-      {n:"Esprit",             d:"Voix sans corps, présence qui veille."},
-      {n:"Constellation",      d:"Trame du ciel cousue à la main."},
-      {n:"Quintessence",       d:"L'éther innommé, cinquième élément."},
-      {n:"Akasha",             d:"Mémoire universelle, registre des âmes."},
-      {n:"Singularité",        d:"Le point où tout commence et finit."},
+      {n:"Bandeau",            d:"Absorbe la sueur. Garde le focus."},
+      {n:"Foulard",            d:"Filtre l'air sec, calme la gorge."},
+      {n:"Masque",             d:"Air filtré, pollution écartée."},
+      {n:"Filtre",             d:"Optimise chaque inspiration."},
+      {n:"Bombonne",            d:"Oxygène pur, comme en altitude."},
+      {n:"Vent Pur",           d:"L'air des matins de printemps."},
+      {n:"Aether",             d:"Le souffle des sommets sacrés."},
+      {n:"Souffle Divin",      d:"Tu n'as plus besoin de respirer."},
     ]},
 ];
 
@@ -3968,93 +4108,93 @@ const TIER_REWARDS = [0, 0, 0, 0, 0, 0, 200, 800, 3000]; // bonus or à chaque t
 const MASTER_QUEST = [
   {
     id:'awaken',
-    title:'Réveil de l\'Atelier',
-    desc:'Touche un cauldron pour ta première invocation.',
+    title:'Premier Pas',
+    desc:'Tape un distributeur pour produire ton premier ravitaillement.',
     progress:s => Math.min(1, sumProduced(s)),
     target:1,
     check:s => sumProduced(s) >= 1,
-    revelation:"Le bocal du Maître t'a écouté. Une graine te répond. C'est commencé."
+    revelation:"Tu lui tends une gourde. Il accélère d'un pas. Tu réalises que ce sera comme ça toute sa vie."
   },
   {
     id:'first_merge',
-    title:'La Première Œuvre',
+    title:'Première Combinaison',
     desc:'Glisse deux items identiques pour les fusionner.',
     progress:s => Math.min(1, sumMerged(s)),
     target:1,
     check:s => sumMerged(s) >= 1,
-    revelation:"Solve et coagula. Tu viens de comprendre par le geste ce que les Anciens enseignaient par les mots."
+    revelation:"Deux gourdes → une bouteille. Tu viens d'inventer le principe : agréger, agréger encore, jusqu'à devenir source pure."
   },
   {
     id:'trinity_one',
-    title:'Les Trois Voies',
-    desc:'Atteins le palier I sur les trois voies (Bourgeon, Quartz, Étincelle).',
+    title:'Les Trois Réservoirs',
+    desc:'Atteins le palier I sur les trois voies (Bouteille, Barre, Foulard).',
     progress:s => s.totals.maxTier.filter(t=>t>=1).length,
     target:3,
     check:s => s.totals.maxTier.every(t=>t>=1),
-    revelation:"Plante, Pierre, Essence. Trois œuvres parallèles, et bientôt — trois œuvres tressées. L'atelier du Grand Œuvre s'ouvre."
+    revelation:"Hydratation, Énergie, Souffle. Les trois besoins de tout coureur. Tu les nourris en parallèle — la machine commence à tourner."
   },
   {
     id:'concord',
-    title:'Le Sceau du Concord',
-    desc:'Compose ton premier catalyseur au Grand Œuvre.',
+    title:'Première Synergie',
+    desc:'Compose ton premier catalyseur au Banc de Mixage.',
     progress:s => Object.keys(s.recipes||{}).length >= 1 ? 1 : 0,
     target:1,
     check:s => Object.keys(s.recipes||{}).length >= 1,
-    revelation:"Tu viens de faire ce que personne n'avait fait depuis lui. Un sceau, dont l'or coule désormais entre tes doigts."
+    revelation:"Tu mélanges les trois voies. Le coureur trouve son rythme — celui qui ne plie pas, même au 30ème kilomètre."
   },
   {
     id:'first_panacee',
-    title:"L'Œuvre Rouge",
-    desc:'Atteins le palier V (Panacée, Pierre Philosophale ou Quintessence) sur une voie.',
+    title:"Le Palier d'Élite",
+    desc:'Atteins le palier V (Eau Bénie, Carburant ou Vent Pur) sur une voie.',
     progress:s => s.totals.maxTier.some(t=>t>=5) ? 1 : 0,
     target:1,
     check:s => s.totals.maxTier.some(t=>t>=5),
-    revelation:"Le palier V. Ce que le Maître appelait l'Œuvre Rouge. La matière commence à parler dans sa propre langue."
+    revelation:"Le palier V. Tu rejoins le cercle des élites. À partir d'ici, chaque pas du coureur compte double."
   },
   {
     id:'triple_v',
-    title:'Triple Couronne',
+    title:'Triple Élite',
     desc:'Atteins le palier V sur les trois voies.',
     progress:s => s.totals.maxTier.filter(t=>t>=5).length,
     target:3,
     check:s => s.totals.maxTier.every(t=>t>=5),
-    revelation:"Triple couronne. Le Maître t'aurait passé un café et serait sorti dans le jardin pour pleurer. La Transmutation t'attend."
+    revelation:"Triple élite. Le coureur ne touche presque plus le sol. L'Ascension t'attend."
   },
   {
     id:'first_transmute',
-    title:'Première Transmutation',
-    desc:'Reset ton atelier contre des Étoiles permanentes (Transmutatio).',
-    progress:s => Math.min(1, s.transmutations||0),
+    title:'Première Ascension',
+    desc:'Boucle un tour complet et réinitialise pour des Étoiles permanentes.',
+    progress:s => Math.min(1, s.ascensions||0),
     target:1,
-    check:s => (s.transmutations||0) >= 1,
-    revelation:"Tu viens de mourir et de renaître. Les étoiles que tu portes désormais sont à toi pour toujours. Les Sceaux Mystiques s'offrent."
+    check:s => (s.ascensions||0) >= 1,
+    revelation:"Premier tour bouclé. Tu reviens au départ, mais le coureur a changé : il porte désormais des étoiles cousues sur son maillot, qui ne disparaîtront jamais."
   },
   {
     id:'sanctum_three',
-    title:'Le Sanctum se garnit',
-    desc:'Acquiers trois upgrades permanents au Sanctum.',
+    title:'Le Vestiaire se Garnit',
+    desc:'Acquiers trois améliorations permanentes au Vestiaire Doré.',
     progress:s => Object.keys(s.upgrades||{}).filter(k=>s.upgrades[k]>0).length,
     target:3,
     check:s => Object.keys(s.upgrades||{}).filter(k=>s.upgrades[k]>0).length >= 3,
-    revelation:"Le Sanctum t'a reconnu. Tes étoiles sont gravées dans la pierre — elles tiendront, quoi que tu fasses désormais."
+    revelation:"Chaussures neuves, dossard de champion, médaille au cou. Le Vestiaire te reconnaît — tu n'es plus un amateur."
   },
   {
     id:'triple_vii',
     title:"L'Apothéose",
-    desc:'Atteins le palier VII (Yggdra, Eternium, Singularité) sur les trois voies.',
+    desc:'Atteins le palier VII (Eau de Vie, Nectar, Souffle Divin) sur les trois voies.',
     progress:s => s.totals.maxTier.filter(t=>t>=7).length,
     target:3,
     check:s => s.totals.maxTier.every(t=>t>=7),
-    revelation:"Trois Apothéoses dans la même vie. Le Maître en a eu une, peut-être deux. Tu approches du 9ème Sceau."
+    revelation:"Trois Apothéoses. Le coureur dépasse le son. La piste devient cosmique. Il reste un seul cap à franchir."
   },
   {
     id:'ninth_seal',
-    title:'Le 9ème Sceau',
-    desc:'Compose les six catalyseurs ET atteins T7 sur les trois voies dans la même run.',
+    title:'Le Marathon Éternel',
+    desc:'Compose les six catalyseurs ET atteins T7 sur les trois voies dans le même tour.',
     progress:s => (Object.keys(s.recipes||{}).length >= 6 ? 1 : 0) + (s.totals.maxTier.every(t=>t>=7) ? 1 : 0),
     target:2,
     check:s => Object.keys(s.recipes||{}).length >= 6 && s.totals.maxTier.every(t=>t>=7),
-    revelation:"Le 9ème Sceau. Le Maître l'a cherché toute sa vie sans le trouver. Toi, tu viens de poser ta paume dessus. Et il s'est ouvert.\n\nDerrière, il y avait toi — celui que tu étais avant qu'il ne te trouve, dans la cour, à ramasser un caillou."
+    revelation:"Le Marathon Éternel. Le coureur ne s'arrête plus — il devient le mouvement lui-même.\n\nIl tourne autour de toi, autour de la piste, autour du monde. Et toi, tu lui tends encore une gourde, parce que c'est ce que tu sais faire."
   },
 ];
 
@@ -4278,13 +4418,13 @@ const LORE = {
     attr: "— Robert Fludd, Utriusque Cosmi",
     lore: "Tu trouves la première graine dans un bocal scellé, posé sur la table du Maître depuis sa disparition. Elle a survécu des années. Elle attendait quelqu'un qui sache la regarder.",
     symbol: "Dans la tradition hermétique, la graine est l'âme avant l'incarnation : tout est déjà là, replié, en attente du feu qui fera s'ouvrir l'enveloppe. Elle est le commencement, mais elle contient déjà la fin.",
-    mech: "Coût d'invocation : 3 étincelle au cauldron vert. Tier de départ de la Voie de la Plante."
+    mech: "Coût d'invocation : 3 énergie au distributeur vert. Tier de départ de la Voie de la Plante."
   },
   "0_1": {
     epigraph: "« Solve : la matière s'ouvre. »",
     attr: "— précepte hermétique",
     lore: "Tu jettes deux graines dans le mortier. Elles se mêlent, leur enveloppe craque. Quelque chose en sort, vert et tendre : un bourgeon. Le Maître appelait cela « la première mort » — non parce qu'il y a fin, mais parce qu'il y a passage.",
-    symbol: "Le bourgeon est l'ouverture, le solve de la formule solve et coagula. Ce qui était dur et clos devient mou et offert. C'est la première transmutation visible.",
+    symbol: "Le bourgeon est l'ouverture, le solve de la formule solve et coagula. Ce qui était dur et clos devient mou et offert. C'est la première ascension visible.",
     mech: "Issu de la fusion de deux Graines. Donne 1 couronne par fusion. Premier palier de la Voie de la Plante."
   },
   "0_2": {
@@ -4292,42 +4432,42 @@ const LORE = {
     attr: "— Mutus Liber, fol. VII",
     lore: "La Mandragore. Tu sens le froid quand elle apparaît. Ses racines ont la forme d'un homme. Le Maître, dans la marge d'un grimoire, avait écrit : « Elle hurle quand on l'arrache. Mieux vaut la laisser venir. » Tu n'avais pas compris. Tu commences à comprendre.",
     symbol: "La Mandragore est l'homme avant l'homme — la matière qui souhaite naître. Symbole de l'incarnation, mais aussi du danger : qui la déracine sans rituel devient fou.",
-    mech: "Fusion de deux Bourgeons. Halo plus marqué, gain de 2 couronnes par fusion."
+    mech: "Fusion de deux Bourgeons. Halo plus marqué, gain de 2 médailles par fusion."
   },
   "0_3": {
     epigraph: "« Le lis noir veille sur ce qui dort. »",
     attr: "— Heinrich Khunrath",
     lore: "La Fleur Sépulcrale s'ouvre lentement. Ses pétales sont d'un violet si profond qu'ils paraissent noirs, et sont marqués d'or, comme si quelqu'un les avait peints à la main. Ses étamines sont d'os blanc. Tu te souviens d'un détail : le Maître avait planté un jardin entier de ces fleurs autour de sa tombe.",
     symbol: "Sentinelle des veilleurs, la Fleur Sépulcrale est le seuil entre les mondes. On la trouve sur les tombes des philosophes ; on dit qu'elle pousse là où la connaissance se cache, et qu'elle pleure du nectar quand un disciple s'approche.",
-    mech: "Halo pulsant dès ce palier. Fusion de deux Mandragores. +4 couronnes par fusion."
+    mech: "Halo pulsant dès ce palier. Fusion de deux Mandragores. +4 médailles par fusion."
   },
   "0_4": {
     epigraph: "« Quand l'aurore monte, la sève remonte. »",
     attr: "— Paracelse, fragment",
     lore: "L'Élixir d'Aube tient dans une fiole de cristal. À l'intérieur, un liquide qui change de couleur selon l'heure : violacé la nuit, doré au matin. Tu le portes contre ta tempe : il bat, comme un cœur. Tu comprends pourquoi le Maître ne le quittait jamais.",
     symbol: "Cinquième essence végétale — la quintessence des plantes. Boisson des prophètes, qui ouvre la vision à ce qui n'est pas encore arrivé. Une goutte donne un songe ; trois rendent fou.",
-    mech: "Fusion de deux Fleurs Sépulcrales. +8 couronnes par fusion. Le sprite commence à porter une aura dorée constante."
+    mech: "Fusion de deux Fleurs Sépulcrales. +8 médailles par fusion. Le sprite commence à porter une aura dorée constante."
   },
   "0_5": {
     epigraph: "« Ce qui guérit toute chose, n'a forme propre. »",
     attr: "— Avicenne, Canon de la Médecine",
     lore: "La Panacée. Tu la formes pour la première fois et tu te tais. C'est ce que le Maître cherchait. C'est aussi ce qu'il n'a pas trouvé. Tu te demandes : si je l'avais possédée avant, l'aurais-je sauvé ? Tu n'as pas de réponse.",
     symbol: "La Panacée est le but caché de la Voie de la Plante : un remède universel, capable de défaire toute maladie, toute lésion, toute mort qui n'est pas encore venue. Mythe ou réalité ? Ce qui est sûr, c'est qu'elle existe sous tes yeux.",
-    mech: "Premier palier ultime de la Voie. Cinématique Grand Œuvre — VIA VEGETABILIS. Bonus de 200 couronnes à la première composition, 50 ensuite. Permet de composer le Soleil Noir au Grand Œuvre."
+    mech: "Premier palier ultime de la Voie. Cinématique Grand Œuvre — VIA VEGETABILIS. Bonus de 200 médailles à la première composition, 50 ensuite. Permet de composer le Soleil Noir au Grand Œuvre."
   },
   "0_6": {
     epigraph: "« L'arbre est la verticale du monde. »",
     attr: "— Mircea Eliade",
     lore: "L'Arbre-Monde s'érige dans une fiole pas plus grande que ta paume — pourtant, en t'approchant, tu le vois immense. Ses racines plongent dans l'autre monde ; ses branches portent des étoiles que tu reconnais. Le Maître ne l'avait jamais atteint.",
     symbol: "Axis mundi : le pilier central qui relie les trois mondes. Yggdrasill dans le Nord, Jambudvīpa dans l'Inde, l'arbre de Vie dans la Genèse. Tout cosmos a son arbre.",
-    mech: "Cinématique Transcendance — VI. Bonus +800 couronnes. Permet de composer le Diadème de l'Œuvre."
+    mech: "Cinématique Transcendance — VI. Bonus +800 médailles. Permet de composer le Diadème de l'Œuvre."
   },
   "0_7": {
     epigraph: "« Yggdra : l'arbre des arbres, qui rêve les autres. »",
     attr: "— Edda en prose, traduit par le Maître",
     lore: "Yggdra. Tu te trouves dehors le cabinet, sous un ciel inconnu, et le voilà devant toi. Tu ne sais plus si c'est toi qui l'as fait ou s'il t'a appelé. Tu sais juste que la Voie de la Plante n'a plus de palier au-dessus. Il y a un soulagement, et un vertige.",
     symbol: "L'Arbre des arbres. Tous les arbres possibles existent en lui, en gestation. Quand un arbre meurt sur la terre, c'est qu'un fragment de Yggdra a accepté la mort. Quand un arbre naît, c'est Yggdra qui rêve.",
-    mech: "Cinématique Apothéose — VII. Bonus +3000 couronnes. La Voie de la Plante est accomplie. Vibrations longues, sub-bass dédié."
+    mech: "Cinématique Apothéose — VII. Bonus +3000 médailles. La Voie de la Plante est accomplie. Vibrations longues, sub-bass dédié."
   },
 
   // ===== VOIE DE LA PIERRE — VIA MINERALIS =====
@@ -4336,7 +4476,7 @@ const LORE = {
     attr: "— Roger Bacon, Opus Majus",
     lore: "Le caillou. Tu le ramasses dans la cour, parce que le Maître t'a dit un jour : « Tout commence par ce que tu jugerais indigne. » Il avait raison. Tu le poses sur la table. Quelque chose, dans le silence du caillou, te parle.",
     symbol: "La pierre est ce qui résiste. Elle ne pousse pas, elle ne meurt pas, elle dure. Dans la tradition, elle est la matière première du grand œuvre — humble par apparence, infinie par possibilité.",
-    mech: "Coût d'invocation : 5 étincelle. Tier de départ de la Voie de la Pierre."
+    mech: "Coût d'invocation : 5 énergie. Tier de départ de la Voie de la Pierre."
   },
   "1_1": {
     epigraph: "« Lumière en cage, géométrie pure. »",
@@ -4350,21 +4490,21 @@ const LORE = {
     attr: "— Albert le Grand",
     lore: "L'Améthyste. Sa couleur — un violet profond, presque noir au cœur — fait penser à la veine d'un poignet. Le Maître croyait que la pierre était l'âme de la terre figée, à différents stades de sa colère ou de sa paix.",
     symbol: "Améthyste : étymologiquement, « qui n'enivre pas ». On la portait en bague pour ne pas céder au vin. Au-delà, elle est la pierre du retour à soi : celui qui la possède retrouve la lucidité, même au cœur du tumulte.",
-    mech: "Fusion de deux Quartz. Cluster cristallin. +2 couronnes par fusion."
+    mech: "Fusion de deux Quartz. Cluster cristallin. +2 médailles par fusion."
   },
   "1_3": {
     epigraph: "« Cathédrale en miniature, hors de la lumière. »",
     attr: "— Heinrich Khunrath",
     lore: "Une Géode. Tu l'ouvres avec précaution. À l'intérieur, le monde a fait pousser une cathédrale sans architecte : des centaines de cristaux d'un bleu d'eau profonde, qui captent une lumière qu'ils n'ont jamais vue. Le Maître t'avait dit : « La pierre a un dehors et un dedans. Les deux sont vrais. »",
     symbol: "Image du templum intérieur. Ce qui est offert au regard et ce qui est caché au cœur — la géode condense ce mystère. L'extérieur est rude ; l'intérieur est sanctuaire.",
-    mech: "Fusion de deux Améthystes. Halo bleu marqué. +4 couronnes par fusion."
+    mech: "Fusion de deux Améthystes. Halo bleu marqué. +4 médailles par fusion."
   },
   "1_4": {
     epigraph: "« Le mot, gravé dans le silence. »",
     attr: "— Edda runique",
     lore: "Une Pierre Runique. Sur sa face, des signes que tu n'as pas tracés mais qui sont là, gravés au feu. Le Maître apprenait les vingt-quatre runes du Futhark à ses élèves les plus avancés. Tu te demandes lesquelles tu connais déjà sans le savoir.",
     symbol: "Les runes sont des forces nommées, pas des lettres. Chaque tracé est un acte. Lire une rune, c'est dérouler une force. Une pierre runique est donc plus qu'un signe : c'est un sortilège dormant.",
-    mech: "Fusion de deux Géodes. Aura dorée constante. +8 couronnes par fusion."
+    mech: "Fusion de deux Géodes. Aura dorée constante. +8 médailles par fusion."
   },
   "1_5": {
     epigraph: "« Lapis philosophorum : ce qui change tout sans se changer. »",
@@ -4394,13 +4534,13 @@ const LORE = {
     attr: "— Hermes Trismégiste, fragment cité par le Maître",
     lore: "La Brume. Tu l'attrapes dans une fiole : un peu d'air bleu-gris, qui pèse à peine. Et pourtant elle pèse. Le Maître disait : « Si tu veux comprendre l'âme, commence par ce qui se laisse à peine voir. »",
     symbol: "Mercurius philosophorum sous forme la plus subtile. Le souffle d'avant les mots, l'avant-conscience. Présente partout, manipulable nulle part, sauf si l'on apprend la patience.",
-    mech: "Coût d'invocation : 8 étincelle (la plus chère des trois voies). Tier de départ de la Voie de l'Essence."
+    mech: "Coût d'invocation : 8 énergie (la plus chère des trois voies). Tier de départ de la Voie de l'Essence."
   },
   "2_1": {
-    epigraph: "« Une étincelle suffit. »",
+    epigraph: "« Une énergie suffit. »",
     attr: "— précepte du Maître",
-    lore: "L'Étincelle. Une seule, mais elle suffit pour percer la pièce d'un trait blanc. Tu te rappelles le Maître qui répétait, parfois en riant, parfois sérieux : « Une seule, mais elle suffit. » Tu n'avais jamais compris quoi. Maintenant, peut-être.",
-    symbol: "Scintilla animae — l'étincelle de l'âme, fragment du divin descendu dans le corps. Capable d'enflammer le tout, mais pour cela il faut savoir l'écouter, ne pas l'étouffer sous les pensées triviales.",
+    lore: "L'Énergie. Une seule, mais elle suffit pour percer la pièce d'un trait blanc. Tu te rappelles le Maître qui répétait, parfois en riant, parfois sérieux : « Une seule, mais elle suffit. » Tu n'avais jamais compris quoi. Maintenant, peut-être.",
+    symbol: "Scintilla animae — l'énergie de l'âme, fragment du divin descendu dans le corps. Capable d'enflammer le tout, mais pour cela il faut savoir l'écouter, ne pas l'étouffer sous les pensées triviales.",
     mech: "Fusion de deux Brumes. Étoile à 4 branches. +1 couronne par fusion."
   },
   "2_2": {
@@ -4408,21 +4548,21 @@ const LORE = {
     attr: "— Cornelius Agrippa",
     lore: "Flamme Bleue. Tu en allumes une dans le creux de ta paume et elle ne te chauffe pas. Tu sens autre chose : une présence qui te regarde, intelligente, ancienne. Le Maître l'appelait « la flamme qui ne consume rien sauf l'erreur ».",
     symbol: "Feu de l'esprit, distinct du feu commun. Brûle les illusions sans abîmer le porteur. Au-dessus de l'autel, dans certaines traditions, on entretenait cette flamme jour et nuit — elle était la mémoire vivante.",
-    mech: "Fusion de deux Étincelles. Coeur blanc, langue de feu cyan. +2 couronnes par fusion."
+    mech: "Fusion de deux Énergies. Coeur blanc, langue de feu cyan. +2 médailles par fusion."
   },
   "2_3": {
     epigraph: "« Voix sans corps, présence qui veille. »",
     attr: "— Iamblique, Sur les Mystères",
     lore: "Un Esprit. Tu ne l'as pas convoqué exactement — il est venu. Il prend la forme d'un drap pourpre flottant, et tu sens qu'il y a quelqu'un dedans, qui te regarde poliment. Le Maître entretenait, dans la salle voisine, plusieurs esprits, avec qui il jouait aux échecs.",
     symbol: "Spiritus est mémoire détachée du corps qui l'a porté. Ils ne sont ni morts ni vivants — ils sont, simplement. Certains aident, d'autres jugent, beaucoup ne savent même plus qui ils ont été.",
-    mech: "Fusion de deux Flammes Bleues. Halo violet, silhouette fantomatique. +4 couronnes par fusion."
+    mech: "Fusion de deux Flammes Bleues. Halo violet, silhouette fantomatique. +4 médailles par fusion."
   },
   "2_4": {
     epigraph: "« La trame du ciel se coud à la main. »",
     attr: "— Macrobe, Commentaire au Songe de Scipion",
     lore: "Une Constellation tient sur ta paume. Elle a la forme d'une figure que tu n'avais jamais remarquée dans le ciel, et pourtant elle te paraît familière, comme un dessin d'enfance retrouvé. Le Maître marquait des étoiles sur le plafond du cabinet — tu commences seulement à voir lesquelles correspondent à quoi.",
     symbol: "Le ciel des Anciens n'était pas une carte : c'était un livre. Chaque constellation racontait une histoire ; lire le ciel, c'était lire l'humanité dans ses formes archétypales.",
-    mech: "Fusion de deux Esprits. Champ noir étoilé, lignes lumineuses. Aura dorée pulsante. +8 couronnes par fusion."
+    mech: "Fusion de deux Esprits. Champ noir étoilé, lignes lumineuses. Aura dorée pulsante. +8 médailles par fusion."
   },
   "2_5": {
     epigraph: "« L'éther innommé, cinquième élément. »",
@@ -4463,7 +4603,7 @@ const ACHIEVEMENTS = [
   // === Trois éveils — palier I sur chaque voie ===
   { id:"plant_t1",     name:"Bourgeon",          desc:"Faire pousser un Bourgeon.",           icon:"sulfur",  reward:10,  check:s => s.totals.maxTier[0]>=1 },
   { id:"stone_t1",     name:"Quartz",            desc:"Tailler ton premier Quartz.",          icon:"salt",    reward:10,  check:s => s.totals.maxTier[1]>=1 },
-  { id:"ess_t1",       name:"Étincelle",         desc:"Allumer ta première Étincelle.",       icon:"mercury", reward:10,  check:s => s.totals.maxTier[2]>=1 },
+  { id:"ess_t1",       name:"Énergie",         desc:"Allumer ta première Énergie.",       icon:"mercury", reward:10,  check:s => s.totals.maxTier[2]>=1 },
 
   // === Trois maturités — palier III ===
   { id:"plant_t3",     name:"Fleur Sépulcrale",  desc:"Atteindre la Fleur Sépulcrale.",       icon:"sulfur",  reward:40,  check:s => s.totals.maxTier[0]>=3 },
@@ -4478,7 +4618,7 @@ const ACHIEVEMENTS = [
   // === Records globaux ===
   { id:"prod_500",     name:"Manufacture",       desc:"Produire 500 items au total.",         icon:"horn",    reward:80,  check:s => sumProduced(s)>=500 },
   { id:"merge_500",    name:"Maître Artisan",    desc:"500 fusions au total.",                icon:"fuse",    reward:150, check:s => sumMerged(s)>=500 },
-  { id:"gold_5000",    name:"Trésor",            desc:"Posséder 5 000 couronnes.",            icon:"crown",   reward:300, check:s => s.gold>=5000 },
+  { id:"gold_5000",    name:"Trésor",            desc:"Posséder 5 000 médailles.",            icon:"crown",   reward:300, check:s => s.gold>=5000 },
 
   // === Ultime ===
   { id:"triple_t7",    name:"Adepte Suprême",    desc:"Avoir Yggdra, Eternium et Singularité.", icon:"trinity", reward:5000, check:s => s.totals.maxTier.every(t=>t>=7) },
@@ -4516,7 +4656,7 @@ function processAchToastQueue(){
     <div class="ach-banner">HAUT FAIT</div>
     <div class="ach-name">${a.name}</div>
     <div class="ach-desc">${a.desc}</div>
-    <div class="ach-reward">+${a.reward} couronnes</div>
+    <div class="ach-reward">+${a.reward} médailles</div>
   `;
   document.body.appendChild(el);
   if(A.ctx){
@@ -5179,7 +5319,7 @@ const SPRITES = [
     "................................",
     "................................",
   ],
-  // T1 — Étincelle (étoile à 4 branches, blanc-violet incandescent)
+  // T1 — Énergie (étoile à 4 branches, blanc-violet incandescent)
   [
     "................................",
     "................................",
@@ -5665,7 +5805,7 @@ const RECIPES = [
   {
     id: 'veilleur',
     name: 'Pierre du Veilleur',
-    desc: 'L\'œil ne dort jamais. Les cauldrons brûlent plus vite.',
+    desc: 'L\'œil ne dort jamais. Les distributeurs brûlent plus vite.',
     ingredients: [{chain:0,tier:3},{chain:1,tier:3},{chain:2,tier:3}],
     effect: { recipeCdMul: 0.85 },
     effectText: 'cooldowns générateurs −15%',
@@ -5677,7 +5817,7 @@ const RECIPES = [
     desc: 'L\'aube perle dans la coupe. L\'éther afflue.',
     ingredients: [{chain:0,tier:4},{chain:1,tier:4},{chain:2,tier:4}],
     effect: { recipeRegenMul: 1.5 },
-    effectText: 'étincelle régénération ×1.5',
+    effectText: 'énergie régénération ×1.5',
     color: '#e8c878',
   },
   {
@@ -5686,7 +5826,7 @@ const RECIPES = [
     desc: 'L\'astre voilé. Plus d\'éther, et parfois la graine se hisse au palier I.',
     ingredients: [{chain:0,tier:5},{chain:1,tier:5},{chain:2,tier:5}],
     effect: { recipeEssenceMaxMul: 1.25, recipeT1Chance: 0.05 },
-    effectText: '+25% étincelle max · 5% spawn T1',
+    effectText: '+25% énergie max · 5% spawn T1',
     color: '#3a3a45',
   },
   {
@@ -5880,10 +6020,10 @@ const STATE = {
   grid: Array.from({length:ROWS},()=>Array(COLS).fill(null)),
   nextId: 1,
   generators:[
-    { chain:0, tier:0, cost:3, cdMs:700,  lastFire:0, unlocked:true, kind:"cauldron" },
-    { chain:1, tier:0, cost:5, cdMs:1100, lastFire:0, unlocked:true, kind:"cauldron" },
-    { chain:2, tier:0, cost:8, cdMs:1600, lastFire:0, unlocked:true, kind:"cauldron" },
-    { chain:3, tier:0, cost:0, cdMs:0,    lastFire:0, unlocked:false, kind:"athanor", unlockCost:500 },
+    { chain:0, tier:0, cost:3, cdMs:700,  lastFire:0, unlocked:true, kind:"distributeur" },
+    { chain:1, tier:0, cost:5, cdMs:1100, lastFire:0, unlocked:true, kind:"distributeur" },
+    { chain:2, tier:0, cost:8, cdMs:1600, lastFire:0, unlocked:true, kind:"distributeur" },
+    { chain:3, tier:0, cost:0, cdMs:0,    lastFire:0, unlocked:false, kind:"mixeur", unlockCost:500 },
   ],
   quests: [],
   totals:{ produced:[0,0,0], merged:[0,0,0], maxTier:[0,0,0] },
@@ -5897,10 +6037,10 @@ const STATE = {
   lastOfflineMs: 0,
   totalPlayMs: 0,
 
-  // Prestige / Transmutation
+  // Prestige / Ascension
   stars: 0,            // monnaie permanente
   totalStars: 0,       // lifetime stars gagnées
-  transmutations: 0,   // nombre de transmutations effectuées
+  ascensions: 0,   // nombre de ascensions effectuées
   upgrades: {},        // id -> niveau acheté (0 ou 1)
 
   // Combo system
@@ -5919,7 +6059,7 @@ const STATE = {
 
 /* ================ QUETES ================ */
 const QUEST_TEMPLATES = [
-  { type:"produce", chain:0, tier:0, target:5,  reward:8,  name:"Semer", desc:"Produis 5 graines au cauldron vert." },
+  { type:"produce", chain:0, tier:0, target:5,  reward:8,  name:"Semer", desc:"Produis 5 graines au distributeur vert." },
   { type:"reach",   chain:0, tier:1, target:1,  reward:12, name:"Bourgeon", desc:"Atteins le palier du Bourgeon." },
   { type:"merge",   chain:0, tier:1, target:3,  reward:15, name:"Mains vertes", desc:"Réalise 3 fusions de plantes." },
   { type:"reach",   chain:0, tier:2, target:1,  reward:25, name:"Mandragore", desc:"Invoque la Mandragore hurlante." },
@@ -5940,7 +6080,7 @@ const QUEST_TEMPLATES = [
   { type:"reach",   chain:1, tier:7, target:1,  reward:5000,name:"Eternium", desc:"Forge le métal qui ne s'oublie pas."},
 
   { type:"produce", chain:2, tier:0, target:5,  reward:14, name:"Brumes", desc:"Capture 5 Brumes." },
-  { type:"reach",   chain:2, tier:1, target:1,  reward:20, name:"Étincelle", desc:"Allume une Étincelle." },
+  { type:"reach",   chain:2, tier:1, target:1,  reward:20, name:"Énergie", desc:"Allume une Énergie." },
   { type:"merge",   chain:2, tier:1, target:3,  reward:28, name:"Souffle", desc:"Réalise 3 fusions d'essences." },
   { type:"reach",   chain:2, tier:2, target:1,  reward:50, name:"Flamme bleue", desc:"Invoque la Flamme Bleue." },
   { type:"reach",   chain:2, tier:3, target:1,  reward:120,name:"Esprit", desc:"Convoque un Esprit." },
@@ -5983,26 +6123,26 @@ function refreshQuests(){
 }
 
 /* ================ SCEAUX MYSTIQUES (modificateurs de prestige) ================ */
-/* Tirés au choix après chaque Transmutation : 3 aléatoires, le joueur en choisit 1.
+/* Tirés au choix après chaque Ascension : 3 aléatoires, le joueur en choisit 1.
    Modifient la run suivante. Bonus + malus. */
 const MODIFIERS = [
   {
     id:"phoenix", name:"Sang du Phœnix",
     boon:"+50% or sur toutes les fusions",
-    bane:"étincelle se régénère deux fois plus lentement",
+    bane:"énergie se régénère deux fois plus lentement",
     lore:"Le sang renaît, mais la flamme s'épuise.",
     effect:{ goldMul:1.5, regenMul:.5 }
   },
   {
     id:"frost", name:"Cœur de Givre",
-    boon:"cooldowns des cauldrons ÷2",
-    bane:"chaque invocation coûte 50% d'étincelle en plus",
-    lore:"Le métal sort plus vite du froid, mais l'étincelle gèle.",
+    boon:"cooldowns des distributeurs ÷2",
+    bane:"chaque invocation coûte 50% d'énergie en plus",
+    lore:"Le métal sort plus vite du froid, mais l'énergie gèle.",
     effect:{ cdMul:.5, costMul:1.5 }
   },
   {
     id:"hourglass", name:"Pacte du Sablier",
-    boon:"étincelle se régénère deux fois plus vite",
+    boon:"énergie se régénère deux fois plus vite",
     bane:"les cinématiques Grand Œuvre rapportent 50% d'or en moins",
     lore:"Le temps coule à flots, mais l'astre détourne le regard.",
     effect:{ regenMul:2, cinematicGoldMul:.5 }
@@ -6010,34 +6150,34 @@ const MODIFIERS = [
   {
     id:"mercury", name:"Souffle de Mercure",
     boon:"un item T0 aléatoire apparaît toutes les 6 secondes",
-    bane:"capacité d'étincelle réduite de 30%",
+    bane:"capacité d'énergie réduite de 30%",
     lore:"Mercure pleut, mais le calice rétrécit.",
     effect:{ autoSpawnMs:6000, essenceMaxMul:.7 }
   },
   {
     id:"poverty", name:"Vœu de Pauvreté",
-    boon:"étoiles ×3 à la prochaine Transmutation",
-    bane:"Le Marché refuse tes couronnes — boutique scellée",
+    boon:"étoiles ×3 à la prochaine Ascension",
+    bane:"Le Marché refuse tes médailles — boutique scellée",
     lore:"Refuser la facilité, c'est aiguiser le geste.",
     effect:{ starsMul:3, shopDisabled:true }
   },
   {
     id:"adept", name:"Sceau de l'Adepte",
-    boon:"les cauldrons invoquent directement au palier I (Bourgeon, Quartz, Étincelle)",
-    bane:"chaque invocation coûte deux fois plus d'étincelle",
+    boon:"les distributeurs invoquent directement au palier I (Bourgeon, Quartz, Énergie)",
+    bane:"chaque invocation coûte deux fois plus d'énergie",
     lore:"L'Adepte ne perd pas son temps avec la matière brute.",
     effect:{ generatorTier:1, costMul:2 }
   },
   {
     id:"thunder", name:"Foudre Bleue",
     boon:"fenêtre de combo ×3, plafond porté à ×6 multiplicateur",
-    bane:"aucun or sur les fusions sous T3 (Bourgeon, Quartz, Étincelle inclus)",
+    bane:"aucun or sur les fusions sous T3 (Bourgeon, Quartz, Énergie inclus)",
     lore:"La foudre paie les cieux, jamais la terre.",
     effect:{ comboWindowMul:3, comboMax:6, lowGoldDisabled:true }
   },
   {
     id:"night", name:"Nuit Éternelle",
-    boon:"+25% or partout, étincelle max +25%",
+    boon:"+25% or partout, énergie max +25%",
     bane:"événements aléatoires deux fois plus rares",
     lore:"Sans étoile filante, l'or coule plus dru.",
     effect:{ goldMul:1.25, essenceMaxMul:1.25, eventRarityMul:.5 }
@@ -6110,11 +6250,11 @@ function openModifierChoice(onChosen){
 
 /* ================ PRESTIGE / TRANSMUTATION ================ */
 const UPGRADES = [
-  { id:"verbum",  name:"Verbum Cordis",   cost:5,  desc:"L'éther murmure plus fort. +25% régénération d'étincelle.",  effect:{regenMul:1.25} },
-  { id:"lapis",   name:"Lapis Mater",     cost:8,  desc:"Le calice s'étend. +25% capacité d'étincelle.",              effect:{essenceMaxMul:1.25} },
-  { id:"mercurio",name:"Mercurio Volatil",cost:12, desc:"Mercure rapide. Cooldowns des cauldrons réduits de 15%.",     effect:{cdMul:.85} },
+  { id:"verbum",  name:"Verbum Cordis",   cost:5,  desc:"L'éther murmure plus fort. +25% régénération d'énergie.",  effect:{regenMul:1.25} },
+  { id:"lapis",   name:"Lapis Mater",     cost:8,  desc:"Le calice s'étend. +25% capacité d'énergie.",              effect:{essenceMaxMul:1.25} },
+  { id:"mercurio",name:"Mercurio Volatil",cost:12, desc:"Mercure rapide. Cooldowns des distributeurs réduits de 15%.",     effect:{cdMul:.85} },
   { id:"sol",     name:"Sol Aurum",       cost:16, desc:"L'or solaire afflue. Quêtes : récompense +25%.",              effect:{questGoldMul:1.25} },
-  { id:"fulmen",  name:"Fulmen",          cost:22, desc:"La foudre paie. Chaque fusion T2+ rapporte +3 couronnes.",    effect:{mergeBonus:3} },
+  { id:"fulmen",  name:"Fulmen",          cost:22, desc:"La foudre paie. Chaque fusion T2+ rapporte +3 médailles.",    effect:{mergeBonus:3} },
   { id:"anima",   name:"Anima Mundi",     cost:30, desc:"L'âme du monde s'incarne. 8% de chance de spawn directement à T1.", effect:{t1Chance:.08} },
   { id:"iungens", name:"Spiritus Iungens",cost:18, desc:"L'esprit qui joint. Toutes les 12 secondes, deux items adjacents identiques fusionnent d'eux-mêmes.", effect:{autoMergeMs:12000} },
 ];
@@ -6133,7 +6273,7 @@ function calcTransmuteStars(){
   stars += Math.floor(Object.keys(STATE.achievements||{}).length / 4);
   // Bonus paliers totaux
   stars += Math.floor(sumProduced(STATE) / 200);
-  // Conversion or non-dépensé : 1 étoile par 2000 couronnes
+  // Conversion or non-dépensé : 1 étoile par 2000 médailles
   stars += Math.floor((STATE.gold||0) / 2000);
   // Vœu de Pauvreté : ×3 stars
   stars = Math.floor(stars * modStarsMul());
@@ -6153,7 +6293,7 @@ function openTransmute(){
     body.innerHTML = `
       <div class="trm-locked">
         <div class="trm-locked-title">SCEAU SCELLÉ</div>
-        <p>Le rituel de Transmutation requiert qu'au moins <em>une voie atteigne le palier de Transcendance</em> (VI).</p>
+        <p>Le rituel de Ascension requiert qu'au moins <em>une voie atteigne le palier de Transcendance</em> (VI).</p>
         <p style="opacity:.7">Atteins l'Arbre-Monde, l'Étoile Polaire ou l'Akasha pour briser le sceau.</p>
       </div>
     `;
@@ -6165,11 +6305,11 @@ function openTransmute(){
       <div class="trm-stars-preview">
         <div class="trm-num">${stars}</div>
         <div class="trm-label">étoiles à graver</div>
-        ${goldStars > 0 ? `<div class="trm-breakdown">${baseStars} de progrès + <strong>${goldStars} de tes couronnes restantes</strong></div>` : ''}
+        ${goldStars > 0 ? `<div class="trm-breakdown">${baseStars} de progrès + <strong>${goldStars} de tes médailles restantes</strong></div>` : ''}
       </div>
-      <p class="trm-warn">Tu réinitialiseras l'atelier. Ton plateau, tes couronnes, tes générateurs et tes quêtes <em>seront effacés</em>.</p>
+      <p class="trm-warn">Tu réinitialiseras le stade. Ton plateau, tes médailles, tes générateurs et tes quêtes <em>seront effacés</em>.</p>
       <p class="trm-keep">Conservés : <strong>Hauts Faits</strong>, <strong>Codex</strong>, <strong>statistiques totales</strong>, et tes <strong>${STATE.stars||0} ★</strong> permanents.</p>
-      ${STATE.gold >= 100 ? `<p class="trm-tip">💡 Astuce : passe au Marché avant de transmuter — chaque tranche de 2000 couronnes non dépensées te donne 1 étoile en plus.</p>` : ''}
+      ${STATE.gold >= 100 ? `<p class="trm-tip">💡 Astuce : passe au Marché avant de transmuter — chaque tranche de 2000 médailles non dépensées te donne 1 étoile en plus.</p>` : ''}
       <button class="trm-confirm" id="trm-confirm">CONFIRMER LA TRANSMUTATION</button>
       <p class="trm-hint">Toucher en dehors pour annuler.</p>
     `;
@@ -6193,23 +6333,23 @@ function doTransmute(){
   // Mémoire qui survit
   STATE.stars = (STATE.stars||0) + stars;
   STATE.totalStars = (STATE.totalStars||0) + stars;
-  STATE.transmutations = (STATE.transmutations||0) + 1;
+  STATE.ascensions = (STATE.ascensions||0) + 1;
 
   // Reset board, gold, quests, totals
   STATE.gold = 0;
   STATE.grid = Array.from({length:ROWS},()=>Array(COLS).fill(null));
   STATE.firstReached = [0,0,0];
   STATE.totals = { produced:[0,0,0], merged:[0,0,0], maxTier:[0,0,0] };
-  // Reset générateurs niveaux/cooldown mais garde l'unlock Athanor (durable)
+  // Reset générateurs niveaux/cooldown mais garde l'unlock Mixeur (durable)
   const athUnlocked = STATE.generators[3]?.unlocked;
   STATE.generators = [
-    { chain:0, tier:0, cost:3, cdMs:700,  lastFire:0, unlocked:true, kind:"cauldron" },
-    { chain:1, tier:0, cost:5, cdMs:1100, lastFire:0, unlocked:true, kind:"cauldron" },
-    { chain:2, tier:0, cost:8, cdMs:1600, lastFire:0, unlocked:true, kind:"cauldron" },
-    { chain:3, tier:0, cost:0, cdMs:0,    lastFire:0, unlocked:!!athUnlocked, kind:"athanor", unlockCost:500 },
+    { chain:0, tier:0, cost:3, cdMs:700,  lastFire:0, unlocked:true, kind:"distributeur" },
+    { chain:1, tier:0, cost:5, cdMs:1100, lastFire:0, unlocked:true, kind:"distributeur" },
+    { chain:2, tier:0, cost:8, cdMs:1600, lastFire:0, unlocked:true, kind:"distributeur" },
+    { chain:3, tier:0, cost:0, cdMs:0,    lastFire:0, unlocked:!!athUnlocked, kind:"mixeur", unlockCost:500 },
   ];
   STATE.activeEvents = {};
-  STATE.recipes = {}; // les catalyseurs sont par-run, reset à la transmutation
+  STATE.recipes = {}; // les catalyseurs sont par-run, reset à la ascension
   STATE.lastAutoSpawnAt = 0;
   applyEventModifiers();
   rebuildQuests();
@@ -6253,7 +6393,7 @@ function renderActiveModifier(){
 }
 
 function applyUpgrades(){
-  // Reset aux valeurs de base puis applique upgrades persistants (Sanctum) + recettes (catalyseurs)
+  // Reset aux valeurs de base puis applique upgrades persistants (Vestiaire) + recettes (catalyseurs)
   let regenMul = 1, essenceMaxMul = 1, cdMul = 1;
   for(const u of UPGRADES){
     if((STATE.upgrades?.[u.id]||0) > 0){
@@ -6263,7 +6403,7 @@ function applyUpgrades(){
       if(e.cdMul) cdMul *= e.cdMul;
     }
   }
-  // Catalyseurs (effets cumulent avec Sanctum)
+  // Catalyseurs (effets cumulent avec Vestiaire)
   for(const r of RECIPES){
     if(STATE.recipes?.[r.id]){
       const e = r.effect;
@@ -6500,7 +6640,7 @@ function tickRecipeAutoSpawn(now){
   particles(r.left + r.width/2, r.top + r.height/2, '#d8d8e0', 8);
 }
 
-function openSanctum(){
+function openVestiaire(){
   const modal = document.getElementById("sanctum-modal");
   const body = document.getElementById("sanctum-body");
   body.innerHTML = "";
@@ -6511,7 +6651,7 @@ function openSanctum(){
       <span class="num">${STATE.stars||0}</span>
       <span class="lbl">étoiles disponibles</span>
     </div>
-    <div class="sanctum-totals">Lifetime : ${STATE.totalStars||0} ★ · ${STATE.transmutations||0} transmutations</div>
+    <div class="sanctum-totals">Lifetime : ${STATE.totalStars||0} ★ · ${STATE.ascensions||0} ascensions</div>
   `;
   body.appendChild(intro);
   for(const u of UPGRADES){
@@ -6555,13 +6695,13 @@ function buyUpgrade(id){
   showUpgradeDiff(u, before, after);
   sfxClaim();
   vibrate([15, 30, 15, 60]);
-  openSanctum(); // refresh
+  openVestiaire(); // refresh
 }
 
 function showUpgradeDiff(u, before, after){
   const lines = [];
-  if(before.regen !== after.regen) lines.push(`Étincelle régen : <strong>${before.regen.toFixed(2)}/s → ${after.regen.toFixed(2)}/s</strong>`);
-  if(before.essenceMax !== after.essenceMax) lines.push(`Étincelle max : <strong>${before.essenceMax} → ${after.essenceMax}</strong>`);
+  if(before.regen !== after.regen) lines.push(`Énergie régen : <strong>${before.regen.toFixed(2)}/s → ${after.regen.toFixed(2)}/s</strong>`);
+  if(before.essenceMax !== after.essenceMax) lines.push(`Énergie max : <strong>${before.essenceMax} → ${after.essenceMax}</strong>`);
   if(before.cd0 !== after.cd0) lines.push(`Cooldown Plante : <strong>${before.cd0}ms → ${after.cd0}ms</strong>`);
   if(lines.length === 0) lines.push(`<strong>${u.effectText || 'effet permanent acquis'}</strong>`);
   const el = document.createElement('div');
@@ -6583,11 +6723,11 @@ const SHOP_ITEMS = [
   // === Coups d'éclat (achats fréquents, peu chers — la boucle dopamine) ===
   { id:'cd_reset', section:"Coups d'éclat", name:'Coup d\'Éclat', desc:'Tous les cooldowns de chaudières remis à zéro. Tu peux re-fire tout de suite.',
     cost:35, kind:'instant', perform:()=>shopResetCooldowns() },
-  { id:'starfall_mini', section:"Coups d'éclat", name:'Pluie Mineure', desc:'5 items palier I tombent dans l\'atelier, voies aléatoires.',
+  { id:'starfall_mini', section:"Coups d'éclat", name:'Pluie Mineure', desc:'5 items palier I tombent dans l\'stade, voies aléatoires.',
     cost:65, kind:'instant', perform:()=>shopMiniStarfall(5) },
-  { id:'boost_essence', section:"Coups d'éclat", name:'Sang d\'Étincelle', desc:'Étincelle remplie immédiatement.',
-    cost:50, kind:'instant', perform:()=>{ STATE.essence = STATE.essenceMax; renderStats(); floating(window.innerWidth/2, 100, "✦ Étincelle pleine", "tier"); } },
-  { id:'spectral_force', section:"Coups d'éclat", name:'Cible Forcée', desc:'Invoque une Cible Spectrale immédiatement. Touche-la pour +200 à +400 couronnes.',
+  { id:'boost_essence', section:"Coups d'éclat", name:'Sang d\'Énergie', desc:'Énergie remplie immédiatement.',
+    cost:50, kind:'instant', perform:()=>{ STATE.essence = STATE.essenceMax; renderStats(); floating(window.innerWidth/2, 100, "✦ Énergie pleine", "tier"); } },
+  { id:'spectral_force', section:"Coups d'éclat", name:'Cible Forcée', desc:'Invoque une Cible Spectrale immédiatement. Touche-la pour +200 à +400 médailles.',
     cost:180, kind:'instant', perform:()=>{ spawnSpectralTarget(); _nextSpectralAt = Date.now() + 45000 + Math.random()*45000; } },
   { id:'frenzy_force', section:"Coups d'éclat", name:'Pacte de Frénésie', desc:'Déclenche Frenzy 10s — or ×1.5 sur tes fusions.',
     cost:320, kind:'instant', perform:()=>startFrenzy() },
@@ -6598,7 +6738,7 @@ const SHOP_ITEMS = [
   { id:'spawn2_0', section:'Invocations directes', name:'Brume',  desc:'Une brume en plus, sur-le-champ.',  cost:22,  icon:2, perform:()=>shopSpawn(2, 0) },
   { id:'spawn0_1', section:'Invocations directes', name:'Bourgeon', desc:'Un Bourgeon (palier II) directement.', cost:90,  icon:0, perform:()=>shopSpawn(0, 1) },
   { id:'spawn1_1', section:'Invocations directes', name:'Quartz',   desc:'Un Quartz (palier II) directement.',  cost:120, icon:1, perform:()=>shopSpawn(1, 1) },
-  { id:'spawn2_1', section:'Invocations directes', name:'Étincelle Vraie', desc:'Une Étincelle (palier II) directement.', cost:160, icon:2, perform:()=>shopSpawn(2, 1) },
+  { id:'spawn2_1', section:'Invocations directes', name:'Énergie Vraie', desc:'Une Énergie (palier II) directement.', cost:160, icon:2, perform:()=>shopSpawn(2, 1) },
 
   // === Sceaux : items au palier choisi par le joueur ===
   { id:'seal_t2', section:'Sceaux du Marchand', name:'Sceau du Marchand', desc:'Un item palier II au choix (Mandragore, Améthyste ou Flamme Bleue).',
@@ -6609,13 +6749,13 @@ const SHOP_ITEMS = [
     cost:4000, kind:'seal', tier:4, perform:()=>shopOpenSeal(4) },
 
   // === Boosts temporaires (actifs comme un event) ===
-  { id:'boost_cool', section:'Boosts prolongés', name:'Souffle Régent', desc:'Cooldowns des cauldrons ÷2 pendant 60 secondes.',
+  { id:'boost_cool', section:'Boosts prolongés', name:'Souffle Régent', desc:'Cooldowns des distributeurs ÷2 pendant 60 secondes.',
     cost:120, kind:'boost', perform:()=>shopActivateEvent('souffle', 60000, { cdMul:.5 }, 'Souffle Régent') },
   { id:'boost_gold',    section:'Boosts prolongés', name:'Pluie d\'Or',    desc:'Or des fusions ×2 pendant 60 secondes.',
     cost:180, kind:'boost', perform:()=>shopActivateEvent('pluiedor', 60000, { mergeGoldMul:2 }, 'Pluie d\'Or') },
   { id:'boost_goldx3', section:'Boosts prolongés', name:'Or Cristallisé', desc:'Or des fusions ×3 pendant 90 secondes.',
     cost:550, kind:'boost', perform:()=>shopActivateEvent('orcristal', 90000, { mergeGoldMul:3 }, 'Or Cristallisé') },
-  { id:'boost_regen', section:'Boosts prolongés', name:'Marée Intérieure', desc:'Étincelle régénère ×3 pendant 90 secondes.',
+  { id:'boost_regen', section:'Boosts prolongés', name:'Marée Intérieure', desc:'Énergie régénère ×3 pendant 90 secondes.',
     cost:240, kind:'boost', perform:()=>shopActivateEvent('mareeshop', 90000, { regenMul:3 }, 'Marée Intérieure') },
 ];
 
@@ -6625,7 +6765,7 @@ function shopResetCooldowns(){
   const now = Date.now();
   let resetCount = 0;
   STATE.generators.forEach(g => {
-    if(!g || g.kind === 'athanor') return;
+    if(!g || g.kind === 'mixeur') return;
     if(!g.unlocked) return;
     // Forcer cd à zéro : lastFire = now - cdMs (donc dt >= cdMs)
     g.lastFire = now - g.cdMs - 1;
@@ -6649,7 +6789,7 @@ function shopMiniStarfall(n){
     placed++;
   }
   if(placed === 0){
-    floating(window.innerWidth/2, 100, "Atelier plein", "lose");
+    floating(window.innerWidth/2, 100, "Stade plein", "lose");
     return;
   }
   floating(window.innerWidth/2, 100, "✦ +" + placed + " items", "tier");
@@ -6658,7 +6798,7 @@ function shopMiniStarfall(n){
 
 function shopSpawn(chain, tier){
   const empties = findEmpty();
-  if(!empties.length){ floating(window.innerWidth/2, 100, "Atelier plein", "lose"); return false; }
+  if(!empties.length){ floating(window.innerWidth/2, 100, "Stade plein", "lose"); return false; }
   const [x,y] = empties[Math.floor(Math.random()*empties.length)];
   STATE.grid[y][x] = { id: STATE.nextId++, chain, tier };
   STATE.totals.produced[chain]++;
@@ -6823,7 +6963,7 @@ function renderShop(){
     } else {
       const sorted = allItems.slice().sort((a,b)=>a.cost-b.cost);
       const next = sorted.find(i => STATE.gold < i.cost);
-      if(next) header.innerHTML = `<p>Prochain achat possible : <strong>${next.name}</strong> à <strong>${next.cost}</strong> couronnes (manque ${next.cost - Math.floor(STATE.gold)}).</p>`;
+      if(next) header.innerHTML = `<p>Prochain achat possible : <strong>${next.name}</strong> à <strong>${next.cost}</strong> médailles (manque ${next.cost - Math.floor(STATE.gold)}).</p>`;
     }
     body.appendChild(header);
   }
@@ -6884,7 +7024,7 @@ function renderShop(){
     const div = document.createElement('div');
     div.className = 'shop-conversion-info';
     div.innerHTML = `
-      <p>À la prochaine <strong>Transmutation</strong>, ton or restant se changera en étoiles à raison de <strong>1 ★ pour 2000 couronnes</strong>.
+      <p>À la prochaine <strong>Ascension</strong>, ton or restant se changera en étoiles à raison de <strong>1 ★ pour 2000 médailles</strong>.
       Au taux actuel, tu obtiendrais <strong>+${starsAt} ★</strong> en plus.</p>
     `;
     body.appendChild(div);
@@ -6909,7 +7049,7 @@ function shopGlyph(id){
 /* ================ ÉVÈNEMENTS ALÉATOIRES ================ */
 const EVENTS = [
   { id:"starfall", name:"Pluie d'Étoiles", duration:0,
-    desc:"Le ciel pleut sur l'atelier. Huit brumes et étincelles tombent.",
+    desc:"Le ciel pleut sur le stade. Huit brumes et énergies tombent.",
     apply:()=>{
       // Spawn 8 items random voies T0 dans cellules vides
       let n = 0;
@@ -6927,7 +7067,7 @@ const EVENTS = [
     desc:"Les astres s'alignent. Cooldowns divisés par deux.",
     multipliers:{ cdMul:.5 } },
   { id:"tide", name:"Marée d'Esprit", duration:60000,
-    desc:"L'éther afflue. Étincelle se régénère trois fois plus vite.",
+    desc:"L'éther afflue. Énergie se régénère trois fois plus vite.",
     multipliers:{ regenMul:3 } },
   { id:"goldbreath", name:"Souffle d'Or", duration:90000,
     desc:"Le métal solaire infuse l'air. Quêtes réclamées : récompense ×1.5.",
@@ -6936,22 +7076,22 @@ const EVENTS = [
     desc:"Une comète embrase la prochaine fusion : palier sauté.",
     apply:()=>{ STATE.cometBoost = 1; return "fusion suivante : palier doublé"; }},
   { id:"deepnight", name:"Nuit Profonde", duration:75000,
-    desc:"Le drone s'épaissit. Toute fusion gagne 25% de couronnes en plus.",
+    desc:"Le drone s'épaissit. Toute fusion gagne 25% de médailles en plus.",
     multipliers:{ mergeGoldMul:1.25 } },
   { id:"moonsmile", name:"Sourire de Lune", duration:0,
-    desc:"La lune sourit. +30 étincelle, +50 couronnes.",
+    desc:"La lune sourit. +30 énergie, +50 médailles.",
     apply:()=>{
       STATE.essence = Math.min(STATE.essenceMax, STATE.essence + 30);
       STATE.gold += 50; renderStats();
-      return "+30 étincelle · +50 couronnes";
+      return "+30 énergie · +50 médailles";
     }},
   { id:"blackmist", name:"Brume Noire", duration:60000,
-    desc:"L'éther s'étouffe. Étincelle régen ÷2, mais chaque fusion rapporte +50% d'or.",
+    desc:"L'éther s'étouffe. Énergie régen ÷2, mais chaque fusion rapporte +50% d'or.",
     multipliers:{ regenMul:.5, mergeGoldMul:1.5 } },
   { id:"merchant", name:"Marchand Errant", duration:0,
-    desc:"Un marchand frappe à la porte. Il offre un Bourgeon, un Quartz et une Étincelle.",
+    desc:"Un marchand frappe à la porte. Il offre un Bourgeon, un Quartz et une Énergie.",
     apply:()=>{
-      const empties = findEmpty(); if(empties.length < 3) return 'l\'atelier est trop encombré';
+      const empties = findEmpty(); if(empties.length < 3) return 'l\'stade est trop encombré';
       // 3 items T1 chacune voie
       for(let c=0; c<3 && empties.length; c++){
         const idx = Math.floor(Math.random()*empties.length);
@@ -7464,7 +7604,7 @@ function renderGenerators(){
     const div = document.createElement("div");
     div.className = "gen";
     div.dataset.chain = g.chain;
-    div.dataset.kind = g.kind || "cauldron";
+    div.dataset.kind = g.kind || "distributeur";
     if(!g.unlocked) div.classList.add("locked");
 
     const stack = document.createElement("div");
@@ -7473,7 +7613,7 @@ function renderGenerators(){
     sp.className = "gen-svg";
     sp.innerHTML = spriteSVG(GEN_SPRITES[g.chain]);
     stack.appendChild(sp);
-    if(g.kind !== "athanor"){
+    if(g.kind !== "mixeur"){
       const bub = document.createElement("canvas");
       bub.className = "gen-bubbles";
       bub.width = 64; bub.height = 64;
@@ -7483,12 +7623,12 @@ function renderGenerators(){
 
     const nm = document.createElement("div");
     nm.className = "gen-name";
-    nm.textContent = g.kind === "athanor" ? "Athanor" : CHAINS[g.chain].short;
+    nm.textContent = g.kind === "mixeur" ? "Mixeur" : CHAINS[g.chain].short;
     div.appendChild(nm);
 
     const co = document.createElement("div");
     co.className = "gen-cost";
-    if(g.kind === "athanor"){
+    if(g.kind === "mixeur"){
       if(!g.unlocked){
         co.innerHTML = `<svg viewBox="0 0 16 16" shape-rendering="crispEdges"><rect x="3" y="5" width="10" height="2" fill="#c9a25a"/><rect x="3" y="7" width="10" height="5" fill="#9a7842"/></svg> ${g.unlockCost}`;
       } else {
@@ -7499,7 +7639,7 @@ function renderGenerators(){
     }
     div.appendChild(co);
 
-    if(g.kind !== "athanor"){
+    if(g.kind !== "mixeur"){
       const cd = document.createElement("div");
       cd.className = "cd-bar";
       cd.innerHTML = "<span></span>";
@@ -7513,9 +7653,9 @@ function renderGenerators(){
 
     div.addEventListener("pointerdown", e=>{
       e.preventDefault();
-      if(g.kind === "athanor"){
-        if(!g.unlocked){ tryUnlockAthanor(); }
-        else openAthanor();
+      if(g.kind === "mixeur"){
+        if(!g.unlocked){ tryUnlockMixeur(); }
+        else openMixeur();
       } else {
         fireGenerator(i, div);
       }
@@ -7524,9 +7664,9 @@ function renderGenerators(){
   });
 }
 
-function tryUnlockAthanor(){
+function tryUnlockMixeur(){
   const g = STATE.generators[3];
-  if(STATE.gold < g.unlockCost){ sfxDeny(); flashStat("gold-val"); floating(window.innerWidth/2, window.innerHeight - 100, "Couronnes insuffisantes", "lose"); return; }
+  if(STATE.gold < g.unlockCost){ sfxDeny(); flashStat("gold-val"); floating(window.innerWidth/2, window.innerHeight - 100, "Médailles insuffisantes", "lose"); return; }
   STATE.gold -= g.unlockCost;
   g.unlocked = true;
   renderStats();
@@ -7534,12 +7674,12 @@ function tryUnlockAthanor(){
   sfxClaim();
   vibrate([20, 80, 20, 80, 100]);
   // Notification
-  eventNotification({ name:"L'Athanor s'éveille", desc:"Le four alchimique brûle de nouveau. Trois items deviennent un, le palier supérieur."}, "");
+  eventNotification({ name:"L'Mixeur s'éveille", desc:"Le four alchimique brûle de nouveau. Trois items deviennent un, le palier supérieur."}, "");
   if(typeof checkAchievements === 'function') checkAchievements();
   if(typeof checkMasterQuest === 'function') checkMasterQuest();
 }
 
-function openAthanor(){
+function openMixeur(){
   // Compte les items par (chain, tier)
   const counts = {}; // key = chain*TIERS+tier
   for(let y=0;y<ROWS;y++) for(let x=0;x<COLS;x++){
@@ -7551,8 +7691,8 @@ function openAthanor(){
   const eligible = [];
   for(const k in counts){ if(counts[k] >= 3) eligible.push({key:+k, count:counts[k]}); }
 
-  const modal = document.getElementById("athanor-modal");
-  const body = document.getElementById("athanor-body");
+  const modal = document.getElementById("mixeur-modal");
+  const body = document.getElementById("mixeur-body");
   if(!eligible.length){
     body.innerHTML = `<div class="ath-empty">Aucun trio purifiable.<br><em>Il faut au moins trois exemplaires d'un même item, hors palier ultime.</em></div>`;
   } else {
@@ -7561,7 +7701,7 @@ function openAthanor(){
     for(const e of eligible){
       const chain = Math.floor(e.key / TIERS), tier = e.key % TIERS;
       const ch = CHAINS[chain];
-      const cost = athanorCost(tier);
+      const cost = mixeurCost(tier);
       const canPay = STATE.gold >= cost;
       const row = document.createElement("div");
       row.className = "ath-row" + (canPay ? "" : " unaff");
@@ -7588,7 +7728,7 @@ function openAthanor(){
   modal.classList.add("show");
 }
 
-function athanorCost(tier){
+function mixeurCost(tier){
   return Math.floor(20 * Math.pow(2.4, tier));
 }
 
@@ -7633,7 +7773,7 @@ function doPurify(chain, tier, cost){
     if(typeof checkAchievements === 'function') checkAchievements();
   if(typeof checkMasterQuest === 'function') checkMasterQuest();
     // Refresh modal
-    openAthanor();
+    openMixeur();
   }, 280);
 }
 
@@ -7822,7 +7962,7 @@ function renderStats(){
     $gold.parentElement.appendChild(span);
     $gold._rateEl = span;
   }
-  $gold.title = Math.floor(STATE.gold) + " couronnes" + (ips > 0 ? ` (+${ips.toFixed(1)}/s)` : '');
+  $gold.title = Math.floor(STATE.gold) + " médailles" + (ips > 0 ? ` (+${ips.toFixed(1)}/s)` : '');
   const modal = document.getElementById("stats-modal");
   if(modal && modal.classList.contains("show")) renderStatsBody();
   // Phase visuelle de fond : 0=normal, 1@T2, 2@T4, 3@T6, 4@T7
@@ -7857,7 +7997,7 @@ function renderStats(){
     }
   }
   if(menuSanc){
-    const showSanc = (STATE.transmutations > 0 || STATE.stars > 0);
+    const showSanc = (STATE.ascensions > 0 || STATE.stars > 0);
     menuSanc.style.display = showSanc ? "" : "none";
     const stars = STATE.stars||0;
     menuSanc.classList.toggle("ready", stars > 0);
@@ -7985,9 +8125,9 @@ function renderStatsBody(){
   html.push(`</div>`);
 
   html.push(`<div class="stats-section"><h3>Économie</h3>`);
-  html.push(`<div class="stats-row"><span class="lbl">Couronnes</span><span class="val">${STATE.gold}</span></div>`);
-  html.push(`<div class="stats-row"><span class="lbl">Étincelle max</span><span class="val">${STATE.essenceMax}</span></div>`);
-  html.push(`<div class="stats-row"><span class="lbl">Étincelle / sec</span><span class="val">${STATE.essenceRegen.toFixed(2)}</span></div>`);
+  html.push(`<div class="stats-row"><span class="lbl">Médailles</span><span class="val">${STATE.gold}</span></div>`);
+  html.push(`<div class="stats-row"><span class="lbl">Énergie max</span><span class="val">${STATE.essenceMax}</span></div>`);
+  html.push(`<div class="stats-row"><span class="lbl">Énergie / sec</span><span class="val">${STATE.essenceRegen.toFixed(2)}</span></div>`);
   html.push(`</div>`);
 
   html.push(`<div class="stats-section"><h3>Trois Voies</h3>`);
@@ -8015,9 +8155,9 @@ function renderStatsBody(){
     html.push(`</div>`);
   }
 
-  if((STATE.transmutations||0) > 0 || (STATE.totalStars||0) > 0){
-    html.push(`<div class="stats-section"><h3>Transmutations</h3>`);
-    html.push(`<div class="stats-row"><span class="lbl">Transmutations</span><span class="val">${STATE.transmutations||0}</span></div>`);
+  if((STATE.ascensions||0) > 0 || (STATE.totalStars||0) > 0){
+    html.push(`<div class="stats-section"><h3>Ascensions</h3>`);
+    html.push(`<div class="stats-row"><span class="lbl">Ascensions</span><span class="val">${STATE.ascensions||0}</span></div>`);
     html.push(`<div class="stats-row"><span class="lbl">Étoiles disponibles</span><span class="val">${STATE.stars||0} ★</span></div>`);
     html.push(`<div class="stats-row"><span class="lbl">Étoiles totales</span><span class="val">${STATE.totalStars||0} ★</span></div>`);
     html.push(`<div class="stats-row"><span class="lbl">Upgrades acquis</span><span class="val">${Object.keys(STATE.upgrades||{}).filter(k=>STATE.upgrades[k]>0).length}/${UPGRADES.length}</span></div>`);
@@ -8162,7 +8302,7 @@ function fireGenerator(idx, el){
   if(typeof checkAchievements === 'function') checkAchievements();
   if(typeof checkMasterQuest === 'function') checkMasterQuest();
   if(typeof tutorialOnSpawn === 'function') tutorialOnSpawn(g.chain);
-  // burst from cauldron
+  // burst from distributeur
   const r = el.getBoundingClientRect();
   particles(r.left + r.width/2, r.top + 14, CHAINS[g.chain].color, 14);
   if(isLucky){
@@ -8197,11 +8337,66 @@ function flashStat(id){
     { boxShadow:"0 0 0 transparent" }
   ], { duration:400 });
 }
+/* ================ LE COUREUR ================ */
+/* Speed multiplier = 1.0 baseline + 0.2 par palier max atteint (toutes voies confondues)
+   + 0.05 par ascension (ascension).
+   Lap count: dérivé de ascensions + cycles internes. */
+function runnerSpeedMultiplier(){
+  const totalMaxTier = (STATE.totals?.maxTier||[0,0,0]).reduce((a,b)=>a+b, 0);
+  const ascensions = STATE.ascensions || 0;
+  return 1 + totalMaxTier * 0.15 + ascensions * 0.5;
+}
+let _runnerMotionDur = 14; // seconds for one lap, lower = faster
+let _runnerLapAt = 0;      // timestamp of last lap completion
+function updateRunner(){
+  const stadium = document.getElementById('runner-stadium');
+  if(!stadium) return;
+  const motion = document.getElementById('rs-motion');
+  const lapEl = document.getElementById('rs-lap-num');
+  const spdEl = document.getElementById('rs-speed-num');
+  const mul = runnerSpeedMultiplier();
+  // Durée de tour : baseline 14s, accélère selon mul. Plancher à 2s.
+  const targetDur = Math.max(2, 14 / mul);
+  if(Math.abs(_runnerMotionDur - targetDur) > 0.05){
+    _runnerMotionDur = targetDur;
+    if(motion){
+      motion.setAttribute('dur', targetDur.toFixed(2) + 's');
+    }
+  }
+  if(spdEl){
+    const txt = '×' + mul.toFixed(1);
+    if(spdEl.textContent !== txt){
+      spdEl.textContent = txt;
+      // Petit pulse sur le compteur quand la vitesse change
+      spdEl.animate([
+        { transform:'scale(1)', color:'#fff' },
+        { transform:'scale(1.25)', color:'var(--gold-bright)' },
+        { transform:'scale(1)', color:'#fff' },
+      ], { duration:380, easing:'ease-out' });
+    }
+  }
+  if(lapEl){
+    const laps = STATE.ascensions || 0;
+    if(lapEl.textContent !== String(laps)){
+      lapEl.textContent = String(laps);
+    }
+  }
+}
+/* Boost visuel du stade quand un merge survient */
+function pulseRunnerBoost(){
+  const stadium = document.getElementById('runner-stadium');
+  if(!stadium) return;
+  stadium.classList.remove('boost');
+  void stadium.offsetWidth;
+  stadium.classList.add('boost');
+  setTimeout(()=>stadium.classList.remove('boost'), 520);
+}
+
 function tickGenerators(now){
   const rates = STATE._idlePerSecByChain || [0, 0, 0];
   $gens.querySelectorAll(".gen").forEach((el, i)=>{
     const g = STATE.generators[i];
-    if(!g || g.kind === "athanor") return; // pas de cooldown sur athanor
+    if(!g || g.kind === "mixeur") return; // pas de cooldown sur mixeur
     const dt = now - g.lastFire;
     const effCd = g.cdMs * (STATE.eventCdMul || 1);
     const cdPct = effCd > 0 ? Math.min(100, (dt/effCd)*100) : 100;
@@ -8230,16 +8425,16 @@ function tickGenerators(now){
       }
     }
   });
-  // bulles canvas (3 cauldrons seulement)
+  // bulles canvas (3 distributeurs seulement)
   $gens.querySelectorAll(".gen-bubbles").forEach((cv, i)=>{
     const ctx = cv.getContext("2d");
-    drawCauldronBubbles(ctx, cv.width, cv.height, i, now);
+    drawDistributeurBubbles(ctx, cv.width, cv.height, i, now);
   });
 }
 
-/* Bulles dans les cauldrons */
+/* Bulles dans les distributeurs */
 const BUB = [[],[],[]];
-function drawCauldronBubbles(ctx, w, h, chainIdx, now){
+function drawDistributeurBubbles(ctx, w, h, chainIdx, now){
   ctx.clearRect(0,0,w,h);
   // spawn
   if(Math.random() < .35){
@@ -8443,7 +8638,7 @@ function triggerComboExplosion(cx, cy, chain, comboCount){
   el.className = 'combo-explosion-toast';
   el.innerHTML = `
     <div class="cx-banner">SUPERNOVA · ×${comboCount}</div>
-    <div class="cx-bonus">+${bonus} couronnes</div>
+    <div class="cx-bonus">+${bonus} médailles</div>
     <div class="cx-sub">L'œuvre prend feu. Trois palier I jaillissent.</div>
   `;
   document.body.appendChild(el);
@@ -8566,6 +8761,8 @@ function doMerge(fx, fy, tx, ty){
   sfxMerge(newTier, a.chain);
   vibrate([12, 30, 18]);
   floating(bx, by - 30, "▲ " + ch.tiers[newTier].n, "tier");
+  // Le stade vibre : le coureur a reçu son boost
+  if(typeof pulseRunnerBoost === 'function') pulseRunnerBoost();
 
   setTimeout(()=>{
     setTile(fx, fy, null);
@@ -8594,12 +8791,12 @@ function doMerge(fx, fy, tx, ty){
       // Texte enrichi qui remplace le simple "▲ MANDRAGORE" — même position, plus dense
       floating(bx, by - 50, `or passif × ${mulTxt}`, "tier-new");
       // Flash unique sur la chaudière de la voie (preuve visuelle qu'elle devient plus forte)
-      const cauldron = document.querySelector(`.gen[data-chain="${a.chain}"]`);
-      if(cauldron){
-        cauldron.classList.remove('gen-power-up');
-        void cauldron.offsetWidth; // reflow
-        cauldron.classList.add('gen-power-up');
-        setTimeout(()=>cauldron.classList.remove('gen-power-up'), 1200);
+      const distributeur = document.querySelector(`.gen[data-chain="${a.chain}"]`);
+      if(distributeur){
+        distributeur.classList.remove('gen-power-up');
+        void distributeur.offsetWidth; // reflow
+        distributeur.classList.add('gen-power-up');
+        setTimeout(()=>distributeur.classList.remove('gen-power-up'), 1200);
       }
       // SFX bref : 2 blips ascendants. Pas de cascade longue.
       if(A.ctx){
@@ -8637,7 +8834,7 @@ function doMerge(fx, fy, tx, ty){
         }
       }
     }
-    // Upgrade Fulmen : +N couronnes par fusion T2+
+    // Upgrade Fulmen : +N médailles par fusion T2+
     if(newTier >= 2){
       const fulmen = getMergeBonusGold();
       if(fulmen > 0){ STATE.gold += Math.floor(fulmen * cMul); }
@@ -8675,7 +8872,7 @@ function claimQuest(q){
   sfxClaim();
   vibrate(20);
   const r = document.getElementById("quests").getBoundingClientRect();
-  floating(r.left + r.width/2, r.top + 80, "+"+reward+" couronnes", "gain");
+  floating(r.left + r.width/2, r.top + 80, "+"+reward+" médailles", "gain");
   renderStats();
   refreshQuests();
   applyProgressionBonuses();
@@ -9164,14 +9361,14 @@ function floating(x, y, txt, kind="gain"){
 const TUTORIAL_STEPS = [
   {
     id:'spawn', title:'PREMIER GESTE',
-    text:'Tape le cauldron <strong style="color:var(--plant-2)">vert</strong> pour invoquer une <em>graine</em>. Coût : 3 étincelle.',
+    text:'Tape le distributeur <strong style="color:var(--plant-2)">vert</strong> pour invoquer une <em>graine</em>. Coût : 3 énergie.',
     target:'.gen[data-chain="0"]', position:'above',
     advanceOn:'spawn', // avance après un fireGenerator réussi
     minDelay: 0,
   },
   {
     id:'spawn2', title:'UNE SECONDE',
-    text:'Une seconde graine pour pouvoir <strong>la fusionner avec la première</strong>. Re-tape le cauldron vert.',
+    text:'Une seconde graine pour pouvoir <strong>la fusionner avec la première</strong>. Re-tape le distributeur vert.',
     target:'.gen[data-chain="0"]', position:'above',
     advanceOn:'spawn2',
     minDelay: 600,
@@ -9192,7 +9389,7 @@ const TUTORIAL_STEPS = [
   },
   {
     id:'menu', title:'LE MENU',
-    text:'Le <strong>☰</strong> en haut à gauche regroupe le Grand Œuvre, le Sanctum, les statistiques et les paramètres. Tu y reviendras souvent.',
+    text:'Le <strong>☰</strong> en haut à gauche regroupe le Grand Œuvre, le Vestiaire, les statistiques et les paramètres. Tu y reviendras souvent.',
     target:'#menu-toggle', position:'right',
     advanceOn:'click',
     minDelay: 2500,
@@ -9351,7 +9548,7 @@ function showItemTooltip(tile, x, y){
   const t = ch.tiers[tile.tier];
   const idleRate = IDLE_GOLD_PER_TIER[tile.tier] || 0;
   const idleHtml = idleRate > 0
-    ? `<div class="it-idle"><span class="it-idle-val">+${idleRate < 1 ? idleRate.toFixed(1) : Math.floor(idleRate)}</span> couronnes / seconde</div>`
+    ? `<div class="it-idle"><span class="it-idle-val">+${idleRate < 1 ? idleRate.toFixed(1) : Math.floor(idleRate)}</span> médailles / seconde</div>`
     : `<div class="it-idle muted">— ne rapporte rien tant qu'inerte — fusionne-la</div>`;
   const el = document.createElement("div");
   el.className = "item-tooltip";
@@ -9399,7 +9596,7 @@ function showOfflineToast(offlineMs, gold){
   ov.innerHTML = `
     <div class="of-banner">PENDANT TON ABSENCE</div>
     <div class="of-time">${fmtDuration(offlineMs)}</div>
-    <div class="of-text">L'atelier a continué de murmurer. La poussière a brillé. L'étincelle s'est rechargée.</div>
+    <div class="of-text">L'stade a continué de murmurer. La poussière a brillé. L'énergie s'est rechargée.</div>
     <div class="of-gain">+${gold} <svg viewBox="0 0 16 16" shape-rendering="crispEdges" style="width:11px;height:11px;vertical-align:-2px"><rect x="3" y="5" width="10" height="2" fill="#c9a25a"/><rect x="3" y="7" width="10" height="5" fill="#9a7842"/></svg></div>
     <div class="of-close">Toucher pour fermer</div>
   `;
@@ -9433,10 +9630,10 @@ function save(){
       totalPlayMs:STATE.totalPlayMs,
       lastSaveTime:now,
       audio:STATE.audio,
-      athanorUnlocked: STATE.generators[3]?.unlocked || false,
+      mixeurUnlocked: STATE.generators[3]?.unlocked || false,
       activeEvents: STATE.activeEvents || {},
       stars:STATE.stars||0, totalStars:STATE.totalStars||0,
-      transmutations:STATE.transmutations||0,
+      ascensions:STATE.ascensions||0,
       upgrades:STATE.upgrades||{},
       bestCombo:STATE.bestCombo||0,
       recipes:STATE.recipes||{},
@@ -9464,10 +9661,10 @@ function load(){
     STATE.achievements = s.achievements ?? {};
     STATE.totalPlayMs = s.totalPlayMs ?? 0;
     STATE.audio = s.audio ?? true;
-    if(STATE.generators[3] && s.athanorUnlocked) STATE.generators[3].unlocked = true;
+    if(STATE.generators[3] && s.mixeurUnlocked) STATE.generators[3].unlocked = true;
     STATE.stars = s.stars ?? 0;
     STATE.totalStars = s.totalStars ?? 0;
-    STATE.transmutations = s.transmutations ?? 0;
+    STATE.ascensions = s.ascensions ?? 0;
     STATE.upgrades = s.upgrades ?? {};
     STATE.bestCombo = s.bestCombo ?? 0;
     STATE.recipes = s.recipes ?? {};
@@ -9498,7 +9695,7 @@ function load(){
     const offlineMs = Math.max(0, now - lastSave);
     if(offlineMs > 60*1000){ // au-delà d'1 min on parle d'offline
       STATE.lastOfflineMs = offlineMs;
-      // Récupération offline : essence se remplit + petit gain de couronnes proportionnel
+      // Récupération offline : essence se remplit + petit gain de médailles proportionnel
       STATE.essence = STATE.essenceMax;
       const cappedHours = Math.min(8, offlineMs / (3600*1000)); // cap 8h
       const offlineGold = Math.floor(cappedHours * 12 + (cappedHours * (sumProduced(STATE)/100)));
@@ -9616,14 +9813,14 @@ function boot(){
     if(e.target.id === "stats-modal") document.getElementById("stats-modal").classList.remove("show");
   });
 
-  document.getElementById("athanor-close").addEventListener("click", ()=>{
-    document.getElementById("athanor-modal").classList.remove("show");
+  document.getElementById("mixeur-close").addEventListener("click", ()=>{
+    document.getElementById("mixeur-modal").classList.remove("show");
   });
-  document.getElementById("athanor-modal").addEventListener("click", e=>{
-    if(e.target.id === "athanor-modal") document.getElementById("athanor-modal").classList.remove("show");
+  document.getElementById("mixeur-modal").addEventListener("click", e=>{
+    if(e.target.id === "mixeur-modal") document.getElementById("mixeur-modal").classList.remove("show");
   });
 
-  document.getElementById("sanctum-toggle").addEventListener("click", openSanctum);
+  document.getElementById("sanctum-toggle").addEventListener("click", openVestiaire);
   document.getElementById("sanctum-close").addEventListener("click", ()=>{
     document.getElementById("sanctum-modal").classList.remove("show");
   });
@@ -9683,7 +9880,7 @@ function boot(){
       setTimeout(()=>{
         if(target) openModal(target);
         else if(action === 'oeuvre') openOeuvre();
-        else if(action === 'sanctum') openSanctum();
+        else if(action === 'sanctum') openVestiaire();
         else if(action === 'transmute') openTransmute();
         else if(action === 'shop'){ renderShop(); openModal('shop-modal'); }
         else if(action === 'stats'){ renderStatsBody(); openModal('stats-modal'); }
@@ -9876,6 +10073,7 @@ function boot(){
     });
     safe(renderStats);
     safe(()=>tickGenerators(now));
+    safe(updateRunner);
     safe(tickDust);
     safe(()=>tickCandles(now));
     safe(tickThemed);

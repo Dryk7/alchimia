@@ -3616,7 +3616,7 @@ body.shop-epic-flash::after{
       </section>
       <section class="grim-sec">
         <h3>Le But</h3>
-        <p><span class="dropcap">T</span>u es l'alchimiste. Trois voies te sont ouvertes : la <em style="color:var(--plant-2)">Plante</em>, la <em style="color:var(--mineral-2)">Pierre</em>, l'<em style="color:var(--essence-2)">Essence</em>. Chaque voie monte en huit paliers, du plus humble (Graine, Caillou, Brume) au plus haut (Yggdra, Eternium, Singularité). Ton œuvre est de gravir ces voies, et — si l'art est juste — de les unir en un Grand Œuvre qui dépasse leurs sommes.</p>
+        <p><span class="dropcap">T</span>u nourris le coureur. Trois voies te sont ouvertes : <em style="color:var(--plant-2)">Hydra</em> (l'eau), <em style="color:var(--mineral-2)">Énergie</em> (la nourriture), <em style="color:var(--essence-2)">Souffle</em> (la respiration). Chaque voie monte en huit paliers, du plus humble (Gourde, Pomme, Bandeau) au plus haut (Eau de Vie, Nectar, Souffle Divin). Ton rôle : fusionner les ravitaillements pour que le coureur tourne plus vite, boucle son tour, et ascende.</p>
       </section>
       <section class="grim-sec">
         <h3>Comment Jouer</h3>
@@ -3625,7 +3625,7 @@ body.shop-epic-flash::after{
       </section>
       <section class="grim-sec">
         <h3>Pourquoi Fusionner ?</h3>
-        <p><span class="dropcap">C</span>haque item posé sur ton plateau, à partir du palier <strong>I</strong>, te rapporte de l'or <strong>passivement</strong>, seconde après seconde. La matière brute (Graine, Caillou, Brume — T0) ne donne rien : elle est inerte. Mais à partir du Bourgeon, du Quartz, de l'Énergie, la ascension a commencé : la matière œuvre.</p>
+        <p><span class="dropcap">C</span>haque item posé sur ton plateau, à partir du palier <strong>I</strong>, donne des médailles <strong>passivement</strong> à ton coureur, seconde après seconde. Les ravitaillements bruts (Gourde, Pomme, Bandeau — T0) ne donnent rien : ils sont en attente. Mais à partir de la Bouteille, de la Barre, du Foulard, le coureur récolte vraiment : tu nourris sa vitesse.</p>
         <p><strong>Le rendement multiplie ×3-4 à chaque palier</strong> :</p>
         <p style="font-family:'VT323', monospace; font-size:14px; color:var(--gold-light); line-height:1.5">
           T1 — 0.1 or/s par tuile<br>
@@ -3667,7 +3667,7 @@ body.shop-epic-flash::after{
       </section>
       <section class="grim-sec">
         <h3>Le Grand Œuvre</h3>
-        <p><span class="dropcap">L</span>'stade des Catalyseurs. Une <em>recette</em> consomme un item de chaque voie au même palier (par exemple : un Bourgeon, un Quartz, une Énergie pour le Sceau du Concord). Le résultat est un <strong>catalyseur permanent</strong> qui modifie le jeu : +10% d'or, auto-spawn, cooldowns réduits, énergie plus large. Six catalyseurs au total. Un seul exemplaire par run.</p>
+        <p><span class="dropcap">L</span>e Banc de Mixage. Une <em>recette</em> consomme un item de chaque voie au même palier (par exemple : une Bouteille, une Barre, un Foulard pour le Sceau du Concord). Le résultat est un <strong>catalyseur permanent</strong> qui modifie le jeu : +10% médailles, auto-spawn, cooldowns réduits, énergie plus large. Six catalyseurs au total. Un seul exemplaire par tour.</p>
         <p>C'est <strong>la</strong> raison de pousser tes trois voies en parallèle : elles doivent atteindre un palier commun pour s'unir.</p>
       </section>
       <section class="grim-sec">
@@ -4710,35 +4710,33 @@ function loreFor(chain, tier){ return LORE[chain + "_" + tier]; }
 const sumMerged = s => s.totals.merged.reduce((a,b)=>a+b,0);
 const sumProduced = s => s.totals.produced.reduce((a,b)=>a+b,0);
 
-/* 14 hauts faits — chacun raconte un moment, pas un compteur grindy.
-   On garde : 1 entrée, 3 premiers paliers, 3 paliers mi-jeu, 3 grands œuvres,
-   3 records globaux (production, fusion, or), 1 endgame ultime. */
+/* 14 hauts faits — alignés avec les voies Hydra/Énergie/Souffle. */
 const ACHIEVEMENTS = [
-  // === Entrée dans l'œuvre ===
-  { id:"first_merge",  name:"Premier Œuvre",     desc:"Réaliser ta toute première fusion.",   icon:"fuse",    reward:5,  check:s => sumMerged(s)>=1 },
+  // === Entrée dans la course ===
+  { id:"first_merge",  name:"Première Fusion",   desc:"Ton premier ravitaillement combiné.",   icon:"fuse",    reward:5,  check:s => sumMerged(s)>=1 },
 
   // === Trois éveils — palier I sur chaque voie ===
-  { id:"plant_t1",     name:"Bourgeon",          desc:"Faire pousser un Bourgeon.",           icon:"sulfur",  reward:10,  check:s => s.totals.maxTier[0]>=1 },
-  { id:"stone_t1",     name:"Quartz",            desc:"Tailler ton premier Quartz.",          icon:"salt",    reward:10,  check:s => s.totals.maxTier[1]>=1 },
-  { id:"ess_t1",       name:"Énergie",         desc:"Allumer ta première Énergie.",       icon:"mercury", reward:10,  check:s => s.totals.maxTier[2]>=1 },
+  { id:"plant_t1",     name:"Bouteille",         desc:"Remplir ta première bouteille pour le coureur.",  icon:"sulfur",  reward:10,  check:s => s.totals.maxTier[0]>=1 },
+  { id:"stone_t1",     name:"Barre",             desc:"Préparer ta première barre énergétique.",         icon:"salt",    reward:10,  check:s => s.totals.maxTier[1]>=1 },
+  { id:"ess_t1",       name:"Foulard",           desc:"Nouer ton premier foulard de course.",            icon:"mercury", reward:10,  check:s => s.totals.maxTier[2]>=1 },
 
   // === Trois maturités — palier III ===
-  { id:"plant_t3",     name:"Fleur Sépulcrale",  desc:"Atteindre la Fleur Sépulcrale.",       icon:"sulfur",  reward:40,  check:s => s.totals.maxTier[0]>=3 },
-  { id:"stone_t3",     name:"Cœur de Géode",     desc:"Ouvrir ta première Géode.",            icon:"salt",    reward:40,  check:s => s.totals.maxTier[1]>=3 },
-  { id:"ess_t3",       name:"Convocation",       desc:"Convoquer un Esprit.",                 icon:"mercury", reward:40,  check:s => s.totals.maxTier[2]>=3 },
+  { id:"plant_t3",     name:"Élixir Glacé",      desc:"Distiller un élixir glacé pour la finale.",       icon:"sulfur",  reward:40,  check:s => s.totals.maxTier[0]>=3 },
+  { id:"stone_t3",     name:"Miel Brut",         desc:"Récolter du miel brut, carburant lent.",          icon:"salt",    reward:40,  check:s => s.totals.maxTier[1]>=3 },
+  { id:"ess_t3",       name:"Filtre",            desc:"Installer un filtre pour respirer pur.",          icon:"mercury", reward:40,  check:s => s.totals.maxTier[2]>=3 },
 
-  // === Trois Grands Œuvres — palier V (Panacée / Pierre Philosophale / Quintessence) ===
-  { id:"plant_t5",     name:"Panacée",           desc:"Distiller la Panacée.",                icon:"sulfur",  reward:250, check:s => s.totals.maxTier[0]>=5 },
-  { id:"stone_t5",     name:"Œuvre Rouge",       desc:"Forger la Pierre Philosophale.",       icon:"salt",    reward:250, check:s => s.totals.maxTier[1]>=5 },
-  { id:"ess_t5",       name:"Quintessence",      desc:"Atteindre l'éther innommé.",           icon:"mercury", reward:250, check:s => s.totals.maxTier[2]>=5 },
+  // === Trois sommets — palier V (Eau Bénie / Carburant / Vent Pur) ===
+  { id:"plant_t5",     name:"Eau Bénie",         desc:"L'eau des coachs et des marathoniens.",           icon:"sulfur",  reward:250, check:s => s.totals.maxTier[0]>=5 },
+  { id:"stone_t5",     name:"Carburant",         desc:"Mix protéiné du champion.",                       icon:"salt",    reward:250, check:s => s.totals.maxTier[1]>=5 },
+  { id:"ess_t5",       name:"Vent Pur",          desc:"Respirer l'air des matins de printemps.",         icon:"mercury", reward:250, check:s => s.totals.maxTier[2]>=5 },
 
   // === Records globaux ===
-  { id:"prod_500",     name:"Manufacture",       desc:"Produire 500 items au total.",         icon:"horn",    reward:80,  check:s => sumProduced(s)>=500 },
-  { id:"merge_500",    name:"Maître Artisan",    desc:"500 fusions au total.",                icon:"fuse",    reward:150, check:s => sumMerged(s)>=500 },
-  { id:"gold_5000",    name:"Trésor",            desc:"Posséder 5 000 médailles.",            icon:"crown",   reward:300, check:s => s.gold>=5000 },
+  { id:"prod_500",     name:"Manufacture",       desc:"Produire 500 ravitaillements au total.",          icon:"horn",    reward:80,  check:s => sumProduced(s)>=500 },
+  { id:"merge_500",    name:"Maître Mixeur",     desc:"500 fusions au total.",                           icon:"fuse",    reward:150, check:s => sumMerged(s)>=500 },
+  { id:"gold_5000",    name:"Trésor",            desc:"Posséder 5 000 médailles.",                       icon:"crown",   reward:300, check:s => s.gold>=5000 },
 
   // === Ultime ===
-  { id:"triple_t7",    name:"Adepte Suprême",    desc:"Avoir Yggdra, Eternium et Singularité.", icon:"trinity", reward:5000, check:s => s.totals.maxTier.every(t=>t>=7) },
+  { id:"triple_t7",    name:"Triple Sommet",     desc:"Eau de Vie, Nectar et Souffle Divin atteints.",   icon:"trinity", reward:5000, check:s => s.totals.maxTier.every(t=>t>=7) },
 ];
 
 function checkAchievements(){
@@ -6626,41 +6624,45 @@ const STATE = {
 
 /* ================ QUETES ================ */
 const QUEST_TEMPLATES = [
-  { type:"produce", chain:0, tier:0, target:5,  reward:8,  name:"Semer", desc:"Produis 5 graines au distributeur vert." },
-  { type:"reach",   chain:0, tier:1, target:1,  reward:12, name:"Bourgeon", desc:"Atteins le palier du Bourgeon." },
-  { type:"merge",   chain:0, tier:1, target:3,  reward:15, name:"Mains vertes", desc:"Réalise 3 fusions de plantes." },
-  { type:"reach",   chain:0, tier:2, target:1,  reward:25, name:"Mandragore", desc:"Invoque la Mandragore hurlante." },
-  { type:"reach",   chain:0, tier:3, target:1,  reward:60, name:"Fleur des veilleurs", desc:"Fais éclore la Fleur Sépulcrale." },
-  { type:"reach",   chain:0, tier:4, target:1,  reward:140,name:"Aube nouvelle", desc:"Distille l'Élixir d'Aube." },
-  { type:"reach",   chain:0, tier:5, target:1,  reward:400,name:"Panacée", desc:"Achève la Voie de la Plante." },
-  { type:"reach",   chain:0, tier:6, target:1,  reward:1200,name:"Axis Mundi", desc:"Fais grandir l'Arbre-Monde." },
-  { type:"reach",   chain:0, tier:7, target:1,  reward:4000,name:"Yggdra", desc:"Atteins l'arbre des arbres."},
+  // === Voie HYDRA (chain 0) ===
+  { type:"produce", chain:0, tier:0, target:5,  reward:8,  name:"Premières gourdes", desc:"Produis 5 gourdes au distributeur bleu." },
+  { type:"reach",   chain:0, tier:1, target:1,  reward:12, name:"Bouteille", desc:"Remplis ta première Bouteille." },
+  { type:"merge",   chain:0, tier:1, target:3,  reward:15, name:"Ravitailleur", desc:"Réalise 3 fusions d'hydratation." },
+  { type:"reach",   chain:0, tier:2, target:1,  reward:25, name:"Bidon Iso", desc:"Prépare un Bidon Iso pour le coureur." },
+  { type:"reach",   chain:0, tier:3, target:1,  reward:60, name:"Élixir Glacé", desc:"Distille un Élixir Glacé." },
+  { type:"reach",   chain:0, tier:4, target:1,  reward:140,name:"Source", desc:"Capture une Source d'Altitude." },
+  { type:"reach",   chain:0, tier:5, target:1,  reward:400,name:"Eau Bénie", desc:"Bénis ton eau." },
+  { type:"reach",   chain:0, tier:6, target:1,  reward:1200,name:"Ambroisie", desc:"Distille l'Ambroisie Liquide." },
+  { type:"reach",   chain:0, tier:7, target:1,  reward:4000,name:"Eau de Vie", desc:"L'eau qui annule la fatigue."},
 
-  { type:"produce", chain:1, tier:0, target:5,  reward:10, name:"Glaner", desc:"Ramasse 5 cailloux." },
-  { type:"reach",   chain:1, tier:1, target:1,  reward:15, name:"Quartz", desc:"Trouve un cristal de Quartz." },
-  { type:"merge",   chain:1, tier:1, target:3,  reward:20, name:"Tailleur", desc:"Réalise 3 fusions de pierres." },
-  { type:"reach",   chain:1, tier:2, target:1,  reward:35, name:"Améthyste", desc:"Façonne une Améthyste." },
-  { type:"reach",   chain:1, tier:3, target:1,  reward:80, name:"Géode", desc:"Ouvre une Géode." },
-  { type:"reach",   chain:1, tier:4, target:1,  reward:180,name:"Runique", desc:"Grave une Pierre Runique." },
-  { type:"reach",   chain:1, tier:5, target:1,  reward:500,name:"L'Œuvre rouge", desc:"Forge la Pierre Philosophale." },
-  { type:"reach",   chain:1, tier:6, target:1,  reward:1500,name:"Étoile Polaire", desc:"Fixe l'aiguille du destin."},
-  { type:"reach",   chain:1, tier:7, target:1,  reward:5000,name:"Eternium", desc:"Forge le métal qui ne s'oublie pas."},
+  // === Voie ÉNERGIE (chain 1) ===
+  { type:"produce", chain:1, tier:0, target:5,  reward:10, name:"Premières pommes", desc:"Cueille 5 pommes au distributeur rouge." },
+  { type:"reach",   chain:1, tier:1, target:1,  reward:15, name:"Barre", desc:"Prépare ta première Barre énergétique." },
+  { type:"merge",   chain:1, tier:1, target:3,  reward:20, name:"Cuisinier", desc:"Réalise 3 fusions d'énergie." },
+  { type:"reach",   chain:1, tier:2, target:1,  reward:35, name:"Gel", desc:"Conditionne un Gel énergétique." },
+  { type:"reach",   chain:1, tier:3, target:1,  reward:80, name:"Miel Brut", desc:"Récolte du Miel Brut." },
+  { type:"reach",   chain:1, tier:4, target:1,  reward:180,name:"Smoothie", desc:"Mixe un Smoothie fruité." },
+  { type:"reach",   chain:1, tier:5, target:1,  reward:500,name:"Carburant", desc:"Compose le Carburant du champion." },
+  { type:"reach",   chain:1, tier:6, target:1,  reward:1500,name:"Élixir d'Or", desc:"Distille un Élixir d'Or."},
+  { type:"reach",   chain:1, tier:7, target:1,  reward:5000,name:"Nectar", desc:"Prépare le Nectar des dieux."},
 
-  { type:"produce", chain:2, tier:0, target:5,  reward:14, name:"Brumes", desc:"Capture 5 Brumes." },
-  { type:"reach",   chain:2, tier:1, target:1,  reward:20, name:"Énergie", desc:"Allume une Énergie." },
-  { type:"merge",   chain:2, tier:1, target:3,  reward:28, name:"Souffle", desc:"Réalise 3 fusions d'essences." },
-  { type:"reach",   chain:2, tier:2, target:1,  reward:50, name:"Flamme bleue", desc:"Invoque la Flamme Bleue." },
-  { type:"reach",   chain:2, tier:3, target:1,  reward:120,name:"Esprit", desc:"Convoque un Esprit." },
-  { type:"reach",   chain:2, tier:4, target:1,  reward:260,name:"Constellation", desc:"Trace une Constellation." },
-  { type:"reach",   chain:2, tier:5, target:1,  reward:700,name:"Quintessence", desc:"Atteins la Quintessence." },
-  { type:"reach",   chain:2, tier:6, target:1,  reward:2200,name:"Akasha", desc:"Lis le registre des âmes."},
-  { type:"reach",   chain:2, tier:7, target:1,  reward:7000,name:"Singularité", desc:"Touche le point de toute chose."},
+  // === Voie SOUFFLE (chain 2) ===
+  { type:"produce", chain:2, tier:0, target:5,  reward:14, name:"Premiers bandeaux", desc:"Noue 5 bandeaux au distributeur violet." },
+  { type:"reach",   chain:2, tier:1, target:1,  reward:20, name:"Foulard", desc:"Drappe un Foulard de course." },
+  { type:"merge",   chain:2, tier:1, target:3,  reward:28, name:"Ajusteur", desc:"Réalise 3 fusions de souffle." },
+  { type:"reach",   chain:2, tier:2, target:1,  reward:50, name:"Masque", desc:"Ajuste un Masque respiratoire." },
+  { type:"reach",   chain:2, tier:3, target:1,  reward:120,name:"Filtre", desc:"Installe un Filtre puissant." },
+  { type:"reach",   chain:2, tier:4, target:1,  reward:260,name:"Bombonne", desc:"Charge une Bombonne d'oxygène." },
+  { type:"reach",   chain:2, tier:5, target:1,  reward:700,name:"Vent Pur", desc:"Capte le Vent Pur des sommets." },
+  { type:"reach",   chain:2, tier:6, target:1,  reward:2200,name:"Aether", desc:"Atteins l'Aether des cieux."},
+  { type:"reach",   chain:2, tier:7, target:1,  reward:7000,name:"Souffle Divin", desc:"Le souffle qui ne s'épuise pas."},
 
-  { type:"merge_any", target:20,  reward:30,  name:"Apprenti",  desc:"Réalise 20 fusions, toutes voies confondues." },
-  { type:"merge_any", target:80,  reward:120, name:"Adepte",    desc:"Réalise 80 fusions au total." },
-  { type:"merge_any", target:300, reward:500, name:"Maître",    desc:"Réalise 300 fusions au total." },
-  { type:"merge_any", target:800, reward:1500,name:"Hiérophante",desc:"Réalise 800 fusions au total." },
-  { type:"merge_any", target:2000,reward:5000,name:"Mage Suprême",desc:"Réalise 2000 fusions au total." },
+  // === Records de fusions ===
+  { type:"merge_any", target:20,  reward:30,  name:"Apprenti coureur",  desc:"20 fusions au total." },
+  { type:"merge_any", target:80,  reward:120, name:"Coureur confirmé",  desc:"80 fusions au total." },
+  { type:"merge_any", target:300, reward:500, name:"Marathonien",       desc:"300 fusions au total." },
+  { type:"merge_any", target:800, reward:1500,name:"Ultra-distance",    desc:"800 fusions au total." },
+  { type:"merge_any", target:2000,reward:5000,name:"Légende du Stade",  desc:"2000 fusions au total." },
 ];
 
 function recordCodexUnlock(chain, tier){
@@ -7316,15 +7318,15 @@ const SHOP_ITEMS = [
     cost:320, kind:'instant', perform:()=>startFrenzy() },
 
   // === Spawns directs (économie de l'attente) ===
-  { id:'spawn0_0', section:'Invocations directes', name:'Graine', desc:'Une graine en plus, sur-le-champ.',  cost:8,   icon:0, perform:()=>shopSpawn(0, 0) },
-  { id:'spawn1_0', section:'Invocations directes', name:'Caillou',desc:'Un caillou en plus, sur-le-champ.', cost:14,  icon:1, perform:()=>shopSpawn(1, 0) },
-  { id:'spawn2_0', section:'Invocations directes', name:'Brume',  desc:'Une brume en plus, sur-le-champ.',  cost:22,  icon:2, perform:()=>shopSpawn(2, 0) },
-  { id:'spawn0_1', section:'Invocations directes', name:'Bourgeon', desc:'Un Bourgeon (palier II) directement.', cost:90,  icon:0, perform:()=>shopSpawn(0, 1) },
-  { id:'spawn1_1', section:'Invocations directes', name:'Quartz',   desc:'Un Quartz (palier II) directement.',  cost:120, icon:1, perform:()=>shopSpawn(1, 1) },
-  { id:'spawn2_1', section:'Invocations directes', name:'Énergie Vraie', desc:'Une Énergie (palier II) directement.', cost:160, icon:2, perform:()=>shopSpawn(2, 1) },
+  { id:'spawn0_0', section:'Invocations directes', name:'Gourde', desc:'Une gourde supplémentaire, livrée au cabinet.',  cost:8,   icon:0, perform:()=>shopSpawn(0, 0) },
+  { id:'spawn1_0', section:'Invocations directes', name:'Pomme',  desc:'Une pomme bien fraîche livrée au cabinet.',    cost:14,  icon:1, perform:()=>shopSpawn(1, 0) },
+  { id:'spawn2_0', section:'Invocations directes', name:'Bandeau',desc:'Un bandeau de sueur livré au cabinet.',         cost:22,  icon:2, perform:()=>shopSpawn(2, 0) },
+  { id:'spawn0_1', section:'Invocations directes', name:'Bouteille', desc:'Une Bouteille (palier II) livrée directement.', cost:90,  icon:0, perform:()=>shopSpawn(0, 1) },
+  { id:'spawn1_1', section:'Invocations directes', name:'Barre',     desc:'Une Barre énergétique (palier II) livrée.',     cost:120, icon:1, perform:()=>shopSpawn(1, 1) },
+  { id:'spawn2_1', section:'Invocations directes', name:'Foulard',   desc:'Un Foulard de course (palier II) livré.',       cost:160, icon:2, perform:()=>shopSpawn(2, 1) },
 
   // === Sceaux : items au palier choisi par le joueur ===
-  { id:'seal_t2', section:'Sceaux du Marchand', name:'Sceau du Marchand', desc:'Un item palier II au choix (Mandragore, Améthyste ou Flamme Bleue).',
+  { id:'seal_t2', section:'Sceaux du Marchand', name:'Sceau du Marchand', desc:'Un item palier II au choix (Bidon Iso, Gel, ou Masque).',
     cost:250, kind:'seal', tier:2, perform:()=>shopOpenSeal(2) },
   { id:'seal_t3', section:'Sceaux du Marchand', name:'Sceau de l\'Apprenti', desc:'Un item palier III au choix.',
     cost:1000, kind:'seal', tier:3, perform:()=>shopOpenSeal(3) },

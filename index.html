@@ -23,40 +23,42 @@
    - aucun emoji : tout est SVG inline
    ========================================================= */
 :root{
-  --ink:#070506;
-  --ink-2:#0e0a0c;
-  --shadow:#1a1318;
-  --panel:#1f1620;
-  --panel-2:#2a1f24;
-  --leather:#3d2a24;
+  /* Palette réchauffée — moins d'encre noire, plus de bois patiné à la lampe à huile.
+     Conserve l'identité gothique alchimique mais respire au lieu d'étouffer. */
+  --ink:#150d08;          /* anciennement #070506 — bois sombre tiède */
+  --ink-2:#1e150e;        /* anciennement #0e0a0c */
+  --shadow:#241812;       /* anciennement #1a1318 */
+  --panel:#2a1d18;        /* anciennement #1f1620 */
+  --panel-2:#382520;      /* anciennement #2a1f24 */
+  --leather:#4d3528;      /* un peu plus chaud */
 
-  --parchment:#d8c69a;
-  --parchment-2:#b8a072;
-  --parchment-3:#8a7048;
+  --parchment:#e8d6aa;    /* anciennement #d8c69a — plus crème */
+  --parchment-2:#c8ad7c;  /* anciennement #b8a072 */
+  --parchment-3:#9a7a52;  /* anciennement #8a7048 */
 
-  --gold-dark:#5a4528;
-  --gold:#9a7842;
-  --gold-light:#c9a25a;
-  --gold-bright:#e8c878;
-  --gold-glow:rgba(232,200,120,.4);
+  --gold-dark:#6a5230;
+  --gold:#a88555;
+  --gold-light:#d8b568;
+  --gold-bright:#f4d989;  /* un poil plus lumineux */
+  --gold-glow:rgba(244,217,137,.45);
 
-  --plant:#5a8a4a;
-  --plant-2:#7ab36a;
-  --plant-glow:rgba(140,210,120,.6);
+  --plant:#6aa055;
+  --plant-2:#9ed079;       /* plus vif */
+  --plant-glow:rgba(160,220,130,.65);
 
-  --mineral:#4a6a8a;
-  --mineral-2:#7aa3c8;
-  --mineral-glow:rgba(140,200,240,.6);
+  --mineral:#5a82a8;
+  --mineral-2:#9ec8e8;     /* plus clair */
+  --mineral-glow:rgba(155,210,245,.65);
 
-  --essence:#6a4a8a;
-  --essence-2:#a070d0;
-  --essence-glow:rgba(180,120,240,.6);
+  --essence:#7a5aa0;
+  --essence-2:#b78ce8;     /* plus chaud */
+  --essence-glow:rgba(195,140,245,.65);
 
-  --ember:#c84a2a;
-  --flame:#e8a050;
-  --flame-glow:rgba(232,160,80,.55);
+  --ember:#d8542a;
+  --flame:#f0b060;
+  --flame-glow:rgba(240,176,96,.6);
 
-  --blood:#8a2a2a;
+  --blood:#9a2e2e;
 }
 
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
@@ -74,20 +76,20 @@ body{
 #stage{
   position:fixed; inset:0;
   background:
-    /* Vignette FORTE — bord noir profond */
-    radial-gradient(ellipse 90% 70% at 50% 50%, transparent 30%, rgba(0,0,0,.55) 60%, rgba(0,0,0,.92) 100%),
-    /* Halos chauds des deux bougies */
-    radial-gradient(ellipse 55% 32% at 18% 4%, rgba(232,160,80,.16), transparent 60%),
-    radial-gradient(ellipse 55% 32% at 82% 4%, rgba(232,160,80,.16), transparent 60%),
-    /* Lueur centrale très douce */
-    radial-gradient(ellipse 80% 60% at 50% 50%, rgba(150,90,50,.14), transparent 70%),
-    /* Veines du bois */
+    /* Vignette adoucie — bord chaud, pas noir total */
+    radial-gradient(ellipse 95% 75% at 50% 50%, transparent 35%, rgba(20,10,4,.35) 65%, rgba(15,8,3,.72) 100%),
+    /* Halos chauds des bougies — plus généreux */
+    radial-gradient(ellipse 65% 38% at 18% 4%, rgba(240,176,96,.24), transparent 62%),
+    radial-gradient(ellipse 65% 38% at 82% 4%, rgba(240,176,96,.24), transparent 62%),
+    /* Lueur centrale chaude — comme une lampe à huile sur la table */
+    radial-gradient(ellipse 85% 65% at 50% 50%, rgba(200,130,70,.20), transparent 72%),
+    /* Veines du bois plus chaudes */
     repeating-linear-gradient(91deg,
-      #1a0f0a 0px, #1a0f0a 2px,
-      #150c08 2px, #150c08 4px,
-      #1d110b 4px, #1d110b 7px,
-      #160d09 7px, #160d09 10px),
-    #120906;
+      #281a10 0px, #281a10 2px,
+      #221510 2px, #221510 4px,
+      #2c1d12 4px, #2c1d12 7px,
+      #241710 7px, #241710 10px),
+    #1d1108;
   display:flex; flex-direction:column;
   transition:filter 1.2s ease;
 }
@@ -99,12 +101,14 @@ body{
   background-repeat:no-repeat; background-size:cover; background-position:center;
   z-index:1;
 }
-/* Phases de fond selon palier max global atteint */
+/* Phases de fond selon palier max global atteint —
+   on RÉCHAUFFE et ÉCLAIRE doucement à mesure qu'on progresse,
+   plutôt que de plonger le joueur dans une nuit cosmique étouffante */
 #stage[data-phase="0"]{filter:none}
-#stage[data-phase="1"]{filter:hue-rotate(-8deg) saturate(1.05) brightness(.96)} /* twilight */
-#stage[data-phase="2"]{filter:hue-rotate(-15deg) saturate(1.10) brightness(.90)} /* dusk purple */
-#stage[data-phase="3"]{filter:hue-rotate(-25deg) saturate(1.15) brightness(.85) contrast(1.05)} /* deep purple night */
-#stage[data-phase="4"]{filter:hue-rotate(-35deg) saturate(1.25) brightness(.78) contrast(1.1)} /* cosmic */
+#stage[data-phase="1"]{filter:saturate(1.08) brightness(1.02)} /* étincelle */
+#stage[data-phase="2"]{filter:hue-rotate(-4deg) saturate(1.12) brightness(1.04) contrast(1.02)} /* aube cuivrée */
+#stage[data-phase="3"]{filter:hue-rotate(-8deg) saturate(1.16) brightness(1.06) contrast(1.04)} /* matin doré */
+#stage[data-phase="4"]{filter:hue-rotate(-12deg) saturate(1.22) brightness(1.10) contrast(1.05)} /* plein jour alchimique */
 
 /* couches canvas plein-écran */
 #dust{position:fixed; inset:0; pointer-events:none; z-index:2}
@@ -289,14 +293,14 @@ header{
   position:relative;
   aspect-ratio:1/1;
   background:
-    radial-gradient(ellipse at 50% 30%, rgba(232,200,120,.06), transparent 65%),
-    linear-gradient(180deg, #0e090b 0%, #060304 100%);
-  border:1px solid rgba(154,120,66,.18);
+    radial-gradient(ellipse at 50% 30%, rgba(244,217,137,.10), transparent 65%),
+    linear-gradient(180deg, #211510 0%, #15100b 100%);
+  border:1px solid rgba(168,133,85,.26);
   border-radius:1px;
   box-shadow:
-    inset 0 1px 0 rgba(232,200,120,.05),
-    inset 0 -1px 2px rgba(0,0,0,.5),
-    inset 0 0 18px rgba(0,0,0,.6);
+    inset 0 1px 0 rgba(244,217,137,.08),
+    inset 0 -1px 2px rgba(15,8,3,.45),
+    inset 0 0 18px rgba(15,8,3,.4);
 }
 /* Subtil cadre intérieur sur les cellules : trait or fin */
 .cell::before{
@@ -1614,7 +1618,7 @@ body.frenzy-on #grid-frame{
 /* ================ INTRO ================ */
 #intro{
   position:fixed; inset:0; z-index:95;
-  background:radial-gradient(ellipse at 50% 50%, #1a1218 0%, #050304 100%);
+  background:radial-gradient(ellipse at 50% 50%, #2a1d18 0%, #15100b 100%);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   text-align:center; padding:24px;
   transition:opacity .9s;
@@ -4449,60 +4453,35 @@ function loreFor(chain, tier){ return LORE[chain + "_" + tier]; }
 const sumMerged = s => s.totals.merged.reduce((a,b)=>a+b,0);
 const sumProduced = s => s.totals.produced.reduce((a,b)=>a+b,0);
 
+/* 14 hauts faits — chacun raconte un moment, pas un compteur grindy.
+   On garde : 1 entrée, 3 premiers paliers, 3 paliers mi-jeu, 3 grands œuvres,
+   3 records globaux (production, fusion, or), 1 endgame ultime. */
 const ACHIEVEMENTS = [
-  // === Premiers pas ===
-  { id:"first_seed",   name:"Premier Geste",     desc:"Produire ta première graine.",         icon:"sulfur",  reward:3,  check:s => s.totals.produced[0]>=1 },
-  { id:"first_pebble", name:"À la Sueur",        desc:"Ramasser ton premier caillou.",        icon:"salt",    reward:3,  check:s => s.totals.produced[1]>=1 },
-  { id:"first_mist",   name:"Premier Souffle",   desc:"Capturer ta première brume.",          icon:"mercury", reward:3,  check:s => s.totals.produced[2]>=1 },
+  // === Entrée dans l'œuvre ===
   { id:"first_merge",  name:"Premier Œuvre",     desc:"Réaliser ta toute première fusion.",   icon:"fuse",    reward:5,  check:s => sumMerged(s)>=1 },
 
-  // === Progression Plante ===
-  { id:"plant_t1",     name:"Bourgeon",          desc:"Faire pousser un Bourgeon.",           icon:"sulfur",  reward:8,   check:s => s.totals.maxTier[0]>=1 },
-  { id:"plant_t3",     name:"Cri de la Mandragore", desc:"Atteindre la Fleur Sépulcrale.",    icon:"sulfur",  reward:30,  check:s => s.totals.maxTier[0]>=3 },
-  { id:"plant_t5",     name:"Panacée Verte",     desc:"Distiller la Panacée.",                icon:"sulfur",  reward:200, check:s => s.totals.maxTier[0]>=5 },
-  { id:"plant_t7",     name:"Yggdrasill",        desc:"Faire éclore Yggdra.",                 icon:"sulfur",  reward:1500,check:s => s.totals.maxTier[0]>=7 },
+  // === Trois éveils — palier I sur chaque voie ===
+  { id:"plant_t1",     name:"Bourgeon",          desc:"Faire pousser un Bourgeon.",           icon:"sulfur",  reward:10,  check:s => s.totals.maxTier[0]>=1 },
+  { id:"stone_t1",     name:"Quartz",            desc:"Tailler ton premier Quartz.",          icon:"salt",    reward:10,  check:s => s.totals.maxTier[1]>=1 },
+  { id:"ess_t1",       name:"Étincelle",         desc:"Allumer ta première Étincelle.",       icon:"mercury", reward:10,  check:s => s.totals.maxTier[2]>=1 },
 
-  // === Progression Pierre ===
-  { id:"stone_t1",     name:"Quartz",            desc:"Tailler ton premier Quartz.",          icon:"salt",    reward:8,   check:s => s.totals.maxTier[1]>=1 },
-  { id:"stone_t3",     name:"Cœur de Géode",     desc:"Ouvrir ta première Géode.",            icon:"salt",    reward:30,  check:s => s.totals.maxTier[1]>=3 },
-  { id:"stone_t5",     name:"Œuvre Rouge",       desc:"Forger la Pierre Philosophale.",       icon:"salt",    reward:200, check:s => s.totals.maxTier[1]>=5 },
-  { id:"stone_t7",     name:"Métal Mémoire",     desc:"Forger l'Eternium.",                   icon:"salt",    reward:1500,check:s => s.totals.maxTier[1]>=7 },
+  // === Trois maturités — palier III ===
+  { id:"plant_t3",     name:"Fleur Sépulcrale",  desc:"Atteindre la Fleur Sépulcrale.",       icon:"sulfur",  reward:40,  check:s => s.totals.maxTier[0]>=3 },
+  { id:"stone_t3",     name:"Cœur de Géode",     desc:"Ouvrir ta première Géode.",            icon:"salt",    reward:40,  check:s => s.totals.maxTier[1]>=3 },
+  { id:"ess_t3",       name:"Convocation",       desc:"Convoquer un Esprit.",                 icon:"mercury", reward:40,  check:s => s.totals.maxTier[2]>=3 },
 
-  // === Progression Essence ===
-  { id:"ess_t1",       name:"Étincelle",         desc:"Allumer ta première Étincelle.",       icon:"mercury", reward:8,   check:s => s.totals.maxTier[2]>=1 },
-  { id:"ess_t3",       name:"Convocation",       desc:"Convoquer un Esprit.",                 icon:"mercury", reward:30,  check:s => s.totals.maxTier[2]>=3 },
-  { id:"ess_t5",       name:"Quintessence",      desc:"Atteindre l'éther innommé.",           icon:"mercury", reward:200, check:s => s.totals.maxTier[2]>=5 },
-  { id:"ess_t7",       name:"Singularité",       desc:"Atteindre la Singularité.",            icon:"mercury", reward:1500,check:s => s.totals.maxTier[2]>=7 },
+  // === Trois Grands Œuvres — palier V (Panacée / Pierre Philosophale / Quintessence) ===
+  { id:"plant_t5",     name:"Panacée",           desc:"Distiller la Panacée.",                icon:"sulfur",  reward:250, check:s => s.totals.maxTier[0]>=5 },
+  { id:"stone_t5",     name:"Œuvre Rouge",       desc:"Forger la Pierre Philosophale.",       icon:"salt",    reward:250, check:s => s.totals.maxTier[1]>=5 },
+  { id:"ess_t5",       name:"Quintessence",      desc:"Atteindre l'éther innommé.",           icon:"mercury", reward:250, check:s => s.totals.maxTier[2]>=5 },
 
-  // === Production ===
-  { id:"prod_50",      name:"Petit Producteur",  desc:"Produire 50 items au total.",          icon:"horn",    reward:15,  check:s => sumProduced(s)>=50 },
-  { id:"prod_500",     name:"Manufacture",       desc:"Produire 500 items au total.",         icon:"horn",    reward:60,  check:s => sumProduced(s)>=500 },
-  { id:"prod_2000",    name:"Grande Manufacture", desc:"Produire 2000 items au total.",        icon:"horn",    reward:240, check:s => sumProduced(s)>=2000 },
-  { id:"prod_10000",   name:"Industrie Alchimique", desc:"Produire 10 000 items au total.",   icon:"horn",    reward:1200,check:s => sumProduced(s)>=10000 },
+  // === Records globaux ===
+  { id:"prod_500",     name:"Manufacture",       desc:"Produire 500 items au total.",         icon:"horn",    reward:80,  check:s => sumProduced(s)>=500 },
+  { id:"merge_500",    name:"Maître Artisan",    desc:"500 fusions au total.",                icon:"fuse",    reward:150, check:s => sumMerged(s)>=500 },
+  { id:"gold_5000",    name:"Trésor",            desc:"Posséder 5 000 couronnes.",            icon:"crown",   reward:300, check:s => s.gold>=5000 },
 
-  // === Fusions ===
-  { id:"merge_50",     name:"Fusionneur",        desc:"50 fusions au total.",                 icon:"fuse",    reward:25,  check:s => sumMerged(s)>=50 },
-  { id:"merge_500",    name:"Maître Artisan",    desc:"500 fusions au total.",                icon:"fuse",    reward:120, check:s => sumMerged(s)>=500 },
-  { id:"merge_2000",   name:"Légende Vivante",   desc:"2000 fusions au total.",               icon:"fuse",    reward:500, check:s => sumMerged(s)>=2000 },
-  { id:"merge_10000",  name:"Mythe d'Atelier",   desc:"10 000 fusions au total.",             icon:"fuse",    reward:2500,check:s => sumMerged(s)>=10000 },
-
-  // === Économie ===
-  { id:"gold_500",     name:"Bourse Garnie",     desc:"Posséder 500 couronnes.",              icon:"crown",   reward:50,  check:s => s.gold>=500 },
-  { id:"gold_5000",    name:"Trésor",            desc:"Posséder 5 000 couronnes.",            icon:"crown",   reward:250, check:s => s.gold>=5000 },
-  { id:"gold_50000",   name:"Fortune",           desc:"Posséder 50 000 couronnes.",           icon:"crown",   reward:1500,check:s => s.gold>=50000 },
-
-  // === Équilibre / records ===
-  { id:"triple_t5",    name:"Triple Couronne",   desc:"Avoir les 3 voies à V ou plus.",       icon:"trinity", reward:400, check:s => s.totals.maxTier.every(t=>t>=5) },
-  { id:"triple_t7",    name:"Adepte Suprême",    desc:"Avoir les 3 voies à VII.",             icon:"trinity", reward:5000,check:s => s.totals.maxTier.every(t=>t>=7) },
-  { id:"balanced_100", name:"Équilibre Parfait", desc:"100 fusions sur chaque voie.",         icon:"trinity", reward:300, check:s => s.totals.merged.every(m=>m>=100) },
-
-  // === Cinématique / Découverte ===
-  { id:"first_grand",  name:"Spectateur du Sacré", desc:"Voir la première cinématique du Grand Œuvre.", icon:"eye", reward:75, check:s => s.firstReached.some(t=>t>=5) },
-  { id:"codex_full",   name:"Bibliothécaire",    desc:"Découvrir les 24 paliers du codex.",   icon:"book",    reward:1000,check:s => s.totals.maxTier.every(t=>t>=7) },
-
-  // === Idle / temps ===
-  { id:"session_60",   name:"Veillée d'Atelier", desc:"Jouer 60 minutes d'affilée.",          icon:"hourglass",reward:120, check:s => (s.sessionMs||0) >= 60*60*1000 },
-  { id:"offline_back", name:"Retour de Voyage",  desc:"Revenir après plus d'1 h d'absence.",  icon:"hourglass",reward:80, check:s => (s.lastOfflineMs||0) >= 60*60*1000 },
+  // === Ultime ===
+  { id:"triple_t7",    name:"Adepte Suprême",    desc:"Avoir Yggdra, Eternium et Singularité.", icon:"trinity", reward:5000, check:s => s.totals.maxTier.every(t=>t>=7) },
 ];
 
 function checkAchievements(){
@@ -9535,6 +9514,34 @@ function load(){
   }catch(e){}
 }
 
+/* Si le joueur arrive sur une partie complètement vierge, on dépose
+   un petit panier de départ sur la grille pour que le cabinet ait
+   l'air vivant avant son premier geste. */
+function seedStarterCabinetIfFresh(){
+  // Critères : aucune production, aucune fusion, grille vide
+  const noProduction = sumProduced(STATE) === 0;
+  const noMerge = (STATE.totals.merged||[0,0,0]).reduce((a,b)=>a+b,0) === 0;
+  const gridEmpty = STATE.grid.flat().every(t => !t);
+  if(!(noProduction && noMerge && gridEmpty)) return;
+  // Place 2 graines, 2 cailloux, 2 brumes — 6 items, T0 only.
+  // Le joueur voit le cabinet animé dès le départ et a 2 paires
+  // évidentes à fusionner pour son tout premier "ah!" en moins de 10 secondes.
+  const positions = [
+    [1,0],[3,0],
+    [0,1],[4,1],
+    [2,2],[2,3],
+  ];
+  const chains = [0, 0, 1, 1, 2, 2];
+  for(let i=0; i<positions.length; i++){
+    const [x,y] = positions[i];
+    const c = chains[i];
+    if(STATE.grid[y]?.[x] === null){
+      STATE.grid[y][x] = { id: STATE.nextId++, chain:c, tier:0 };
+      STATE.totals.produced[c] = (STATE.totals.produced[c]||0) + 1;
+    }
+  }
+}
+
 /* ================ BOOT ================ */
 function boot(){
   resize();
@@ -9544,6 +9551,9 @@ function boot(){
   load();
   applyUpgrades();
   applyProgressionBonuses();
+  // Hook early-game : si fraîche partie (zéro progression), peuple le cabinet
+  // de quelques items pour qu'il respire dès la première seconde
+  seedStarterCabinetIfFresh();
   renderGenerators();
   renderAll();
   refreshQuests();

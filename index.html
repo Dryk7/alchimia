@@ -306,13 +306,56 @@ header{
   background:rgba(20,12,4,.45);
 }
 .rs-niv-num{ color:var(--gold-bright) }
-/* Animation des jambes + chaussures du coureur — alternance simple */
+/* Animation des jambes + chaussures + bras du coureur */
 .rs-leg1, .rs-shoe1{ animation:legAlt 0.30s steps(2) infinite }
 .rs-leg2, .rs-shoe2{ animation:legAlt 0.30s steps(2) infinite reverse }
+.rs-arm1{ animation:armSwing 0.30s steps(2) infinite reverse }
+.rs-arm2{ animation:armSwing 0.30s steps(2) infinite }
 @keyframes legAlt{
   0%   { transform:translateY(0); }
   50%  { transform:translateY(-2.5px); }
   100% { transform:translateY(0); }
+}
+@keyframes armSwing{
+  0%   { transform:translateY(0) translateX(0); }
+  50%  { transform:translateY(-1.5px) translateX(.5px); }
+  100% { transform:translateY(0) translateX(0); }
+}
+/* Bounce léger du corps complet */
+.rs-body{ animation:bodyBob 0.30s steps(2) infinite }
+@keyframes bodyBob{
+  0%   { transform:translateY(0); }
+  50%  { transform:translateY(-0.5px); }
+  100% { transform:translateY(0); }
+}
+/* Speed lines derrière le coureur — visibles quand frenzy ou vitesse élevée */
+.rs-speedlines{
+  animation:speedFlicker 0.18s steps(2) infinite;
+}
+@keyframes speedFlicker{
+  0%   { opacity:0; transform:translateX(0); }
+  50%  { opacity:.85; transform:translateX(-2px); }
+  100% { opacity:0; transform:translateX(0); }
+}
+/* Goutte de sueur qui tombe occasionnellement */
+.rs-sweat{
+  animation:sweatDrop 3.2s ease-in infinite;
+}
+@keyframes sweatDrop{
+  0%   { opacity:0; transform:translate(0, 0); }
+  8%   { opacity:.9; transform:translate(0, 0); }
+  20%  { opacity:.9; transform:translate(1.5px, 8px); }
+  25%  { opacity:0; transform:translate(2px, 10px); }
+  100% { opacity:0; }
+}
+/* Quand frenzy actif : aura orange autour du coureur */
+body.frenzy-on #rs-runner{
+  filter:drop-shadow(0 0 4px #ffd070) drop-shadow(0 0 8px var(--ember));
+}
+body.frenzy-on .rs-speedlines{ animation-duration:0.10s }
+/* Quand vitesse haute (multiplier >= 2), montrer speedlines en permanence */
+#runner-stadium[data-fast="1"] .rs-speedlines{
+  animation:speedFlicker 0.14s steps(2) infinite;
 }
 /* Quand boost reçu */
 #runner-stadium.boost{
@@ -3063,17 +3106,24 @@ body.shop-epic-flash::after{
   position:fixed; inset:0; z-index:92;
   pointer-events:none; opacity:0;
   background:
-    radial-gradient(ellipse at 50% 50%, rgba(255,240,200,.45) 0%, rgba(232,160,80,.25) 30%, rgba(0,0,0,.95) 70%);
+    radial-gradient(ellipse at 50% 50%, rgba(255,232,168,.55) 0%, rgba(240,160,80,.30) 30%, rgba(10,15,30,.96) 75%);
   display:flex; align-items:center; justify-content:center;
   flex-direction:column;
-  transition:opacity .6s;
+  transition:opacity .5s;
 }
 #grand-oeuvre.show{opacity:1; pointer-events:auto}
 #grand-oeuvre .seal{
   width:240px; height:240px;
-  color:var(--gold-bright);
+  color:#ffd070;
   filter:drop-shadow(0 0 30px #fff) drop-shadow(0 0 60px var(--gold-bright));
-  animation:sealIn 1.8s cubic-bezier(.2,.9,.2,1.2);
+  animation:sealIn 1.4s cubic-bezier(.2,.9,.2,1.3);
+}
+@keyframes sealIn{
+  0%   { transform:scale(.2) translateY(120px) rotate(-15deg); opacity:0; }
+  35%  { transform:scale(.7) translateY(40px) rotate(-5deg); opacity:.8; }
+  60%  { transform:scale(1.08) translateY(0) rotate(0); opacity:1; }
+  80%  { transform:scale(.96) translateY(0) rotate(0); }
+  100% { transform:scale(1) translateY(0) rotate(0); opacity:1; }
 }
 #grand-oeuvre .ouvre-text{
   margin-top:20px;
@@ -3091,11 +3141,6 @@ body.shop-epic-flash::after{
   color:var(--gold-bright);
   animation:fadeIn 1s ease-out 1.4s forwards; opacity:0;
 }
-@keyframes sealIn{
-  0%{transform:scale(.1) rotate(-360deg); opacity:0}
-  100%{transform:scale(1) rotate(0); opacity:1}
-}
-
 /* ================ RESPONSIVE ================ */
 @media (min-width: 600px){
   body{font-size:16px}
@@ -3265,34 +3310,44 @@ body.shop-epic-flash::after{
         </g>
         <!-- LE COUREUR : groupe animé qui suit la trajectoire -->
         <g id="rs-runner">
-          <!-- Sprite pixel art du coureur orange (~16x22 px) — plus visible -->
-          <g shape-rendering="crispEdges">
-            <!-- ombre au sol -->
-            <ellipse cx="0" cy="10" rx="6" ry="1.5" fill="#000" opacity=".25"/>
-            <!-- cheveux foncés -->
-            <rect x="-4" y="-12" width="7" height="3" fill="#4a2818"/>
-            <!-- tête couleur peau -->
-            <rect x="-4" y="-10" width="7" height="6" fill="#f0c890"/>
-            <!-- œil -->
-            <rect x="1" y="-7" width="1.5" height="1.5" fill="#1a1010"/>
-            <!-- maillot orange -->
-            <rect x="-5" y="-4" width="9" height="6" fill="#e85a30"/>
-            <rect x="-5" y="-4" width="9" height="1" fill="#ffd070"/>
-            <!-- numéro de dossard -->
-            <rect x="-1" y="-2" width="2" height="3" fill="#fff"/>
-            <!-- bras -->
-            <rect x="-7" y="-3" width="2" height="4" fill="#f0c890"/>
-            <rect x="4" y="-3" width="2" height="4" fill="#f0c890"/>
-            <!-- short blanc -->
-            <rect x="-4" y="2" width="7" height="4" fill="#fff"/>
-            <rect x="-4" y="2" width="7" height="1" fill="#1f3548"/>
-            <!-- jambes animées -->
-            <rect class="rs-leg1" x="-3" y="6" width="2.5" height="5" fill="#f0c890"/>
-            <rect class="rs-leg2" x="1" y="6" width="2.5" height="5" fill="#f0c890"/>
-            <!-- chaussures -->
-            <rect class="rs-shoe1" x="-3.5" y="10" width="3" height="1.5" fill="#1f3548"/>
-            <rect class="rs-shoe2" x="0.5" y="10" width="3" height="1.5" fill="#1f3548"/>
+          <!-- Lignes de vitesse derrière (visibles quand rapide) -->
+          <g class="rs-speedlines" opacity="0">
+            <rect x="-14" y="-3" width="6" height="1" fill="#fff" opacity=".6"/>
+            <rect x="-12" y="0" width="5" height="1" fill="#fff" opacity=".5"/>
+            <rect x="-14" y="3" width="6" height="1" fill="#fff" opacity=".4"/>
           </g>
+          <!-- Bounce wrapper pour le corps -->
+          <g class="rs-body">
+            <g shape-rendering="crispEdges">
+              <!-- ombre au sol -->
+              <ellipse cx="0" cy="10" rx="6" ry="1.5" fill="#000" opacity=".3"/>
+              <!-- cheveux foncés -->
+              <rect x="-4" y="-12" width="7" height="3" fill="#4a2818"/>
+              <!-- tête couleur peau -->
+              <rect x="-4" y="-10" width="7" height="6" fill="#f0c890"/>
+              <!-- œil -->
+              <rect x="1" y="-7" width="1.5" height="1.5" fill="#1a1010"/>
+              <!-- maillot orange -->
+              <rect x="-5" y="-4" width="9" height="6" fill="#e85a30"/>
+              <rect x="-5" y="-4" width="9" height="1" fill="#ffd070"/>
+              <!-- numéro de dossard -->
+              <rect x="-1" y="-2" width="2" height="3" fill="#fff"/>
+              <!-- bras -->
+              <rect class="rs-arm1" x="-7" y="-3" width="2" height="4" fill="#f0c890"/>
+              <rect class="rs-arm2" x="4" y="-3" width="2" height="4" fill="#f0c890"/>
+              <!-- short blanc -->
+              <rect x="-4" y="2" width="7" height="4" fill="#fff"/>
+              <rect x="-4" y="2" width="7" height="1" fill="#1f3548"/>
+              <!-- jambes animées -->
+              <rect class="rs-leg1" x="-3" y="6" width="2.5" height="5" fill="#f0c890"/>
+              <rect class="rs-leg2" x="1" y="6" width="2.5" height="5" fill="#f0c890"/>
+              <!-- chaussures -->
+              <rect class="rs-shoe1" x="-3.5" y="10" width="3" height="1.5" fill="#1f3548"/>
+              <rect class="rs-shoe2" x="0.5" y="10" width="3" height="1.5" fill="#1f3548"/>
+            </g>
+          </g>
+          <!-- Sueurs occasionnelles -->
+          <circle class="rs-sweat" cx="3" cy="-13" r="0.8" fill="#7ec8e8" opacity="0"/>
           <animateMotion id="rs-motion" dur="14s" repeatCount="indefinite" rotate="auto">
             <mpath href="#rs-path"/>
           </animateMotion>
@@ -4084,31 +4139,52 @@ body.shop-epic-flash::after{
   </div>
 </div>
 
-<!-- GRAND ŒUVRE CINEMATIC -->
+<!-- ASCENSION CINEMATIC : médaille du tour bouclé -->
 <div id="grand-oeuvre">
   <svg class="seal" viewBox="-50 -50 100 100">
     <g>
-      <!-- triangle alchimique -->
-      <polygon points="0,-40 35,22 -35,22" fill="none" stroke="currentColor" stroke-width="1.4"/>
-      <!-- cercle inscrit -->
-      <circle cx="0" cy="3" r="28" fill="none" stroke="currentColor" stroke-width="1.4"/>
-      <!-- carré -->
-      <rect x="-20" y="-17" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.2"/>
-      <!-- ouroboros minimal -->
-      <circle cx="0" cy="3" r="14" fill="none" stroke="currentColor" stroke-width=".8" stroke-dasharray="2 3"/>
-      <!-- monogramme central -->
-      <g transform="translate(0,3)">
-        <circle r="3.5" fill="currentColor"/>
-        <line x1="0" y1="-3.5" x2="0" y2="-9" stroke="currentColor" stroke-width="1.2"/>
+      <!-- Rubans qui descendent du sommet -->
+      <polygon points="-30,-45 -8,-8 0,-22 8,-8 30,-45 32,-43 18,-2 0,-12 -18,-2 -32,-43" fill="#d04030" stroke="currentColor" stroke-width="1"/>
+      <polygon points="-22,-43 -3,-8 0,-15 3,-8 22,-43 23,-42 12,-3 0,-9 -12,-3 -23,-42" fill="#e85a30" stroke="none"/>
+      <!-- Anneau extérieur de la médaille (or foncé) -->
+      <circle cx="0" cy="12" r="30" fill="none" stroke="currentColor" stroke-width="2"/>
+      <!-- Disque or principal -->
+      <circle cx="0" cy="12" r="26" fill="currentColor" opacity=".25"/>
+      <circle cx="0" cy="12" r="24" fill="currentColor" opacity=".4"/>
+      <!-- Disque or central radieux -->
+      <circle cx="0" cy="12" r="20" fill="currentColor" opacity=".7"/>
+      <!-- Laurier gauche -->
+      <g fill="none" stroke="currentColor" stroke-width="1.2">
+        <path d="M -22 14 Q -16 8 -10 12"/>
+        <path d="M -19 18 Q -14 14 -8 16"/>
+        <path d="M -17 22 Q -12 20 -7 21"/>
+        <ellipse cx="-19" cy="11" rx="2.5" ry="1.2" transform="rotate(-30 -19 11)"/>
+        <ellipse cx="-16" cy="16" rx="2.5" ry="1.2" transform="rotate(-15 -16 16)"/>
+        <ellipse cx="-13" cy="20" rx="2.5" ry="1.2"/>
       </g>
-      <!-- 3 points cardinaux -->
-      <circle cx="0" cy="-40" r="2.5" fill="currentColor"/>
-      <circle cx="35" cy="22" r="2.5" fill="currentColor"/>
-      <circle cx="-35" cy="22" r="2.5" fill="currentColor"/>
+      <!-- Laurier droit -->
+      <g fill="none" stroke="currentColor" stroke-width="1.2">
+        <path d="M 22 14 Q 16 8 10 12"/>
+        <path d="M 19 18 Q 14 14 8 16"/>
+        <path d="M 17 22 Q 12 20 7 21"/>
+        <ellipse cx="19" cy="11" rx="2.5" ry="1.2" transform="rotate(30 19 11)"/>
+        <ellipse cx="16" cy="16" rx="2.5" ry="1.2" transform="rotate(15 16 16)"/>
+        <ellipse cx="13" cy="20" rx="2.5" ry="1.2"/>
+      </g>
+      <!-- Étoile/numéro central -->
+      <g transform="translate(0,15)">
+        <text id="seal-lap-num" x="0" y="2" text-anchor="middle" dominant-baseline="middle" font-family="Cinzel" font-size="20" font-weight="900" fill="currentColor">★</text>
+      </g>
+      <!-- Points scintillants autour -->
+      <circle cx="-42" cy="-30" r="1.5" fill="currentColor"/>
+      <circle cx="42" cy="-30" r="1.5" fill="currentColor"/>
+      <circle cx="-40" cy="35" r="1.2" fill="currentColor"/>
+      <circle cx="40" cy="35" r="1.2" fill="currentColor"/>
+      <circle cx="0" cy="-48" r="1.8" fill="currentColor"/>
     </g>
   </svg>
-  <div class="ouvre-text" id="ouvre-text">VIA VEGETABILIS</div>
-  <div class="ouvre-sub" id="ouvre-sub">— le sceau du Grand Œuvre est posé —</div>
+  <div class="ouvre-text" id="ouvre-text">ASCENSION</div>
+  <div class="ouvre-sub" id="ouvre-sub">— tour bouclé, le coureur renaît —</div>
 </div>
 
 <script>
@@ -6732,12 +6808,28 @@ function openTransmute(){
 
 function doTransmute(){
   const stars = calcTransmuteStars();
-  // Cinematique courte
+  // Numéro du tour qu'on va boucler (lap N+1)
+  const nextLap = ((STATE.ascensions||0) + 1);
+  // Cinématique d'Ascension
   const ge = document.getElementById("grand-oeuvre");
-  document.getElementById("ouvre-text").textContent = "TRANSMUTATIO";
-  document.getElementById("ouvre-sub").textContent = "— +" + stars + " ★ étoiles permanentes —";
+  document.getElementById("ouvre-text").textContent = "TOUR " + nextLap + " BOUCLÉ";
+  document.getElementById("ouvre-sub").textContent = "— ascension · +" + stars + " ★ permanentes —";
+  // Remplir le numéro dans la médaille
+  const sealNum = document.getElementById('seal-lap-num');
+  if(sealNum) sealNum.textContent = String(nextLap);
   ge.classList.add("show");
-  cinematicBurst("#e8c878", 7);
+  cinematicBurst("#ffd070", 7);
+  // Particules dorées qui jaillissent du stade vers la médaille
+  const stadium = document.getElementById('runner-stadium');
+  if(stadium){
+    const r = stadium.getBoundingClientRect();
+    const cx = r.left + r.width/2, cy = r.top + r.height/2;
+    for(let i=0;i<3;i++){
+      setTimeout(()=>{
+        if(typeof particles === 'function') particles(cx, cy, '#ffd070', 18);
+      }, i*180);
+    }
+  }
   sfxGrand(7);
   vibrate([60, 80, 60, 80, 60, 80, 200]);
   setTimeout(()=>ge.classList.remove("show"), 4200);
@@ -8775,6 +8867,9 @@ function updateRunner(){
       motion.setAttribute('dur', targetDur.toFixed(2) + 's');
     }
   }
+  // Toggle "fast" mode pour speed lines persistants
+  const fast = mul >= 1.8 ? '1' : '0';
+  if(stadium.dataset.fast !== fast) stadium.dataset.fast = fast;
   if(spdEl){
     const txt = '×' + mul.toFixed(1);
     if(spdEl.textContent !== txt){

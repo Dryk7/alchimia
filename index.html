@@ -657,6 +657,126 @@ header{
   animation:unlockSlideIn .8s ease-out, milestonePop 1.4s ease-out .6s;
 }
 
+/* === Refonte v4 : cards avec cycle de production (Eatventure) === */
+.runner-card{
+  grid-template-columns:44px 1fr auto;
+}
+/* Batch label remplace l'ancien "+X méd/s" */
+.rc-batch{
+  font-family:"Nunito", sans-serif; font-weight:800;
+  font-size:11.5px; color:#3a8c3a;
+  margin-top:1px;
+  font-variant-numeric:tabular-nums;
+}
+/* Barre de cycle (full width sous le batch) */
+.rc-cycle-bar{
+  height:6px;
+  background:rgba(160,122,68,.18);
+  border-radius:3px;
+  overflow:hidden;
+  margin-top:4px;
+  position:relative;
+}
+.rc-cycle-fill{
+  display:block; height:100%;
+  background:linear-gradient(90deg, var(--rc-color, var(--ember)), #ffd070);
+  transition:width .08s linear;
+}
+.runner-card.ready .rc-cycle-fill{
+  background:linear-gradient(90deg, #ffd070, #ffba30, #ffd070);
+  background-size:200% 100%;
+  animation:cycleReadyShine 1s linear infinite;
+}
+@keyframes cycleReadyShine{
+  0%   { background-position:0% 0; }
+  100% { background-position:200% 0; }
+}
+.rc-cycle-hint{
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:9.5px; color:var(--ink-2);
+  margin-top:3px;
+  letter-spacing:.02em;
+}
+.runner-card.ready .rc-cycle-hint{
+  color:#ffba30;
+  font-weight:900;
+  animation:hintReadyPulse 1s ease-in-out infinite;
+}
+@keyframes hintReadyPulse{
+  0%,100% { opacity:.85; transform:translateY(0); }
+  50%     { opacity:1; transform:translateY(-1px); }
+}
+.runner-card.ready{
+  box-shadow:0 0 0 3px rgba(255,208,112,.5), 0 4px 16px rgba(255,186,48,.35);
+  border-color:#ffba30;
+}
+.runner-card.ready .rc-emoji{
+  animation:emojiBounce .9s ease-in-out infinite;
+}
+@keyframes emojiBounce{
+  0%,100% { transform:translateY(0); }
+  50%     { transform:translateY(-3px); }
+}
+/* Actions à droite : NIV+1 + MANAGER */
+.rc-actions{
+  display:flex; flex-direction:column; gap:4px;
+  align-items:stretch; min-width:88px;
+}
+.rc-buy, .rc-manager{
+  border:none; cursor:pointer;
+  padding:5px 10px;
+  border-radius:9px;
+  display:flex; flex-direction:column; align-items:center;
+  font-family:"Nunito", sans-serif;
+  transition:transform .12s, background-color .15s, box-shadow .15s;
+  text-align:center;
+  background:#f3ead4;
+  color:var(--ink);
+}
+.rc-buy:active, .rc-manager:active{ transform:scale(.96); }
+.runner-card.affordable .rc-buy{
+  background:linear-gradient(180deg, #5ab0ee, #3a8fc9);
+  color:#fff;
+  box-shadow:0 2px 6px rgba(74,159,217,.4);
+}
+.runner-card.unhired .rc-buy{
+  background:linear-gradient(180deg, #ffd070, #f0a050);
+  color:#5a2810;
+  font-weight:900;
+}
+.rc-buy-lbl{ font-weight:900; font-size:10px; letter-spacing:.06em; }
+.rc-buy-cost{ font-weight:800; font-size:11px; margin-top:1px; font-variant-numeric:tabular-nums; }
+/* Bouton MANAGER : violet (acheté = vert) */
+.rc-manager{
+  background:linear-gradient(180deg, #c89af0, #9b6cd0);
+  color:#fff;
+  box-shadow:0 2px 6px rgba(155,108,208,.35);
+  padding:4px 8px;
+}
+.rc-manager.hired{
+  background:linear-gradient(180deg, #7ec46a, #4e9438);
+  cursor:default;
+  box-shadow:0 2px 6px rgba(78,148,56,.35);
+}
+.rc-mgr-ico{ font-weight:900; font-size:13px; line-height:1; }
+.rc-mgr-cost{ font-weight:800; font-size:9.5px; margin-top:1px; letter-spacing:.04em; }
+/* Pop "+N" qui flotte vers le haut quand on collecte */
+.rc-collect-pop{
+  position:absolute; top:0; left:50%;
+  transform:translateX(-50%);
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:18px; color:#3a8c3a;
+  text-shadow:0 2px 4px rgba(0,0,0,.25);
+  pointer-events:none;
+  animation:collectPop .8s ease-out forwards;
+  z-index:10;
+}
+@keyframes collectPop{
+  0%   { transform:translate(-50%, 0) scale(.8); opacity:0; }
+  20%  { transform:translate(-50%, -10px) scale(1.1); opacity:1; }
+  100% { transform:translate(-50%, -40px) scale(.9); opacity:0; }
+}
+
 /* === AURA dorée du coureur (Saison 5+) === */
 @keyframes runnerAuraPulse{
   0%,100% { opacity:.30; transform:scale(1); }
@@ -10331,27 +10451,61 @@ function saisonAutoBase(){ return (STATE.perkAutoBase||0) * 0.2; }
    Tous les 25 niveaux → milestone ×2 multiplicateur.
    Déblocage par tours bouclés ou saison atteinte.
 */
+/* v4 PIVOT — Eatventure cycles + managers
+   Chaque coureur a un CYCLE (ex: 3s) au bout duquel il livre un BATCH de médailles.
+   - Sans manager : le batch ATTEND que tu tap la carte pour collecter (active)
+   - Avec manager : auto-collecte (passive)
+   Manager = upgrade one-time payée en gold.
+*/
 const TEAM_RUNNERS = [
   { id:'sprinter',    name:'Sprinter',     emoji:'⚡', color:'#ffa45c',
-    base:8,           factor:1.07,  baseRate:1,     unlockLaps:0,   unlockSaison:1,
-    desc:'Vite, court, efficace.' },
+    base:8,            factor:1.10,  baseBatch:5,         cycleTime:1.5,
+    managerCost:1000,  unlockLaps:0,   unlockSaison:1,
+    desc:'Cycle court · batch léger. Le starter.' },
   { id:'relayeur',    name:'Relayeur',     emoji:'🤝', color:'#7bc7f6',
-    base:60,          factor:1.075, baseRate:6,     unlockLaps:5,   unlockSaison:1,
-    desc:'Le team player. Tu paies 1×, 4 gagnent.' },
+    base:80,           factor:1.10,  baseBatch:50,        cycleTime:4,
+    managerCost:25000, unlockLaps:5,   unlockSaison:1,
+    desc:'Cycle moyen · batch décent.' },
   { id:'hurdler',     name:'Hurdler',      emoji:'🏃', color:'#c89af0',
-    base:500,         factor:1.08,  baseRate:30,    unlockLaps:20,  unlockSaison:1,
-    desc:'Saute les obstacles. Crit ×2 sur cette ligne.' },
+    base:800,          factor:1.10,  baseBatch:500,       cycleTime:8,
+    managerCost:500000,unlockLaps:20,  unlockSaison:1,
+    desc:'Cycle lent · batch musclé.' },
   { id:'marathonien', name:'Marathonien',  emoji:'🧘', color:'#7ec46a',
-    base:5000,        factor:1.085, baseRate:200,   unlockLaps:50,  unlockSaison:1,
-    desc:'Lent mais inarrêtable. La bête.' },
+    base:10000,        factor:1.11,  baseBatch:8000,      cycleTime:18,
+    managerCost:10000000, unlockLaps:50, unlockSaison:1,
+    desc:'Cycle long · batch énorme.' },
   { id:'pistard',     name:'Pistard',      emoji:'🚴', color:'#f55a5a',
-    base:50000,       factor:1.09,  baseRate:1500,  unlockLaps:100, unlockSaison:1,
-    desc:'Vélodrome. Multiplie toute l\'équipe ×1.05/niv.' },
+    base:120000,       factor:1.11,  baseBatch:80000,     cycleTime:30,
+    managerCost:200000000, unlockLaps:100, unlockSaison:1,
+    desc:'Multiplie toute l\'équipe ×1.05/niv.' },
   { id:'legende',     name:'Légende',      emoji:'⭐', color:'#ffd070',
-    base:500000,      factor:1.095, baseRate:12000, unlockLaps:0,   unlockSaison:2,
-    desc:'Le GOAT. Ne se débloque qu\'après une saison.' },
+    base:2000000,      factor:1.12,  baseBatch:2000000,   cycleTime:60,
+    managerCost:5e9,   unlockLaps:0,   unlockSaison:2,
+    desc:'Le GOAT. Cycle long, gain titanesque.' },
 ];
-function runnerLevel(id){ return (STATE.team && STATE.team[id]) || 0; }
+/* Migration : ancien STATE.team = { sprinter: 10 } → nouveau { sprinter: { level:10, cycle:0, mgr:false } } */
+function _ensureTeamShape(){
+  if(!STATE.team || typeof STATE.team !== 'object') STATE.team = {};
+  for(const r of TEAM_RUNNERS){
+    const v = STATE.team[r.id];
+    if(typeof v === 'number'){
+      STATE.team[r.id] = { level:v, cycle:0, mgr:false };
+    } else if(!v){
+      STATE.team[r.id] = { level:0, cycle:0, mgr:false };
+    } else {
+      if(typeof v.level !== 'number') v.level = 0;
+      if(typeof v.cycle !== 'number') v.cycle = 0;
+      if(typeof v.mgr !== 'boolean')  v.mgr = false;
+    }
+  }
+}
+function runnerData(id){
+  _ensureTeamShape();
+  return STATE.team[id];
+}
+function runnerLevel(id){ return runnerData(id)?.level || 0; }
+function runnerCycle(id){ return runnerData(id)?.cycle || 0; }
+function runnerHasManager(id){ return !!runnerData(id)?.mgr; }
 function runnerUnlocked(r){
   return (STATE.lapsRun || 0) >= r.unlockLaps && (STATE.saison || 1) >= r.unlockSaison;
 }
@@ -10360,23 +10514,25 @@ function runnerCost(r){
   return Math.ceil(r.base * Math.pow(r.factor, lvl));
 }
 function runnerMilestoneMul(id){
-  // ×2 tous les 25 niveaux (Eatventure-style)
-  const lvl = runnerLevel(id);
-  return Math.pow(2, Math.floor(lvl / 25));
+  return Math.pow(2, Math.floor(runnerLevel(id) / 25));
 }
 function runnerPistardTeamMul(){
-  // Le Pistard donne +5% par niveau à toute l'équipe
   return 1 + runnerLevel('pistard') * 0.05;
 }
+/* Valeur d'UN batch (collect) */
+function runnerBatchValue(r){
+  const lvl = runnerLevel(r.id);
+  if(lvl <= 0) return 0;
+  const baseBatch = r.baseBatch * lvl * runnerMilestoneMul(r.id);
+  const pistardMul = (r.id === 'pistard') ? 1 : runnerPistardTeamMul();
+  const saisonMul = (typeof saisonGoldMul === 'function') ? saisonGoldMul() : 1;
+  return Math.floor(baseBatch * pistardMul * saisonMul);
+}
+/* Production théorique méd/sec (info uniquement) */
 function runnerProductionPerSec(r){
   const lvl = runnerLevel(r.id);
   if(lvl <= 0) return 0;
-  const baseProd = r.baseRate * lvl * runnerMilestoneMul(r.id);
-  // Hurdler & Légende ne sont pas affectés par leur propre boost de Pistard
-  const pistardMul = (r.id === 'pistard') ? 1 : runnerPistardTeamMul();
-  // Saison gold mul s'applique aussi
-  const saisonMul = (typeof saisonGoldMul === 'function') ? saisonGoldMul() : 1;
-  return baseProd * pistardMul * saisonMul;
+  return runnerBatchValue(r) / r.cycleTime;
 }
 function teamTotalPerSec(){
   let total = 0;
@@ -10386,22 +10542,14 @@ function teamTotalPerSec(){
 function buyRunnerLevel(id){
   const r = TEAM_RUNNERS.find(x => x.id === id);
   if(!r) return;
-  if(!runnerUnlocked(r)){
-    if(typeof sfxDeny === 'function') sfxDeny();
-    return;
-  }
+  if(!runnerUnlocked(r)){ if(typeof sfxDeny === 'function') sfxDeny(); return; }
   const cost = runnerCost(r);
-  if((STATE.gold || 0) < cost){
-    if(typeof sfxDeny === 'function') sfxDeny();
-    return;
-  }
+  if((STATE.gold || 0) < cost){ if(typeof sfxDeny === 'function') sfxDeny(); return; }
   STATE.gold -= cost;
-  if(!STATE.team) STATE.team = {};
-  STATE.team[id] = (STATE.team[id] || 0) + 1;
-  const newLvl = STATE.team[id];
-  // Milestone visuel ×2 tous les 25 niveaux
+  const d = runnerData(id);
+  d.level += 1;
+  const newLvl = d.level;
   const milestone = (newLvl % 25 === 0);
-  // SFX
   if(A?.ctx){
     if(milestone){
       blip(440, .2, "triangle", .26, .65);
@@ -10412,44 +10560,89 @@ function buyRunnerLevel(id){
     }
   }
   vibrate(milestone ? [30, 50, 30] : 8);
-  // Sparkles si milestone
   if(milestone){
     const card = document.querySelector(`.runner-card[data-runner="${id}"]`);
-    if(card){
-      card.classList.remove('milestone-pop'); void card.offsetWidth;
-      card.classList.add('milestone-pop');
-      setTimeout(()=>card.classList.remove('milestone-pop'), 1200);
-    }
-    if(typeof showRunnerBubble === 'function'){
-      showRunnerBubble(`✦ ${r.name} NIV ${newLvl} · ×2 !`);
-    }
+    if(card){ card.classList.remove('milestone-pop'); void card.offsetWidth; card.classList.add('milestone-pop');
+      setTimeout(()=>card.classList.remove('milestone-pop'), 1200); }
+    if(typeof showRunnerBubble === 'function') showRunnerBubble(`✦ ${r.name} NIV ${newLvl} · ×2 !`);
   }
   renderTeam();
   if(typeof renderStats === 'function') renderStats();
 }
-/* Tick : chaque seconde, chaque coureur ajoute sa production */
-let _teamTickAccum = 0;
-function tickTeam(dt){
-  if(!dt || dt <= 0) return;
-  _teamTickAccum += dt;
-  if(_teamTickAccum < 1) return; // tick 1×/sec
-  const secs = Math.floor(_teamTickAccum);
-  _teamTickAccum -= secs;
-  const perSec = teamTotalPerSec();
-  if(perSec <= 0) return;
-  const gain = perSec * secs;
-  STATE.gold = (STATE.gold || 0) + gain;
-  // XP gain plus modeste : 1 XP par 100 médailles produites
+/* Embaucher le manager d'un coureur (one-time achat) */
+function hireManager(id){
+  const r = TEAM_RUNNERS.find(x => x.id === id);
+  if(!r) return;
+  const d = runnerData(id);
+  if(d.mgr){ return; }
+  if(d.level < 1){ if(typeof sfxDeny === 'function') sfxDeny(); return; } // doit avoir recruté avant
+  if((STATE.gold || 0) < r.managerCost){ if(typeof sfxDeny === 'function') sfxDeny(); return; }
+  STATE.gold -= r.managerCost;
+  d.mgr = true;
+  if(A?.ctx){
+    blip(660, .15, "triangle", .26, .65);
+    setTimeout(()=>blip(990, .18, "sine", .26, .7), 100);
+    setTimeout(()=>blip(1320, .22, "triangle", .26, .75), 220);
+  }
+  vibrate([20, 40, 20]);
+  if(typeof showRunnerBubble === 'function') showRunnerBubble(`✓ Manager du ${r.name} embauché !`);
+  renderTeam();
+  if(typeof renderStats === 'function') renderStats();
+}
+/* Collecte le batch d'un coureur prêt (cycle >= 1) — tap actif */
+function collectRunnerBatch(id){
+  const r = TEAM_RUNNERS.find(x => x.id === id);
+  if(!r) return false;
+  const d = runnerData(id);
+  if(d.level < 1 || d.cycle < 1) return false;
+  const batch = runnerBatchValue(r);
+  STATE.gold = (STATE.gold || 0) + batch;
+  d.cycle = 0;
   if(typeof gainXp === 'function'){
-    const xp = Math.max(1, Math.floor(gain / 100));
+    const xp = Math.max(1, Math.floor(batch / 100));
     if(xp > 0) gainXp(xp);
   }
+  if(A?.ctx) blip(880, .08, "triangle", .22, .45);
+  vibrate(8);
+  // Floating "+N" sur la carte
+  const card = document.querySelector(`.runner-card[data-runner="${id}"]`);
+  if(card){
+    const pop = document.createElement('div');
+    pop.className = 'rc-collect-pop';
+    pop.textContent = '+' + fmtBigNumber(batch);
+    card.appendChild(pop);
+    setTimeout(()=>pop.remove(), 800);
+  }
+  return true;
 }
-/* Render des cartes équipe — appelé toutes les 500ms via main loop */
+/* Tick : avance les cycles, auto-collecte si manager hired */
+function tickTeam(dt){
+  if(!dt || dt <= 0) return;
+  _ensureTeamShape();
+  for(const r of TEAM_RUNNERS){
+    const d = STATE.team[r.id];
+    if(d.level < 1) continue;
+    if(d.cycle < 1){
+      d.cycle += dt / r.cycleTime;
+      if(d.cycle > 1) d.cycle = 1;
+    }
+    // Auto-collect si manager
+    if(d.cycle >= 1 && d.mgr){
+      const batch = runnerBatchValue(r);
+      STATE.gold = (STATE.gold || 0) + batch;
+      d.cycle = 0;
+      if(typeof gainXp === 'function'){
+        const xp = Math.max(1, Math.floor(batch / 100));
+        if(xp > 0) gainXp(xp);
+      }
+    }
+  }
+}
+/* Render des cartes équipe — appelé toutes les 100ms via main loop pour cycle bars fluides */
 let _teamRenderAccum = 0;
 function tickTeamRender(dt){
   _teamRenderAccum += dt;
-  if(_teamRenderAccum < 0.5) return;
+  if(_teamRenderAccum < 0.1) return;
   _teamRenderAccum = 0;
   renderTeam();
 }
@@ -10462,20 +10655,44 @@ function updateTeamRate(){
 function renderTeam(){
   const container = document.getElementById('team-list');
   if(!container) return;
-  // Si pas encore d'enfants, full render. Sinon, juste maj les valeurs (perf).
   const existing = container.querySelectorAll('.runner-card');
   if(existing.length !== TEAM_RUNNERS.length){
     container.innerHTML = TEAM_RUNNERS.map(r => renderRunnerCard(r)).join('');
-    container.querySelectorAll('.runner-card').forEach(card=>{
-      card.addEventListener('click', ()=>{
-        const id = card.dataset.runner;
-        if(id) buyRunnerLevel(id);
-      });
-    });
+    bindTeamCardHandlers();
   } else {
-    // Update fields sans recréer le DOM
     TEAM_RUNNERS.forEach(r => updateRunnerCard(r));
   }
+}
+function bindTeamCardHandlers(){
+  document.querySelectorAll('.runner-card').forEach(card => {
+    if(card._wired) return;
+    card._wired = true;
+    const id = card.dataset.runner;
+    // Tap sur la carte (zone large) : collecte le batch SI prêt, sinon ouvre / recrute
+    card.addEventListener('click', (e)=>{
+      // Si on a cliqué sur un bouton interne, le laisser gérer
+      if(e.target.closest('.rc-buy') || e.target.closest('.rc-manager')) return;
+      const d = runnerData(id);
+      if(!d) return;
+      if(d.level < 1){ buyRunnerLevel(id); return; }
+      // Si cycle prêt → collecte
+      if(d.cycle >= 1){ collectRunnerBatch(id); }
+      else {
+        // Sinon, accélère le cycle de 5% (active gameplay)
+        d.cycle = Math.min(1, d.cycle + 0.05);
+      }
+    });
+    // Bouton ACHAT NIVEAU
+    const buyBtn = card.querySelector('.rc-buy');
+    if(buyBtn){
+      buyBtn.addEventListener('click', (e)=>{ e.stopPropagation(); buyRunnerLevel(id); });
+    }
+    // Bouton MANAGER
+    const mgrBtn = card.querySelector('.rc-manager');
+    if(mgrBtn){
+      mgrBtn.addEventListener('click', (e)=>{ e.stopPropagation(); hireManager(id); });
+    }
+  });
 }
 function fmtBigNumber(n){
   if(!isFinite(n)) return '∞';
@@ -10497,28 +10714,32 @@ function renderRunnerCard(r){
     </div>`;
   }
   const cost = runnerCost(r);
-  const prod = runnerProductionPerSec(r);
-  const mileLvl = lvl % 25;
-  const mileNext = 25 - mileLvl;
-  const milePct = (mileLvl / 25) * 100;
+  const cyclePct = (runnerCycle(r.id) || 0) * 100;
+  const batchVal = runnerBatchValue(r);
   const milestoneMul = runnerMilestoneMul(r.id);
-  return `<div class="runner-card ${lvl > 0 ? 'hired' : 'unhired'}" data-runner="${r.id}"
-       style="--rc-color:${r.color}">
+  const hasMgr = runnerHasManager(r.id);
+  const cycleReady = cyclePct >= 100;
+  return `<div class="runner-card ${lvl > 0 ? 'hired' : 'unhired'} ${cycleReady ? 'ready' : ''} ${hasMgr ? 'has-mgr' : ''}"
+       data-runner="${r.id}" style="--rc-color:${r.color}">
     <div class="rc-emoji">${r.emoji}</div>
     <div class="rc-body">
       <div class="rc-head">
         <span class="rc-name">${r.name}</span>
         <span class="rc-lvl" data-rc-lvl>NIV ${lvl}${milestoneMul > 1 ? ' ×'+milestoneMul : ''}</span>
       </div>
-      <div class="rc-rate" data-rc-rate>+${fmtBigNumber(prod)} méd/s</div>
-      <div class="rc-mile">
-        <div class="rc-mile-bar"><span class="rc-mile-fill" data-rc-mile style="width:${milePct.toFixed(0)}%"></span></div>
-        <span class="rc-mile-txt" data-rc-miletxt>${mileNext} → ×${milestoneMul*2}</span>
-      </div>
+      <div class="rc-batch" data-rc-batch>${lvl > 0 ? '+' + fmtBigNumber(batchVal) + ' méd / cycle' : 'Pas encore recruté'}</div>
+      <div class="rc-cycle-bar"><span class="rc-cycle-fill" data-rc-cycle style="width:${cyclePct.toFixed(0)}%"></span></div>
+      <div class="rc-cycle-hint" data-rc-cyclehint>${lvl > 0 ? (cycleReady ? '✦ TAP POUR COLLECTER' : `cycle ${r.cycleTime}s`) : '—'}</div>
     </div>
-    <div class="rc-buy">
-      <span class="rc-buy-lbl">${lvl === 0 ? 'RECRUTER' : 'NIV +1'}</span>
-      <span class="rc-buy-cost" data-rc-cost>${fmtBigNumber(cost)} méd</span>
+    <div class="rc-actions">
+      <button class="rc-buy" type="button">
+        <span class="rc-buy-lbl">${lvl === 0 ? 'RECRUTER' : 'NIV +1'}</span>
+        <span class="rc-buy-cost" data-rc-cost>${fmtBigNumber(cost)} méd</span>
+      </button>
+      ${lvl > 0 ? `<button class="rc-manager ${hasMgr ? 'hired' : ''}" type="button" data-rc-mgr title="${hasMgr ? 'Manager embauché — auto-collecte' : 'Embaucher manager — auto-collecte'}">
+        <span class="rc-mgr-ico">${hasMgr ? '✓' : '👔'}</span>
+        <span class="rc-mgr-cost" data-rc-mgrcost>${hasMgr ? 'AUTO' : fmtBigNumber(r.managerCost)}</span>
+      </button>` : ''}
     </div>
   </div>`;
 }
@@ -10528,12 +10749,13 @@ function updateRunnerCard(r){
   const unlocked = runnerUnlocked(r);
   const wasLocked = card.classList.contains('locked');
   if(unlocked && wasLocked){
-    // Déblocage → full re-render de cette carte avec animation
     card.outerHTML = renderRunnerCard(r);
     const newCard = document.querySelector(`.runner-card[data-runner="${r.id}"]`);
-    newCard?.addEventListener('click', ()=>buyRunnerLevel(r.id));
-    newCard?.classList.add('just-unlocked');
-    setTimeout(()=>newCard?.classList.remove('just-unlocked'), 1400);
+    if(newCard){
+      newCard.classList.add('just-unlocked');
+      setTimeout(()=>newCard.classList.remove('just-unlocked'), 1400);
+    }
+    bindTeamCardHandlers();
     if(A?.ctx){
       blip(660, .2, "triangle", .24, .65);
       setTimeout(()=>blip(990, .25, "sine", .24, .7), 120);
@@ -10543,27 +10765,45 @@ function updateRunnerCard(r){
   if(!unlocked) return;
   const lvl = runnerLevel(r.id);
   const cost = runnerCost(r);
-  const prod = runnerProductionPerSec(r);
-  const mileLvl = lvl % 25;
-  const milePct = (mileLvl / 25) * 100;
+  const batchVal = runnerBatchValue(r);
   const milestoneMul = runnerMilestoneMul(r.id);
-  const mileNext = 25 - mileLvl;
+  const cycle = runnerCycle(r.id);
+  const cyclePct = cycle * 100;
+  const cycleReady = cycle >= 1;
+  const hasMgr = runnerHasManager(r.id);
   const affordable = (STATE.gold || 0) >= cost;
+  // Si on vient de passer level 0 → 1, il faut rerender pour afficher le bouton MANAGER
+  const hadMgrBtn = !!card.querySelector('.rc-manager');
+  if(lvl > 0 && !hadMgrBtn){
+    card.outerHTML = renderRunnerCard(r);
+    bindTeamCardHandlers();
+    return;
+  }
   card.classList.toggle('affordable', affordable);
   card.classList.toggle('hired', lvl > 0);
   card.classList.toggle('unhired', lvl === 0);
+  card.classList.toggle('ready', cycleReady && !hasMgr);
+  card.classList.toggle('has-mgr', hasMgr);
   const $lvl = card.querySelector('[data-rc-lvl]');
-  const $rate = card.querySelector('[data-rc-rate]');
-  const $mile = card.querySelector('[data-rc-mile]');
-  const $miletxt = card.querySelector('[data-rc-miletxt]');
+  const $batch = card.querySelector('[data-rc-batch]');
+  const $cycle = card.querySelector('[data-rc-cycle]');
+  const $cyclehint = card.querySelector('[data-rc-cyclehint]');
   const $cost = card.querySelector('[data-rc-cost]');
   const $buyLbl = card.querySelector('.rc-buy-lbl');
+  const $mgrBtn = card.querySelector('.rc-manager');
   if($lvl) $lvl.textContent = 'NIV ' + lvl + (milestoneMul > 1 ? ' ×' + milestoneMul : '');
-  if($rate) $rate.textContent = '+' + fmtBigNumber(prod) + ' méd/s';
-  if($mile) $mile.style.width = milePct.toFixed(0) + '%';
-  if($miletxt) $miletxt.textContent = mileNext + ' → ×' + (milestoneMul*2);
+  if($batch) $batch.textContent = lvl > 0 ? '+' + fmtBigNumber(batchVal) + ' méd / cycle' : 'Pas encore recruté';
+  if($cycle) $cycle.style.width = cyclePct.toFixed(0) + '%';
+  if($cyclehint) $cyclehint.textContent = lvl > 0 ? (cycleReady ? '✦ TAP POUR COLLECTER' : (hasMgr ? 'auto · cycle ' + r.cycleTime + 's' : 'cycle ' + r.cycleTime + 's')) : '—';
   if($cost) $cost.textContent = fmtBigNumber(cost) + ' méd';
   if($buyLbl) $buyLbl.textContent = lvl === 0 ? 'RECRUTER' : 'NIV +1';
+  if($mgrBtn){
+    $mgrBtn.classList.toggle('hired', hasMgr);
+    const $cost = $mgrBtn.querySelector('[data-rc-mgrcost]');
+    if($cost) $cost.textContent = hasMgr ? 'AUTO' : fmtBigNumber(r.managerCost);
+    const $ico = $mgrBtn.querySelector('.rc-mgr-ico');
+    if($ico) $ico.textContent = hasMgr ? '✓' : '👔';
+  }
 }
 
 /* ================ DAILY REWARDS — calendrier 7 jours ================ */

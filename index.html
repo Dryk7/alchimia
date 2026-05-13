@@ -2545,11 +2545,11 @@ header{
 }
 #runner-stadium::before, #runner-stadium::after{ display:none }
 /* PERSPECTIVE CINÉMA TV-broadcast : caméra penchée pour voir les tribunes du fond */
-#runner-stadium{ perspective: 550px; perspective-origin: 50% 30%; }
+#runner-stadium{ perspective: 900px; perspective-origin: 50% 40%; }
 #runner-svg{
   display:block; width:100%; height:100%;
-  transform: rotateX(52deg);
-  transform-origin: center 55%;
+  transform: rotateX(32deg);
+  transform-origin: center center;
   transform-style: preserve-3d;
 }
 
@@ -5860,7 +5860,7 @@ body.shop-epic-flash::after{
       </div>
       <svg id="runner-svg" viewBox="0 0 320 340" preserveAspectRatio="xMidYMid meet">
         <defs>
-          <path id="rs-path" d="M 60,205 A 100,85 0 1 0 260,205 A 100,85 0 1 0 60,205 Z" fill="none"/>
+          <path id="rs-path" d="M 30,210 A 130,80 0 1 0 290,210 A 130,80 0 1 0 30,210 Z" fill="none"/>
           <!-- CIEL : gradient profond avec horizon doré -->
           <linearGradient id="rs-sky-grad" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%"   stop-color="#4a9fd0"/>
@@ -5985,27 +5985,28 @@ body.shop-epic-flash::after{
           <ellipse cx="160" cy="305" rx="80" ry="5" fill="#c0e070"/>
         </g>
 
-        <!-- OMBRE PROJETÉE de l'arena -->
-        <ellipse cx="160" cy="305" rx="155" ry="20" fill="#000" opacity=".22" filter="url(#rs-blur)"/>
+        <!-- OMBRE PROJETÉE de l'arena (gros flou doux) -->
+        <ellipse cx="160" cy="305" rx="172" ry="22" fill="#000" opacity=".22" filter="url(#rs-blur)"/>
 
-        <!-- MUR EXTÉRIEUR DE L'ARENA — ellipses + circulaires (perspective les aplatira) -->
-        <ellipse cx="160" cy="206" rx="155" ry="145" fill="#5a4828"/>
-        <ellipse cx="160" cy="204" rx="153" ry="143" fill="url(#rs-tribune-grad)"/>
-        <!-- Liseré supérieur -->
-        <ellipse cx="160" cy="200" rx="151" ry="138" fill="none" stroke="#e8c898" stroke-width="1" opacity=".6"/>
-        <ellipse cx="160" cy="206" rx="153" ry="143" fill="none" stroke="#1a1010" stroke-width="1" opacity=".6"/>
+        <!-- MUR EXTÉRIEUR DE L'ARENA (béton avec gradient) -->
+        <ellipse cx="160" cy="206" rx="162" ry="108" fill="#5a4828"/>
+        <ellipse cx="160" cy="204" rx="160" ry="106" fill="url(#rs-tribune-grad)"/>
+        <!-- Liseré supérieur (highlight haut du mur) -->
+        <ellipse cx="160" cy="200" rx="158" ry="100" fill="none" stroke="#e8c898" stroke-width="1" opacity=".6"/>
+        <!-- Ombre interne du mur -->
+        <ellipse cx="160" cy="206" rx="160" ry="106" fill="none" stroke="#1a1010" stroke-width="1" opacity=".6"/>
 
-        <!-- TRIBUNE ANNEAU principal — plus circulaire -->
-        <ellipse cx="160" cy="208" rx="145" ry="135" fill="url(#rs-tribune-grad)"/>
+        <!-- TRIBUNE ANNEAU principal — base gradient avec relief des gradins -->
+        <ellipse cx="160" cy="208" rx="152" ry="100" fill="url(#rs-tribune-grad)"/>
         <!-- Pattern de sièges visible sur l'anneau -->
-        <g>
-          <ellipse cx="160" cy="208" rx="145" ry="135" fill="url(#rs-seats)" opacity=".55"/>
+        <g style="clip-path: url(#rs-tribune-clip);">
+          <ellipse cx="160" cy="208" rx="152" ry="100" fill="url(#rs-seats)" opacity=".55"/>
         </g>
-        <!-- Gradins concentriques (anneaux d'escaliers) -->
-        <ellipse cx="160" cy="210" rx="139" ry="128" fill="none" stroke="#3a2818" stroke-width=".6" opacity=".7"/>
-        <ellipse cx="160" cy="212" rx="132" ry="120" fill="none" stroke="#3a2818" stroke-width=".6" opacity=".6"/>
-        <ellipse cx="160" cy="214" rx="125" ry="112" fill="none" stroke="#3a2818" stroke-width=".6" opacity=".5"/>
-        <ellipse cx="160" cy="216" rx="118" ry="104" fill="none" stroke="#3a2818" stroke-width=".6" opacity=".4"/>
+        <!-- Gradins concentriques avec relief (lignes radiales d'escaliers) -->
+        <ellipse cx="160" cy="210" rx="146" ry="94" fill="none" stroke="#3a2818" stroke-width=".6" opacity=".7"/>
+        <ellipse cx="160" cy="212" rx="139" ry="88" fill="none" stroke="#3a2818" stroke-width=".6" opacity=".6"/>
+        <ellipse cx="160" cy="214" rx="132" ry="82" fill="none" stroke="#3a2818" stroke-width=".6" opacity=".5"/>
+        <ellipse cx="160" cy="216" rx="125" ry="76" fill="none" stroke="#3a2818" stroke-width=".6" opacity=".4"/>
         <!-- Escaliers radiaux (vomitorios) -->
         <g stroke="#1a1010" stroke-width=".8" opacity=".5" fill="none">
           <line x1="160" y1="108" x2="160" y2="138"/>
@@ -6016,10 +6017,10 @@ body.shop-epic-flash::after{
           <line x1="92" y1="276" x2="108" y2="258"/>
           <line x1="228" y1="276" x2="212" y2="258"/>
         </g>
-        <!-- TOIT / OMBRE DE COURONNEMENT -->
-        <ellipse cx="160" cy="206" rx="148" ry="125" fill="none" stroke="#1a1010" stroke-width="2" opacity=".4"/>
-        <!-- Ombre intérieure de l'anneau -->
-        <ellipse cx="160" cy="218" rx="115" ry="100" fill="url(#rs-tribune-shade)" opacity=".85"/>
+        <!-- TOIT / OMBRE DE COURONNEMENT (rebord avant) -->
+        <ellipse cx="160" cy="206" rx="155" ry="92" fill="none" stroke="#1a1010" stroke-width="2" opacity=".4"/>
+        <!-- Ombre intérieure de l'anneau (dégradé vers le centre) -->
+        <ellipse cx="160" cy="220" rx="120" ry="72" fill="url(#rs-tribune-shade)" opacity=".85"/>
 
         <!-- SPECTATEURS distribués (généré par buildCrowd) -->
         <g id="rs-crowd"></g>
@@ -6034,30 +6035,30 @@ body.shop-epic-flash::after{
           <text x="160" y="274.5" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="7" fill="#fff" letter-spacing=".4">FOULÉE OLYMPIC ARENA</text>
         </g>
 
-        <!-- PISTE OVALE TARTAN ROUGE — ellipses circulaires (perspective fait le reste) -->
+        <!-- PISTE OVALE TARTAN ROUGE — Mondo-style officiel -->
         <!-- Rebord arrière (ombre 3D sous la piste) -->
-        <ellipse cx="160" cy="222" rx="113" ry="100" fill="#2a0808"/>
+        <ellipse cx="160" cy="224" rx="121" ry="79" fill="#2a0808"/>
         <!-- Bordure noire externe de la piste -->
-        <ellipse cx="160" cy="220" rx="112" ry="99" fill="#1a0408"/>
+        <ellipse cx="160" cy="220" rx="120" ry="78" fill="#1a0408"/>
         <!-- Piste tartan ROUGE avec texture granuleuse -->
-        <ellipse id="rs-track-shape" cx="160" cy="220" rx="110" ry="97" fill="url(#rs-tartan-tex)"/>
+        <ellipse id="rs-track-shape" cx="160" cy="220" rx="118" ry="76" fill="url(#rs-tartan-tex)"/>
         <!-- Bordure blanche extérieure -->
-        <ellipse cx="160" cy="220" rx="110" ry="97" fill="none" stroke="#fff" stroke-width="1.2" opacity=".9"/>
-        <!-- Highlight glossy en haut -->
-        <ellipse cx="160" cy="195" rx="108" ry="62" fill="url(#rs-track-shine)" opacity=".5"/>
+        <ellipse cx="160" cy="220" rx="118" ry="76" fill="none" stroke="#fff" stroke-width="1.2" opacity=".9"/>
+        <!-- Highlight glossy en haut (effet brillant sun-baked) -->
+        <ellipse cx="160" cy="198" rx="116" ry="42" fill="url(#rs-track-shine)" opacity=".7"/>
 
-        <!-- 8 COULOIRS BLANCS — ratios circulaires -->
+        <!-- 8 COULOIRS BLANCS (officiel athlétisme) -->
         <g fill="none" stroke="#fff" stroke-width=".7" opacity=".85">
-          <ellipse cx="160" cy="220" rx="106" ry="93"/>
-          <ellipse cx="160" cy="220" rx="102" ry="89"/>
-          <ellipse cx="160" cy="220" rx="98" ry="85"/>
-          <ellipse cx="160" cy="220" rx="94" ry="81"/>
-          <ellipse cx="160" cy="220" rx="90" ry="77"/>
-          <ellipse cx="160" cy="220" rx="86" ry="73"/>
-          <ellipse cx="160" cy="220" rx="82" ry="69"/>
+          <ellipse cx="160" cy="220" rx="114" ry="72"/>
+          <ellipse cx="160" cy="220" rx="110" ry="68"/>
+          <ellipse cx="160" cy="220" rx="106" ry="64"/>
+          <ellipse cx="160" cy="220" rx="102" ry="60"/>
+          <ellipse cx="160" cy="220" rx="98" ry="56"/>
+          <ellipse cx="160" cy="220" rx="94" ry="52"/>
+          <ellipse cx="160" cy="220" rx="90" ry="48"/>
         </g>
         <!-- Bordure intérieure blanche épaisse -->
-        <ellipse cx="160" cy="220" rx="78" ry="65" fill="none" stroke="#fff" stroke-width="1.2" opacity=".95"/>
+        <ellipse cx="160" cy="220" rx="87" ry="45" fill="none" stroke="#fff" stroke-width="1.2" opacity=".95"/>
         <!-- Marques de départ (10 traits radiaux blancs courts dans le couloir 1) -->
         <g stroke="#fff" stroke-width=".8" opacity=".7">
           <line x1="160" y1="142" x2="160" y2="148"/>
@@ -6069,11 +6070,11 @@ body.shop-epic-flash::after{
           <line x1="95" y1="280" x2="99" y2="276"/>
         </g>
 
-        <!-- GAZON CENTRAL — circulaire pour vraie perspective -->
-        <ellipse cx="160" cy="222" rx="80" ry="67" fill="#3a6a28" opacity=".45"/>
-        <ellipse cx="160" cy="220" rx="78" ry="65" fill="url(#rs-mowed)"/>
+        <!-- GAZON CENTRAL avec pattern + ombre extérieure -->
+        <ellipse cx="160" cy="222" rx="89" ry="47" fill="#3a6a28" opacity=".45"/>
+        <ellipse cx="160" cy="220" rx="87" ry="45" fill="url(#rs-mowed)"/>
         <!-- Liseré du gazon -->
-        <ellipse cx="160" cy="220" rx="78" ry="65" fill="none" stroke="#fff" stroke-width=".8" opacity=".5"/>
+        <ellipse cx="160" cy="220" rx="87" ry="45" fill="none" stroke="#fff" stroke-width=".8" opacity=".5"/>
 
         <!-- LIGNE D'ARRIVÉE checkered (sur la piste front) -->
         <g shape-rendering="crispEdges">

@@ -2552,9 +2552,13 @@ header{
 #runner-stadium[data-tier="0"] #rs-foreground rect[fill="#ff5a30"],
 #runner-stadium[data-tier="0"] #rs-foreground rect[fill="#c8a8f0"],
 #runner-stadium[data-tier="0"] #rs-foreground rect[fill="#fff"]{ display:none; }
-/* Lanes pointillées : que la piste de base */
-#runner-stadium[data-tier="0"] #rs-track-ring ~ ellipse{ display:none; }
-/* Ligne d'arrivée et drapeau */
+/* Lanes : cache que les couloirs en pointillé externes (rx=123) et lanes (rx=110/103) */
+#runner-stadium[data-tier="0"] ellipse[rx="123"],
+#runner-stadium[data-tier="0"] ellipse[rx="115"],
+#runner-stadium[data-tier="0"] ellipse[rx="103"],
+#runner-stadium[data-tier="0"] ellipse[rx="110"],
+#runner-stadium[data-tier="0"] ellipse[rx="100"]{ display:none; }
+/* Ligne d'arrivée et drapeau (cachés au tier 0) */
 #runner-stadium[data-tier="0"] rect[fill="#1a1010"][height="11"],
 #runner-stadium[data-tier="0"] rect[fill="#3a2818"][height="28"]{ display:none; }
 
@@ -2685,6 +2689,9 @@ header{
 
 /* 7. RUNNER — speedlines visibles quand rapide + jambes anim */
 .rs-speedlines{
+  animation:none;
+}
+#runner-stadium[data-fast="1"] .rs-speedlines{
   animation:speedlinesFlick .25s linear infinite;
 }
 @keyframes speedlinesFlick{
@@ -6029,7 +6036,7 @@ body.shop-epic-flash::after{
             <rect x="-18" y="0" width="8" height="1.4" fill="#fff" opacity=".55"/>
             <rect x="-20" y="4" width="9" height="1.4" fill="#fff" opacity=".45"/>
           </g>
-          <g class="rs-body" transform="scale(2.0)">
+          <g class="rs-body" transform="scale(4)">
             <g shape-rendering="crispEdges">
               <!-- ombre au sol -->
               <ellipse cx="0" cy="10" rx="6" ry="1.5" fill="#000" opacity=".4"/>
@@ -6368,13 +6375,6 @@ body.shop-epic-flash::after{
           <path d="M4 7 L9 12 L15 12 L20 7"/>
         </svg>
         <div class="mi-meta"><div class="mi-title">👕 Vestiaire</div><div class="mi-sub">skins coureur · cosmétiques</div></div>
-      </button>
-      <button class="menu-item" data-action="stadium">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
-          <ellipse cx="12" cy="13" rx="9" ry="4"/>
-          <path d="M3 13 V16 q9 4 18 0 V13"/>
-        </svg>
-        <div class="mi-meta"><div class="mi-title">🏟️ Stades</div><div class="mi-sub">5 stades à débloquer par saison</div></div>
       </button>
       <button class="menu-item" data-action="quests-daily">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
@@ -12731,8 +12731,8 @@ function tapBoost(e){
   if(typeof gainXp === 'function') gainXp(isCrit ? 3 : 1);
   STATE.totalTaps = (STATE.totalTaps || 0) + 1;
   // v7 : CHAQUE TAP POUSSE LE COUREUR — boost manuel de lapProgress
-  // Au début, c'est le SEUL moyen d'avancer. Avec progression, devient bonus.
-  const tapPush = 0.006 + (STATE.upgradeTapValue || 0) * 0.0005; // 0.6% au départ, +0.05% par niv TAP
+  // Au début, ~30 taps pour 1 tour. Avec progression auto, devient bonus.
+  const tapPush = 0.033 + (STATE.upgradeTapValue || 0) * 0.001; // 3.3% au départ
   STATE.lapProgress = (STATE.lapProgress || 0) + tapPush * (isCrit ? 2 : 1);
   if(STATE.lapProgress >= 1){
     STATE.lapProgress = 0;
@@ -12740,8 +12740,10 @@ function tapBoost(e){
   }
   // Check achievements throttled every 25 taps pour pas spammer
   if(STATE.totalTaps % 25 === 0 && typeof checkAchievements === 'function') checkAchievements();
-  // Starter pack offert au joueur après son 10e tap
-  if(STATE.totalTaps === 10 && typeof maybeShowStarterPack === 'function') maybeShowStarterPack();
+  // Starter pack offert au joueur après son 10e tap (re-tente si modal ouvert)
+  if(STATE.totalTaps >= 10 && !STATE.starterPackClaimed && !STATE.starterPackDeclined && typeof maybeShowStarterPack === 'function'){
+    maybeShowStarterPack();
+  }
   // Quêtes : tap counter
   if(typeof progressQuest === 'function') progressQuest('taps', 1);
   if(_comboCount >= 10 && typeof progressQuest === 'function') progressQuest('combo', 1);
@@ -13454,7 +13456,9 @@ function shouldShowStarterPack(){
 }
 function maybeShowStarterPack(){
   if(!shouldShowStarterPack()) return;
-  if(document.querySelectorAll('.modal.show').length > 0) return; // pas par-dessus un autre modal
+  if(document.querySelectorAll('.modal.show').length > 0) return;
+  // Aussi : pas par-dessus un chest reveal en cours
+  if(document.getElementById('chest-stage')?.classList.contains('active')) return;
   document.getElementById('starter-modal')?.classList.add('show');
 }
 function claimStarterPack(){
@@ -14939,7 +14943,7 @@ function _teamRunnerSprite(r, lvl){
     aura = `<circle cx="0" cy="-1.5" r="6" fill="#ffd070" opacity=".25" filter="blur(1.5px)" class="tr-aura"/>`;
   }
   return `
-    <g transform="scale(1.4)">
+    <g transform="scale(2.2)">
       ${aura}
       <ellipse cx="0" cy="6.5" rx="3.5" ry="1" fill="#000" opacity=".35"/>
       <rect x="-2.5" y="-7" width="5" height="2" fill="#4a2818"/>

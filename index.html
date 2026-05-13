@@ -5202,6 +5202,7 @@ function gainXp(amount){
     const oldTitle = ALCH_TITLES.filter(t=>t[0]<=oldLvl).slice(-1)[0]?.[1] || 'Novice';
     const newTitle = alchTitle();
     showLevelUp(newLvl, oldTitle !== newTitle ? newTitle : null);
+    if(typeof checkAchievements === 'function') checkAchievements();
   }
   renderAlchLevel();
 }
@@ -5449,6 +5450,21 @@ const ACHIEVEMENTS = [
 
   // === Ultime ===
   { id:"triple_t7",    name:"Triple Sommet",     desc:"Eau de Vie, Nectar et Souffle Divin atteints.",   icon:"trinity", reward:5000, check:s => s.totals.maxTier.every(t=>t>=7) },
+
+  // === TAP-ERA — Hauts faits actuels (course / tap / niveau) ===
+  { id:"tap_100",      name:"Tape Tape Tape",    desc:"100 taps cumulés.",                               icon:"fuse",    reward:50,    check:s => (s.totalTaps||0)>=100 },
+  { id:"tap_1000",     name:"Pouce Acier",       desc:"1 000 taps cumulés.",                             icon:"fuse",    reward:300,   check:s => (s.totalTaps||0)>=1000 },
+  { id:"tap_10000",    name:"Légende du Tap",    desc:"10 000 taps cumulés.",                            icon:"fuse",    reward:2000,  check:s => (s.totalTaps||0)>=10000 },
+  { id:"lap_10",       name:"Premier Dossard",   desc:"Boucler 10 tours.",                               icon:"crown",   reward:100,   check:s => (s.lapsRun||0)>=10 },
+  { id:"lap_50",       name:"Coureur Confirmé",  desc:"Boucler 50 tours.",                               icon:"crown",   reward:500,   check:s => (s.lapsRun||0)>=50 },
+  { id:"lap_100",      name:"Marathonien",       desc:"Boucler 100 tours (ASCENSION débloquée).",        icon:"crown",   reward:2000,  check:s => (s.lapsRun||0)>=100 },
+  { id:"lvl_10",       name:"Athlète Niveau 10", desc:"Atteindre le niveau 10.",                         icon:"horn",    reward:200,   check:s => (s.alchLevel||1)>=10 },
+  { id:"lvl_25",       name:"Compétiteur",       desc:"Atteindre le niveau 25.",                         icon:"horn",    reward:800,   check:s => (s.alchLevel||1)>=25 },
+  { id:"lvl_50",       name:"Élite",             desc:"Atteindre le niveau 50.",                         icon:"horn",    reward:5000,  check:s => (s.alchLevel||1)>=50 },
+  { id:"saison_2",     name:"Première Ascension",desc:"Compléter ta première saison.",                   icon:"trinity", reward:1000,  check:s => (s.saison||1)>=2 },
+  { id:"saison_5",     name:"Vétéran des Saisons",desc:"Atteindre la saison 5.",                         icon:"trinity", reward:5000,  check:s => (s.saison||1)>=5 },
+  { id:"daily_3",      name:"Habitué",           desc:"Réclamer 3 jours de récompense de suite.",        icon:"crown",   reward:200,   check:s => (s.dailyStreak||0)>=3 },
+  { id:"daily_7",      name:"Fidèle de la Semaine",desc:"Compléter le calendrier 7 jours.",              icon:"crown",   reward:1500,  check:s => (s.dailyCycles||0)>=1 },
 ];
 
 function checkAchievements(){
@@ -9784,6 +9800,8 @@ function tapBoost(e){
   // XP gain : 1 par tap, +3 si crit
   if(typeof gainXp === 'function') gainXp(isCrit ? 3 : 1);
   STATE.totalTaps = (STATE.totalTaps || 0) + 1;
+  // Check achievements throttled every 25 taps pour pas spammer
+  if(STATE.totalTaps % 25 === 0 && typeof checkAchievements === 'function') checkAchievements();
   if(typeof renderStats === 'function') renderStats();
   if(typeof updateTapStrip === 'function') updateTapStrip();
   if(typeof updateRunnerHUD === 'function') updateRunnerHUD();
@@ -9918,6 +9936,7 @@ function doSaisonAscend(){
   if(typeof renderStats === 'function') renderStats();
   if(typeof updateRunnerHUD === 'function') updateRunnerHUD();
   if(typeof updateTapStrip === 'function') updateTapStrip();
+  if(typeof checkAchievements === 'function') checkAchievements();
 }
 /* Boosts permanents achetables avec des étoiles */
 const STAR_PERKS = {
@@ -10054,12 +10073,14 @@ function claimDailyReward(){
   } else if(rwd.type === 'mixed'){
     STATE.gold = (STATE.gold || 0) + 15000;
     STATE.stars = (STATE.stars || 0) + 5;
+    STATE.dailyCycles = (STATE.dailyCycles || 0) + 1;
     if(typeof showRunnerBubble === 'function'){
       showRunnerBubble('🎁 +15k méd + 5 ★ !');
     }
   }
   STATE.dailyLast = Date.now();
   STATE.dailyStreak = day === 7 ? 0 : day; // après jour 7 → recommence à 1 demain
+  if(typeof checkAchievements === 'function') checkAchievements();
   // FX + son
   if(A?.ctx){
     blip(660, .15, "triangle", .22, .6);
@@ -10349,6 +10370,7 @@ function completeLap(){
   if(typeof gainXp === 'function') gainXp(50);
   if(typeof renderStats === 'function') renderStats();
   if(typeof updateRunnerHUD === 'function') updateRunnerHUD();
+  if(typeof checkAchievements === 'function') checkAchievements();
 }
 
 /* Maillot du coureur — évolue selon le nombre d'ascensions */
@@ -11965,6 +11987,7 @@ function save(){
       perkAutoBase:STATE.perkAutoBase ?? 0,
       dailyLast:STATE.dailyLast ?? 0,
       dailyStreak:STATE.dailyStreak ?? 0,
+      dailyCycles:STATE.dailyCycles ?? 0,
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
   }catch(e){}
@@ -12012,6 +12035,7 @@ function load(){
     STATE.perkAutoBase = s.perkAutoBase ?? 0;
     STATE.dailyLast = s.dailyLast ?? 0;
     STATE.dailyStreak = s.dailyStreak ?? 0;
+    STATE.dailyCycles = s.dailyCycles ?? 0;
     // Migration : si on a maxTier mais pas de codexUnlocks → backfill
     for(let c=0;c<3;c++){
       for(let t=0; t<=STATE.totals.maxTier[c]; t++){

@@ -2488,8 +2488,8 @@ header{
   aspect-ratio:320/340;
   max-height:56vh;
   flex-shrink:0;
-  /* PALETTE PREMIUM MOBILE : sage doux uniforme (matche le SVG) */
-  background:linear-gradient(180deg, #c0d8f0 0%, #d8e4ee 18%, #b8d490 28%, #b8d490 100%);
+  /* PALETTE PREMIUM MOBILE : sage uniforme top-down comme la référence */
+  background:#b8d490;
   border:none;
   border-radius:22px;
   overflow:hidden;
@@ -5889,10 +5889,10 @@ body.shop-epic-flash::after{
             <stop offset="0%"   stop-color="#c8d8e8"/>
             <stop offset="100%" stop-color="#d8e4ee"/>
           </linearGradient>
-          <!-- TRANSITION ciel → herbe (gradient vertical doux) -->
+          <!-- VIGNETTE haut : très subtile ombre pour donner profondeur -->
           <linearGradient id="rs-sky-transition" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#d8e4ee"/>
-            <stop offset="100%" stop-color="#b8d490"/>
+            <stop offset="0%"   stop-color="#000" stop-opacity=".15"/>
+            <stop offset="100%" stop-color="#000" stop-opacity="0"/>
           </linearGradient>
           <!-- GAZON : vert sauge doux (pas vert pomme) -->
           <linearGradient id="rs-grass-grad" x1="0" y1="0" x2="0" y2="1">
@@ -5961,29 +5961,15 @@ body.shop-epic-flash::after{
 
         <!-- ============ CINEMATIC ARENA — vue à 50m de haut avec perspective ============ -->
 
-        <!-- CIEL : bande pastel douce -->
-        <rect id="rs-sky-bg" x="0" y="0" width="320" height="65" fill="#d8e4ee"/>
-        <!-- Transition douce ciel → herbe -->
-        <rect x="0" y="56" width="320" height="14" fill="url(#rs-sky-transition)"/>
+        <!-- SOL UNIFIÉ : pas de bande ciel, vue top-down totale comme la référence -->
+        <rect id="rs-sky-bg" x="0" y="0" width="320" height="340" fill="#b8d490"/>
+        <!-- Subtle vignette douce dans le coin -->
+        <rect x="0" y="0" width="320" height="40" fill="url(#rs-sky-transition)" opacity=".4"/>
 
-        <!-- SOLEIL : doux et discret -->
-        <circle id="rs-celestial" cx="280" cy="28" r="11" fill="#fde8a0" opacity=".85"/>
-        <circle cx="280" cy="28" r="18" fill="#fff" opacity=".25"/>
-
-        <!-- NUAGES -->
-        <g opacity=".9" id="rs-clouds">
-          <ellipse cx="50" cy="25" rx="18" ry="5" fill="#fff"/>
-          <ellipse cx="62" cy="22" rx="10" ry="4" fill="#fff"/>
-          <ellipse cx="160" cy="18" rx="22" ry="5" fill="#fff"/>
-          <ellipse cx="180" cy="14" rx="11" ry="3.5" fill="#fff"/>
-        </g>
-
-        <!-- BLIMP / DIRIGEABLE animé : pastel doux -->
-        <g id="rs-blimp" transform="translate(-50 35)">
-          <ellipse cx="0" cy="0" rx="12" ry="4" fill="#e8a8a0"/>
-          <rect x="-3" y="3" width="6" height="1.5" fill="#9a8878" rx=".5"/>
-          <text x="0" y="1.2" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="3.5" fill="#fff">F</text>
-        </g>
+        <!-- Plus de ciel : vue 100% top-down (les éléments soleil/nuages/blimp deviennent invisibles) -->
+        <g id="rs-celestial" style="display:none"></g>
+        <g id="rs-clouds" style="display:none"></g>
+        <g id="rs-blimp" style="display:none"></g>
 
         <!-- ════════ STADE STYLE PREMIUM MOBILE — pastel, soft 3D, no outlines ════════ -->
 
@@ -14749,13 +14735,14 @@ function applyStadiumTier(){
   }
 }
 
-/* Stades unlockables par saison — change le visuel complet du décor */
+/* Stades unlockables par saison — palette pastel mute pour tous (style premium mobile)
+   "sky" sert de couleur de fond unifiée (vue top-down, plus de bandeau ciel). */
 const STADIUMS = [
-  { id:'municipal', name:'Stade Municipal',   sky:'#bedeed', celestial:'#ffd86a', celX:265, celY:28, celR:14, grass:'#9ec858', track:'#c8884e', minSaison:1 },
-  { id:'olympic',   name:'Stade Olympique',   sky:'#7ec8ee', celestial:'#fff3b0', celX:230, celY:24, celR:16, grass:'#7eb858', track:'#e02818', minSaison:2 },
-  { id:'coliseum',  name:'Coliseum',          sky:'#ffb070', celestial:'#ff6020', celX:280, celY:35, celR:18, grass:'#a09040', track:'#d8a040', minSaison:3 },
-  { id:'sunset',    name:'Stade du Couchant', sky:'#ff8060', celestial:'#ffd070', celX:50,  celY:40, celR:20, grass:'#90a060', track:'#b04030', minSaison:5 },
-  { id:'cosmic',    name:'Stade Cosmique',    sky:'#1a1640', celestial:'#fff',    celX:265, celY:28, celR:10, grass:'#3c4a78', track:'#5040b0', minSaison:8 },
+  { id:'municipal', name:'Stade Municipal',   sky:'#b8d490', celestial:'#fde8a0', celX:265, celY:28, celR:11, grass:'#a8c880', track:'#c87860', minSaison:1 },
+  { id:'olympic',   name:'Stade Olympique',   sky:'#b0cc88', celestial:'#fff',    celX:230, celY:24, celR:11, grass:'#a0c078', track:'#d68a72', minSaison:2 },
+  { id:'coliseum',  name:'Coliseum',          sky:'#d8c8a8', celestial:'#e8b078', celX:280, celY:35, celR:13, grass:'#b8a888', track:'#c89868', minSaison:3 },
+  { id:'sunset',    name:'Stade du Couchant', sky:'#e8c0a8', celestial:'#e8a890', celX:50,  celY:40, celR:13, grass:'#a89878', track:'#b08068', minSaison:5 },
+  { id:'cosmic',    name:'Stade Cosmique',    sky:'#3a3858', celestial:'#fff',    celX:265, celY:28, celR:9,  grass:'#6868a0', track:'#7868b0', minSaison:8 },
 ];
 function currentStadium(){
   const saison = STATE.saison || 1;

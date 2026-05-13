@@ -9091,59 +9091,45 @@ function shopGlyph(id){
 }
 
 /* ================ ÉVÈNEMENTS ALÉATOIRES ================ */
+/* v4 : Events sport-themed qui boostent le vrai gameplay (tap, team, cycle) */
 const EVENTS = [
-  { id:"starfall", name:"Pluie d'Étoiles", duration:0,
-    desc:"Le ciel pleut sur le stade. Huit brumes et énergies tombent.",
-    apply:()=>{
-      // Spawn 8 items random voies T0 dans cellules vides
-      let n = 0;
-      const empties = findEmpty();
-      for(let i=0;i<8 && empties.length;i++){
-        const idx = Math.floor(Math.random()*empties.length);
-        const [x,y] = empties.splice(idx, 1)[0];
-        const c = Math.floor(Math.random()*3);
-        STATE.grid[y][x] = { id: STATE.nextId++, chain:c, tier:0 };
-        renderTile(x,y); n++;
-      }
-      return n + " items invoqués";
-    }},
-  { id:"conjunction", name:"Conjonction Astrale", duration:60000,
-    desc:"Les astres s'alignent. Cooldowns divisés par deux.",
-    multipliers:{ cdMul:.5 } },
-  { id:"tide", name:"Marée d'Esprit", duration:60000,
-    desc:"L'éther afflue. Énergie se régénère trois fois plus vite.",
-    multipliers:{ regenMul:3 } },
-  { id:"goldbreath", name:"Souffle d'Or", duration:90000,
-    desc:"Le métal solaire infuse l'air. Quêtes réclamées : récompense ×1.5.",
+  { id:"coach", name:"Coach Présent", duration:60000,
+    desc:"Le coach motive ton équipe. Production team ×2 pendant 60s.",
+    multipliers:{ teamMul:2 } },
+  { id:"sprint", name:"Sprint Final", duration:30000,
+    desc:"Tu déchaînes le tap. ×5 méd / clic pendant 30s.",
+    multipliers:{ tapMul:5 } },
+  { id:"tailwind", name:"Vent dans le Dos", duration:60000,
+    desc:"Le vent souffle pour toi. Cycles ÷2 (deux fois plus rapides).",
+    multipliers:{ cycleMul:0.5 } },
+  { id:"anniv", name:"Anniversaire du Stade", duration:90000,
+    desc:"Tout le stade fête. +50% médailles toutes sources pendant 90s.",
     multipliers:{ goldMul:1.5 } },
-  { id:"comet", name:"Comète Errante", duration:0,
-    desc:"Une comète embrase la prochaine fusion : palier sauté.",
-    apply:()=>{ STATE.cometBoost = 1; return "fusion suivante : palier doublé"; }},
-  { id:"deepnight", name:"Nuit Profonde", duration:75000,
-    desc:"Le drone s'épaissit. Toute fusion gagne 25% de médailles en plus.",
-    multipliers:{ mergeGoldMul:1.25 } },
-  { id:"moonsmile", name:"Sourire de Lune", duration:0,
-    desc:"La lune sourit. +30 énergie, +50 médailles.",
+  { id:"hydration", name:"Pause Hydratation", duration:0,
+    desc:"+30 méd × niveau coureur (récompense immédiate).",
     apply:()=>{
-      STATE.essence = Math.min(STATE.essenceMax, STATE.essence + 30);
-      STATE.gold += 50; renderStats();
-      return "+30 énergie · +50 médailles";
+      const bonus = (STATE.alchLevel||1) * 30 + 100;
+      STATE.gold = (STATE.gold || 0) + bonus;
+      return '+' + bonus + ' méd';
     }},
-  { id:"blackmist", name:"Brume Noire", duration:60000,
-    desc:"L'éther s'étouffe. Énergie régen ÷2, mais chaque fusion rapporte +50% d'or.",
-    multipliers:{ regenMul:.5, mergeGoldMul:1.5 } },
-  { id:"merchant", name:"Marchand Errant", duration:0,
-    desc:"Un marchand frappe à la porte. Il offre un Bourgeon, un Quartz et une Énergie.",
+  { id:"legend", name:"Coureur Légendaire", duration:45000,
+    desc:"Un champion passe en visite. Tous les batches team ×3 pendant 45s.",
+    multipliers:{ teamMul:3 } },
+  { id:"competition", name:"Compétition Officielle", duration:60000,
+    desc:"Chaque tour bouclé donne +500 méd bonus pendant 60s.",
+    multipliers:{ lapBonus:500 } },
+  { id:"goldenrush", name:"Pluie de Médailles", duration:0,
+    desc:"Pluie de médailles instantanée !",
     apply:()=>{
-      const empties = findEmpty(); if(empties.length < 3) return 'l\'stade est trop encombré';
-      // 3 items T1 chacune voie
-      for(let c=0; c<3 && empties.length; c++){
-        const idx = Math.floor(Math.random()*empties.length);
-        const [x,y] = empties.splice(idx,1)[0];
-        STATE.grid[y][x] = { id:STATE.nextId++, chain:c, tier:1 };
-        renderTile(x,y);
-      }
-      return '+3 items palier I offerts';
+      const bonus = Math.max(200, Math.floor(teamTotalPerSec() * 60));
+      STATE.gold = (STATE.gold || 0) + bonus;
+      return '+' + (typeof fmtBigNumber === 'function' ? fmtBigNumber(bonus) : bonus) + ' méd';
+    }},
+  { id:"gemdrop", name:"Sponsor Généreux", duration:0,
+    desc:"Un sponsor donne quelques gemmes. +3 💎",
+    apply:()=>{
+      if(typeof addGems === 'function') addGems(3);
+      return '+3 💎';
     }},
 ];
 
@@ -9192,12 +9178,51 @@ function eventNotification(e, extra){
 }
 
 function applyEventModifiers(){
-  // Appliqué au démarrage de l'event ou quand un expire
   const ae = STATE.activeEvents || {};
   let cdMul = 1, regenMul = 1;
   for(const id in ae){ const a = ae[id]; if(a.multipliers?.cdMul) cdMul *= a.multipliers.cdMul; if(a.multipliers?.regenMul) regenMul *= a.multipliers.regenMul; }
   STATE.eventCdMul = cdMul;
   STATE.eventRegenMul = regenMul;
+}
+/* v4 helpers — multiplicateurs actifs des events sport-themed */
+function _activeEvents(){
+  const ae = STATE.activeEvents || {};
+  const now = Date.now();
+  const res = {};
+  for(const id in ae){
+    if(ae[id].expiresAt > now) res[id] = ae[id];
+  }
+  return res;
+}
+function eventTeamMul(){
+  let m = 1;
+  const ae = _activeEvents();
+  for(const id in ae){ if(ae[id].multipliers?.teamMul) m *= ae[id].multipliers.teamMul; }
+  return m;
+}
+function eventTapMul(){
+  let m = 1;
+  const ae = _activeEvents();
+  for(const id in ae){ if(ae[id].multipliers?.tapMul) m *= ae[id].multipliers.tapMul; }
+  return m;
+}
+function eventCycleMul(){
+  let m = 1;
+  const ae = _activeEvents();
+  for(const id in ae){ if(ae[id].multipliers?.cycleMul) m *= ae[id].multipliers.cycleMul; }
+  return m;
+}
+function eventGoldMul(){
+  let m = 1;
+  const ae = _activeEvents();
+  for(const id in ae){ if(ae[id].multipliers?.goldMul) m *= ae[id].multipliers.goldMul; }
+  return m;
+}
+function eventLapBonus(){
+  let b = 0;
+  const ae = _activeEvents();
+  for(const id in ae){ if(ae[id].multipliers?.lapBonus) b += ae[id].multipliers.lapBonus; }
+  return b;
 }
 
 /* ================ CIBLES SPECTRALES — micro-défis ================ */
@@ -10465,10 +10490,12 @@ function tapBoost(e){
   const comboMul = _comboCount >= 25 ? 5 : _comboCount >= 12 ? 3 : _comboCount >= 6 ? 2 : _comboCount >= 3 ? 1.5 : 1;
   // Bump stamina = boost de vitesse temporaire
   if(typeof bumpStamina === 'function') bumpStamina(0.14 + _comboCount * 0.005);
-  // Médailles par tap : base 1 + niveau upgrade × saison × tap golden × shop boost
+  // Médailles par tap : tous les multipliers s'empilent
   const tapMul = (typeof getTapMul === 'function') ? getTapMul() : 1;
   const shopMul = (typeof getShopBoostMul === 'function') ? getShopBoostMul() : 1;
-  const perTap = (1 + (STATE.upgradeTapValue||0)) * comboMul * tapMul * shopMul * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
+  const eTapMul = (typeof eventTapMul === 'function') ? eventTapMul() : 1;
+  const eGoldMul = (typeof eventGoldMul === 'function') ? eventGoldMul() : 1;
+  const perTap = (1 + (STATE.upgradeTapValue||0)) * comboMul * tapMul * shopMul * eTapMul * eGoldMul * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
   // Crit chance plafonné à 60% pour éviter le OP late game
   const rawCrit = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
   const critChance = Math.min(0.60, rawCrit);
@@ -11080,7 +11107,9 @@ function runnerBatchValue(r){
   const pistardMul = (r.id === 'pistard') ? 1 : runnerPistardTeamMul();
   const saisonMul = (typeof saisonGoldMul === 'function') ? saisonGoldMul() : 1;
   const shopMul = (typeof getShopBoostMul === 'function') ? getShopBoostMul() : 1;
-  return Math.floor(baseBatch * pistardMul * saisonMul * shopMul);
+  const eTeamMul = (typeof eventTeamMul === 'function') ? eventTeamMul() : 1;
+  const eGoldMul = (typeof eventGoldMul === 'function') ? eventGoldMul() : 1;
+  return Math.floor(baseBatch * pistardMul * saisonMul * shopMul * eTeamMul * eGoldMul);
 }
 /* Production théorique méd/sec (info uniquement) */
 function runnerProductionPerSec(r){
@@ -11173,11 +11202,12 @@ function collectRunnerBatch(id){
 function tickTeam(dt){
   if(!dt || dt <= 0) return;
   _ensureTeamShape();
+  const cycleSpeedMul = (typeof eventCycleMul === 'function') ? (1 / eventCycleMul()) : 1; // cycleMul 0.5 = vitesse ×2
   for(const r of TEAM_RUNNERS){
     const d = STATE.team[r.id];
     if(d.level < 1) continue;
     if(d.cycle < 1){
-      d.cycle += dt / r.cycleTime;
+      d.cycle += (dt * cycleSpeedMul) / r.cycleTime;
       if(d.cycle > 1) d.cycle = 1;
     }
     // Auto-collect si manager

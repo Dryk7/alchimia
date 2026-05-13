@@ -504,6 +504,70 @@ header{
   margin-top:12px;
 }
 
+/* === VESTIAIRE (skins) === */
+.wardrobe-body{ overflow-y:auto; max-height:65vh; padding:4px 2px; }
+.wardrobe-section{ margin-bottom:14px; }
+.wardrobe-section h3{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:11px; letter-spacing:.14em;
+  color:var(--ember); margin:8px 4px;
+  text-transform:uppercase;
+}
+.wardrobe-grid{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:8px;
+}
+.wardrobe-cell{
+  padding:10px 6px;
+  background:#fff;
+  border:2px solid rgba(160,122,68,.25);
+  border-radius:12px;
+  text-align:center;
+  cursor:pointer;
+  transition:transform .12s, border-color .15s;
+}
+.wardrobe-cell.owned{ cursor:pointer; }
+.wardrobe-cell.locked{ opacity:.5; cursor:not-allowed; }
+.wardrobe-cell.affordable{
+  cursor:pointer; opacity:1;
+  border-color:#7bc7f6;
+  box-shadow:0 2px 8px rgba(74,159,217,.25);
+}
+.wardrobe-cell.selected{
+  border-color:#3a8c3a;
+  background:linear-gradient(180deg, #fff, #e2f4e2);
+  box-shadow:0 0 0 2px rgba(58,140,58,.25);
+}
+.wardrobe-cell:active{ transform:scale(.97); }
+.wc-preview{
+  display:flex; flex-direction:column; align-items:center;
+  margin-bottom:6px;
+}
+.wc-head{
+  width:18px; height:18px;
+  background:#f0c890;
+  border-radius:3px;
+  margin-bottom:2px;
+}
+.wc-body{
+  width:24px; height:14px;
+  background:var(--wc-jersey, #e85a30);
+  border-radius:3px;
+  border-top:2px solid var(--wc-accent, #ffd070);
+}
+.wc-name{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:11px; color:var(--ink);
+}
+.wc-status{
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:9.5px; color:var(--ink-2);
+  margin-top:2px;
+}
+.wardrobe-cell.selected .wc-status{ color:#3a8c3a; font-weight:900; }
+.wardrobe-cell.affordable .wc-status{ color:#2c5a8a; font-weight:900; }
+
 /* === STARTER PACK MODAL === */
 .starter-card{ position:relative; text-align:center; padding-top:32px; }
 .starter-ribbon{
@@ -4995,6 +5059,13 @@ body.shop-epic-flash::after{
         </svg>
         <div class="mi-meta"><div class="mi-title">💎 Boutique</div><div class="mi-sub">boosts, packs, médailles avec gemmes</div></div>
       </button>
+      <button class="menu-item" data-action="wardrobe">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M4 7 L12 3 L20 7 L20 19 L4 19 z"/>
+          <path d="M4 7 L9 12 L15 12 L20 7"/>
+        </svg>
+        <div class="mi-meta"><div class="mi-title">👕 Vestiaire</div><div class="mi-sub">skins coureur · cosmétiques</div></div>
+      </button>
       <button class="menu-item" data-action="stats">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
           <rect x="4" y="13" width="3" height="7"/>
@@ -5573,6 +5644,16 @@ body.shop-epic-flash::after{
     <h2>ASCENSION</h2>
     <div class="divider"></div>
     <div class="saison-body" id="saison-body"></div>
+  </div>
+</div>
+
+<!-- VESTIAIRE (skins coureur) -->
+<div id="wardrobe-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-close" id="wardrobe-close" aria-label="Fermer">×</div>
+    <h2>👕 VESTIAIRE</h2>
+    <div class="divider"></div>
+    <div class="wardrobe-body" id="wardrobe-body"></div>
   </div>
 </div>
 
@@ -11871,18 +11952,127 @@ function completeLap(){
 }
 
 /* Maillot du coureur — évolue selon le nombre d'ascensions */
+/* Skins par défaut, déblocables par ascensions (gratuits) */
 const RUNNER_SKINS = [
-  { jersey:'#e85a30', accent:'#ffd070', hair:'#4a2818', name:'Débutant' },           // 0 — orange
-  { jersey:'#3e8db8', accent:'#7ec8e8', hair:'#4a2818', name:'Confirmé' },           // 1 — bleu
-  { jersey:'#3a8838', accent:'#a8e070', hair:'#4a2818', name:'Habitué' },            // 2 — vert
-  { jersey:'#c83434', accent:'#ffa050', hair:'#4a2818', name:'Vétéran' },            // 3 — rouge
-  { jersey:'#7a4ab0', accent:'#c8a8f0', hair:'#4a2818', name:'Mystique' },           // 4 — violet
-  { jersey:'#d0a830', accent:'#ffe898', hair:'#5a3818', name:'Champion' },           // 5+ — or
+  { id:'base',    jersey:'#e85a30', accent:'#ffd070', hair:'#4a2818', name:'Débutant', free:true },
+  { id:'blue',    jersey:'#3e8db8', accent:'#7ec8e8', hair:'#4a2818', name:'Confirmé', free:true },
+  { id:'green',   jersey:'#3a8838', accent:'#a8e070', hair:'#4a2818', name:'Habitué', free:true },
+  { id:'red',     jersey:'#c83434', accent:'#ffa050', hair:'#4a2818', name:'Vétéran', free:true },
+  { id:'purple',  jersey:'#7a4ab0', accent:'#c8a8f0', hair:'#4a2818', name:'Mystique', free:true },
+  { id:'gold',    jersey:'#d0a830', accent:'#ffe898', hair:'#5a3818', name:'Champion', free:true },
 ];
+/* SKINS PREMIUM — achetables en gemmes ou débloqués via achievements */
+const PREMIUM_SKINS = [
+  { id:'pink',    jersey:'#ee5a9a', accent:'#ffc4dc', hair:'#3a1818', name:'Flamingo', priceGems:50 },
+  { id:'black',   jersey:'#1a1a1a', accent:'#d030d0', hair:'#1a1a1a', name:'Ninja',     priceGems:80 },
+  { id:'rainbow', jersey:'#7a4ab0', accent:'#7ec8e8', hair:'#4a2818', name:'Arc-en-ciel', priceGems:120, special:'rainbow' },
+  { id:'cyber',   jersey:'#00d4ff', accent:'#ff00aa', hair:'#000',    name:'Cyber',     priceGems:150, special:'glow' },
+  { id:'crown',   jersey:'#fff', accent:'#ffd070', hair:'#5a3818',    name:'Royal',     priceGems:200 },
+];
+function ownedSkins(){
+  if(!STATE.ownedSkins) STATE.ownedSkins = {};
+  // Skins gratuits débloqués par nombre d'ascensions
+  const asc = STATE.ascensions || STATE.transmutations || 0;
+  for(let i=0; i<=Math.min(asc, RUNNER_SKINS.length-1); i++){
+    STATE.ownedSkins[RUNNER_SKINS[i].id] = true;
+  }
+  return STATE.ownedSkins;
+}
+function isSkinOwned(id){
+  ownedSkins();
+  return !!STATE.ownedSkins[id];
+}
+function selectedSkin(){
+  return STATE.selectedSkinId || 'base';
+}
+function setSelectedSkin(id){
+  if(!isSkinOwned(id)) return false;
+  STATE.selectedSkinId = id;
+  if(typeof applyRunnerSkin === 'function') applyRunnerSkin();
+  return true;
+}
+function buySkin(id){
+  const skin = PREMIUM_SKINS.find(s => s.id === id);
+  if(!skin) return;
+  if(isSkinOwned(id)) return;
+  if(!spendGems(skin.priceGems)){
+    if(typeof sfxDeny === 'function') sfxDeny();
+    return;
+  }
+  if(!STATE.ownedSkins) STATE.ownedSkins = {};
+  STATE.ownedSkins[id] = true;
+  STATE.selectedSkinId = id;
+  if(A?.ctx){
+    blip(660, .15, "triangle", .26, .65);
+    setTimeout(()=>blip(990, .18, "sine", .26, .7), 100);
+  }
+  vibrate([20, 40, 20]);
+  if(typeof showRunnerBubble === 'function') showRunnerBubble('✨ Skin ' + skin.name + ' équipé !');
+  if(typeof applyRunnerSkin === 'function') applyRunnerSkin();
+  if(typeof renderWardrobe === 'function') renderWardrobe();
+}
 function getRunnerSkin(){
+  // Si le joueur a sélectionné un skin → utiliser ça
+  const sel = selectedSkin();
+  const all = [...RUNNER_SKINS, ...PREMIUM_SKINS];
+  const found = all.find(s => s.id === sel);
+  if(found && isSkinOwned(sel)) return found;
+  // Sinon, fallback : skin du nombre d'ascensions
   const asc = STATE.ascensions || STATE.transmutations || 0;
   const idx = Math.min(asc, RUNNER_SKINS.length - 1);
   return RUNNER_SKINS[idx];
+}
+/* Vestiaire = modal pour switcher entre skins owned + acheter premium */
+function openWardrobe(){
+  if(typeof renderWardrobe === 'function') renderWardrobe();
+  document.getElementById('wardrobe-modal')?.classList.add('show');
+}
+function renderWardrobe(){
+  const body = document.getElementById('wardrobe-body');
+  if(!body) return;
+  const sel = selectedSkin();
+  const gems = getGems();
+  const renderCell = (s, isPremium) => {
+    const owned = isSkinOwned(s.id);
+    const selected = sel === s.id;
+    const canBuy = isPremium && !owned && gems >= s.priceGems;
+    return `<div class="wardrobe-cell ${owned ? 'owned' : 'locked'} ${selected ? 'selected' : ''} ${canBuy ? 'affordable' : ''}" data-skin="${s.id}" data-premium="${isPremium?1:0}">
+      <div class="wc-preview" style="--wc-jersey:${s.jersey}; --wc-accent:${s.accent}">
+        <div class="wc-head"></div>
+        <div class="wc-body"></div>
+      </div>
+      <div class="wc-name">${s.name}</div>
+      <div class="wc-status">
+        ${owned ? (selected ? '✓ ÉQUIPÉ' : 'POSSÉDÉ · CLIQUER') : (isPremium ? s.priceGems + ' 💎' : '🔒')}
+      </div>
+    </div>`;
+  };
+  body.innerHTML = `
+    <div class="wardrobe-section">
+      <h3>SKINS GRATUITS</h3>
+      <div class="wardrobe-grid">
+        ${RUNNER_SKINS.map(s => renderCell(s, false)).join('')}
+      </div>
+    </div>
+    <div class="wardrobe-section">
+      <h3>SKINS PREMIUM 💎</h3>
+      <div class="wardrobe-grid">
+        ${PREMIUM_SKINS.map(s => renderCell(s, true)).join('')}
+      </div>
+    </div>
+  `;
+  body.querySelectorAll('.wardrobe-cell').forEach(cell => {
+    cell.addEventListener('click', ()=>{
+      const id = cell.dataset.skin;
+      const isPremium = cell.dataset.premium === '1';
+      if(isSkinOwned(id)){
+        setSelectedSkin(id);
+        renderWardrobe();
+      } else if(isPremium){
+        buySkin(id);
+      }
+    });
+  });
 }
 
 /* Distance parcourue par le coureur en mètres.
@@ -13600,6 +13790,8 @@ function save(){
       lastAdAt:STATE.lastAdAt ?? 0,
       starterPackClaimed:STATE.starterPackClaimed ?? false,
       starterPackDeclined:STATE.starterPackDeclined ?? false,
+      ownedSkins:STATE.ownedSkins || {},
+      selectedSkinId:STATE.selectedSkinId || 'base',
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
   }catch(e){}
@@ -13654,6 +13846,8 @@ function load(){
     STATE.lastAdAt = s.lastAdAt ?? 0;
     STATE.starterPackClaimed = s.starterPackClaimed ?? false;
     STATE.starterPackDeclined = s.starterPackDeclined ?? false;
+    STATE.ownedSkins = s.ownedSkins || {};
+    STATE.selectedSkinId = s.selectedSkinId || 'base';
     // Migration : si on a maxTier mais pas de codexUnlocks → backfill
     for(let c=0;c<3;c++){
       for(let t=0; t<=STATE.totals.maxTier[c]; t++){
@@ -13875,6 +14069,7 @@ function boot(){
     if(A?.ctx) blip(880, .15, "triangle", .22, .55);
   });
   bindModalClose('shop-premium-modal','shop-premium-close');
+  bindModalClose('wardrobe-modal','wardrobe-close');
   document.getElementById('starter-close')?.addEventListener('click', ()=>{
     document.getElementById('starter-modal')?.classList.remove('show');
     STATE.starterPackDeclined = true; // ne plus re-spam
@@ -13980,6 +14175,7 @@ function boot(){
         else if(action === 'saison' && typeof openSaisonModal === 'function') openSaisonModal();
         else if(action === 'daily' && typeof openDailyModal === 'function') openDailyModal();
         else if(action === 'shop-premium' && typeof openShopModal === 'function') openShopModal();
+        else if(action === 'wardrobe' && typeof openWardrobe === 'function') openWardrobe();
         else if(action === 'stats'){ renderStatsBody(); openModal('stats-modal'); }
       }, 200);
     });

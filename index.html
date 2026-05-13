@@ -2485,12 +2485,12 @@ header{
 #runner-stadium{
   position:relative;
   width:100%;
-  /* v8 LINEAR : stade moins haut, garde du space pour UI overlay */
   aspect-ratio:320/340;
   max-height:56vh;
   flex-shrink:0;
-  background:linear-gradient(180deg, #b8def0 0%, #cbe5f5 40%, #e8d8a8 100%);
-  border:4px solid #a07a44;
+  /* PALETTE PREMIUM MOBILE : sage doux uniforme (matche le SVG) */
+  background:linear-gradient(180deg, #c0d8f0 0%, #d8e4ee 18%, #b8d490 28%, #b8d490 100%);
+  border:none;
   border-radius:22px;
   overflow:hidden;
   flex-shrink:0;
@@ -2498,19 +2498,15 @@ header{
   user-select:none;
   -webkit-tap-highlight-color:transparent;
   touch-action:manipulation;
+  /* Soft shadow premium (pas d'inset doré old-school) */
   box-shadow:
-    inset 0 3px 0 rgba(255,255,255,.55),
-    inset 0 -3px 6px rgba(160,122,68,.22),
-    0 6px 18px rgba(80,55,30,.22),
-    0 2px 4px rgba(80,55,30,.10);
+    0 6px 20px rgba(60,80,60,.12),
+    0 2px 6px rgba(60,80,60,.08);
   transition:transform .12s cubic-bezier(.2,.9,.2,1.4), box-shadow .12s;
 }
 #runner-stadium:active, #runner-stadium.stadium-tapped{
   transform:scale(.992);
-  box-shadow:
-    inset 0 3px 0 rgba(255,255,255,.55),
-    inset 0 -3px 6px rgba(160,122,68,.22),
-    0 3px 8px rgba(80,55,30,.18);
+  box-shadow:0 3px 10px rgba(60,80,60,.10);
 }
 #runner-stadium.stadium-tapped::after{
   content:'';
@@ -5888,10 +5884,15 @@ body.shop-epic-flash::after{
         <defs>
           <path id="rs-path" d="M 80,216 A 80,50 0 1 0 240,216 A 80,50 0 1 0 80,216 Z" fill="none"/>
           <!-- ═══ PALETTE PREMIUM MOBILE : pastel mute, soft, élégant ═══ -->
-          <!-- CIEL : gris doux quasi blanc (pas de bleu pétant) -->
+          <!-- CIEL : gris doux quasi blanc -->
           <linearGradient id="rs-sky-grad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#d8dde2"/>
-            <stop offset="100%" stop-color="#e8edf2"/>
+            <stop offset="0%"   stop-color="#c8d8e8"/>
+            <stop offset="100%" stop-color="#d8e4ee"/>
+          </linearGradient>
+          <!-- TRANSITION ciel → herbe (gradient vertical doux) -->
+          <linearGradient id="rs-sky-transition" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stop-color="#d8e4ee"/>
+            <stop offset="100%" stop-color="#b8d490"/>
           </linearGradient>
           <!-- GAZON : vert sauge doux (pas vert pomme) -->
           <linearGradient id="rs-grass-grad" x1="0" y1="0" x2="0" y2="1">
@@ -5960,8 +5961,10 @@ body.shop-epic-flash::after{
 
         <!-- ============ CINEMATIC ARENA — vue à 50m de haut avec perspective ============ -->
 
-        <!-- CIEL (bande haute) avec gradient -->
-        <rect id="rs-sky-bg" x="0" y="0" width="320" height="65" fill="url(#rs-sky-grad)"/>
+        <!-- CIEL : bande pastel douce -->
+        <rect id="rs-sky-bg" x="0" y="0" width="320" height="65" fill="#d8e4ee"/>
+        <!-- Transition douce ciel → herbe -->
+        <rect x="0" y="56" width="320" height="14" fill="url(#rs-sky-transition)"/>
 
         <!-- SOLEIL : doux et discret -->
         <circle id="rs-celestial" cx="280" cy="28" r="11" fill="#fde8a0" opacity=".85"/>
@@ -6070,18 +6073,25 @@ body.shop-epic-flash::after{
           <rect x="270" y="210" width="3" height="6" fill="#7a5838"/>
         </g>
 
-        <!-- Petits buissons d'avant-plan (touche détail) -->
+        <!-- AVANT-PLAN : buissons + caissons + détails (composition framing) -->
         <g filter="url(#rs-shadow-tight)">
-          <ellipse cx="55" cy="298" rx="9" ry="6" fill="#98b878"/>
-          <ellipse cx="60" cy="295" rx="6" ry="4" fill="#a8c888"/>
-          <ellipse cx="265" cy="298" rx="9" ry="6" fill="#98b878"/>
-          <ellipse cx="260" cy="295" rx="6" ry="4" fill="#a8c888"/>
-        </g>
-        <!-- Petit caisson en bois (style référence) -->
-        <g filter="url(#rs-shadow-tight)">
-          <rect x="115" y="305" width="14" height="16" fill="#a87850"/>
-          <rect x="115" y="305" width="14" height="3" fill="#b88860"/>
-          <rect x="121" y="310" width="2" height="11" fill="#7a5838" opacity=".4"/>
+          <!-- Buissons gauche -->
+          <ellipse cx="55" cy="298" rx="10" ry="6" fill="#98b878"/>
+          <ellipse cx="62" cy="295" rx="7" ry="4.5" fill="#a8c888"/>
+          <!-- Buissons droite -->
+          <ellipse cx="265" cy="298" rx="10" ry="6" fill="#98b878"/>
+          <ellipse cx="258" cy="295" rx="7" ry="4.5" fill="#a8c888"/>
+          <!-- Caissons en bois (2, comme un coin "matos" stade) -->
+          <rect x="105" y="308" width="12" height="14" rx="1" fill="#a87850"/>
+          <rect x="105" y="308" width="12" height="2.5" fill="#b88860"/>
+          <rect x="110" y="312" width="2" height="9" fill="#7a5838" opacity=".4"/>
+          <rect x="118" y="304" width="11" height="18" rx="1" fill="#9a6c48"/>
+          <rect x="118" y="304" width="11" height="2.5" fill="#aa7c58"/>
+          <rect x="122" y="308" width="2" height="13" fill="#6a4828" opacity=".4"/>
+          <!-- Petit cône orange de signalisation à droite (touche athlé) -->
+          <path d="M 200,322 L 196,310 L 204,310 Z" fill="#d68a72"/>
+          <rect x="194" y="320" width="12" height="3" rx=".5" fill="#c8786a"/>
+          <rect x="196" y="313" width="8" height="1.5" fill="#fff" opacity=".6"/>
         </g>
 
         <!-- PAS de scoreboard, pas de drapeaux, pas de fleurs : sobriété mobile premium -->
@@ -6091,9 +6101,9 @@ body.shop-epic-flash::after{
         <g id="rs-team-runners"></g>
         <!-- LE COUREUR principal (toi, le joueur) -->
         <g id="rs-runner">
-          <!-- AURA HERO (cercle doré subtil derrière le héros) -->
-          <circle class="rs-hero-aura" cx="0" cy="2" r="22" fill="#ffd84a" opacity=".22"/>
-          <circle class="rs-hero-aura" cx="0" cy="2" r="16" fill="#fff" opacity=".15"/>
+          <!-- AURA HERO discrète (palette pastel premium) -->
+          <circle class="rs-hero-aura" cx="0" cy="2" r="18" fill="#fff" opacity=".18"/>
+          <circle class="rs-hero-aura" cx="0" cy="2" r="12" fill="#fff" opacity=".25"/>
           <!-- Lignes de vitesse derrière (visibles quand rapide) -->
           <g class="rs-speedlines" opacity="0" style="opacity:0">
             <rect x="-22" y="-4" width="11" height="1.6" fill="#fff" opacity=".8"/>
@@ -15055,7 +15065,8 @@ const NPC_TYPES = [
       <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#5a4028"/>
     </g>` },
 ];
-const NPC_COLORS_ALL = ['#3e8db8','#5a9040','#9080c0','#ffd070','#f55a5a','#c89af0','#e85a30','#7ec46a','#ee5a9a','#4a9fd9'];
+// Palette NPCs : pastel mute matche le nouveau style premium
+const NPC_COLORS_ALL = ['#7e9bb8','#a0c090','#b8a8c8','#e8d090','#d49880','#c8a0b8','#c87860','#a0b890','#d8a8b8','#8aa8c4'];
 const NPC_COUNT = 5;
 function _npcSprite(npcType, color){
   return npcType.sprite(color);

@@ -798,6 +798,61 @@ header{
   font-size:10px; color:var(--ink-2);
 }
 
+/* === SKILLS BAR (Clicker Heroes style) === */
+.skills-bar{
+  display:none;
+  grid-template-columns:repeat(4, 1fr);
+  gap:8px;
+  margin-top:8px;
+  padding:0 2px;
+}
+.skills-bar.show{ display:grid; }
+.skill-btn{
+  position:relative;
+  aspect-ratio:1 / 1;
+  background:linear-gradient(180deg, var(--sk-color, #f08a48), color-mix(in srgb, var(--sk-color) 60%, #000) );
+  border:3px solid #fff;
+  border-radius:50%;
+  cursor:pointer;
+  overflow:hidden;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 10px rgba(80,55,30,.25);
+  transition:transform .12s;
+  padding:0;
+}
+.skill-btn.cooldown{
+  cursor:not-allowed;
+  filter:saturate(.4) brightness(.7);
+}
+.skill-btn.ready{
+  animation:skillReadyPulse 1.5s ease-in-out infinite;
+}
+@keyframes skillReadyPulse{
+  0%,100% { box-shadow:0 4px 10px rgba(80,55,30,.25), 0 0 0 0 rgba(255,255,255,.6); }
+  50%     { box-shadow:0 4px 14px rgba(80,55,30,.30), 0 0 0 6px rgba(255,255,255,0); }
+}
+.skill-btn:active{ transform:scale(.94); }
+.skill-ico{
+  font-size:24px;
+  z-index:2;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.4));
+}
+.skill-cd-fill{
+  position:absolute; left:0; right:0; bottom:0;
+  background:rgba(255,255,255,.18);
+  pointer-events:none;
+  transition:height .25s linear;
+}
+.skill-cd-text{
+  position:absolute; bottom:4px; left:0; right:0;
+  text-align:center;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:11px;
+  color:#fff;
+  text-shadow:0 1px 2px rgba(0,0,0,.6);
+  z-index:3;
+}
+
 /* === GOLDEN BATCHES (Cookie Clicker style) === */
 .golden-batch{
   position:absolute;
@@ -4928,6 +4983,9 @@ body.shop-epic-flash::after{
         <span class="boost-label">TAP</span>
         <span class="boost-sub">+<span id="boost-per-tap">1</span> méd / clic</span>
       </button>
+
+      <!-- SKILLS ACTIFS (4 boutons à cooldown) -->
+      <div id="skills-bar" class="skills-bar"></div>
 
       <!-- Bouton ASCENSION (visible quand atteint 100 tours) -->
       <button id="saison-btn" class="saison-btn" style="display:none">
@@ -10532,12 +10590,13 @@ function tapBoost(e){
   const comboMul = _comboCount >= 25 ? 5 : _comboCount >= 12 ? 3 : _comboCount >= 6 ? 2 : _comboCount >= 3 ? 1.5 : 1;
   // Bump stamina = boost de vitesse temporaire
   if(typeof bumpStamina === 'function') bumpStamina(0.14 + _comboCount * 0.005);
-  // Médailles par tap : tous les multipliers s'empilent
+  // Médailles par tap : tous les multipliers s'empilent (combo + tap + shop + event + skill + saison)
   const tapMul = (typeof getTapMul === 'function') ? getTapMul() : 1;
   const shopMul = (typeof getShopBoostMul === 'function') ? getShopBoostMul() : 1;
   const eTapMul = (typeof eventTapMul === 'function') ? eventTapMul() : 1;
   const eGoldMul = (typeof eventGoldMul === 'function') ? eventGoldMul() : 1;
-  const perTap = (1 + (STATE.upgradeTapValue||0)) * comboMul * tapMul * shopMul * eTapMul * eGoldMul * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
+  const skillTap = (typeof skillSprintTapMul === 'function') ? skillSprintTapMul() : 1;
+  const perTap = (1 + (STATE.upgradeTapValue||0)) * comboMul * tapMul * shopMul * eTapMul * eGoldMul * skillTap * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
   // Crit chance plafonné à 60% pour éviter le OP late game
   const rawCrit = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
   const critChance = Math.min(0.60, rawCrit);
@@ -10817,6 +10876,131 @@ function saisonGoldMul(){ return 1 + (STATE.perkGoldMul||0) * 0.05; }
 function saisonCritBonus(){ return (STATE.perkCritBase||0) * 0.005; }
 function saisonXpMul(){ return 1 + (STATE.perkXpMul||0) * 0.05; }
 function saisonAutoBase(){ return (STATE.perkAutoBase||0) * 0.2; }
+
+/* ================ SKILLS ACTIFS (à la Clicker Heroes) ================
+   4 boosts manuels avec cooldown. Le joueur les active quand il veut.
+   Débloqués progressivement par tours bouclés / saisons. */
+const SKILLS = [
+  {
+    id:'sprint',
+    name:'SPRINT',
+    icon:'⚡',
+    color:'#ff6020',
+    desc:'×10 méd/tap pendant 30s',
+    cooldown:480, // 8 minutes
+    duration:30,
+    unlockLaps:0,
+    apply(){
+      STATE.skillSprintUntil = Date.now() + 30000;
+    }
+  },
+  {
+    id:'tailwind',
+    name:'VENT FAVORABLE',
+    icon:'💨',
+    color:'#7bc7f6',
+    desc:'Cycles ÷3 pendant 60s',
+    cooldown:600,
+    duration:60,
+    unlockLaps:5,
+    apply(){
+      STATE.skillTailwindUntil = Date.now() + 60000;
+    }
+  },
+  {
+    id:'bounty',
+    name:'PRIME',
+    icon:'💰',
+    color:'#ffd070',
+    desc:'+2h de team production instant',
+    cooldown:1800, // 30 min
+    duration:0,
+    unlockLaps:20,
+    apply(){
+      const gain = Math.max(100, Math.floor(teamTotalPerSec() * 7200));
+      STATE.gold = (STATE.gold || 0) + gain;
+      if(typeof showRunnerBubble === 'function') showRunnerBubble('+' + fmtBigNumber(gain) + ' méd !');
+    }
+  },
+  {
+    id:'breath',
+    name:'2EME SOUFFLE',
+    icon:'❤️',
+    color:'#e8a050',
+    desc:'×5 team production pendant 45s',
+    cooldown:900, // 15 min
+    duration:45,
+    unlockLaps:50,
+    apply(){
+      STATE.skillBreathUntil = Date.now() + 45000;
+    }
+  },
+];
+function skillUnlocked(s){ return (STATE.lapsRun || 0) >= s.unlockLaps; }
+function skillCooldownRemaining(s){
+  const last = (STATE.skillsLastUsed && STATE.skillsLastUsed[s.id]) || 0;
+  const ready = last + s.cooldown * 1000;
+  return Math.max(0, ready - Date.now());
+}
+function skillReady(s){ return skillCooldownRemaining(s) === 0; }
+function activateSkill(id){
+  const s = SKILLS.find(x => x.id === id);
+  if(!s) return;
+  if(!skillUnlocked(s)){ if(typeof sfxDeny === 'function') sfxDeny(); return; }
+  if(!skillReady(s)){ if(typeof sfxDeny === 'function') sfxDeny(); return; }
+  s.apply();
+  if(!STATE.skillsLastUsed) STATE.skillsLastUsed = {};
+  STATE.skillsLastUsed[s.id] = Date.now();
+  if(A?.ctx){
+    blip(880, .12, "triangle", .26, .65);
+    setTimeout(()=>blip(1320, .15, "sine", .26, .7), 80);
+    setTimeout(()=>blip(1760, .2, "triangle", .26, .75), 180);
+  }
+  vibrate([30, 50, 30]);
+  if(typeof showRunnerBubble === 'function') showRunnerBubble('✦ ' + s.name + ' !');
+  if(typeof renderSkillsBar === 'function') renderSkillsBar();
+}
+/* Multiplicateurs actifs des skills */
+function skillSprintTapMul(){ return (STATE.skillSprintUntil && Date.now() < STATE.skillSprintUntil) ? 10 : 1; }
+function skillTailwindCycleMul(){ return (STATE.skillTailwindUntil && Date.now() < STATE.skillTailwindUntil) ? 1/3 : 1; }
+function skillBreathTeamMul(){ return (STATE.skillBreathUntil && Date.now() < STATE.skillBreathUntil) ? 5 : 1; }
+
+/* Rendu de la barre de skills (en bas du stade ou flottante) */
+function renderSkillsBar(){
+  const container = document.getElementById('skills-bar');
+  if(!container) return;
+  const visibles = SKILLS.filter(skillUnlocked);
+  if(visibles.length === 0){
+    container.innerHTML = '';
+    container.classList.remove('show');
+    return;
+  }
+  container.classList.add('show');
+  container.innerHTML = visibles.map(s => {
+    const ready = skillReady(s);
+    const cd = skillCooldownRemaining(s);
+    const cdSec = Math.ceil(cd / 1000);
+    const cdPct = cd > 0 ? (1 - cd / (s.cooldown * 1000)) * 100 : 100;
+    return `<button class="skill-btn ${ready ? 'ready' : 'cooldown'}" data-skill="${s.id}" style="--sk-color:${s.color}" title="${s.name} — ${s.desc}">
+      <div class="skill-ico">${s.icon}</div>
+      <div class="skill-cd-fill" style="height:${(100-cdPct).toFixed(0)}%"></div>
+      ${!ready ? `<div class="skill-cd-text">${cdSec}s</div>` : ''}
+    </button>`;
+  }).join('');
+  container.querySelectorAll('.skill-btn').forEach(btn => {
+    btn.addEventListener('click', ()=>{
+      activateSkill(btn.dataset.skill);
+    });
+  });
+}
+/* Tick pour rafraîchir les cooldowns + activer effets visuels */
+let _skillTickAccum = 0;
+function tickSkills(dt){
+  _skillTickAccum += dt;
+  if(_skillTickAccum < 0.25) return;
+  _skillTickAccum = 0;
+  if(typeof renderSkillsBar === 'function') renderSkillsBar();
+}
 
 /* ================ GOLDEN BATCHES — Cookie Clicker style ================
    Toutes les 45-90s une médaille dorée apparaît sur le stade.
@@ -11188,7 +11372,8 @@ function runnerBatchValue(r){
   const shopMul = (typeof getShopBoostMul === 'function') ? getShopBoostMul() : 1;
   const eTeamMul = (typeof eventTeamMul === 'function') ? eventTeamMul() : 1;
   const eGoldMul = (typeof eventGoldMul === 'function') ? eventGoldMul() : 1;
-  return Math.floor(baseBatch * pistardMul * saisonMul * shopMul * eTeamMul * eGoldMul);
+  const skillTeam = (typeof skillBreathTeamMul === 'function') ? skillBreathTeamMul() : 1;
+  return Math.floor(baseBatch * pistardMul * saisonMul * shopMul * eTeamMul * eGoldMul * skillTeam);
 }
 /* Production théorique méd/sec (info uniquement) */
 function runnerProductionPerSec(r){
@@ -11281,7 +11466,9 @@ function collectRunnerBatch(id){
 function tickTeam(dt){
   if(!dt || dt <= 0) return;
   _ensureTeamShape();
-  const cycleSpeedMul = (typeof eventCycleMul === 'function') ? (1 / eventCycleMul()) : 1; // cycleMul 0.5 = vitesse ×2
+  const eCycleMul = (typeof eventCycleMul === 'function') ? eventCycleMul() : 1;
+  const skillCycle = (typeof skillTailwindCycleMul === 'function') ? skillTailwindCycleMul() : 1;
+  const cycleSpeedMul = 1 / (eCycleMul * skillCycle); // mul < 1 = cycle plus rapide
   for(const r of TEAM_RUNNERS){
     const d = STATE.team[r.id];
     if(d.level < 1) continue;
@@ -13742,6 +13929,10 @@ function save(){
       ownedSkins:STATE.ownedSkins || {},
       selectedSkinId:STATE.selectedSkinId || 'base',
       records:STATE.records || {},
+      skillsLastUsed:STATE.skillsLastUsed || {},
+      skillSprintUntil:STATE.skillSprintUntil ?? 0,
+      skillTailwindUntil:STATE.skillTailwindUntil ?? 0,
+      skillBreathUntil:STATE.skillBreathUntil ?? 0,
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
   }catch(e){}
@@ -13799,6 +13990,10 @@ function load(){
     STATE.ownedSkins = s.ownedSkins || {};
     STATE.selectedSkinId = s.selectedSkinId || 'base';
     STATE.records = s.records || null;
+    STATE.skillsLastUsed = s.skillsLastUsed || {};
+    STATE.skillSprintUntil = s.skillSprintUntil ?? 0;
+    STATE.skillTailwindUntil = s.skillTailwindUntil ?? 0;
+    STATE.skillBreathUntil = s.skillBreathUntil ?? 0;
     // Migration : si on a maxTier mais pas de codexUnlocks → backfill
     for(let c=0;c<3;c++){
       for(let t=0; t<=STATE.totals.maxTier[c]; t++){
@@ -14314,6 +14509,7 @@ function boot(){
     safe(()=>tickTeam(dt));
     safe(()=>tickTeamRender(dt));
     safe(tickGoldenBatch);
+    safe(()=>tickSkills(dt));
     safe(updateRunner);
     safe(updateTapStrip);
     safe(updateRunnerHUD);

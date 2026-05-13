@@ -664,6 +664,73 @@ header{
   border-radius:50%;
 }
 
+/* === CARTE DES STADES (multi locations) === */
+.map-stadiums-body{ overflow-y:auto; max-height:65vh; padding:4px 2px; }
+.ms-intro{
+  text-align:center;
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:11.5px; color:var(--ink-2);
+  padding:8px 12px; margin-bottom:12px;
+  background:#fffaee;
+  border:1.5px dashed rgba(160,122,68,.30);
+  border-radius:10px;
+}
+.ms-grid{ display:flex; flex-direction:column; gap:10px; }
+.ms-card{
+  padding:12px;
+  background:#fff;
+  border:3px solid var(--ms-color, #9b9b9b);
+  border-radius:14px;
+  transition:transform .15s;
+}
+.ms-card.locked{ opacity:.5; filter:grayscale(.5); }
+.ms-card.active{
+  background:linear-gradient(180deg, #fff, color-mix(in srgb, var(--ms-color) 15%, #fff));
+  box-shadow:0 0 0 2px var(--ms-color), 0 4px 12px rgba(80,55,30,.15);
+}
+.ms-head{ display:flex; gap:10px; align-items:center; }
+.ms-emoji{ font-size:36px; line-height:1; flex-shrink:0; }
+.ms-info{ flex:1; }
+.ms-name{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:15px; color:var(--ink);
+}
+.ms-desc{
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:11px; color:var(--ink-2); margin-top:2px;
+}
+.ms-modifiers{
+  display:flex; gap:6px; margin-top:8px; flex-wrap:wrap;
+}
+.ms-mod{
+  display:inline-block;
+  padding:3px 8px;
+  background:var(--ms-color, #9b9b9b);
+  color:#fff;
+  border-radius:10px;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:10.5px; letter-spacing:.04em;
+}
+.ms-progress{
+  margin-top:8px;
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:11px; color:var(--ink-2);
+  text-align:right;
+}
+.ms-enter{
+  margin-top:8px; width:100%;
+  padding:8px;
+  background:linear-gradient(180deg, var(--ms-color), color-mix(in srgb, var(--ms-color) 60%, #000));
+  color:#fff;
+  border:none; border-radius:10px;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:13px; letter-spacing:.06em;
+  cursor:pointer;
+  transition:transform .12s, opacity .15s;
+}
+.ms-enter:active{ transform:scale(.97); }
+.ms-enter.active{ background:#5a8038; cursor:default; }
+
 /* === CARTES STAR — pick modal + collection === */
 #card-pick-body{ padding:8px 4px; }
 .cp-intro{
@@ -6267,6 +6334,13 @@ body.shop-epic-flash::after{
         </svg>
         <div class="mi-meta"><div class="mi-title">💎 Boutique</div><div class="mi-sub">boosts, packs, médailles avec gemmes</div></div>
       </button>
+      <button class="menu-item" data-action="map-stadiums">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M3 6 L9 4 L15 6 L21 4 V18 L15 20 L9 18 L3 20 z"/>
+          <path d="M9 4 V18 M15 6 V20"/>
+        </svg>
+        <div class="mi-meta"><div class="mi-title">🗺️ Carte des Stades</div><div class="mi-sub">5 disciplines · économies parallèles</div></div>
+      </button>
       <button class="menu-item" data-action="cards">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
           <rect x="6" y="3" width="12" height="18" rx="2"/>
@@ -6702,6 +6776,16 @@ body.shop-epic-flash::after{
     <h2>ASCENSION</h2>
     <div class="divider"></div>
     <div class="saison-body" id="saison-body"></div>
+  </div>
+</div>
+
+<!-- CARTE DES STADES (multi locations) -->
+<div id="map-stadiums-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-close" id="map-stadiums-close" aria-label="Fermer">×</div>
+    <h2>🗺️ CARTE DES STADES</h2>
+    <div class="divider"></div>
+    <div class="map-stadiums-body" id="map-stadiums-body"></div>
   </div>
 </div>
 
@@ -11887,6 +11971,139 @@ function _showDropToast(item, action, scrapMed){
     }
   }
 }
+/* ================ MULTIPLE STADES (Eatventure locations) ================
+   Chaque stade a sa propre économie : team, upgrades, gold local séparés.
+   Le coureur principal (level, cartes, gemmes, étoiles, équipement) reste global. */
+const MAP_STADIUMS = [
+  { id:'municipal',  name:'Stade Municipal',   emoji:'🏟️', theme:'#7ec46a',
+    minSaison:1, desc:'Le départ. Course classique sur piste cendrée.',
+    modifier:{ tapMul:1, cycleMul:1, batchMul:1 } },
+  { id:'velodrome',  name:'Vélodrome',         emoji:'🚴', theme:'#4a9fd9',
+    minSaison:2, desc:'Vitesse pure. Cycles 50% plus rapides.',
+    modifier:{ tapMul:1.2, cycleMul:0.5, batchMul:0.8 } },
+  { id:'indoor',     name:'Athlé Indoor',      emoji:'🏃', theme:'#e85a30',
+    minSaison:3, desc:'Sprint intense. Tap 2× plus rentable, batches 50%.',
+    modifier:{ tapMul:2, cycleMul:0.7, batchMul:0.5 } },
+  { id:'trail',      name:'Trail Montagne',    emoji:'⛰️', theme:'#5a9040',
+    minSaison:4, desc:'Marathon outdoor. Cycles longs, batches énormes.',
+    modifier:{ tapMul:0.7, cycleMul:1.5, batchMul:2.5 } },
+  { id:'olympic',    name:'Stade Olympique',   emoji:'🏛️', theme:'#ffba30',
+    minSaison:5, desc:'Élite. Tout est multiplié.',
+    modifier:{ tapMul:1.5, cycleMul:0.6, batchMul:2 } },
+];
+function mapStadiumDef(id){ return MAP_STADIUMS.find(s => s.id === id); }
+function currentMapStadium(){ return mapStadiumDef(STATE.currentStadiumId || 'municipal'); }
+function mapStadiumUnlocked(s){ return (STATE.saison || 1) >= s.minSaison; }
+function _ensureStadiumProgress(){
+  if(!STATE.stadiumProgress) STATE.stadiumProgress = {};
+}
+/* Snapshot du state actuel dans stadiumProgress[currentId] */
+function _snapshotCurrentStadium(){
+  _ensureStadiumProgress();
+  const id = STATE.currentStadiumId || 'municipal';
+  STATE.stadiumProgress[id] = {
+    gold: STATE.gold || 0,
+    team: JSON.parse(JSON.stringify(STATE.team || {})),
+    upgradeTapValue: STATE.upgradeTapValue || 0,
+    upgradeCritChance: STATE.upgradeCritChance || 0,
+    upgradeLapBonus: STATE.upgradeLapBonus || 0,
+    upgradeAutoTap: STATE.upgradeAutoTap || 0,
+    lapsRun: STATE.lapsRun || 0,
+    lapProgress: STATE.lapProgress || 0,
+    runnerStamina: STATE.runnerStamina || 1,
+  };
+}
+/* Charge le state d'un stade (depuis stadiumProgress[id] ou init zéro) */
+function _loadStadiumState(id){
+  _ensureStadiumProgress();
+  const prog = STATE.stadiumProgress[id] || {};
+  STATE.gold = prog.gold || 0;
+  STATE.team = prog.team || {};
+  STATE.upgradeTapValue = prog.upgradeTapValue || 0;
+  STATE.upgradeCritChance = prog.upgradeCritChance || 0;
+  STATE.upgradeLapBonus = prog.upgradeLapBonus || 0;
+  STATE.upgradeAutoTap = prog.upgradeAutoTap || 0;
+  STATE.lapsRun = prog.lapsRun || 0;
+  STATE.lapProgress = prog.lapProgress || 0;
+  STATE.runnerStamina = prog.runnerStamina || 1;
+  _ensureTeamShape();
+}
+function switchToStadium(id){
+  const s = mapStadiumDef(id);
+  if(!s) return;
+  if(!mapStadiumUnlocked(s)){
+    if(typeof sfxDeny === 'function') sfxDeny();
+    return;
+  }
+  if(STATE.currentStadiumId === id) return;
+  // Save current, then load target
+  _snapshotCurrentStadium();
+  _loadStadiumState(id);
+  STATE.currentStadiumId = id;
+  // Refresh UI
+  if(typeof renderTeam === 'function') renderTeam();
+  if(typeof updateTeamRate === 'function') updateTeamRate();
+  if(typeof renderStats === 'function') renderStats();
+  if(typeof updateTapStrip === 'function') updateTapStrip();
+  if(typeof applyStadiumTier === 'function') applyStadiumTier();
+  if(typeof buildCrowd === 'function') buildCrowd();
+  if(typeof updateTrackSurface === 'function') updateTrackSurface();
+  if(typeof showRunnerBubble === 'function') showRunnerBubble('🏛️ ' + s.name);
+  if(A?.ctx){
+    blip(550, .1, "triangle", .24, .55);
+    setTimeout(()=>blip(880, .15, "sine", .24, .6), 100);
+  }
+  if(typeof renderMapStadiums === 'function') renderMapStadiums();
+}
+/* Modifiers de gameplay du stade actif */
+function mapStadiumTapMul(){ return currentMapStadium()?.modifier?.tapMul || 1; }
+function mapStadiumCycleMul(){ return currentMapStadium()?.modifier?.cycleMul || 1; }
+function mapStadiumBatchMul(){ return currentMapStadium()?.modifier?.batchMul || 1; }
+function openMapStadiums(){
+  if(typeof renderMapStadiums === 'function') renderMapStadiums();
+  document.getElementById('map-stadiums-modal')?.classList.add('show');
+}
+function renderMapStadiums(){
+  const body = document.getElementById('map-stadiums-body');
+  if(!body) return;
+  const currentId = STATE.currentStadiumId || 'municipal';
+  _ensureStadiumProgress();
+  const cards = MAP_STADIUMS.map(s => {
+    const unlocked = mapStadiumUnlocked(s);
+    const active = currentId === s.id;
+    const prog = STATE.stadiumProgress?.[s.id] || {};
+    const localGold = (s.id === currentId) ? STATE.gold : (prog.gold || 0);
+    const localLaps = (s.id === currentId) ? STATE.lapsRun : (prog.lapsRun || 0);
+    const m = s.modifier;
+    return `<div class="ms-card ${unlocked ? 'unlocked' : 'locked'} ${active ? 'active' : ''}"
+        data-stadium="${s.id}" style="--ms-color:${s.theme}">
+      <div class="ms-head">
+        <div class="ms-emoji">${s.emoji}</div>
+        <div class="ms-info">
+          <div class="ms-name">${s.name}</div>
+          <div class="ms-desc">${unlocked ? s.desc : '🔒 Saison ' + s.minSaison}</div>
+        </div>
+      </div>
+      <div class="ms-modifiers">
+        ${m.tapMul !== 1 ? `<span class="ms-mod">Tap ×${m.tapMul}</span>` : ''}
+        ${m.cycleMul !== 1 ? `<span class="ms-mod">Cycle ×${m.cycleMul}</span>` : ''}
+        ${m.batchMul !== 1 ? `<span class="ms-mod">Batch ×${m.batchMul}</span>` : ''}
+      </div>
+      ${unlocked ? `<div class="ms-progress">
+        <span>${fmtBigNumber(localGold)} méd · ${localLaps} tours</span>
+      </div>` : ''}
+      ${unlocked ? `<button class="ms-enter ${active ? 'active' : ''}" data-enter="${s.id}">${active ? '✓ ACTIF' : 'ENTRER'}</button>` : ''}
+    </div>`;
+  }).join('');
+  body.innerHTML = `
+    <div class="ms-intro">Chaque stade a sa propre équipe, son or, ses upgrades. Le coureur principal (niveau, cartes, gemmes) reste partagé.</div>
+    <div class="ms-grid">${cards}</div>
+  `;
+  body.querySelectorAll('[data-enter]').forEach(btn => {
+    btn.addEventListener('click', ()=>switchToStadium(btn.dataset.enter));
+  });
+}
+
 /* ================ CARTES STAR COUREUR (Investor Cards Eatventure-like) ================
    À chaque ascension de saison, le joueur tire 1 carte (parmi 3 proposées).
    Les cartes donnent des bonus permanents passifs.
@@ -12467,7 +12684,9 @@ function tapBoost(e){
   const cardAll = (typeof deckAllMul === 'function') ? deckAllMul() : 1;
   // Big Bang : chaque tap 5% chance de ×100
   const bigBangBonus = (typeof deckBonus === 'function' && deckBonus('tapBig') > 0 && Math.random() < deckBonus('tapBig')) ? 100 : 1;
-  const perTap = (1 + (STATE.upgradeTapValue||0)) * comboMul * tapMul * shopMul * eTapMul * eGoldMul * skillTap * equipMul * cardTap * cardAll * bigBangBonus * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
+  // Modifier stade map (vélodrome / indoor / etc.)
+  const mapTapMul = (typeof mapStadiumTapMul === 'function') ? mapStadiumTapMul() : 1;
+  const perTap = (1 + (STATE.upgradeTapValue||0)) * comboMul * tapMul * shopMul * eTapMul * eGoldMul * skillTap * equipMul * cardTap * cardAll * bigBangBonus * mapTapMul * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
   // Crit chance plafonné à 60% + équipement + cartes
   const equipCrit = (typeof equipBonus === 'function') ? equipBonus('critRate') : 0;
   const cardCrit = (typeof deckBonus === 'function') ? deckBonus('crit') : 0;
@@ -13394,7 +13613,8 @@ function runnerBatchValue(r){
   // CARTES STAR : team + goldAll multipliers
   const cardTeam = (typeof deckBonus === 'function') ? (1 + deckBonus('team') + deckBonus('goldAll')) : 1;
   const cardAllMul = (typeof deckAllMul === 'function') ? deckAllMul() : 1;
-  return Math.floor(baseBatch * pistardMul * saisonMul * shopMul * eTeamMul * eGoldMul * skillTeam * equipMul * cardTeam * cardAllMul);
+  const mapBatchMul = (typeof mapStadiumBatchMul === 'function') ? mapStadiumBatchMul() : 1;
+  return Math.floor(baseBatch * pistardMul * saisonMul * shopMul * eTeamMul * eGoldMul * skillTeam * equipMul * cardTeam * cardAllMul * mapBatchMul);
 }
 /* Production théorique méd/sec (info uniquement) */
 function runnerProductionPerSec(r){
@@ -13503,8 +13723,9 @@ function tickTeam(dt){
   _ensureTeamShape();
   const eCycleMul = (typeof eventCycleMul === 'function') ? eventCycleMul() : 1;
   const skillCycle = (typeof skillTailwindCycleMul === 'function') ? skillTailwindCycleMul() : 1;
-  const cardCycle = (typeof deckBonus === 'function') ? (1 - deckBonus('cycle')) : 1; // réduction
-  const cycleSpeedMul = 1 / (eCycleMul * skillCycle * cardCycle);
+  const cardCycle = (typeof deckBonus === 'function') ? (1 - deckBonus('cycle')) : 1;
+  const mapCycle = (typeof mapStadiumCycleMul === 'function') ? mapStadiumCycleMul() : 1;
+  const cycleSpeedMul = 1 / (eCycleMul * skillCycle * cardCycle * mapCycle);
   for(const r of TEAM_RUNNERS){
     const d = STATE.team[r.id];
     if(d.level < 1) continue;
@@ -16213,6 +16434,8 @@ function showOfflineToast(offlineMs, gold){
 function save(){
   if(STATE._resetting) return; // bloque les sauvegardes pendant le reset complet
   try{
+    // Snapshot du stade actuel avant save
+    if(typeof _snapshotCurrentStadium === 'function') _snapshotCurrentStadium();
     const now = Date.now();
     STATE.sessionMs = now - STATE.sessionStartMs;
     STATE.totalPlayMs = (STATE.totalPlayMs||0) + (now - (STATE.lastSaveTime||now));
@@ -16277,6 +16500,8 @@ function save(){
       chests:STATE.chests || {},
       cardsOwned:STATE.cardsOwned || [],
       cardsDeck:STATE.cardsDeck || [],
+      stadiumProgress:STATE.stadiumProgress || {},
+      currentStadiumId:STATE.currentStadiumId || 'municipal',
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
   }catch(e){}
@@ -16344,6 +16569,8 @@ function load(){
     STATE.chests = s.chests || {};
     STATE.cardsOwned = s.cardsOwned || [];
     STATE.cardsDeck = s.cardsDeck || [];
+    STATE.stadiumProgress = s.stadiumProgress || {};
+    STATE.currentStadiumId = s.currentStadiumId || 'municipal';
     // Migration : si on a maxTier mais pas de codexUnlocks → backfill
     for(let c=0;c<3;c++){
       for(let t=0; t<=STATE.totals.maxTier[c]; t++){
@@ -16560,6 +16787,7 @@ function boot(){
   bindModalClose('equip-modal','equip-close');
   bindModalClose('chests-modal','chests-close');
   bindModalClose('cards-modal','cards-close');
+  bindModalClose('map-stadiums-modal','map-stadiums-close');
   // Pas de close pour card-pick (forçage choix)
   if(typeof updateChestBadge === 'function') updateChestBadge();
   document.getElementById('starter-close')?.addEventListener('click', ()=>{
@@ -16698,6 +16926,7 @@ function boot(){
         else if(action === 'equip' && typeof openEquip === 'function') openEquip();
         else if(action === 'chests' && typeof openChestsModal === 'function') openChestsModal();
         else if(action === 'cards' && typeof openCardCollection === 'function') openCardCollection();
+        else if(action === 'map-stadiums' && typeof openMapStadiums === 'function') openMapStadiums();
         else if(action === 'records' && typeof openRecords === 'function') openRecords();
         else if(action === 'quests-daily' && typeof openQuestsModal === 'function') openQuestsModal();
         else if(action === 'stadium' && typeof openStadiumPicker === 'function') openStadiumPicker();

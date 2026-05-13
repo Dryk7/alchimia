@@ -1916,6 +1916,150 @@ header{
 #runner-svg{
   display:block; width:100%; height:100%;
 }
+
+/* ================ ANIMATIONS STADIUM v7 ================ */
+/* 1. NUAGES glissent lentement de gauche à droite */
+#rs-clouds ellipse{
+  transform-box:fill-box;
+  transform-origin:center;
+}
+#rs-clouds{
+  animation:cloudsDrift 60s linear infinite;
+}
+@keyframes cloudsDrift{
+  0%   { transform:translateX(-20px); }
+  50%  { transform:translateX(20px); }
+  100% { transform:translateX(-20px); }
+}
+
+/* 2. SOLEIL pulse + scintille */
+#rs-celestial{
+  transform-origin:center;
+  transform-box:fill-box;
+  animation:sunPulse 4s ease-in-out infinite;
+}
+@keyframes sunPulse{
+  0%,100% { opacity:1; transform:scale(1); }
+  50%     { opacity:.92; transform:scale(1.06); }
+}
+
+/* 3. DIRIGEABLE traverse le ciel */
+#rs-blimp{
+  animation:blimpFly 50s linear infinite;
+}
+@keyframes blimpFly{
+  0%   { transform:translate(-50px, 60px); }
+  50%  { transform:translate(370px, 75px); }
+  51%  { transform:translate(-50px, 90px); opacity:0; }
+  52%  { opacity:1; }
+  100% { transform:translate(-50px, 60px); }
+}
+
+/* 4. DRAPEAU flotte (effet vent) */
+#rs-runner-svg #drapeau-flag, .rs-flag{
+  animation:flagWave 1.2s ease-in-out infinite;
+  transform-origin:159px 332px;
+  transform-box:fill-box;
+}
+/* Cible le drapeau dans le SVG */
+#runner-svg g[shape-rendering="crispEdges"] rect[fill="#1a1010"][x="160"]{
+  animation:flagBlackWave 1.2s ease-in-out infinite;
+  transform-origin:160px 332px;
+}
+@keyframes flagBlackWave{
+  0%,100% { transform:skewX(-3deg); }
+  50%     { transform:skewX(3deg); }
+}
+
+/* 5. PROJECTEURS — halos pulsent */
+.rs-light-glow{
+  transform-origin:center;
+  transform-box:fill-box;
+  animation:lightPulse 2s ease-in-out infinite;
+}
+@keyframes lightPulse{
+  0%,100% { opacity:.6; transform:scale(1); }
+  50%     { opacity:1; transform:scale(1.15); }
+}
+
+/* 6. SPECTATEURS — wave périodique */
+#rs-crowd rect{
+  animation:crowdBob 1.8s ease-in-out infinite;
+  animation-delay:var(--crowd-delay, 0s);
+  transform-box:fill-box;
+}
+@keyframes crowdBob{
+  0%,100% { transform:translateY(0); }
+  50%     { transform:translateY(-1.2px); }
+}
+
+/* 7. RUNNER — speedlines visibles quand rapide + jambes anim */
+.rs-speedlines{
+  animation:speedlinesFlick .25s linear infinite;
+}
+@keyframes speedlinesFlick{
+  0% { opacity:0; transform:translateX(0); }
+  50%{ opacity:.7; transform:translateX(-2px); }
+  100%{ opacity:0; transform:translateX(-4px); }
+}
+#runner-stadium[data-fast="1"] .rs-speedlines{ opacity:1 !important; }
+.rs-arm1{ animation:armSwing 0.4s ease-in-out infinite alternate; transform-box:fill-box; transform-origin:-6px -3px; }
+.rs-arm2{ animation:armSwing 0.4s ease-in-out infinite alternate-reverse; transform-box:fill-box; transform-origin:5px -3px; }
+@keyframes armSwing{
+  0%   { transform:rotate(-25deg); }
+  100% { transform:rotate(25deg); }
+}
+.rs-leg1{ animation:legPump 0.4s ease-in-out infinite alternate; transform-box:fill-box; transform-origin:-2px 6px; }
+.rs-leg2{ animation:legPump 0.4s ease-in-out infinite alternate-reverse; transform-box:fill-box; transform-origin:2px 6px; }
+@keyframes legPump{
+  0%   { transform:rotate(-20deg); }
+  100% { transform:rotate(20deg); }
+}
+.rs-shoe1{ animation:legPump 0.4s ease-in-out infinite alternate; transform-box:fill-box; transform-origin:-2px 10px; }
+.rs-shoe2{ animation:legPump 0.4s ease-in-out infinite alternate-reverse; transform-box:fill-box; transform-origin:2px 10px; }
+/* Gouttes de sueur (animation aléatoire) */
+.rs-sweat{
+  animation:sweatDrop 1.8s ease-in-out infinite;
+  animation-delay:var(--sweat-delay, 0s);
+}
+@keyframes sweatDrop{
+  0%   { opacity:0; transform:translate(0, 0); }
+  20%  { opacity:.85; }
+  60%  { opacity:.85; transform:translate(1px, 4px); }
+  100% { opacity:0; transform:translate(2px, 8px); }
+}
+
+/* 8. SCOREBOARD LED scintille */
+#rs-sb-laps, #rs-sb-stars{
+  animation:ledFlicker 3s steps(3, end) infinite;
+}
+@keyframes ledFlicker{
+  0%,90%,100% { fill:#fff; }
+  93%,97%     { fill:#ffd070; }
+}
+
+/* 9. FOREGROUND herbes sway */
+#rs-foreground rect[fill="#5a8038"]{
+  transform-origin:bottom center;
+  transform-box:fill-box;
+  animation:grassSway 2.5s ease-in-out infinite;
+  animation-delay:var(--grass-delay, 0s);
+}
+@keyframes grassSway{
+  0%,100% { transform:rotate(-2deg); }
+  50%     { transform:rotate(2deg); }
+}
+
+/* 10. SPONSORS pulse léger (effet LED) */
+#rs-banners rect[fill="#e85a30"],
+#rs-banners rect[fill="#4a9fd9"],
+#rs-banners rect[fill="#7ec46a"]{
+  animation:sponsorPulse 4s ease-in-out infinite;
+}
+@keyframes sponsorPulse{
+  0%,100% { filter:brightness(1); }
+  50%     { filter:brightness(1.15); }
+}
 /* HUD overlay haut du stade : redondant maintenant que le scoreboard SVG existe.
    On le cache mais on garde les valeurs (utilisées par updateRunner). */
 .rs-hud{
@@ -5188,7 +5332,7 @@ body.shop-epic-flash::after{
         <!-- LE COUREUR : sprite agrandi (×1.6), proportions claires, contour noir -->
         <g id="rs-runner">
           <!-- Lignes de vitesse derrière (visibles quand rapide) -->
-          <g class="rs-speedlines" opacity="0">
+          <g class="rs-speedlines" opacity="0" style="opacity:0">
             <rect x="-20" y="-4" width="9" height="1.4" fill="#fff" opacity=".7"/>
             <rect x="-18" y="0" width="8" height="1.4" fill="#fff" opacity=".55"/>
             <rect x="-20" y="4" width="9" height="1.4" fill="#fff" opacity=".45"/>
@@ -12865,7 +13009,18 @@ function buildCrowd(){
     html += `<rect x="284" y="178" width="10" height="7" fill="${tones[2]}"/>`;
   }
   g.innerHTML = html;
+  // Random delays sur chaque spectateur pour wave en cascade
+  g.querySelectorAll('rect[fill="#f0c890"]').forEach((el, i) => {
+    el.style.setProperty('--crowd-delay', (i * 0.06).toFixed(2) + 's');
+  });
 }
+/* Random delays sur les herbes du foreground (sway désynchronisé) */
+function _initForegroundAnims(){
+  document.querySelectorAll('#rs-foreground rect[fill="#5a8038"]').forEach((el, i) => {
+    el.style.setProperty('--grass-delay', (i * 0.18).toFixed(2) + 's');
+  });
+}
+window.addEventListener('load', ()=>setTimeout(_initForegroundAnims, 100));
 
 /* Couleur de la piste : progresse avec les tours et les saisons.
    Plus tu progresses, plus la piste devient un beau tartan olympique. */

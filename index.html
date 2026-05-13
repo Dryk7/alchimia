@@ -10187,36 +10187,36 @@ function tickDust(){
   }
 }
 
-/* CANDLES (bougies aux 2 coins supérieurs) */
+/* LAMPADAIRES DU STADE (poteaux d'éclairage aux 2 coins supérieurs) */
 const CANDLES = [
-  { x:0, y:0, ph:0 }, // sera positionné dans tickCandles
+  { x:0, y:0, ph:0 },
   { x:0, y:0, ph:Math.PI }
 ];
 const EMBERS = [];
 function tickCandles(now){
   cdCtx.clearRect(0,0,window.innerWidth,window.innerHeight);
-  // positions : coins supérieurs, hors header
-  CANDLES[0].x = 28; CANDLES[0].y = 70;
-  CANDLES[1].x = window.innerWidth - 28; CANDLES[1].y = 70;
+  // Positions : coins TOUT EN HAUT, juste sous le header, lampes pendantes au-dessus du stade
+  CANDLES[0].x = 28; CANDLES[0].y = 92;
+  CANDLES[1].x = window.innerWidth - 28; CANDLES[1].y = 92;
   for(const c of CANDLES){
-    c.ph += .12;
+    c.ph += .08;
     drawCandle(cdCtx, c.x, c.y, c.ph);
-    // braises occasionnelles
-    if(Math.random() < .04){
+    // Petites étincelles dorées qui montent de la lampe (chaleur)
+    if(Math.random() < .025){
       EMBERS.push({
-        x: c.x + (Math.random()-.5)*4,
-        y: c.y - 10,
-        vx:(Math.random()-.5)*.4,
-        vy:-.6 - Math.random()*.6,
-        a:1, r:.6+Math.random()*1.2,
-        col: Math.random()<.5 ? '#e8a050':'#ffd070',
+        x: c.x + (Math.random()-.5)*6,
+        y: c.y - 5,
+        vx:(Math.random()-.5)*.25,
+        vy:-.35 - Math.random()*.35,
+        a:.85, r:.5+Math.random()*1.1,
+        col: Math.random()<.5 ? '#ffc870':'#ffe898',
       });
     }
   }
   for(let i=EMBERS.length-1; i>=0; i--){
     const e = EMBERS[i];
     e.x += e.vx; e.y += e.vy;
-    e.vy += .005; e.a -= .012;
+    e.vy += .003; e.a -= .010;
     if(e.a <= 0){ EMBERS.splice(i,1); continue; }
     cdCtx.fillStyle = e.col; cdCtx.globalAlpha = e.a;
     cdCtx.beginPath(); cdCtx.arc(e.x, e.y, e.r, 0, Math.PI*2); cdCtx.fill();
@@ -10226,59 +10226,35 @@ function tickCandles(now){
   cdCtx.globalAlpha = 1;
 }
 function drawCandle(ctx, x, y, ph){
-  // halo
-  const halo = 50 + Math.sin(ph*2.3)*6 + Math.sin(ph*5.1)*3;
-  const grad = ctx.createRadialGradient(x, y-10, 4, x, y-10, halo);
-  grad.addColorStop(0, 'rgba(255,220,140,.55)');
-  grad.addColorStop(.4, 'rgba(232,160,80,.18)');
-  grad.addColorStop(1, 'rgba(232,160,80,0)');
+  // Halo lumineux chaud — vraie lumière de lampadaire
+  const halo = 56 + Math.sin(ph*1.9)*5 + Math.sin(ph*4.3)*2.5;
+  const grad = ctx.createRadialGradient(x, y, 4, x, y, halo);
+  grad.addColorStop(0, 'rgba(255,232,168,.70)');
+  grad.addColorStop(.35, 'rgba(255,200,112,.28)');
+  grad.addColorStop(1, 'rgba(255,200,112,0)');
   ctx.fillStyle = grad;
-  ctx.beginPath(); ctx.arc(x, y-10, halo, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x, y, halo, 0, Math.PI*2); ctx.fill();
 
-  // bougie (cire ivoire)
-  ctx.fillStyle = '#d8c69a';
-  ctx.fillRect(x-3, y, 6, 22);
-  ctx.fillStyle = '#b8a072';
-  ctx.fillRect(x+2, y, 1, 22);
-  // gouttes de cire
-  ctx.fillStyle = '#d8c69a';
-  ctx.beginPath();
-  ctx.arc(x-3, y+7, 1.5, 0, Math.PI*2);
-  ctx.arc(x+3, y+12, 2, 0, Math.PI*2);
-  ctx.fill();
-  // mèche
-  ctx.fillStyle = '#1a1318';
-  ctx.fillRect(x, y-3, 1, 4);
-
-  // flamme — forme de goutte avec flicker
-  const flick = 1 + Math.sin(ph*3.7)*.08 + Math.sin(ph*9.1)*.05;
-  const fh = 14 * flick;
-  const fw = 5 * flick;
-  // flamme externe orange
-  ctx.beginPath();
-  ctx.fillStyle = '#e8a050';
-  ctx.moveTo(x, y - fh - 4);
-  ctx.quadraticCurveTo(x+fw, y - fh*.5, x+fw*.3, y - 2);
-  ctx.quadraticCurveTo(x, y, x-fw*.3, y - 2);
-  ctx.quadraticCurveTo(x-fw, y - fh*.5, x, y - fh - 4);
-  ctx.fill();
-  // flamme intermédiaire
-  ctx.beginPath();
-  ctx.fillStyle = '#ffd070';
-  const fh2 = fh*.7, fw2 = fw*.55;
-  ctx.moveTo(x, y - fh2 - 3);
-  ctx.quadraticCurveTo(x+fw2, y - fh2*.5, x+fw2*.4, y - 1);
-  ctx.quadraticCurveTo(x, y - .5, x-fw2*.4, y - 1);
-  ctx.quadraticCurveTo(x-fw2, y - fh2*.5, x, y - fh2 - 3);
-  ctx.fill();
-  // cœur blanc
-  ctx.beginPath();
-  ctx.fillStyle = '#fff5d8';
-  const fh3 = fh*.45, fw3 = fw*.3;
-  ctx.moveTo(x, y - fh3 - 2);
-  ctx.quadraticCurveTo(x+fw3, y - fh3*.5, x, y - 1);
-  ctx.quadraticCurveTo(x-fw3, y - fh3*.5, x, y - fh3 - 2);
-  ctx.fill();
+  // Mât du lampadaire (descend du haut)
+  ctx.fillStyle = '#3a2818';
+  ctx.fillRect(x-1, 0, 2, y-8);
+  // Petite courbure ornementale (barre horizontale d'accroche)
+  ctx.fillRect(x-6, y-12, 12, 2);
+  // Ampoule globe — corps en céramique crème
+  ctx.fillStyle = '#fff8d8';
+  ctx.beginPath(); ctx.arc(x, y, 5.5, 0, Math.PI*2); ctx.fill();
+  // Bordure de la lampe
+  ctx.fillStyle = '#a07840';
+  ctx.fillRect(x-6, y-2, 12, 1);
+  // Filament chaud au centre — pulse léger
+  const flick = .92 + Math.sin(ph*3.5)*.04 + Math.sin(ph*7.2)*.04;
+  ctx.fillStyle = `rgba(255,200,112,${flick})`;
+  ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI*2); ctx.fill();
+  // Point lumineux central
+  ctx.fillStyle = '#ffffff';
+  ctx.globalAlpha = .7;
+  ctx.beginPath(); ctx.arc(x, y-1, 1.4, 0, Math.PI*2); ctx.fill();
+  ctx.globalAlpha = 1;
 }
 
 /* PARTICLES + SHOCKWAVE + LIGHTNING */

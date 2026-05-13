@@ -664,6 +664,194 @@ header{
   border-radius:50%;
 }
 
+/* === CARTES STAR — pick modal + collection === */
+#card-pick-body{ padding:8px 4px; }
+.cp-intro{
+  text-align:center;
+  font-family:"Caveat", cursive;
+  font-size:18px; color:var(--ember);
+  font-weight:700; margin-bottom:14px;
+}
+.cp-cards{
+  display:flex; flex-direction:column;
+  gap:10px;
+}
+.cp-card{
+  padding:14px 16px;
+  background:linear-gradient(180deg, #fffaee, #fff3d8);
+  border:3px solid #9b9b9b;
+  border-radius:14px;
+  text-align:center;
+  cursor:pointer;
+  position:relative;
+  transition:transform .15s, box-shadow .15s;
+}
+.cp-card:hover, .cp-card:active{
+  transform:scale(1.03);
+  box-shadow:0 4px 16px rgba(80,55,30,.30);
+}
+.cp-card.rar-uncommon{ border-color:#5aa040; }
+.cp-card.rar-rare{ border-color:#3e8db8; }
+.cp-card.rar-epic{ border-color:#9b6cd0; }
+.cp-card.rar-legendary{
+  border-color:#ffba30;
+  box-shadow:0 0 20px rgba(255,186,48,.5);
+  animation:legendaryGlow 1.5s ease-in-out infinite alternate;
+}
+.cp-emoji{ font-size:48px; line-height:1; }
+.cp-rar{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:11px; letter-spacing:.10em;
+  text-transform:uppercase; margin-top:4px;
+}
+.cp-name{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:16px; color:var(--ink);
+}
+.cp-desc{
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:13px; color:#3a8c3a; margin-top:4px;
+}
+.cp-dupe{
+  position:absolute; top:6px; right:8px;
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:10px; color:var(--ink-2);
+  background:#fff; padding:2px 6px;
+  border-radius:8px; border:1px solid rgba(0,0,0,.1);
+}
+
+/* Collection */
+.cards-body{ overflow-y:auto; max-height:65vh; padding:4px 2px; }
+.cards-summary{
+  padding:10px;
+  background:linear-gradient(180deg, #fff3d0, #ffd896);
+  border:2px solid var(--ember);
+  border-radius:12px; margin-bottom:12px;
+}
+.cards-summary h3{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:11px; letter-spacing:.14em;
+  color:var(--ember); margin:0 0 6px;
+  text-transform:uppercase;
+}
+.cards-stats-grid{ display:grid; grid-template-columns:1fr 1fr; gap:4px; }
+.cards-stat{
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:11.5px; color:var(--ink);
+}
+.cards-stat b{ color:#3a8c3a; font-weight:900; }
+.cards-empty{
+  font-family:"Nunito", sans-serif; font-weight:600;
+  font-size:11.5px; color:var(--ink-2);
+  grid-column:1/-1; text-align:center;
+}
+.cards-body > h3{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:11px; letter-spacing:.14em;
+  color:var(--ember); margin:14px 4px 8px;
+  text-transform:uppercase;
+}
+.cards-deck{
+  display:grid; grid-template-columns:repeat(3, 1fr);
+  gap:8px; margin-bottom:14px;
+}
+.card-slot{
+  position:relative;
+  aspect-ratio:1/1.3;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:8px 4px;
+  background:#fff;
+  border:3px dashed rgba(160,122,68,.30);
+  border-radius:12px;
+  text-align:center;
+}
+.card-slot.empty{
+  color:rgba(160,122,68,.5);
+  font-size:32px; font-weight:900;
+}
+.card-slot.filled{
+  background:linear-gradient(180deg, #fff, color-mix(in srgb, var(--rar-color) 12%, #fff));
+  border-style:solid;
+  border-color:var(--rar-color);
+}
+.cs-emoji{ font-size:32px; line-height:1; }
+.cs-name{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:10.5px; color:var(--ink);
+  margin-top:4px;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  width:100%;
+}
+.cs-remove{
+  position:absolute; top:2px; right:2px;
+  width:22px; height:22px;
+  background:rgba(208,64,48,.9);
+  color:#fff;
+  border:none; border-radius:50%;
+  cursor:pointer;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:14px;
+  line-height:1;
+}
+.cards-grid{
+  display:grid; grid-template-columns:repeat(2, 1fr);
+  gap:8px;
+}
+.card-cell{
+  padding:10px 8px;
+  background:#fff;
+  border:2px solid rgba(160,122,68,.25);
+  border-radius:12px;
+  text-align:center;
+  transition:transform .15s;
+}
+.card-cell.owned.rar-uncommon{ border-color:#5aa040; }
+.card-cell.owned.rar-rare{ border-color:#3e8db8; }
+.card-cell.owned.rar-epic{ border-color:#9b6cd0; }
+.card-cell.owned.rar-legendary{ border-color:#ffba30; box-shadow:0 0 14px rgba(255,186,48,.4); }
+.card-cell.locked{ opacity:.4; filter:grayscale(.8); }
+.card-cell.in-deck{ background:linear-gradient(180deg, #fff, #e2f4e2); }
+.cc-emoji{ font-size:32px; line-height:1; }
+.cc-rar{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:9.5px; letter-spacing:.10em; text-transform:uppercase;
+  margin-top:2px;
+}
+.cc-name{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:12px; color:var(--ink); margin-top:2px;
+}
+.cc-desc{
+  font-family:"Nunito", sans-serif; font-weight:600;
+  font-size:10px; color:var(--ink-2); margin-top:3px;
+}
+.cc-equip{
+  margin-top:6px;
+  padding:5px 8px;
+  background:linear-gradient(180deg, #7ec46a, #4e9438);
+  color:#fff;
+  border:none; border-radius:8px;
+  cursor:pointer;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:10px; letter-spacing:.06em;
+}
+.cc-equipped{
+  margin-top:6px;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:10px;
+  color:#3a8c3a; letter-spacing:.06em;
+}
+.cards-help{
+  text-align:center;
+  font-family:"Nunito", sans-serif; font-weight:600;
+  font-size:10.5px; color:var(--ink-2);
+  padding:8px 12px; margin-top:12px;
+  background:#fffaee;
+  border:1.5px dashed rgba(160,122,68,.30);
+  border-radius:10px;
+}
+
 /* === ÉVOLUTION VISUELLE COUREURS D'ÉQUIPE === */
 #rs-team-runners > g{
   transform-origin:center;
@@ -6079,6 +6267,13 @@ body.shop-epic-flash::after{
         </svg>
         <div class="mi-meta"><div class="mi-title">💎 Boutique</div><div class="mi-sub">boosts, packs, médailles avec gemmes</div></div>
       </button>
+      <button class="menu-item" data-action="cards">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <rect x="6" y="3" width="12" height="18" rx="2"/>
+          <path d="M10 8 H14 M9 12 H15 M10 16 H14"/>
+        </svg>
+        <div class="mi-meta"><div class="mi-title">🃏 Cartes Star</div><div class="mi-sub">collection · deck actif · bonus permanents</div></div>
+      </button>
       <button class="menu-item" data-action="chests">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
           <rect x="4" y="8" width="16" height="11" rx="1"/>
@@ -6507,6 +6702,25 @@ body.shop-epic-flash::after{
     <h2>ASCENSION</h2>
     <div class="divider"></div>
     <div class="saison-body" id="saison-body"></div>
+  </div>
+</div>
+
+<!-- CARTES STAR : pick après ascension -->
+<div id="card-pick-modal" class="modal">
+  <div class="modal-card">
+    <h2>🃏 PIOCHE TA CARTE</h2>
+    <div class="divider"></div>
+    <div id="card-pick-body"></div>
+  </div>
+</div>
+
+<!-- COLLECTION CARTES -->
+<div id="cards-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-close" id="cards-close" aria-label="Fermer">×</div>
+    <h2>🃏 CARTES STAR</h2>
+    <div class="divider"></div>
+    <div class="cards-body" id="cards-body"></div>
   </div>
 </div>
 
@@ -6997,11 +7211,14 @@ function alchGoldMul(){
 }
 function gainXp(amount){
   if(!amount) return;
-  // Saison perk + équipement chrono
   if(typeof saisonXpMul === 'function') amount = Math.floor(amount * saisonXpMul());
   if(typeof equipBonus === 'function'){
     const xpMul = 1 + equipBonus('xpMul');
     amount = Math.floor(amount * xpMul);
+  }
+  // Cartes star : bonus XP
+  if(typeof deckBonus === 'function'){
+    amount = Math.floor(amount * (1 + deckBonus('xp')));
   }
   if(amount < 1) amount = 1;
   STATE.alchXp = (STATE.alchXp||0) + amount;
@@ -11670,6 +11887,222 @@ function _showDropToast(item, action, scrapMed){
     }
   }
 }
+/* ================ CARTES STAR COUREUR (Investor Cards Eatventure-like) ================
+   À chaque ascension de saison, le joueur tire 1 carte (parmi 3 proposées).
+   Les cartes donnent des bonus permanents passifs.
+   Deck actif = 3 cartes maximum. Le reste reste en collection. */
+const STAR_CARDS = [
+  // Vitesse / Speed
+  { id:'bolt',     name:'Bolt Légende',      emoji:'⚡', rarity:'rare',      stat:'speed',   bonus:0.25, desc:'+25% vitesse globale' },
+  { id:'coach',    name:'Coach Carter',      emoji:'🎓', rarity:'uncommon',  stat:'team',    bonus:0.20, desc:'+20% production team' },
+  { id:'brute',    name:'Brute Force',       emoji:'💪', rarity:'common',    stat:'tap',     bonus:0.15, desc:'+15% méd par tap' },
+  // Cycle
+  { id:'chrono',   name:'Chronométreur',     emoji:'⏱️', rarity:'rare',      stat:'cycle',   bonus:0.10, desc:'-10% temps de cycle' },
+  { id:'wind',     name:'Vent d\'Est',       emoji:'🌪️', rarity:'epic',      stat:'cycle',   bonus:0.20, desc:'-20% temps de cycle' },
+  // Gold
+  { id:'sponsor',  name:'Sponsor Or',        emoji:'💰', rarity:'uncommon',  stat:'goldAll', bonus:0.15, desc:'+15% méd toutes sources' },
+  { id:'champion', name:'Champion National', emoji:'🏆', rarity:'rare',      stat:'lapGold', bonus:0.30, desc:'+30% méd au tour bouclé' },
+  { id:'diamond',  name:'Diamant',           emoji:'💎', rarity:'epic',      stat:'goldAll', bonus:0.25, desc:'+25% méd + chance gemme' },
+  // Crit
+  { id:'sniper',   name:'Sniper',            emoji:'🎯', rarity:'uncommon',  stat:'crit',    bonus:0.05, desc:'+5% chance crit' },
+  { id:'star',     name:'Étoile Filante',    emoji:'✨', rarity:'rare',      stat:'crit',    bonus:0.10, desc:'+10% chance crit' },
+  { id:'combo',    name:'Combo King',        emoji:'🔥', rarity:'epic',      stat:'comboLen',bonus:1,    desc:'Combos durent 2× plus longtemps' },
+  // XP
+  { id:'mentor',   name:'Mentor',            emoji:'📚', rarity:'uncommon',  stat:'xp',      bonus:0.30, desc:'+30% XP' },
+  { id:'legend',   name:'Légende',           emoji:'🌟', rarity:'rare',      stat:'xp',      bonus:0.50, desc:'+50% XP' },
+  // LÉGENDAIRES
+  { id:'king',     name:'Roi de la Piste',   emoji:'👑', rarity:'legendary', stat:'allStats',bonus:0.10, desc:'+10% TOUTES stats' },
+  { id:'infinity', name:'Infini',            emoji:'♾️', rarity:'legendary', stat:'allMul',  bonus:0.5,  desc:'×1.5 multiplicateur global' },
+  { id:'bigbang',  name:'Big Bang',          emoji:'💥', rarity:'legendary', stat:'tapBig',  bonus:0.05, desc:'5% chance tap → ×100 méd' },
+];
+function cardDef(id){ return STAR_CARDS.find(c => c.id === id); }
+function ownedCards(){
+  if(!STATE.cardsOwned) STATE.cardsOwned = [];
+  return STATE.cardsOwned;
+}
+function deckCards(){
+  if(!STATE.cardsDeck) STATE.cardsDeck = [];
+  return STATE.cardsDeck.filter(id => cardDef(id)); // filter valid
+}
+function isCardOwned(id){ return ownedCards().includes(id); }
+function isCardInDeck(id){ return deckCards().includes(id); }
+function equipCardInDeck(id){
+  if(!isCardOwned(id)) return;
+  if(!STATE.cardsDeck) STATE.cardsDeck = [];
+  if(STATE.cardsDeck.includes(id)) return; // déjà équipée
+  if(STATE.cardsDeck.length >= 3){
+    if(typeof sfxDeny === 'function') sfxDeny();
+    if(typeof showRunnerBubble === 'function') showRunnerBubble('Deck plein ! Retire une carte d\'abord');
+    return;
+  }
+  STATE.cardsDeck.push(id);
+  if(A?.ctx) blip(880, .1, "triangle", .22, .55);
+  if(typeof renderCardCollection === 'function') renderCardCollection();
+}
+function unequipCardFromDeck(id){
+  if(!STATE.cardsDeck) return;
+  STATE.cardsDeck = STATE.cardsDeck.filter(x => x !== id);
+  if(A?.ctx) blip(550, .08, "triangle", .22, .45);
+  if(typeof renderCardCollection === 'function') renderCardCollection();
+}
+/* Bonus d'une stat agrégés du deck actif */
+function deckBonus(stat){
+  let sum = 0;
+  for(const id of deckCards()){
+    const c = cardDef(id);
+    if(!c) continue;
+    if(c.stat === stat) sum += c.bonus;
+    if(c.stat === 'allStats' && ['speed','team','tap','goldAll','crit','xp'].includes(stat)) sum += c.bonus;
+  }
+  return sum;
+}
+function deckAllMul(){
+  let mul = 1;
+  for(const id of deckCards()){
+    const c = cardDef(id);
+    if(c?.stat === 'allMul') mul *= (1 + c.bonus);
+  }
+  return mul;
+}
+/* DRAW au saison : 3 cartes random, joueur choisit 1 */
+function drawSaisonCards(){
+  // Pool : cartes non possédées en priorité, sinon dupliquées (qui boost +5%)
+  const owned = new Set(ownedCards());
+  const notOwned = STAR_CARDS.filter(c => !owned.has(c.id));
+  // Pondéré par rareté inverse
+  const weight = c => ({ common:50, uncommon:30, rare:15, epic:4, legendary:1 }[c.rarity] || 50);
+  const draw = () => {
+    const pool = notOwned.length >= 3 ? notOwned : STAR_CARDS;
+    const totW = pool.reduce((a,c)=>a + weight(c), 0);
+    let r = Math.random() * totW;
+    for(const c of pool){
+      r -= weight(c);
+      if(r < 0) return c;
+    }
+    return pool[0];
+  };
+  const drawn = new Set();
+  while(drawn.size < Math.min(3, STAR_CARDS.length)){
+    drawn.add(draw().id);
+  }
+  return [...drawn].map(id => cardDef(id));
+}
+function showSaisonCardPick(cards){
+  const modal = document.getElementById('card-pick-modal');
+  if(!modal) return;
+  const body = document.getElementById('card-pick-body');
+  body.innerHTML = `
+    <div class="cp-intro">Choisis 1 carte parmi les 3 :</div>
+    <div class="cp-cards">
+      ${cards.map(c => {
+        const owned = isCardOwned(c.id);
+        return `<div class="cp-card rar-${c.rarity}" data-card="${c.id}">
+          <div class="cp-emoji">${c.emoji}</div>
+          <div class="cp-rar" style="color:${rarityDef(c.rarity)?.color || '#999'}">${rarityDef(c.rarity)?.name || c.rarity}</div>
+          <div class="cp-name">${c.name}</div>
+          <div class="cp-desc">${c.desc}</div>
+          ${owned ? '<div class="cp-dupe">Déjà obtenue</div>' : ''}
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+  body.querySelectorAll('.cp-card').forEach(el => {
+    el.addEventListener('click', ()=>{
+      const id = el.dataset.card;
+      if(!STATE.cardsOwned) STATE.cardsOwned = [];
+      if(!STATE.cardsOwned.includes(id)){
+        STATE.cardsOwned.push(id);
+        // Auto-équipe si deck pas plein
+        if(!STATE.cardsDeck) STATE.cardsDeck = [];
+        if(STATE.cardsDeck.length < 3) STATE.cardsDeck.push(id);
+      }
+      if(A?.ctx){
+        blip(660, .15, "triangle", .26, .65);
+        setTimeout(()=>blip(990, .18, "sine", .26, .7), 100);
+      }
+      modal.classList.remove('show');
+      if(typeof showRunnerBubble === 'function') showRunnerBubble('🃏 ' + cardDef(id).name);
+    });
+  });
+  modal.classList.add('show');
+}
+function openCardCollection(){
+  if(typeof renderCardCollection === 'function') renderCardCollection();
+  document.getElementById('cards-modal')?.classList.add('show');
+}
+function renderCardCollection(){
+  const body = document.getElementById('cards-body');
+  if(!body) return;
+  const owned = new Set(ownedCards());
+  const deck = deckCards();
+  // Sommaire bonus
+  const stats = [
+    ['speed','⚡ Vitesse'],['team','👥 Team'],['tap','👆 Tap'],
+    ['goldAll','💰 Méd'],['lapGold','🏁 Tour'],['crit','🎯 Crit'],
+    ['xp','⏱️ XP'],['cycle','⚡ Cycle (réduction)']
+  ];
+  const allMul = deckAllMul();
+  const sumHTML = stats.map(([s,lbl])=>{
+    const b = deckBonus(s);
+    if(b <= 0) return '';
+    return `<div class="cards-stat">${lbl} <b>+${(b*100).toFixed(0)}%</b></div>`;
+  }).join('') + (allMul > 1 ? `<div class="cards-stat">♾️ Global <b>×${allMul.toFixed(2)}</b></div>` : '');
+  // Section DECK
+  const deckHTML = `
+    <h3>DECK ACTIF (${deck.length}/3)</h3>
+    <div class="cards-deck">
+      ${[0,1,2].map(i => {
+        const id = deck[i];
+        if(!id) return `<div class="card-slot empty">+</div>`;
+        const c = cardDef(id);
+        const rar = rarityDef(c.rarity);
+        return `<div class="card-slot filled rar-${c.rarity}" data-deck-card="${id}" style="--rar-color:${rar.color}">
+          <div class="cs-emoji">${c.emoji}</div>
+          <div class="cs-name">${c.name}</div>
+          <button class="cs-remove" data-unequip="${id}">×</button>
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+  // Section COLLECTION
+  const collectionHTML = `
+    <h3>COLLECTION (${owned.size}/${STAR_CARDS.length})</h3>
+    <div class="cards-grid">
+      ${STAR_CARDS.map(c => {
+        const isOwned = owned.has(c.id);
+        const inDeck = deck.includes(c.id);
+        const rar = rarityDef(c.rarity);
+        return `<div class="card-cell ${isOwned ? 'owned' : 'locked'} rar-${c.rarity} ${inDeck ? 'in-deck' : ''}"
+             data-card="${c.id}" style="--rar-color:${rar.color}">
+          <div class="cc-emoji">${isOwned ? c.emoji : '?'}</div>
+          <div class="cc-rar" style="color:${rar.color}">${rar.name}</div>
+          <div class="cc-name">${isOwned ? c.name : '???'}</div>
+          <div class="cc-desc">${isOwned ? c.desc : 'Carte à découvrir'}</div>
+          ${isOwned && !inDeck ? `<button class="cc-equip" data-equip="${c.id}">+ DECK</button>` : ''}
+          ${inDeck ? '<div class="cc-equipped">✓ ÉQUIPÉE</div>' : ''}
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+  body.innerHTML = `
+    <div class="cards-summary">
+      <h3>BONUS ACTIFS</h3>
+      <div class="cards-stats-grid">${sumHTML || '<div class="cards-empty">Aucune carte équipée</div>'}</div>
+    </div>
+    ${deckHTML}
+    ${collectionHTML}
+    <div class="cards-help">🃏 Tu pioches 1 carte à chaque ascension (saison). Équipe 3 max dans ton deck actif pour cumuler les bonus.</div>
+  `;
+  body.querySelectorAll('[data-equip]').forEach(btn => btn.addEventListener('click', e=>{
+    e.stopPropagation();
+    equipCardInDeck(btn.dataset.equip);
+  }));
+  body.querySelectorAll('[data-unequip]').forEach(btn => btn.addEventListener('click', e=>{
+    e.stopPropagation();
+    unequipCardFromDeck(btn.dataset.unequip);
+  }));
+}
+
 /* === COFFRES — drop à chaque tour, le joueur ouvre quand il veut === */
 const CHEST_TYPES = [
   { id:'wood',      name:'Coffre Bois',       emoji:'📦', color:'#9b7f50', weight:60,
@@ -11969,7 +12402,7 @@ function renderEquipment(){
    grâce aux upgrades AUTO, aux managers d'équipe, et aux ascensions.
    → l'automatisation devient un "wow moment" tangible. */
 function runnerBaseSpeed(){
-  let base = 0; // ← le COUREUR ne bouge PAS au départ
+  let base = 0;
   base += (STATE.upgradeAutoTap || 0) * 0.15;
   base += (STATE.upgradeTapValue || 0) * 0.04;
   base += (STATE.upgradeLapBonus || 0) * 0.06;
@@ -11981,8 +12414,12 @@ function runnerBaseSpeed(){
   base += ((STATE.saison || 1) - 1) * 0.5;
   if(typeof saisonAutoBase === 'function') base += saisonAutoBase() * 0.1;
   base += Math.floor((STATE.alchLevel || 1) / 10) * 0.1;
-  // ÉQUIPEMENT : bonus vitesse des chaussures
-  if(typeof equipBonus === 'function') base += equipBonus('speed') * 3; // chaussures pèsent beaucoup
+  if(typeof equipBonus === 'function') base += equipBonus('speed') * 3;
+  // CARTES STAR : multiplicateur sur la vitesse
+  if(typeof deckBonus === 'function' && base > 0){
+    base *= (1 + deckBonus('speed'));
+    base *= deckAllMul();
+  }
   return base;
 }
 function runnerSpeedMultiplier(){
@@ -12019,17 +12456,22 @@ function tapBoost(e){
   const comboMul = _comboCount >= 25 ? 5 : _comboCount >= 12 ? 3 : _comboCount >= 6 ? 2 : _comboCount >= 3 ? 1.5 : 1;
   // Bump stamina = boost de vitesse temporaire
   if(typeof bumpStamina === 'function') bumpStamina(0.14 + _comboCount * 0.005);
-  // Médailles par tap : multipliers + équipement maillot
+  // Médailles par tap : multipliers + équipement maillot + cartes star
   const tapMul = (typeof getTapMul === 'function') ? getTapMul() : 1;
   const shopMul = (typeof getShopBoostMul === 'function') ? getShopBoostMul() : 1;
   const eTapMul = (typeof eventTapMul === 'function') ? eventTapMul() : 1;
   const eGoldMul = (typeof eventGoldMul === 'function') ? eventGoldMul() : 1;
   const skillTap = (typeof skillSprintTapMul === 'function') ? skillSprintTapMul() : 1;
   const equipMul = (typeof equipBonus === 'function') ? (1 + equipBonus('goldMul')) : 1;
-  const perTap = (1 + (STATE.upgradeTapValue||0)) * comboMul * tapMul * shopMul * eTapMul * eGoldMul * skillTap * equipMul * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
-  // Crit chance plafonné à 60% + bonus bandeau équipé
+  const cardTap = (typeof deckBonus === 'function') ? (1 + deckBonus('tap') + deckBonus('goldAll')) : 1;
+  const cardAll = (typeof deckAllMul === 'function') ? deckAllMul() : 1;
+  // Big Bang : chaque tap 5% chance de ×100
+  const bigBangBonus = (typeof deckBonus === 'function' && deckBonus('tapBig') > 0 && Math.random() < deckBonus('tapBig')) ? 100 : 1;
+  const perTap = (1 + (STATE.upgradeTapValue||0)) * comboMul * tapMul * shopMul * eTapMul * eGoldMul * skillTap * equipMul * cardTap * cardAll * bigBangBonus * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
+  // Crit chance plafonné à 60% + équipement + cartes
   const equipCrit = (typeof equipBonus === 'function') ? equipBonus('critRate') : 0;
-  const rawCrit = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + equipCrit + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
+  const cardCrit = (typeof deckBonus === 'function') ? deckBonus('crit') : 0;
+  const rawCrit = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + equipCrit + cardCrit + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
   const critChance = Math.min(0.60, rawCrit);
   const isCrit = Math.random() < critChance;
   const gain = Math.floor(isCrit ? perTap * 5 : perTap);
@@ -12232,6 +12674,13 @@ function doSaisonAscend(){
   if(typeof updateRunnerHUD === 'function') updateRunnerHUD();
   if(typeof updateTapStrip === 'function') updateTapStrip();
   if(typeof checkAchievements === 'function') checkAchievements();
+  // 🃏 PIOCHE 1 CARTE STAR à chaque ascension (3 propositions, joueur en pick 1)
+  if(typeof drawSaisonCards === 'function' && typeof showSaisonCardPick === 'function'){
+    setTimeout(()=>{
+      const cards = drawSaisonCards();
+      if(cards && cards.length > 0) showSaisonCardPick(cards);
+    }, 800);
+  }
 }
 /* Boosts permanents achetables avec des étoiles */
 const STAR_PERKS = {
@@ -12942,7 +13391,10 @@ function runnerBatchValue(r){
   const eGoldMul = (typeof eventGoldMul === 'function') ? eventGoldMul() : 1;
   const skillTeam = (typeof skillBreathTeamMul === 'function') ? skillBreathTeamMul() : 1;
   const equipMul = (typeof equipBonus === 'function') ? (1 + equipBonus('goldMul')) : 1;
-  return Math.floor(baseBatch * pistardMul * saisonMul * shopMul * eTeamMul * eGoldMul * skillTeam * equipMul);
+  // CARTES STAR : team + goldAll multipliers
+  const cardTeam = (typeof deckBonus === 'function') ? (1 + deckBonus('team') + deckBonus('goldAll')) : 1;
+  const cardAllMul = (typeof deckAllMul === 'function') ? deckAllMul() : 1;
+  return Math.floor(baseBatch * pistardMul * saisonMul * shopMul * eTeamMul * eGoldMul * skillTeam * equipMul * cardTeam * cardAllMul);
 }
 /* Production théorique méd/sec (info uniquement) */
 function runnerProductionPerSec(r){
@@ -13051,7 +13503,8 @@ function tickTeam(dt){
   _ensureTeamShape();
   const eCycleMul = (typeof eventCycleMul === 'function') ? eventCycleMul() : 1;
   const skillCycle = (typeof skillTailwindCycleMul === 'function') ? skillTailwindCycleMul() : 1;
-  const cycleSpeedMul = 1 / (eCycleMul * skillCycle); // mul < 1 = cycle plus rapide
+  const cardCycle = (typeof deckBonus === 'function') ? (1 - deckBonus('cycle')) : 1; // réduction
+  const cycleSpeedMul = 1 / (eCycleMul * skillCycle * cardCycle);
   for(const r of TEAM_RUNNERS){
     const d = STATE.team[r.id];
     if(d.level < 1) continue;
@@ -13585,7 +14038,11 @@ function completeLap(){
   STATE.lapsRun = (STATE.lapsRun || 0) + 1;
   const lapNum = STATE.lapsRun;
   const upgradeBonus = (STATE.upgradeLapBonus||0) * 50;
-  const baseReward = 100 + lapNum * 50 + upgradeBonus;
+  let baseReward = 100 + lapNum * 50 + upgradeBonus;
+  // Bonus carte "Champion National" → +30% lap gold
+  if(typeof deckBonus === 'function') baseReward = Math.floor(baseReward * (1 + deckBonus('lapGold') + deckBonus('goldAll')));
+  // Bonus event lapBonus aussi
+  if(typeof eventLapBonus === 'function') baseReward += eventLapBonus();
   const stamBonus = Math.floor(baseReward * Math.max(0, (STATE.runnerStamina||1) - 1) * 0.5);
   const totalReward = baseReward + stamBonus;
   STATE.gold += totalReward;
@@ -15818,6 +16275,8 @@ function save(){
       selectedStadiumId:STATE.selectedStadiumId || null,
       equipment:STATE.equipment || {},
       chests:STATE.chests || {},
+      cardsOwned:STATE.cardsOwned || [],
+      cardsDeck:STATE.cardsDeck || [],
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
   }catch(e){}
@@ -15883,6 +16342,8 @@ function load(){
     STATE.selectedStadiumId = s.selectedStadiumId || null;
     STATE.equipment = s.equipment || {};
     STATE.chests = s.chests || {};
+    STATE.cardsOwned = s.cardsOwned || [];
+    STATE.cardsDeck = s.cardsDeck || [];
     // Migration : si on a maxTier mais pas de codexUnlocks → backfill
     for(let c=0;c<3;c++){
       for(let t=0; t<=STATE.totals.maxTier[c]; t++){
@@ -16098,7 +16559,8 @@ function boot(){
   bindModalClose('stadium-modal','stadium-close');
   bindModalClose('equip-modal','equip-close');
   bindModalClose('chests-modal','chests-close');
-  // Update chest badge at boot
+  bindModalClose('cards-modal','cards-close');
+  // Pas de close pour card-pick (forçage choix)
   if(typeof updateChestBadge === 'function') updateChestBadge();
   document.getElementById('starter-close')?.addEventListener('click', ()=>{
     document.getElementById('starter-modal')?.classList.remove('show');
@@ -16235,6 +16697,7 @@ function boot(){
         else if(action === 'wardrobe' && typeof openWardrobe === 'function') openWardrobe();
         else if(action === 'equip' && typeof openEquip === 'function') openEquip();
         else if(action === 'chests' && typeof openChestsModal === 'function') openChestsModal();
+        else if(action === 'cards' && typeof openCardCollection === 'function') openCardCollection();
         else if(action === 'records' && typeof openRecords === 'function') openRecords();
         else if(action === 'quests-daily' && typeof openQuestsModal === 'function') openQuestsModal();
         else if(action === 'stadium' && typeof openStadiumPicker === 'function') openStadiumPicker();

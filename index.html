@@ -17609,6 +17609,33 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
   scene.add(makeLaneNumber('3', 2.1, -4.5));
   scene.add(makeLaneNumber('4', 2.7, -4.5));
 
+  // === Texte "FINISH" peint au-dessus de la ligne d'arrivée ===
+  function makeFinishText(){
+    const c = document.createElement('canvas');
+    c.width = 512; c.height = 96;
+    const ctx = c.getContext('2d');
+    ctx.clearRect(0, 0, 512, 96);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 64px Nunito, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('FINISH', 256, 50);
+    // Petit ombre/outline
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = '#1a1010';
+    ctx.strokeText('FINISH', 256, 50);
+    ctx.fillStyle = '#fff';
+    ctx.fillText('FINISH', 256, 50);
+    return new THREE.CanvasTexture(c);
+  }
+  const finishText = new THREE.Mesh(
+    new THREE.PlaneGeometry(2.6, .5),
+    new THREE.MeshBasicMaterial({map: makeFinishText(), transparent: true})
+  );
+  finishText.position.set(0, .3, -4.0);
+  finishText.rotation.x = -Math.PI/2;
+  scene.add(finishText);
+
   // === GAZON CENTRAL ===
   const grass = new THREE.Mesh(
     new THREE.CircleGeometry(5.4, 48).scale(1, 1.05, 1),
@@ -18161,6 +18188,30 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
   // Alias pour le ancien code
   const heroAura = heroAuraInner;
 
+  // === TRAIL DERRIÈRE LE JOUEUR : ligne lumineuse de ses positions passées ===
+  const trailLength = 20;
+  const trailPositions = new Float32Array(trailLength * 3);
+  for(let i = 0; i < trailLength; i++){
+    trailPositions[i*3+1] = -100;
+  }
+  const trailGeom = new THREE.BufferGeometry();
+  trailGeom.setAttribute('position', new THREE.BufferAttribute(trailPositions, 3));
+  // Couleurs : gradient rouge → or → transparent
+  const trailColors = new Float32Array(trailLength * 3);
+  for(let i = 0; i < trailLength; i++){
+    const t = 1 - i / trailLength;
+    trailColors[i*3] = .9 + t * .1;   // R
+    trailColors[i*3+1] = .5 * t;      // G
+    trailColors[i*3+2] = .2 * t;      // B
+  }
+  trailGeom.setAttribute('color', new THREE.BufferAttribute(trailColors, 3));
+  const trail = new THREE.Line(trailGeom, new THREE.LineBasicMaterial({
+    vertexColors: true, transparent: true, opacity: .85, linewidth: 2,
+    blending: THREE.AdditiveBlending, depthWrite: false
+  }));
+  scene.add(trail);
+  const trailHistory = [];
+
   // === TAP RIPPLES : effet visuel à chaque tap ===
   const ripples = [];
   function makeRipple(){
@@ -18552,6 +18603,24 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       tick._sbT = now;
       if(scoreboard.userData.updateScreen) scoreboard.userData.updateScreen();
     }
+
+    // === TRAIL : ajoute la position actuelle du joueur, fait suivre ===
+    trailHistory.unshift({ x: player.position.x, y: .25, z: player.position.z });
+    if(trailHistory.length > trailLength) trailHistory.length = trailLength;
+    const trailArr = trail.geometry.attributes.position.array;
+    for(let i = 0; i < trailLength; i++){
+      const h = trailHistory[i];
+      if(h){
+        trailArr[i*3] = h.x;
+        trailArr[i*3+1] = h.y;
+        trailArr[i*3+2] = h.z;
+      } else {
+        trailArr[i*3+1] = -100;
+      }
+    }
+    trail.geometry.attributes.position.needsUpdate = true;
+    // Trail visible seulement quand player se déplace vite
+    trail.material.opacity = Math.min(.85, playerSmoothVel * 200);
 
     // === TAP RIPPLES : expand + fade ===
     ripples.forEach(r => {

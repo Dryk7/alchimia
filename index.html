@@ -220,11 +220,178 @@ header{
 #tap-area{
   flex:1;
   display:flex; flex-direction:column;
-  gap:14px;
-  padding:6px 0 4px;
+  gap:10px;
+  padding:4px 0 4px;
   min-height:0;
   justify-content:space-between;
 }
+
+/* HUD du coureur : avatar + niveau + XP bar + bouton profil */
+.runner-hud{
+  display:grid;
+  grid-template-columns:44px 1fr 36px;
+  gap:10px; align-items:center;
+  background:linear-gradient(180deg, #fff8e4, #f4e2b4);
+  border:2px solid rgba(160,122,68,.40);
+  border-radius:18px;
+  padding:6px 10px 7px;
+  box-shadow:0 2px 6px rgba(80,55,30,.14), inset 0 1px 0 rgba(255,255,255,.45);
+}
+.runner-avatar{
+  width:44px; height:44px;
+  background:linear-gradient(180deg, #b8def0, #f4d8a8);
+  border:2px solid #a07a44;
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  image-rendering:pixelated;
+  box-shadow:0 1px 3px rgba(80,55,30,.20);
+}
+.runner-avatar svg{ width:90%; height:90%; }
+.runner-hud-info{ min-width:0; display:flex; flex-direction:column; gap:2px; }
+.runner-hud-row1{ display:flex; align-items:baseline; gap:8px; }
+.runner-lvl{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:13px; letter-spacing:.02em;
+  color:#fff; background:var(--ember);
+  padding:2px 8px; border-radius:8px;
+  box-shadow:0 1px 2px rgba(217,104,40,.40);
+}
+.runner-title{
+  font-family:"Caveat", cursive; font-weight:700;
+  font-size:17px; color:var(--ink); line-height:1;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.runner-xp{
+  height:7px;
+  background:rgba(255,255,255,.55);
+  border:1.5px solid rgba(80,55,30,.40);
+  border-radius:6px;
+  overflow:hidden;
+}
+.runner-xp > span{
+  display:block; height:100%; width:0%;
+  background:linear-gradient(90deg, #5ab050, #88d878);
+  transition:width .3s;
+}
+.runner-xp-txt{
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:9.5px; letter-spacing:.04em;
+  color:var(--ink-2);
+  line-height:1;
+}
+.runner-profile-btn{
+  width:36px; height:36px;
+  background:linear-gradient(180deg, #ffba70, #f08a48);
+  border:2px solid #fff;
+  border-radius:50%;
+  color:#fff;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 2px 4px rgba(217,104,40,.30);
+}
+.runner-profile-btn svg{ width:60%; height:60%; }
+.runner-profile-btn:active{ transform:translateY(2px); box-shadow:0 1px 2px rgba(217,104,40,.30); }
+
+/* === PROFILE MODAL === */
+.profile-body{ overflow-y:auto; max-height:60vh; padding:4px 2px; }
+.profile-hero{
+  display:grid;
+  grid-template-columns:80px 1fr;
+  gap:12px; align-items:center;
+  padding:12px;
+  background:linear-gradient(180deg, #fffaee, #f4e2b4);
+  border:2px solid var(--ember);
+  border-radius:16px;
+  margin-bottom:12px;
+  box-shadow:0 2px 6px rgba(80,55,30,.12);
+}
+.profile-big-avatar{
+  width:80px; height:80px;
+  background:linear-gradient(180deg, #b8def0, #f4d8a8);
+  border:3px solid #a07a44;
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  image-rendering:pixelated;
+  box-shadow:0 2px 6px rgba(80,55,30,.18);
+}
+.profile-big-avatar svg{ width:90%; height:90%; }
+.profile-info{ min-width:0; }
+.profile-lvl{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:11px; letter-spacing:.10em;
+  color:var(--ember); text-transform:uppercase;
+  line-height:1;
+}
+.profile-title{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:20px; color:var(--ink); margin:2px 0 6px;
+}
+.profile-skin{
+  font-family:"Caveat", cursive; font-weight:700;
+  font-size:16px; color:var(--ink-2);
+  margin-bottom:4px;
+}
+.profile-xp-bar{
+  height:7px;
+  background:rgba(255,255,255,.6);
+  border:1.5px solid rgba(80,55,30,.40);
+  border-radius:6px;
+  overflow:hidden;
+  margin-top:4px;
+}
+.profile-xp-bar > span{
+  display:block; height:100%;
+  background:linear-gradient(90deg, #5ab050, #88d878);
+}
+.profile-xp-txt{
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:10px; color:var(--ink-2);
+  margin-top:3px;
+}
+.profile-section{
+  background:linear-gradient(180deg, #fffaee, #fff3d8);
+  border:1.5px solid rgba(160,122,68,.30);
+  border-radius:12px;
+  padding:10px 12px;
+  margin-bottom:10px;
+}
+.profile-section h3{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:11px; letter-spacing:.14em;
+  color:var(--ember);
+  margin:0 0 8px;
+  text-transform:uppercase;
+}
+.stat-grid{
+  display:grid; grid-template-columns:1fr 1fr; gap:6px;
+}
+.stat-block{
+  display:grid; grid-template-columns:24px 1fr auto; gap:6px;
+  align-items:center;
+  padding:6px 8px;
+  background:#fff;
+  border:1.5px solid rgba(160,122,68,.25);
+  border-radius:10px;
+}
+.stat-icon{ font-size:16px; line-height:1; text-align:center; }
+.stat-name{
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:11px; color:var(--ink-2);
+}
+.stat-val{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:15px; color:var(--ink);
+}
+.record-row{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:5px 0;
+  border-bottom:1px solid rgba(160,122,68,.18);
+  font-family:"Nunito", sans-serif;
+}
+.record-row:last-child{ border-bottom:none; }
+.record-row span{ color:var(--ink-2); font-weight:600; font-size:13px; }
+.record-row b{ color:var(--ink); font-weight:900; font-size:14px; }
 .tap-strip{
   display:grid;
   grid-template-columns:1fr 1fr 1fr;
@@ -3617,7 +3784,35 @@ body.shop-epic-flash::after{
 
     <!-- ================ TAP-TO-BOOST UI ================ -->
     <div id="tap-area">
-      <!-- Stat strip : médailles par tap + cooldown -->
+      <!-- Bandeau Coureur : Niveau + XP bar + Titre + bouton PROFIL -->
+      <div class="runner-hud">
+        <div class="runner-hud-left">
+          <div class="runner-avatar" id="runner-avatar" role="button" aria-label="Profil du coureur">
+            <svg viewBox="-12 -12 24 24" shape-rendering="crispEdges">
+              <rect data-skin="hair" x="-4" y="-9" width="7" height="2" fill="#4a2818"/>
+              <rect x="-4" y="-7" width="7" height="5" fill="#f0c890"/>
+              <rect x="1" y="-5" width="1" height="1" fill="#1a1010"/>
+              <rect data-skin="jersey" x="-5" y="-2" width="9" height="6" fill="#e85a30"/>
+              <rect data-skin="accent" x="-5" y="-2" width="9" height="1" fill="#ffd070"/>
+              <rect x="-1" y="0" width="2" height="2" fill="#fff"/>
+              <rect x="-3" y="4" width="2" height="3" fill="#f0c890"/>
+              <rect x="1" y="4" width="2" height="3" fill="#f0c890"/>
+            </svg>
+          </div>
+        </div>
+        <div class="runner-hud-info">
+          <div class="runner-hud-row1">
+            <span class="runner-lvl" id="runner-lvl">NIV 1</span>
+            <span class="runner-title" id="runner-title">Débutant</span>
+          </div>
+          <div class="runner-xp"><span id="runner-xp-fill"></span></div>
+          <div class="runner-xp-txt" id="runner-xp-txt">0 / 50 XP</div>
+        </div>
+        <button class="runner-profile-btn" data-action="profile" aria-label="Ouvrir le profil">
+          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 22 q0-7 8-7 t8 7"/></svg>
+        </button>
+      </div>
+      <!-- Stat strip : médailles par tap + crit -->
       <div class="tap-strip">
         <div class="tap-stat">
           <span class="tap-stat-lbl">PAR TAP</span>
@@ -4388,6 +4583,16 @@ body.shop-epic-flash::after{
 </div>
 
 <!-- ASCENSION CINEMATIC : médaille du tour bouclé -->
+<!-- PROFIL DU COUREUR -->
+<div id="profile-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-close" id="profile-close" aria-label="Fermer">×</div>
+    <h2>LE COUREUR</h2>
+    <div class="divider"></div>
+    <div class="profile-body" id="profile-body"></div>
+  </div>
+</div>
+
 <div id="grand-oeuvre">
   <svg class="seal" viewBox="-50 -50 100 100">
     <g>
@@ -4708,10 +4913,10 @@ const IDLE_GOLD_PER_TIER = [0, 0.1, 0.4, 1.5, 4, 10, 30, 100];
 /* XP gagnée à chaque action. Niveau qui monte avec courbe progressive.
    Titres évolutifs et bonus passif +1% or par niveau. */
 const ALCH_TITLES = [
-  [0, 'Novice'], [3, 'Apprenti'], [6, 'Initié'], [10, 'Adepte'],
-  [15, 'Magister'], [21, 'Maître'], [28, 'Maître Suprême'],
-  [36, 'Hiérophante'], [45, 'Ouroboros'], [55, 'Alchimiste-Roi'],
-  [70, 'Voix de l\'Œuvre'], [90, 'Lapis Vivant'],
+  [0, 'Débutant'], [3, 'Amateur'], [6, 'Coureur'], [10, 'Athlète'],
+  [15, 'Compétiteur'], [21, 'Sprinter'], [28, 'Marathonien'],
+  [36, 'Champion'], [45, 'Vétéran'], [55, 'Élite'],
+  [70, 'Champion National'], [90, 'Légende'],
 ];
 function xpForLevel(level){ return Math.floor(50 * Math.pow(1.18, level-1)); } // niveau 1→59, niveau 10→260, niveau 30→9700, etc.
 function totalXpForLevel(level){
@@ -9323,8 +9528,12 @@ function tapBoost(e){
     const body = document.querySelector('.rs-body');
     if(body){ body.classList.remove('runner-cheer'); void body.offsetWidth; body.classList.add('runner-cheer'); setTimeout(()=>body.classList.remove('runner-cheer'), 720); }
   }
+  // XP gain : 1 par tap, +3 si crit
+  if(typeof gainXp === 'function') gainXp(isCrit ? 3 : 1);
+  STATE.totalTaps = (STATE.totalTaps || 0) + 1;
   if(typeof renderStats === 'function') renderStats();
   if(typeof updateTapStrip === 'function') updateTapStrip();
+  if(typeof updateRunnerHUD === 'function') updateRunnerHUD();
 }
 
 /* Met à jour la bande de stats au-dessus du bouton boost */
@@ -9407,6 +9616,104 @@ function buyUpgrade(id){
   if(typeof renderStats === 'function') renderStats();
   updateTapStrip();
 }
+/* Calcule les stats du coureur dérivées du niveau + upgrades */
+function getRunnerStats(){
+  const lvl = alchLevel();
+  const upgTap = STATE.upgradeTapValue || 0;
+  const upgCrit = STATE.upgradeCritChance || 0;
+  const upgLap = STATE.upgradeLapBonus || 0;
+  // Vitesse : base 10 + bonus tour upgrades + 1/2 niveau
+  const vitesse = 10 + upgLap * 3 + Math.floor(lvl / 2);
+  // Endurance : base 10 + bonus tap upgrades + 1/2 niveau
+  const endurance = 10 + upgTap * 2 + Math.floor(lvl / 2);
+  // Chance : base 10 + crit upgrades + 1/3 niveau
+  const chance = 10 + upgCrit * 4 + Math.floor(lvl / 3);
+  // Charisme : base 10 + 1/2 niveau (révèle les bulles, taunts, etc.)
+  const charisme = 10 + Math.floor(lvl / 2);
+  return { vitesse, endurance, chance, charisme };
+}
+/* Ouvre le modal de profil */
+function openRunnerProfile(){
+  const body = document.getElementById('profile-body');
+  if(!body) return;
+  const lvl = alchLevel();
+  const title = alchTitle();
+  const p = alchProgress();
+  const skin = (typeof getRunnerSkin === 'function') ? getRunnerSkin() : { name:'Débutant', jersey:'#e85a30' };
+  const stats = getRunnerStats();
+  const lapsRun = STATE.lapsRun || 0;
+  const totalTaps = STATE.totalTaps || 0;
+  const totalGold = Math.floor(STATE.gold || 0);
+  // Distance : 1 tour = 400m
+  const distM = lapsRun * 400;
+  const distTxt = distM >= 1000 ? (distM/1000).toFixed(distM>=10000?0:1) + ' km' : distM + ' m';
+  // Prochain titre
+  const nextTitleEntry = ALCH_TITLES.find(t => t[0] > lvl);
+  const nextTitleTxt = nextTitleEntry ? `${nextTitleEntry[1]} (niv ${nextTitleEntry[0]})` : 'Atteint le sommet';
+  body.innerHTML = `
+    <div class="profile-hero">
+      <div class="profile-big-avatar">
+        <svg viewBox="-16 -16 32 32" shape-rendering="crispEdges">
+          <ellipse cx="0" cy="10" rx="6" ry="1.5" fill="#000" opacity=".3"/>
+          <rect data-skin="hair" x="-4" y="-12" width="7" height="3" fill="${skin.hair}"/>
+          <rect x="-4" y="-10" width="7" height="6" fill="#f0c890"/>
+          <rect x="1" y="-7" width="1.5" height="1.5" fill="#1a1010"/>
+          <rect data-skin="jersey" x="-5" y="-4" width="9" height="6" fill="${skin.jersey}"/>
+          <rect data-skin="accent" x="-5" y="-4" width="9" height="1" fill="${skin.accent}"/>
+          <rect x="-1.5" y="-2" width="3" height="3" fill="#fff"/>
+          <rect x="-7" y="-3" width="2" height="4" fill="#f0c890"/>
+          <rect x="4" y="-3" width="2" height="4" fill="#f0c890"/>
+          <rect x="-4" y="2" width="7" height="4" fill="#fff"/>
+          <rect x="-4" y="2" width="7" height="1" fill="#1f3548"/>
+          <rect x="-3" y="6" width="2.5" height="5" fill="#f0c890"/>
+          <rect x="1" y="6" width="2.5" height="5" fill="#f0c890"/>
+          <rect x="-3.5" y="10" width="3" height="1.8" fill="#1f3548"/>
+          <rect x="0.5" y="10" width="3" height="1.8" fill="#1f3548"/>
+        </svg>
+      </div>
+      <div class="profile-info">
+        <div class="profile-lvl">NIVEAU ${lvl}</div>
+        <div class="profile-title">${title}</div>
+        <div class="profile-skin">Tenue : ${skin.name}</div>
+        <div class="profile-xp-bar"><span style="width:${p.pct.toFixed(1)}%"></span></div>
+        <div class="profile-xp-txt">${p.inLvl} / ${p.need} XP — prochain : ${nextTitleTxt}</div>
+      </div>
+    </div>
+    <div class="profile-section">
+      <h3>STATISTIQUES</h3>
+      <div class="stat-grid">
+        <div class="stat-block"><span class="stat-icon">⚡</span><span class="stat-name">Vitesse</span><span class="stat-val">${stats.vitesse}</span></div>
+        <div class="stat-block"><span class="stat-icon">💪</span><span class="stat-name">Endurance</span><span class="stat-val">${stats.endurance}</span></div>
+        <div class="stat-block"><span class="stat-icon">🍀</span><span class="stat-name">Chance</span><span class="stat-val">${stats.chance}</span></div>
+        <div class="stat-block"><span class="stat-icon">✨</span><span class="stat-name">Charisme</span><span class="stat-val">${stats.charisme}</span></div>
+      </div>
+    </div>
+    <div class="profile-section">
+      <h3>PALMARÈS</h3>
+      <div class="record-row"><span>Tours bouclés</span><b>${lapsRun}</b></div>
+      <div class="record-row"><span>Distance totale</span><b>${distTxt}</b></div>
+      <div class="record-row"><span>Total taps</span><b>${totalTaps}</b></div>
+      <div class="record-row"><span>Médailles actuelles</span><b>${totalGold}</b></div>
+    </div>
+  `;
+  document.getElementById('profile-modal')?.classList.add('show');
+}
+
+/* Met à jour le HUD du coureur (niveau, titre, XP bar) */
+function updateRunnerHUD(){
+  const lvl = alchLevel();
+  const title = alchTitle();
+  const p = alchProgress();
+  const lvlEl = document.getElementById('runner-lvl');
+  const titleEl = document.getElementById('runner-title');
+  const fillEl = document.getElementById('runner-xp-fill');
+  const txtEl = document.getElementById('runner-xp-txt');
+  if(lvlEl) lvlEl.textContent = 'NIV ' + lvl;
+  if(titleEl) titleEl.textContent = title;
+  if(fillEl) fillEl.style.width = p.pct.toFixed(1) + '%';
+  if(txtEl) txtEl.textContent = p.inLvl + ' / ' + p.need + ' XP';
+}
+
 function updateUpgradesUI(){
   for(const id in UPGRADES_TAP){
     const u = UPGRADES_TAP[id];
@@ -9497,7 +9804,10 @@ function completeLap(){
     setTimeout(()=>blip(1320, .3, "triangle", .24, .7), 360);
   }
   vibrate([30, 50, 30, 50, 30, 50, 100]);
+  // XP : +50 par tour bouclé
+  if(typeof gainXp === 'function') gainXp(50);
   if(typeof renderStats === 'function') renderStats();
+  if(typeof updateRunnerHUD === 'function') updateRunnerHUD();
 }
 
 /* Maillot du coureur — évolue selon le nombre d'ascensions */
@@ -11329,6 +11639,7 @@ function boot(){
   bindModalClose('settings-modal','settings-close');
   bindModalClose('credits-modal','credits-close');
   bindModalClose('shop-modal','shop-close');
+  bindModalClose('profile-modal','profile-close');
   // Bandeau "prochain achat" → ouvre directement le Marché
   document.getElementById('shop-hint')?.addEventListener('click', (e)=>{
     e.stopPropagation();
@@ -11349,9 +11660,14 @@ function boot(){
       if(id && typeof buyUpgrade === 'function') buyUpgrade(id);
     });
   });
+  // Profile button + avatar : ouvrent le modal profil du coureur
+  const profileOpener = (e)=>{ e.stopPropagation(); openRunnerProfile(); };
+  document.querySelector('.runner-profile-btn')?.addEventListener('click', profileOpener);
+  document.getElementById('runner-avatar')?.addEventListener('click', profileOpener);
   // Init des stats du tap au démarrage
   if(typeof updateTapStrip === 'function') updateTapStrip();
   if(typeof updateUpgradesUI === 'function') updateUpgradesUI();
+  if(typeof updateRunnerHUD === 'function') updateRunnerHUD();
   bindModalClose('seal-modal','seal-close');
   bindModalClose('codex-page-modal','codex-page-close');
   document.getElementById('codex-page-prev').addEventListener('click', e=>{ e.stopPropagation(); navCodexPage(-1); });
@@ -11568,6 +11884,7 @@ function boot(){
     safe(()=>tickRunnerLap(dt));
     safe(updateRunner);
     safe(updateTapStrip);
+    safe(updateRunnerHUD);
     safe(tickDust);
     safe(()=>tickCandles(now));
     safe(tickThemed);

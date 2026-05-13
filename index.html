@@ -5954,14 +5954,36 @@ body.shop-epic-flash::after{
         <!-- OMBRE PROJETÉE de l'arena (légère et douce) -->
         <ellipse cx="160" cy="300" rx="155" ry="14" fill="#000" opacity=".18"/>
 
-        <!-- TRIBUNE = anneau orange/terracotta flat avec outline noire épaisse Eatventure -->
-        <ellipse cx="160" cy="208" rx="148" ry="98" fill="url(#rs-tribune-grad)" stroke="#3a2010" stroke-width="2"/>
+        <!-- TRIBUNE EXTÉRIEURE (mur/structure) avec outline Eatventure -->
+        <ellipse cx="160" cy="210" rx="150" ry="100" fill="#a85820" stroke="#2a1008" stroke-width="2.5"/>
+        <!-- TRIBUNE inner (gradins orange) -->
+        <ellipse cx="160" cy="208" rx="148" ry="98" fill="url(#rs-tribune-grad)"/>
+        <!-- Highlight clair sur le rebord supérieur (effet lumière du jour) -->
+        <ellipse cx="160" cy="200" rx="146" ry="92" fill="none" stroke="#fac890" stroke-width="2" opacity=".7"/>
 
-        <!-- SPECTATEURS : juste des points colorés clairsemés (généré par buildCrowd) -->
+        <!-- RANGÉES DE GRADINS visibles (4 anneaux concentriques) -->
+        <g fill="none" stroke="#7a3810" stroke-width=".8" opacity=".55">
+          <ellipse cx="160" cy="208" rx="144" ry="93"/>
+          <ellipse cx="160" cy="210" rx="135" ry="85"/>
+          <ellipse cx="160" cy="212" rx="126" ry="78"/>
+          <ellipse cx="160" cy="214" rx="118" ry="72"/>
+        </g>
+
+        <!-- SECTIONS COLORÉES BACKGROUND (4 quadrants : front/back/L/R) — légère teinte sous les fans -->
+        <g opacity=".18">
+          <!-- Section FRONT (bas) : tinte rouge sous les fans home -->
+          <path d="M 50,220 Q 160,310 270,220 L 270,290 L 50,290 Z" fill="#e84a30"/>
+          <!-- Section BACK (haut) : tinte bleue sous les fans visiteurs -->
+          <path d="M 50,200 Q 160,130 270,200 L 270,130 L 50,130 Z" fill="#3e8db8"/>
+        </g>
+
+        <!-- SPECTATEURS : vrais petits bonhommes (généré par buildCrowd) -->
         <g id="rs-crowd"></g>
 
-        <!-- Liseré clair sur le rebord supérieur de l'anneau (highlight subtil) -->
-        <ellipse cx="160" cy="202" rx="146" ry="92" fill="none" stroke="#f4b070" stroke-width="1.5" opacity=".5"/>
+        <!-- BORDURE INTÉRIEURE TRIBUNE (sépare gradins de la piste) -->
+        <ellipse cx="160" cy="216" rx="120" ry="74" fill="none" stroke="#2a1008" stroke-width="2"/>
+        <!-- Ombre intérieure douce -->
+        <ellipse cx="160" cy="222" rx="118" ry="72" fill="none" stroke="#3a1808" stroke-width="3" opacity=".3"/>
 
         <!-- PISTE ROUGE VIVE flat (style Eatventure) -->
         <ellipse cx="160" cy="220" rx="118" ry="76" fill="url(#rs-track-grad)" stroke="#3a1010" stroke-width="2"/>
@@ -5975,15 +5997,49 @@ body.shop-epic-flash::after{
           <ellipse cx="160" cy="220" rx="92" ry="50"/>
         </g>
 
-        <!-- GAZON CENTRAL : bandes alternées vert pomme -->
-        <ellipse cx="160" cy="220" rx="88" ry="46" fill="url(#rs-mowed)" stroke="#3a2010" stroke-width="1.5"/>
+        <!-- GAZON CENTRAL : bandes alternées vert pomme avec outline -->
+        <ellipse cx="160" cy="220" rx="88" ry="46" fill="url(#rs-mowed)" stroke="#2a1808" stroke-width="1.8"/>
 
-        <!-- LIGNE D'ARRIVÉE checkered (sur la piste front) -->
+        <!-- ═══ TERRAIN INTÉRIEUR : éléments de stade athlé ═══ -->
+        <!-- ZONE DE LANCER DE POIDS (cercle clair en haut-gauche) -->
+        <circle cx="120" cy="205" r="6" fill="#f0e0a0" stroke="#a08068" stroke-width="1"/>
+        <circle cx="120" cy="205" r="2" fill="#d4a060"/>
+
+        <!-- PISTE DE SAUT EN LONGUEUR (rectangle sable + planche d'appel) -->
+        <rect x="184" y="200" width="20" height="6" rx="1" fill="#f0d890" stroke="#a08868" stroke-width=".8"/>
+        <rect x="183" y="201" width="2" height="4" fill="#fff" stroke="#3a2818" stroke-width=".3"/>
+
+        <!-- HAIES (3 mini haies décoratives dans le terrain) -->
         <g shape-rendering="crispEdges">
-          <rect x="155" y="291" width="5" height="3" fill="#fff"/>
-          <rect x="160" y="291" width="5" height="3" fill="#1a1010"/>
-          <rect x="155" y="294" width="5" height="3" fill="#1a1010"/>
-          <rect x="160" y="294" width="5" height="3" fill="#fff"/>
+          <rect x="105" y="240" width="6" height="3" fill="#fff" stroke="#3a2818" stroke-width=".4"/>
+          <rect x="105" y="240" width="6" height="1" fill="#e84a30"/>
+          <rect x="207" y="240" width="6" height="3" fill="#fff" stroke="#3a2818" stroke-width=".4"/>
+          <rect x="207" y="240" width="6" height="1" fill="#e84a30"/>
+        </g>
+
+        <!-- PODIUM au centre du terrain (1-2-3 marches) -->
+        <g>
+          <!-- Plateforme 2 (gauche, argent) -->
+          <rect x="143" y="222" width="9" height="5" fill="#c8c8d4" stroke="#3a2818" stroke-width=".5"/>
+          <text x="147.5" y="226" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="4" fill="#3a2818">2</text>
+          <!-- Plateforme 1 (centre, or, plus haute) -->
+          <rect x="153" y="218" width="9" height="9" fill="#ffd84a" stroke="#3a2818" stroke-width=".5"/>
+          <text x="157.5" y="224" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="4.5" fill="#3a2818">1</text>
+          <!-- Plateforme 3 (droite, bronze) -->
+          <rect x="163" y="224" width="9" height="3" fill="#d4884a" stroke="#3a2818" stroke-width=".5"/>
+          <text x="167.5" y="227" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="3.5" fill="#3a2818">3</text>
+        </g>
+
+        <!-- LIGNE D'ARRIVÉE checkered épaisse (sur la piste front) -->
+        <g shape-rendering="crispEdges">
+          <rect x="152" y="289" width="4" height="3" fill="#fff"/>
+          <rect x="156" y="289" width="4" height="3" fill="#1a1010"/>
+          <rect x="160" y="289" width="4" height="3" fill="#fff"/>
+          <rect x="164" y="289" width="4" height="3" fill="#1a1010"/>
+          <rect x="152" y="292" width="4" height="3" fill="#1a1010"/>
+          <rect x="156" y="292" width="4" height="3" fill="#fff"/>
+          <rect x="160" y="292" width="4" height="3" fill="#1a1010"/>
+          <rect x="164" y="292" width="4" height="3" fill="#fff"/>
         </g>
 
         <!-- 4 PROJECTEURS Eatventure : simples, ronds, mignons -->
@@ -6018,13 +6074,16 @@ body.shop-epic-flash::after{
         <g id="rs-team-runners"></g>
         <!-- LE COUREUR principal (toi, le joueur) -->
         <g id="rs-runner">
+          <!-- AURA HERO (cercle doré subtil derrière le héros) -->
+          <circle class="rs-hero-aura" cx="0" cy="2" r="22" fill="#ffd84a" opacity=".22"/>
+          <circle class="rs-hero-aura" cx="0" cy="2" r="16" fill="#fff" opacity=".15"/>
           <!-- Lignes de vitesse derrière (visibles quand rapide) -->
           <g class="rs-speedlines" opacity="0" style="opacity:0">
-            <rect x="-20" y="-4" width="9" height="1.4" fill="#fff" opacity=".7"/>
-            <rect x="-18" y="0" width="8" height="1.4" fill="#fff" opacity=".55"/>
-            <rect x="-20" y="4" width="9" height="1.4" fill="#fff" opacity=".45"/>
+            <rect x="-22" y="-4" width="11" height="1.6" fill="#fff" opacity=".8"/>
+            <rect x="-20" y="0" width="10" height="1.6" fill="#fff" opacity=".65"/>
+            <rect x="-22" y="4" width="11" height="1.6" fill="#fff" opacity=".55"/>
           </g>
-          <g class="rs-body" transform="scale(5)">
+          <g class="rs-body" transform="scale(6)">
             <g shape-rendering="crispEdges">
               <!-- ombre au sol plus large -->
               <ellipse cx="0" cy="10.5" rx="7" ry="1.6" fill="#000" opacity=".35"/>
@@ -14569,48 +14628,67 @@ function buildCrowd(){
   if(tier === 0){ g.innerHTML = ''; return; }
   const laps = STATE.lapsRun || 0;
   const saison = (STATE.saison || 1) - 1;
-  const tones = ['#3e8db8','#d04030','#5a9040','#9080c0','#ffd070','#fff','#f08a48','#ee5a9a','#7ec46a'];
+  // Palette Eatventure : couleurs saturées + cohérentes par section
+  // 4 sections (front, back, left, right) ont des couleurs dominantes différentes (sections fans)
+  const sectionPalettes = [
+    ['#e84a30','#f08a48','#ffd84a','#fff'],   // SECTION FRONT : ROUGE/OR (équipe home)
+    ['#3e8db8','#5ab4d8','#a8d8e8','#fff'],   // SECTION ARRIÈRE : BLEU (visiteurs)
+    ['#7ec46a','#5a9040','#ffd84a','#fff'],   // SECTION GAUCHE : VERT (familles)
+    ['#e85aa0','#c83880','#ffd84a','#fff'],   // SECTION DROITE : ROSE/MAGENTA (jeunes)
+  ];
+  const skinTones = ['#f0c890','#e0b078','#d4a070','#c89060','#a87850'];
   const fillLevel = Math.min(1, (tier - 1) * 0.18 + laps / 100 + saison * 0.2);
   let html = '';
-  // SPECTATEURS distribués sur tout l'anneau de tribunes (autour de l'arena)
-  // 3 cercles concentriques : externe, milieu, interne
-  // Centre ovale tribune: cx=160 cy=210, rayons : ext (155,100), mid (140,86), int (122,72)
   const cx = 160, cy = 210;
+  // 3 rangées concentriques de bancs : MOINS de spectateurs mais BIEN PLUS GROS
   const ringConfigs = [
-    { rx: 148, ry: 95, size: 1.6, count: 60 },  // anneau externe (loin haut)
-    { rx: 138, ry: 86, size: 1.8, count: 55 },  // milieu
-    { rx: 128, ry: 78, size: 2.0, count: 50 },  // interne (proche du terrain)
+    { rx: 144, ry: 92, count: 28, headR: 1.6, bodyW: 3.2, bodyH: 3.5 },  // rangée du fond (loin)
+    { rx: 134, ry: 84, count: 26, headR: 1.8, bodyW: 3.6, bodyH: 4.0 },  // milieu
+    { rx: 124, ry: 76, count: 24, headR: 2.0, bodyW: 4.0, bodyH: 4.5 },  // 1ère rangée (proche piste, plus grosse car en avant)
   ];
   ringConfigs.forEach((ring, ri) => {
     for(let i = 0; i < ring.count; i++){
       const angle = (i / ring.count) * Math.PI * 2;
       const x = cx + Math.cos(angle) * ring.rx;
       const y = cy + Math.sin(angle) * ring.ry;
-      // Densité variable selon fillLevel
-      const rand = ((i * 31 + ri * 13) % 100) / 100;
+      // Densité variable selon fillLevel + un peu de hasard reproductible
+      const rand = ((i * 31 + ri * 17 + 7) % 100) / 100;
       if(rand > fillLevel) continue;
-      const c = tones[Math.floor(rand * tones.length) % tones.length];
-      const s = ring.size;
-      // Échelle Y selon position (spectateurs au bas = plus gros)
-      const yScale = 0.8 + (y - 100) / 200 * 0.5;
-      const w = s * 2 * yScale;
-      const h = s * 1.5 * yScale;
-      // Tête (peau)
-      html += `<rect x="${(x - w/2).toFixed(1)}" y="${(y - h*1.4).toFixed(1)}" width="${w.toFixed(1)}" height="${(h*0.9).toFixed(1)}" fill="#f0c890"/>`;
-      // Corps (maillot coloré)
-      html += `<rect x="${(x - w/2).toFixed(1)}" y="${(y - h*0.3).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="${c}"/>`;
+      // Section selon l'angle (4 quadrants : front/back/gauche/droite)
+      let section = 0;
+      if(angle > Math.PI * 0.25 && angle < Math.PI * 0.75) section = 0;         // bas = front (rouge/or)
+      else if(angle > Math.PI * 1.25 && angle < Math.PI * 1.75) section = 1;     // haut = back (bleu)
+      else if(angle >= Math.PI * 0.75 && angle <= Math.PI * 1.25) section = 2;   // gauche (vert)
+      else section = 3;                                                          // droite (rose)
+      const palette = sectionPalettes[section];
+      const jerseyColor = palette[Math.floor(rand * palette.length) % palette.length];
+      const skinColor = skinTones[Math.floor((i * 13 + ri * 5) % skinTones.length)];
+      // Petits bonhommes : tête (cercle) + corps (rect arrondi)
+      const headR = ring.headR;
+      const bodyW = ring.bodyW;
+      const bodyH = ring.bodyH;
+      // Tête (rond)
+      html += `<circle cx="${x.toFixed(1)}" cy="${(y - bodyH - headR*0.5).toFixed(1)}" r="${headR.toFixed(1)}" fill="${skinColor}"/>`;
+      // Corps (rect coloré maillot)
+      html += `<rect x="${(x - bodyW/2).toFixed(1)}" y="${(y - bodyH + headR*0.3).toFixed(1)}" width="${bodyW.toFixed(1)}" height="${bodyH.toFixed(1)}" rx=".5" fill="${jerseyColor}"/>`;
+      // Petit chapeau / casquette aléatoire (20% chance)
+      if(rand > 0.8){
+        const hatColor = palette[0];
+        html += `<rect x="${(x - headR).toFixed(1)}" y="${(y - bodyH - headR*1.3).toFixed(1)}" width="${(headR*2).toFixed(1)}" height=".8" fill="${hatColor}"/>`;
+      }
     }
   });
   // Drapeaux au sommet de l'arena (visibles depuis saison 2+)
   if(saison >= 1){
     html += `<rect x="40" y="100" width="1" height="10" fill="#3a2818"/>`;
-    html += `<rect x="40" y="100" width="9" height="5" fill="${tones[0]}"/>`;
+    html += `<rect x="40" y="100" width="9" height="5" fill="#e84a30"/>`;
     html += `<rect x="280" y="100" width="1" height="10" fill="#3a2818"/>`;
-    html += `<rect x="271" y="100" width="9" height="5" fill="${tones[2]}"/>`;
+    html += `<rect x="271" y="100" width="9" height="5" fill="#3e8db8"/>`;
   }
   g.innerHTML = html;
-  g.querySelectorAll('rect[fill="#f0c890"]').forEach((el, i) => {
-    el.style.setProperty('--crowd-delay', (i * 0.04).toFixed(2) + 's');
+  // Animation de wave/ola : delays sur les têtes
+  g.querySelectorAll('circle').forEach((el, i) => {
+    el.style.setProperty('--crowd-delay', ((i % 30) * 0.06).toFixed(2) + 's');
   });
 }
 /* Random delays sur les herbes du foreground (sway désynchronisé) */

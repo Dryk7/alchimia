@@ -18060,13 +18060,17 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     pg.lookAt(0, 4, 0);
     return pg;
   }
-  // 4 corners (slight outside the tribune ring)
-  const projectors = [
-    makeProjector(-13, -8),
-    makeProjector(13, -8),
-    makeProjector(-13, 8),
-    makeProjector(13, 8),
-  ];
+  // 4 corners (slight outside the tribune ring) + chacun emet une PointLight chaude
+  const projectorPositions = [[-13, -8], [13, -8], [-13, 8], [13, 8]];
+  const projectors = projectorPositions.map(([x, z]) => {
+    const p = makeProjector(x, z);
+    // Ajoute une PointLight chaude au sommet du projecteur (dans le local frame)
+    const light = new THREE.PointLight('#fff4c0', 0.5, 18, 1.4);
+    light.position.set(0, 8.5, 0);
+    p.add(light);
+    p.userData.light = light;
+    return p;
+  });
   projectors.forEach(p => scene.add(p));
 
   // === FOULE 3D : spectateurs sur le toit de la tribune (ola) ===
@@ -18321,6 +18325,10 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     parts.headGroup.rotation.x = -.05 - Math.abs(swing) * .03;
   }
 
+  // === CAMERA INTRO : pan-in les 3 premières secondes ===
+  const introT0 = performance.now();
+  const introDur = 2500;
+
   let lastT = performance.now();
   let lastPlayerP = 0;
   let playerSmoothVel = 0;
@@ -18392,11 +18400,22 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       // Pendant la vague, leve les bras (scale Y plus grand)
       s.scale.y = 1 + intensity * .35;
     });
-    // CAMERA IDLE BREATHING
-    const breathX = Math.sin(now * .0003) * .25;
-    const breathY = Math.sin(now * .00037) * .12;
-    const breathZ = Math.cos(now * .0004) * .2;
-    camera.position.set(camBasePos.x + breathX, camBasePos.y + breathY, camBasePos.z + breathZ);
+    // CAMERA IDLE BREATHING + INTRO PAN-IN
+    const introProgress = Math.min(1, (now - introT0) / introDur);
+    const introEase = 1 - Math.pow(1 - introProgress, 3); // ease-out cubic
+    if(introProgress < 1){
+      // Start far + high + rotated, end at base position
+      const startPos = new THREE.Vector3(15, 40, 25);
+      const introX = startPos.x + (camBasePos.x - startPos.x) * introEase;
+      const introY = startPos.y + (camBasePos.y - startPos.y) * introEase;
+      const introZ = startPos.z + (camBasePos.z - startPos.z) * introEase;
+      camera.position.set(introX, introY, introZ);
+    } else {
+      const breathX = Math.sin(now * .0003) * .25;
+      const breathY = Math.sin(now * .00037) * .12;
+      const breathZ = Math.cos(now * .0004) * .2;
+      camera.position.set(camBasePos.x + breathX, camBasePos.y + breathY, camBasePos.z + breathZ);
+    }
     camera.lookAt(camTarget);
 
     // === SPARKLES podium : étoiles tournent et pulsent ===
@@ -18521,16 +18540,24 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       r.material.opacity = (1 - t) * .8;
     });
 
-    // === DAY CYCLE SUBTIL : intensité directional light pulse léger (matin → midi → soir) ===
+    // === DAY CYCLE : matin → midi → soir → nuit (60s cycle) ===
     {
-      const cycleT = (now / 60000) % 1; // 1 cycle complet en 60s
+      const cycleT = (now / 60000) % 1;
       const sunHeight = Math.sin(cycleT * Math.PI * 2);
-      dir.intensity = 0.85 + sunHeight * 0.15;
-      // Couleur chaude (or) au "soir", froide (blanc) au midi
+      // Directional light : intensité varie selon soleil + couleur (chaud au soir/nuit)
+      dir.intensity = Math.max(0.4, 0.85 + sunHeight * 0.25);
       const warmth = Math.max(0, -sunHeight);
-      dir.color.setRGB(1, 1 - warmth * 0.15, 1 - warmth * 0.25);
-      // Hemisphere intensity réajuste aussi
-      hemi.intensity = 0.35 + sunHeight * 0.1;
+      dir.color.setRGB(1, 1 - warmth * 0.18, 1 - warmth * 0.3);
+      // Hemisphere
+      hemi.intensity = 0.35 + sunHeight * 0.15;
+      // Projecteurs : intensité inverse du soleil (allumés quand sombre)
+      const projIntensity = Math.max(0, -sunHeight) * 1.5 + 0.3;
+      projectors.forEach(p => {
+        if(p.userData.light) p.userData.light.intensity = projIntensity;
+      });
+      // Ambient : couleur ambient légèrement teintée au soir
+      const ambientWarmth = Math.max(0, -sunHeight) * 0.15;
+      ambient.color.setRGB(1, 1 - ambientWarmth * 0.5, 1 - ambientWarmth);
     }
 
     composer.render();

@@ -527,11 +527,11 @@ header{
   100% { transform:scale(1.15); opacity:1; }
 }
 
-/* Upgrade buttons — la VRAIE progression */
+/* Upgrade buttons — 4 colonnes (tap / crit / tour / auto) */
 .tap-upgrades{
   display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  gap:8px;
+  grid-template-columns:1fr 1fr 1fr 1fr;
+  gap:6px;
   padding:0 4px;
 }
 .upg-btn{
@@ -3844,37 +3844,39 @@ body.shop-epic-flash::after{
         <span class="combo-fire" id="combo-fire"></span>
       </div>
 
-      <!-- UPGRADES — cœur addictif du jeu (Cookie Clicker style) -->
+      <!-- UPGRADES — cœur addictif du jeu (Cookie Clicker style) — 4 colonnes -->
       <div class="tap-upgrades">
         <button class="upg-btn" data-upgrade="tapValue" aria-label="Améliorer tap">
           <div class="upg-row1">
-            <span class="upg-ico">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 L4 14 h7 L9 22 L20 10 h-7 z"/></svg>
-            </span>
+            <span class="upg-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 L4 14 h7 L9 22 L20 10 h-7 z"/></svg></span>
             <span class="upg-lvl" id="upg-tap-lvl">NIV 0</span>
           </div>
           <div class="upg-name">TAP +1</div>
-          <div class="upg-cost" id="upg-tap-cost">50 méd</div>
+          <div class="upg-cost" id="upg-tap-cost">80 méd</div>
         </button>
         <button class="upg-btn" data-upgrade="critChance" aria-label="Améliorer critique">
           <div class="upg-row1">
-            <span class="upg-ico">
-              <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 14,9 22,9 16,14 18,22 12,17 6,22 8,14 2,9 10,9"/></svg>
-            </span>
+            <span class="upg-ico"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 14,9 22,9 16,14 18,22 12,17 6,22 8,14 2,9 10,9"/></svg></span>
             <span class="upg-lvl" id="upg-crit-lvl">NIV 0</span>
           </div>
-          <div class="upg-name">CRIT +2%</div>
-          <div class="upg-cost" id="upg-crit-cost">200 méd</div>
+          <div class="upg-name">CRIT +1%</div>
+          <div class="upg-cost" id="upg-crit-cost">400 méd</div>
         </button>
         <button class="upg-btn" data-upgrade="lapBonus" aria-label="Améliorer tour">
           <div class="upg-row1">
-            <span class="upg-ico">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 4 V20 L7 19 L9 20 L11 19 L13 20 L15 19 L17 20 L19 19 V4 Z"/></svg>
-            </span>
+            <span class="upg-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 4 V20 L7 19 L9 20 L11 19 L13 20 L15 19 L17 20 L19 19 V4 Z"/></svg></span>
             <span class="upg-lvl" id="upg-lap-lvl">NIV 0</span>
           </div>
           <div class="upg-name">TOUR +50</div>
-          <div class="upg-cost" id="upg-lap-cost">500 méd</div>
+          <div class="upg-cost" id="upg-lap-cost">1.2k méd</div>
+        </button>
+        <button class="upg-btn" data-upgrade="autoTap" aria-label="Auto-tap passif">
+          <div class="upg-row1">
+            <span class="upg-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 v3 M12 19 v3 M2 12 h3 M19 12 h3 M5 5 l2 2 M17 17 l2 2 M5 19 l2-2 M17 7 l2-2" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="3"/></svg></span>
+            <span class="upg-lvl" id="upg-auto-lvl">NIV 0</span>
+          </div>
+          <div class="upg-name">AUTO 1/s</div>
+          <div class="upg-cost" id="upg-auto-cost">2k méd</div>
         </button>
       </div>
     </div>
@@ -4918,7 +4920,8 @@ const ALCH_TITLES = [
   [36, 'Champion'], [45, 'Vétéran'], [55, 'Élite'],
   [70, 'Champion National'], [90, 'Légende'],
 ];
-function xpForLevel(level){ return Math.floor(50 * Math.pow(1.18, level-1)); } // niveau 1→59, niveau 10→260, niveau 30→9700, etc.
+function xpForLevel(level){ return Math.floor(80 * Math.pow(1.24, level-1)); }
+// niveau 1→80, niveau 5→194, niveau 10→549, niveau 20→4724, niveau 30→40k, niveau 50→3.7M, niveau 90→17G
 function totalXpForLevel(level){
   let total = 0;
   for(let i=1; i<level; i++) total += xpForLevel(i);
@@ -9447,6 +9450,12 @@ function flashStat(id){
    STAMINA décroit en continu — le joueur DOIT nourrir le coureur pour la garder haute.
    Sans stamina, le tour traîne. Avec stamina max, il déchire. */
 const LAP_BASE_DURATION = 140; // secondes pour boucler à vitesse ×1.0 stamina=1 — DUR
+/* Durée actuelle du tour : la durée croît avec les tours bouclés.
+   Chaque tour ajoute 4s, cap à 360s (6 minutes) pour les ultra-grinders. */
+function currentLapDuration(){
+  const laps = STATE.lapsRun || 0;
+  return Math.min(360, LAP_BASE_DURATION + laps * 4);
+}
 const STAMINA_DECAY_PER_SEC = 0.075; // décroit plus vite : 1 → 0 en ~13s sans nourrir
 const STAMINA_MAX = 2.2;
 const STAMINA_MIN = 0.3;
@@ -9568,24 +9577,23 @@ function updateComboDisplay(){
 }
 
 /* ================ UPGRADE SYSTEM (Cookie Clicker style) ================ */
+/* Upgrades scaling — calibré pour 30-50 heures de jeu */
 const UPGRADES_TAP = {
   tapValue: {
-    name: 'TAP +1',
-    base: 50,
-    factor: 1.55,
+    name: 'TAP +1', base: 80, factor: 1.85,
     state: 'upgradeTapValue',
   },
   critChance: {
-    name: 'CRIT +2%',
-    base: 200,
-    factor: 1.85,
+    name: 'CRIT +1%', base: 400, factor: 2.20,
     state: 'upgradeCritChance',
   },
   lapBonus: {
-    name: 'TOUR +50',
-    base: 500,
-    factor: 1.75,
+    name: 'TOUR +50', base: 1200, factor: 1.95,
     state: 'upgradeLapBonus',
+  },
+  autoTap: {
+    name: 'AUTO 1/s', base: 2000, factor: 2.50,
+    state: 'upgradeAutoTap',
   },
 };
 function upgradeCost(id){
@@ -9714,21 +9722,50 @@ function updateRunnerHUD(){
   if(txtEl) txtEl.textContent = p.inLvl + ' / ' + p.need + ' XP';
 }
 
+const UPG_ID_SUFFIX = { tapValue:'tap', critChance:'crit', lapBonus:'lap', autoTap:'auto' };
+function fmtCost(n){
+  if(n >= 1e9) return (n/1e9).toFixed(n>=1e10?0:1) + 'G';
+  if(n >= 1e6) return (n/1e6).toFixed(n>=1e7?0:1) + 'M';
+  if(n >= 1e3) return (n/1e3).toFixed(n>=1e4?0:1) + 'k';
+  return Math.floor(n);
+}
 function updateUpgradesUI(){
   for(const id in UPGRADES_TAP){
     const u = UPGRADES_TAP[id];
     const lvl = STATE[u.state] || 0;
     const cost = upgradeCost(id);
-    const lvlEl = document.getElementById('upg-' + (id==='tapValue'?'tap':id==='critChance'?'crit':'lap') + '-lvl');
-    const costEl = document.getElementById('upg-' + (id==='tapValue'?'tap':id==='critChance'?'crit':'lap') + '-cost');
+    const sfx = UPG_ID_SUFFIX[id];
+    const lvlEl = document.getElementById('upg-' + sfx + '-lvl');
+    const costEl = document.getElementById('upg-' + sfx + '-cost');
     const btn = document.querySelector(`.upg-btn[data-upgrade="${id}"]`);
     if(lvlEl) lvlEl.textContent = 'NIV ' + lvl;
-    if(costEl) costEl.textContent = (cost >= 1000 ? (cost/1000).toFixed(cost>=10000?0:1) + 'k' : cost) + ' méd';
+    if(costEl) costEl.textContent = fmtCost(cost) + ' méd';
     if(btn){
       const affordable = STATE.gold >= cost;
       btn.classList.toggle('affordable', affordable);
       btn.classList.toggle('locked', !affordable);
     }
+  }
+}
+
+/* Auto-tap : chaque niveau acheté donne +1 tap par seconde
+   (passif, comme un employé qui tape pour toi) */
+let _autoTapAccumulator = 0;
+function tickAutoTap(dt){
+  const lvl = STATE.upgradeAutoTap || 0;
+  if(lvl <= 0) return;
+  _autoTapAccumulator += dt * lvl;
+  while(_autoTapAccumulator >= 1){
+    _autoTapAccumulator -= 1;
+    // Tap silencieux : médailles + XP sans SFX/vibration
+    const perTap = (1 + (STATE.upgradeTapValue||0));
+    const critChance = 0.05 + (STATE.upgradeCritChance||0) * 0.01;
+    const isCrit = Math.random() < critChance;
+    const gain = Math.floor(isCrit ? perTap * 5 : perTap);
+    STATE.gold += gain;
+    if(typeof bumpStamina === 'function') bumpStamina(0.04);
+    if(typeof gainXp === 'function') gainXp(1);
+    STATE.totalTaps = (STATE.totalTaps || 0) + 1;
   }
 }
 /* Tick lap + stamina decay — appelé dans la boucle principale chaque frame */
@@ -9738,7 +9775,7 @@ function tickRunnerLap(dt){
   dt = Math.min(dt, 0.5);
   STATE.runnerStamina = Math.max(STAMINA_MIN, (STATE.runnerStamina || 1) - STAMINA_DECAY_PER_SEC * dt);
   const speedMul = runnerSpeedMultiplier();
-  STATE.lapProgress = (STATE.lapProgress || 0) + (speedMul * dt) / LAP_BASE_DURATION;
+  STATE.lapProgress = (STATE.lapProgress || 0) + (speedMul * dt) / currentLapDuration();
   if(STATE.lapProgress >= 1){
     STATE.lapProgress = 0;
     completeLap();
@@ -11414,6 +11451,10 @@ function save(){
       upgradeTapValue:STATE.upgradeTapValue ?? 0,
       upgradeCritChance:STATE.upgradeCritChance ?? 0,
       upgradeLapBonus:STATE.upgradeLapBonus ?? 0,
+      upgradeAutoTap:STATE.upgradeAutoTap ?? 0,
+      totalTaps:STATE.totalTaps ?? 0,
+      saison:STATE.saison ?? 1,
+      saisonBonus:STATE.saisonBonus ?? 0,
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
   }catch(e){}
@@ -11451,6 +11492,10 @@ function load(){
     STATE.upgradeTapValue = s.upgradeTapValue ?? 0;
     STATE.upgradeCritChance = s.upgradeCritChance ?? 0;
     STATE.upgradeLapBonus = s.upgradeLapBonus ?? 0;
+    STATE.upgradeAutoTap = s.upgradeAutoTap ?? 0;
+    STATE.totalTaps = s.totalTaps ?? 0;
+    STATE.saison = s.saison ?? 1;
+    STATE.saisonBonus = s.saisonBonus ?? 0;
     // Migration : si on a maxTier mais pas de codexUnlocks → backfill
     for(let c=0;c<3;c++){
       for(let t=0; t<=STATE.totals.maxTier[c]; t++){
@@ -11882,6 +11927,7 @@ function boot(){
     safe(renderStats);
     safe(()=>tickGenerators(now));
     safe(()=>tickRunnerLap(dt));
+    safe(()=>tickAutoTap(dt));
     safe(updateRunner);
     safe(updateTapStrip);
     safe(updateRunnerHUD);

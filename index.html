@@ -657,6 +657,17 @@ header{
   animation:unlockSlideIn .8s ease-out, milestonePop 1.4s ease-out .6s;
 }
 
+/* === AURA dorée du coureur (Saison 5+) === */
+@keyframes runnerAuraPulse{
+  0%,100% { opacity:.30; transform:scale(1); }
+  50%     { opacity:.55; transform:scale(1.15); }
+}
+.runner-aura-pulse{
+  transform-origin:center;
+  transform-box:fill-box;
+  animation:runnerAuraPulse 1.8s ease-in-out infinite;
+}
+
 /* === PROFILE MODAL === */
 .profile-body{ overflow-y:auto; max-height:60vh; padding:4px 2px; }
 .profile-hero{
@@ -4127,9 +4138,6 @@ body.shop-epic-flash::after{
             </g>
           </g>
           <circle class="rs-sweat" cx="4" cy="-18" r="1" fill="#7ec8e8" opacity="0"/>
-          <animateMotion id="rs-motion" dur="14s" repeatCount="indefinite" rotate="auto">
-            <mpath href="#rs-path"/>
-          </animateMotion>
         </g>
       </svg>
       <div class="rs-hud">
@@ -4201,8 +4209,8 @@ body.shop-epic-flash::after{
         <span class="boost-icon">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 L4 14 h7 L9 22 L20 10 h-7 z"/></svg>
         </span>
-        <span class="boost-label">TAP !</span>
-        <span class="boost-sub">Donne au coureur</span>
+        <span class="boost-label">TAP</span>
+        <span class="boost-sub">+<span id="boost-per-tap">1</span> méd / clic</span>
       </button>
 
       <!-- Bouton ASCENSION (visible quand atteint 100 tours) -->
@@ -9884,7 +9892,9 @@ function tapBoost(e){
   if(typeof bumpStamina === 'function') bumpStamina(0.14 + _comboCount * 0.005);
   // Médailles par tap : base 1 + niveau upgrade × saison goldMul
   const perTap = (1 + (STATE.upgradeTapValue||0)) * comboMul * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
-  const critChance = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
+  // Crit chance plafonné à 60% pour éviter le OP late game
+  const rawCrit = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
+  const critChance = Math.min(0.60, rawCrit);
   const isCrit = Math.random() < critChance;
   const gain = Math.floor(isCrit ? perTap * 5 : perTap);
   STATE.gold += gain;
@@ -9935,7 +9945,11 @@ function updateTapStrip(){
   const perTap = document.getElementById('tap-per-tap');
   const perLap = document.getElementById('tap-per-lap');
   const critRate = document.getElementById('tap-crit-rate');
-  if(perTap) perTap.textContent = '+' + (1 + (STATE.upgradeTapValue||0));
+  const tapValue = 1 + (STATE.upgradeTapValue||0);
+  if(perTap) perTap.textContent = '+' + tapValue;
+  // Affiche le gain par tap dans le bouton principal
+  const boostPerTap = document.getElementById('boost-per-tap');
+  if(boostPerTap) boostPerTap.textContent = tapValue;
   if(perLap){
     const lapBonus = (STATE.upgradeLapBonus||0) * 50;
     const lapReward = 100 + (STATE.lapsRun||0) * 50 + lapBonus;
@@ -9962,22 +9976,24 @@ function updateComboDisplay(){
 }
 
 /* ================ UPGRADE SYSTEM (Cookie Clicker style) ================ */
-/* Upgrades scaling — calibré pour 30-50 heures de jeu */
+/* Upgrades scaling — calibré pour rester pertinent avec la team production.
+   Factor < 1.7 = reste cher mais buyable, pas OP. */
 const UPGRADES_TAP = {
   tapValue: {
-    name: 'TAP +1', base: 80, factor: 1.85,
+    name: 'TAP +1', base: 50, factor: 1.55,
     state: 'upgradeTapValue',
   },
   critChance: {
-    name: 'CRIT +1%', base: 400, factor: 2.20,
+    name: 'CRIT +1%', base: 250, factor: 1.75,
     state: 'upgradeCritChance',
+    maxLevel: 55, // crit cap 60% (5% base + 55%) — pas plus pour pas OP
   },
   lapBonus: {
-    name: 'TOUR +50', base: 1200, factor: 1.95,
+    name: 'TOUR +50', base: 800, factor: 1.65,
     state: 'upgradeLapBonus',
   },
   autoTap: {
-    name: 'AUTO 1/s', base: 2000, factor: 2.50,
+    name: 'AUTO 1/s', base: 1500, factor: 1.80,
     state: 'upgradeAutoTap',
   },
 };
@@ -9990,6 +10006,12 @@ function upgradeCost(id){
 function buyUpgrade(id){
   const u = UPGRADES_TAP[id];
   if(!u) return;
+  // Cap au maxLevel si défini
+  const currentLvl = STATE[u.state] || 0;
+  if(u.maxLevel && currentLvl >= u.maxLevel){
+    if(typeof sfxDeny === 'function') sfxDeny();
+    return;
+  }
   const cost = upgradeCost(id);
   if(STATE.gold < cost){ if(typeof sfxDeny === 'function') sfxDeny(); flashStat?.('gold-val'); return; }
   STATE.gold -= cost;
@@ -10649,7 +10671,8 @@ function tickAutoTap(dt){
   while(_autoTapAccumulator >= 1){
     _autoTapAccumulator -= 1;
     const perTap = (1 + (STATE.upgradeTapValue||0)) * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
-    const critChance = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
+    const rawCrit = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
+    const critChance = Math.min(0.60, rawCrit);
     const isCrit = Math.random() < critChance;
     const gain = Math.floor(isCrit ? perTap * 5 : perTap);
     STATE.gold += gain;
@@ -10781,142 +10804,236 @@ function applyRunnerSkin(){
 function buildCrowd(){
   const g = document.getElementById('rs-crowd');
   if(!g) return;
-  const avgMaxTier = ((STATE.totals?.maxTier||[0,0,0]).reduce((a,b)=>a+b,0)) / 3;
-  // Nombre de spectateurs par côté gauche/droit en fonction du palier moyen
-  const perSide = Math.min(18, Math.floor(2 + avgMaxTier * 2.5));
-  // Couleurs maillots — mix
-  const tones = ['#3e8db8','#d04030','#5a9040','#9080c0','#ffd070','#fff','#a0a0a0'];
+  // Niveau de la foule = tours bouclés (proxy de progression)
+  const laps = STATE.lapsRun || 0;
+  const saison = (STATE.saison || 1) - 1;
+  // Plus tu joues, plus la foule remplit les tribunes
+  const fillLevel = Math.min(1, laps / 50 + saison * 0.3);
+  // Couleurs maillots/casquettes — palette équipe
+  const tones = ['#3e8db8','#d04030','#5a9040','#9080c0','#ffd070','#fff','#f08a48'];
   let html = '';
-  // Tribune gauche (entre x=0 et x=42, derrière la piste)
-  for(let i=0; i<perSide; i++){
-    const row = i % 3;
-    const x = 4 + (i % 6) * 6 + row * 1.5;
-    const y = 56 - row * 4;
-    const c = tones[(i * 3) % tones.length];
-    // Tête
-    html += `<rect x="${x}" y="${y-3}" width="2" height="2" fill="#f0c890"/>`;
-    // Corps (haut)
-    html += `<rect x="${x-1}" y="${y-1}" width="4" height="3" fill="${c}"/>`;
+  // === STRUCTURE DES TRIBUNES (bleachers) ===
+  // 3 niveaux de gradins de chaque côté, dessinés en perspective
+  // Bleachers de gauche (x=0..52)
+  html += `<g class="rs-bleachers">`;
+  // Plinthe arrière
+  html += `<rect x="0" y="36" width="52" height="42" fill="#9b7f50"/>`;
+  html += `<rect x="0" y="36" width="52" height="2" fill="#7c6440"/>`;
+  // Marches escalier descendantes vers la piste
+  html += `<rect x="0" y="44" width="52" height="4" fill="#b89a6e"/>`;
+  html += `<rect x="0" y="52" width="52" height="4" fill="#c8aa7e"/>`;
+  html += `<rect x="0" y="60" width="52" height="4" fill="#d8ba8e"/>`;
+  html += `<rect x="0" y="68" width="52" height="4" fill="#e8ca9e"/>`;
+  // Séparateurs de marches
+  for(let mx=4; mx<52; mx+=8){
+    html += `<rect x="${mx}" y="40" width=".5" height="36" fill="#8a6d44" opacity=".5"/>`;
   }
-  // Tribune droite
-  for(let i=0; i<perSide; i++){
-    const row = i % 3;
-    const x = 280 + (i % 6) * 6 + row * 1.5;
-    const y = 56 - row * 4;
-    const c = tones[(i * 5 + 1) % tones.length];
-    html += `<rect x="${x}" y="${y-3}" width="2" height="2" fill="#f0c890"/>`;
-    html += `<rect x="${x-1}" y="${y-1}" width="4" height="3" fill="${c}"/>`;
+  html += `</g>`;
+  // Bleachers de droite (x=268..320)
+  html += `<g class="rs-bleachers">`;
+  html += `<rect x="268" y="36" width="52" height="42" fill="#9b7f50"/>`;
+  html += `<rect x="268" y="36" width="52" height="2" fill="#7c6440"/>`;
+  html += `<rect x="268" y="44" width="52" height="4" fill="#b89a6e"/>`;
+  html += `<rect x="268" y="52" width="52" height="4" fill="#c8aa7e"/>`;
+  html += `<rect x="268" y="60" width="52" height="4" fill="#d8ba8e"/>`;
+  html += `<rect x="268" y="68" width="52" height="4" fill="#e8ca9e"/>`;
+  for(let mx=272; mx<320; mx+=8){
+    html += `<rect x="${mx}" y="40" width=".5" height="36" fill="#8a6d44" opacity=".5"/>`;
+  }
+  html += `</g>`;
+
+  // === SPECTATEURS sur les gradins ===
+  // 4 rangées (y), 6-8 spectateurs par rangée
+  const rows = [
+    { y: 44, spacing: 7, headSize: 1.5, body: 2.5 }, // arrière (petits)
+    { y: 52, spacing: 7, headSize: 1.8, body: 3 },
+    { y: 60, spacing: 7, headSize: 2,   body: 3.5 },
+    { y: 68, spacing: 7, headSize: 2.2, body: 4 },   // avant (gros)
+  ];
+  const placePerson = (x, y, headSize, bodySize, color, hatColor) => {
+    let s = '';
+    // Tête (peau)
+    s += `<rect x="${x - headSize/2}" y="${y - bodySize - headSize}" width="${headSize}" height="${headSize}" fill="#f0c890"/>`;
+    // Casquette (parfois)
+    if(hatColor){
+      s += `<rect x="${x - headSize/2 - .3}" y="${y - bodySize - headSize - .5}" width="${headSize + .6}" height=".8" fill="${hatColor}"/>`;
+    }
+    // Corps maillot
+    s += `<rect x="${x - bodySize/2}" y="${y - bodySize}" width="${bodySize}" height="${bodySize}" fill="${color}"/>`;
+    // Contour foncé bas (effet 3D)
+    s += `<rect x="${x - bodySize/2}" y="${y - .8}" width="${bodySize}" height=".8" fill="rgba(0,0,0,.15)"/>`;
+    return s;
+  };
+  // Pour chaque rangée, place des spectateurs (densité = fillLevel)
+  rows.forEach((row, rowIdx) => {
+    const perRow = 6;
+    for(let i=0; i<perRow; i++){
+      const x = 4 + i * row.spacing;
+      // Saute aléatoirement selon fillLevel pour donner l'illusion de remplissage progressif
+      const rand = ((i * 31 + rowIdx * 17) % 100) / 100;
+      if(rand > fillLevel) continue;
+      const c = tones[(i * 3 + rowIdx) % tones.length];
+      const hatC = (i % 4 === 0) ? tones[(i + 2) % tones.length] : null;
+      html += placePerson(x, row.y, row.headSize, row.body, c, hatC);
+    }
+    // Idem côté droit
+    for(let i=0; i<perRow; i++){
+      const x = 272 + i * row.spacing;
+      const rand = ((i * 23 + rowIdx * 11) % 100) / 100;
+      if(rand > fillLevel) continue;
+      const c = tones[(i * 5 + rowIdx + 1) % tones.length];
+      const hatC = (i % 3 === 0) ? tones[(i + 1) % tones.length] : null;
+      html += placePerson(x, row.y, row.headSize, row.body, c, hatC);
+    }
+  });
+  // Drapeaux suspendus au-dessus (à partir de saison 2)
+  if(saison >= 1){
+    html += `<rect x="20" y="34" width=".5" height="6" fill="#3a2818"/>`;
+    html += `<rect x="20" y="34" width="6" height="3" fill="${tones[0]}"/>`;
+    html += `<rect x="294" y="34" width=".5" height="6" fill="#3a2818"/>`;
+    html += `<rect x="288" y="34" width="6" height="3" fill="${tones[2]}"/>`;
   }
   g.innerHTML = html;
 }
 
-/* Couleur de la piste selon maxTier global :
-   - 0-1 : terre brune cendrée
-   - 2-3 : terre orange cuite (actuel)
-   - 4-5 : tartan rouge clair
-   - 6+  : tartan olympique vif */
+/* Couleur de la piste : progresse avec les tours et les saisons.
+   Plus tu progresses, plus la piste devient un beau tartan olympique. */
 function updateTrackSurface(){
   const ring = document.getElementById('rs-track-ring');
   if(!ring) return;
-  const maxT = Math.max(...(STATE.totals?.maxTier||[0,0,0]));
-  let color = '#a86840';      // terre simple
-  if(maxT >= 2) color = '#d88030'; // terre cuite
-  if(maxT >= 4) color = '#c84030'; // tartan rouge clair
-  if(maxT >= 6) color = '#e02818'; // tartan vif
+  const laps = STATE.lapsRun || 0;
+  const saison = STATE.saison || 1;
+  let color = '#c8884e';            // terre battue (début)
+  if(laps >= 10) color = '#d88030'; // terre cuite
+  if(laps >= 50) color = '#c84030'; // tartan rouge clair
+  if(saison >= 2) color = '#e02818'; // tartan olympique
+  if(saison >= 5) color = '#b020c8'; // tartan saison ultra
   ring.setAttribute('fill', color);
 }
 
-/* Cycle jour/nuit : selon le temps de session.
-   0-5min : aube, 5-15 : matin, 15-30 : midi, 30-50 : après-midi, 50+ : couchant/nuit. */
+/* Ciel : jour ensoleillé fixe (plus de cycle dynamique qui rendait le stade "cosmique").
+   Le stade est un beau stade municipal en plein jour, point. */
 function updateSky(){
   const sky = document.getElementById('rs-sky-bg');
   const cel = document.getElementById('rs-celestial');
   if(!sky) return;
-  const sess = (Date.now() - (STATE.sessionStartMs||Date.now())) / 60000; // minutes
-  let bg, sun, sx, sy, sr;
-  if(sess < 5)        { bg = '#3a4878'; sun = '#ffd070'; sx = 260; sy = 30; sr = 9; }   // aube
-  else if(sess < 15)  { bg = '#5a78a8'; sun = '#ffe898'; sx = 240; sy = 22; sr = 10; }  // matin
-  else if(sess < 30)  { bg = '#7090c0'; sun = '#ffffff'; sx = 200; sy = 18; sr = 11; }  // midi
-  else if(sess < 50)  { bg = '#7a6a90'; sun = '#ffa050'; sx = 100; sy = 24; sr = 10; }  // après-midi
-  else if(sess < 75)  { bg = '#4a3868'; sun = '#ff6030'; sx =  55; sy = 30; sr = 9; }   // couchant
-  else                { bg = '#16223a'; sun = '#e0e8f0'; sx = 265; sy = 22; sr = 7; }   // nuit
-  sky.setAttribute('fill', bg);
+  // Bleu ciel doux, soleil chaud en haut à droite
+  sky.setAttribute('fill', '#bedeed');
   if(cel){
-    cel.setAttribute('cx', sx);
-    cel.setAttribute('cy', sy);
-    cel.setAttribute('r', sr);
-    cel.setAttribute('fill', sun);
+    cel.setAttribute('cx', 265);
+    cel.setAttribute('cy', 28);
+    cel.setAttribute('r', 14);
+    cel.setAttribute('fill', '#ffd86a');
   }
 }
 
-/* Accessoires de coureur — débloqués par palier max sur les voies.
-   Hydra T5+ : bandeau (HYDRA)
-   Énergie T5+ : lunettes
-   Souffle T5+ : casquette */
+/* Accessoires de coureur — progression visuelle par niveau & saison.
+   Le coureur s'équipe au fil de la carrière, comme un vrai athlète qui monte.
+   - NIV 5+  : bandeau bleu (premier outfit pro)
+   - NIV 10+ : médaille bronze autour du cou
+   - NIV 25+ : médaille or
+   - NIV 50+ : couronne de laurier
+   - SAISON 2+ : cape flottante rouge
+   - SAISON 3+ : trim or sur le maillot
+   - SAISON 5+ : aura dorée pulsante */
 function applyRunnerAccessories(){
   const body = document.querySelector('.rs-body > g');
   if(!body) return;
   // Supprimer les anciens accessoires
   body.querySelectorAll('[data-accessory]').forEach(e => e.remove());
-  const maxT = STATE.totals?.maxTier || [0,0,0];
-  // Bandeau hydra (sur le front)
-  if(maxT[0] >= 5){
-    const b = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    b.setAttribute('x', -4); b.setAttribute('y', -9);
-    b.setAttribute('width', 7); b.setAttribute('height', 1.5);
-    b.setAttribute('fill', '#3e8db8');
-    b.setAttribute('data-accessory', 'headband');
-    body.appendChild(b);
+  const lvl = STATE.alchLevel || 1;
+  const saison = STATE.saison || 1;
+  const addRect = (x, y, w, h, fill, tag, opacity) => {
+    const r = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    r.setAttribute('x', x); r.setAttribute('y', y);
+    r.setAttribute('width', w); r.setAttribute('height', h);
+    r.setAttribute('fill', fill);
+    if(opacity !== undefined) r.setAttribute('opacity', opacity);
+    r.setAttribute('data-accessory', tag);
+    body.appendChild(r);
+    return r;
+  };
+  // === NIV 5+ : bandeau bleu (front) ===
+  if(lvl >= 5){
+    addRect(-4, -9, 7, 1.5, '#3e8db8', 'headband');
   }
-  // Lunettes énergie
-  if(maxT[1] >= 5){
-    const l1 = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    l1.setAttribute('x', -3); l1.setAttribute('y', -7.5);
-    l1.setAttribute('width', 2); l1.setAttribute('height', 1.5);
-    l1.setAttribute('fill', '#1a1010');
-    l1.setAttribute('data-accessory', 'glasses');
-    body.appendChild(l1);
-    const l2 = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    l2.setAttribute('x', 0); l2.setAttribute('y', -7.5);
-    l2.setAttribute('width', 2); l2.setAttribute('height', 1.5);
-    l2.setAttribute('fill', '#1a1010');
-    l2.setAttribute('data-accessory', 'glasses');
-    body.appendChild(l2);
+  // === NIV 10+ : médaille bronze autour du cou ===
+  if(lvl >= 10 && lvl < 25){
+    // ruban
+    addRect(-1, -4.5, 2, 1, '#c84030', 'medal-ribbon');
+    // médaille bronze
+    addRect(-1.5, -3.5, 3, 2, '#c8804a', 'medal');
+    addRect(-1, -3, 2, 1, '#e89c66', 'medal');
   }
-  // Casquette souffle
-  if(maxT[2] >= 5){
-    const c = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    c.setAttribute('x', -5); c.setAttribute('y', -13);
-    c.setAttribute('width', 9); c.setAttribute('height', 2);
-    c.setAttribute('fill', '#9080c0');
-    c.setAttribute('data-accessory', 'cap');
-    body.appendChild(c);
-    const v = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    v.setAttribute('x', -6); v.setAttribute('y', -11);
-    v.setAttribute('width', 11); v.setAttribute('height', 1);
-    v.setAttribute('fill', '#3a2858');
-    v.setAttribute('data-accessory', 'cap');
-    body.appendChild(v);
+  // === NIV 25+ : médaille or ===
+  if(lvl >= 25 && lvl < 50){
+    addRect(-1, -4.5, 2, 1, '#c84030', 'medal-ribbon');
+    addRect(-1.5, -3.5, 3, 2, '#ffd070', 'medal');
+    addRect(-1, -3, 2, 1, '#ffe898', 'medal');
+  }
+  // === NIV 50+ : couronne de laurier (sur la tête) ===
+  if(lvl >= 50){
+    addRect(-5, -10, 11, 1, '#5a9040', 'crown');
+    addRect(-5, -10.5, 1, 1, '#ffd070', 'crown');     // baie or G
+    addRect(4, -10.5, 1, 1, '#ffd070', 'crown');      // baie or D
+    addRect(-2, -11, 1, 1, '#7ec060', 'crown');       // feuille
+    addRect(1, -11, 1, 1, '#7ec060', 'crown');
+    // Garde aussi la médaille or
+    addRect(-1, -4.5, 2, 1, '#c84030', 'medal-ribbon');
+    addRect(-1.5, -3.5, 3, 2, '#ffd070', 'medal');
+    addRect(-1, -3, 2, 1, '#ffe898', 'medal');
+  }
+  // === SAISON 2+ : cape rouge flottante derrière ===
+  if(saison >= 2){
+    addRect(-7, -3, 2.5, 7, '#c84030', 'cape');
+    addRect(-7.5, -2.5, 1, 6, '#a02818', 'cape');
+    addRect(-6, 3.5, 3, 1, '#a02818', 'cape');
+  }
+  // === SAISON 3+ : trim or sur le maillot ===
+  if(saison >= 3){
+    addRect(-5, -1, 9, .8, '#ffd070', 'jersey-trim');
+    addRect(-5, 1, 9, .8, '#ffd070', 'jersey-trim');
+  }
+  // === SAISON 5+ : aura dorée pulsante (cercle derrière le coureur) ===
+  if(saison >= 5){
+    const aura = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    aura.setAttribute('cx', 0); aura.setAttribute('cy', -2);
+    aura.setAttribute('r', 12);
+    aura.setAttribute('fill', '#ffd070');
+    aura.setAttribute('opacity', '0.35');
+    aura.setAttribute('data-accessory', 'aura');
+    aura.style.filter = 'blur(2px)';
+    // Insère avant le body pour passer derrière
+    body.insertBefore(aura, body.firstChild);
+    // Animation CSS pulse via classe
+    aura.classList.add('runner-aura-pulse');
   }
 }
 
-let _runnerMotionDur = 14; // seconds for one lap, lower = faster
 let _runnerLapAt = 0;      // timestamp of last lap completion
+/* Position le coureur sur la piste manuellement via getPointAtLength.
+   Évite le bug de téléportation des animateMotion SMIL quand on change dur. */
+function placeRunnerOnTrack(progress){
+  const path = document.getElementById('rs-path');
+  const runner = document.getElementById('rs-runner');
+  if(!path || !runner) return;
+  const total = path.getTotalLength();
+  const p = ((progress % 1) + 1) % 1; // wrap 0..1
+  const pt = path.getPointAtLength(p * total);
+  // Tangente : direction du chemin pour rotation auto
+  const dl = total * 0.001;
+  const pt2 = path.getPointAtLength((p * total + dl) % total);
+  const angle = Math.atan2(pt2.y - pt.y, pt2.x - pt.x) * 180 / Math.PI;
+  runner.setAttribute('transform', `translate(${pt.x.toFixed(2)} ${pt.y.toFixed(2)}) rotate(${angle.toFixed(1)})`);
+}
 function updateRunner(){
   const stadium = document.getElementById('runner-stadium');
   if(!stadium) return;
-  const motion = document.getElementById('rs-motion');
   const lapEl = document.getElementById('rs-lap-num');
   const spdEl = document.getElementById('rs-speed-num');
   const mul = runnerSpeedMultiplier();
-  // Durée de tour : baseline 14s, accélère selon mul. Plancher à 2s.
-  const targetDur = Math.max(2, 14 / mul);
-  if(Math.abs(_runnerMotionDur - targetDur) > 0.05){
-    _runnerMotionDur = targetDur;
-    if(motion){
-      motion.setAttribute('dur', targetDur.toFixed(2) + 's');
-    }
-  }
+  // Position le coureur basé sur lapProgress (jamais de téléport)
+  placeRunnerOnTrack(STATE.lapProgress || 0);
   // Toggle "fast" mode pour speed lines persistants
   const fast = mul >= 1.8 ? '1' : '0';
   if(stadium.dataset.fast !== fast) stadium.dataset.fast = fast;
@@ -10927,13 +11044,18 @@ function updateRunner(){
     applyRunnerAccessories();
     stadium.dataset.skin = expectedSkin.name;
   }
-  // Foule + piste + ciel : recalcule si maxTier a changé
-  const maxT = (STATE.totals?.maxTier||[0,0,0]).join(',');
-  if(stadium.dataset.maxt !== maxT){
+  // Foule + piste : recalcule si lapsRun ou saison change (tous les 5 tours par défaut)
+  const progKey = Math.floor((STATE.lapsRun||0) / 5) + '_' + (STATE.saison||1);
+  if(stadium.dataset.prog !== progKey){
     if(typeof buildCrowd === 'function') buildCrowd();
     if(typeof updateTrackSurface === 'function') updateTrackSurface();
+    stadium.dataset.prog = progKey;
+  }
+  // Accessoires coureur : checkent niveau ET saison (recalcul à chaque palier)
+  const accKey = (STATE.alchLevel||1) + '_' + (STATE.saison||1);
+  if(stadium.dataset.acc !== accKey){
     if(typeof applyRunnerAccessories === 'function') applyRunnerAccessories();
-    stadium.dataset.maxt = maxT;
+    stadium.dataset.acc = accKey;
   }
   // Ciel jour/nuit refresh toutes les 5 secondes pour éviter spam
   const now = Date.now();

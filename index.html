@@ -1417,13 +1417,17 @@ body.frenzy-on #grid-frame{
 }
 
 /* Active events banner */
+/* Bandeau d'événements actifs : sous le header, AU-DESSUS du stade (jamais overlap) */
 #active-events{
-  position:fixed; left:50%; top:46px;
-  transform:translateX(-50%);
-  z-index:5;
-  display:flex; gap:5px;
+  position:relative;
+  display:flex; gap:5px; justify-content:center;
+  margin:6px auto 0;
+  padding:0 8px;
   pointer-events:none;
+  z-index:5;
+  min-height:0;
 }
+#active-events:empty{ display:none }
 .active-event{
   background:linear-gradient(180deg, #fff8e4, #f4e2b4);
   border:1.5px solid var(--ember);
@@ -3318,8 +3322,37 @@ body.shop-epic-flash::after{
         <ellipse cx="160" cy="100" rx="88" ry="14" fill="#7ab858" stroke="#558838" stroke-width="1.5"/>
         <!-- Couloir blanc pointillé doux -->
         <ellipse cx="160" cy="100" rx="108" ry="20" fill="none" stroke="#fff" stroke-width="1" stroke-dasharray="6 5" opacity=".8"/>
-        <!-- Ligne d'arrivée -->
-        <line x1="160" y1="76" x2="160" y2="124" stroke="#fff" stroke-width="1.5" stroke-dasharray="3 3" opacity=".9"/>
+        <!-- Ligne d'arrivée checkered -->
+        <g shape-rendering="crispEdges">
+          <rect x="158.5" y="76" width="3" height="2" fill="#fff"/>
+          <rect x="158.5" y="78" width="3" height="2" fill="#1a1010"/>
+          <rect x="158.5" y="80" width="3" height="2" fill="#fff"/>
+          <rect x="158.5" y="118" width="3" height="2" fill="#fff"/>
+          <rect x="158.5" y="120" width="3" height="2" fill="#1a1010"/>
+          <rect x="158.5" y="122" width="3" height="2" fill="#fff"/>
+        </g>
+        <!-- Drapeau à damiers à la ligne d'arrivée -->
+        <g shape-rendering="crispEdges">
+          <rect x="159" y="60" width="1" height="16" fill="#3a2818"/>
+          <rect x="160" y="60" width="10" height="8" fill="#1a1010"/>
+          <rect x="161" y="61" width="2" height="2" fill="#fff"/>
+          <rect x="165" y="61" width="2" height="2" fill="#fff"/>
+          <rect x="163" y="63" width="2" height="2" fill="#fff"/>
+          <rect x="167" y="63" width="2" height="2" fill="#fff"/>
+          <rect x="161" y="65" width="2" height="2" fill="#fff"/>
+          <rect x="165" y="65" width="2" height="2" fill="#fff"/>
+        </g>
+        <!-- Tussocks d'herbe et fleurs dans le gazon -->
+        <g shape-rendering="crispEdges">
+          <rect x="125" y="98" width="2" height="3" fill="#558838" opacity=".75"/>
+          <rect x="178" y="103" width="2" height="3" fill="#558838" opacity=".75"/>
+          <rect x="148" y="106" width="2" height="3" fill="#558838" opacity=".75"/>
+          <rect x="195" y="97" width="2" height="3" fill="#558838" opacity=".75"/>
+          <rect x="115" y="97" width="2" height="2" fill="#ff8a48"/>
+          <rect x="200" y="102" width="2" height="2" fill="#fff"/>
+          <rect x="140" y="103" width="2" height="2" fill="#ff8a48"/>
+          <rect x="170" y="108" width="2" height="2" fill="#fff"/>
+        </g>
         <!-- LE COUREUR : sprite agrandi (×1.6), proportions claires, contour noir -->
         <g id="rs-runner">
           <!-- Lignes de vitesse derrière (visibles quand rapide) -->

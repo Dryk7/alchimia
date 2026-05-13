@@ -220,25 +220,126 @@ header{
 #tap-area{
   flex:1;
   display:flex; flex-direction:column;
-  gap:10px;
-  padding:4px 0 4px;
+  gap:8px;
+  padding:0;
   min-height:0;
-  justify-content:space-between;
+}
+/* === TABS SYSTEM (Eatventure layout) === */
+.tabs-strip{
+  display:flex;
+  gap:4px;
+  padding:0;
+  margin-top:4px;
+}
+.tab-btn{
+  flex:1;
+  padding:8px 6px;
+  background:linear-gradient(180deg, #f8e8c8, #e8c898);
+  border:2px solid rgba(160,122,68,.30);
+  border-bottom:none;
+  border-radius:14px 14px 0 0;
+  cursor:pointer;
+  display:flex; flex-direction:column; align-items:center;
+  gap:2px;
+  color:var(--ink);
+  font-family:"Nunito", sans-serif;
+  opacity:.7;
+  transition:opacity .15s, background .15s, transform .12s;
+  position:relative;
+  min-width:0;
+}
+.tab-btn:active{ transform:scale(.97); }
+.tab-btn.active{
+  opacity:1;
+  background:linear-gradient(180deg, #fff8e4, #fff3d8);
+  border-color:var(--ember);
+  z-index:2;
+}
+.tab-btn.active::after{
+  content:'';
+  position:absolute; bottom:-2px; left:0; right:0;
+  height:4px;
+  background:#fff8e4;
+  z-index:3;
+}
+.tab-ico{ font-size:18px; line-height:1; }
+.tab-label{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:9.5px; letter-spacing:.10em;
+  text-transform:uppercase;
+  color:var(--ember);
+}
+.tab-badge{
+  font-family:"Nunito", sans-serif; font-weight:800;
+  font-size:9.5px;
+  color:#3a8c3a;
+  white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+  margin-top:1px;
+}
+.tab-badge.alert{
+  color:#fff; background:#d04030;
+  padding:1px 6px; border-radius:8px;
+  animation:tabBadgePulse 1.2s ease-in-out infinite;
+}
+@keyframes tabBadgePulse{
+  0%,100% { transform:scale(1); }
+  50%     { transform:scale(1.1); }
+}
+.tabs-content{
+  flex:1;
+  background:linear-gradient(180deg, #fff8e4, #fff3d8);
+  border:2px solid var(--ember);
+  border-radius:0 0 16px 16px;
+  padding:8px;
+  overflow-y:auto;
+  min-height:140px;
+  max-height:38vh;
+}
+.tab-pane{
+  display:none;
+}
+.tab-pane.active{ display:block; animation:tabFadeIn .2s ease-out; }
+@keyframes tabFadeIn{
+  0%   { opacity:0; transform:translateY(4px); }
+  100% { opacity:1; transform:translateY(0); }
+}
+.stats-quick{
+  margin-top:8px;
+  display:grid; grid-template-columns:repeat(2, 1fr);
+  gap:6px;
+}
+.stats-quick-cell{
+  padding:7px 10px;
+  background:#fff;
+  border:1.5px solid rgba(160,122,68,.25);
+  border-radius:10px;
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:11px;
+  color:var(--ink-2);
+  text-align:left;
+}
+.stats-quick-cell b{
+  display:block;
+  color:var(--ember);
+  font-weight:900;
+  font-size:14px;
+  margin-top:2px;
 }
 
-/* HUD du coureur : avatar + niveau + XP bar + bouton profil */
+/* HUD du coureur : avatar + niveau + XP bar + bouton profil — compact v5 */
 .runner-hud{
   display:grid;
-  grid-template-columns:44px 1fr 36px;
-  gap:10px; align-items:center;
+  grid-template-columns:36px 1fr 30px;
+  gap:8px; align-items:center;
   background:linear-gradient(180deg, #fff8e4, #f4e2b4);
   border:2px solid rgba(160,122,68,.40);
-  border-radius:18px;
-  padding:6px 10px 7px;
+  border-radius:14px;
+  padding:4px 8px 5px;
   box-shadow:0 2px 6px rgba(80,55,30,.14), inset 0 1px 0 rgba(255,255,255,.45);
 }
 .runner-avatar{
-  width:44px; height:44px;
+  width:36px; height:36px;
   background:linear-gradient(180deg, #b8def0, #f4d8a8);
   border:2px solid #a07a44;
   border-radius:50%;
@@ -1710,10 +1811,11 @@ header{
 #runner-stadium{
   position:relative;
   width:100%;
-  /* v3 PIVOT : le stade EST le bouton de tap. Il domine l'écran. */
+  /* v5 LAYOUT EATVENTURE : le stade domine massivement l'écran. */
   aspect-ratio: 320 / 200;
-  max-height:54vh;
-  min-height:280px;
+  max-height:46vh;
+  min-height:220px;
+  flex-shrink:0;
   background:linear-gradient(180deg, #b8def0 0%, #cbe5f5 40%, #e8d8a8 100%);
   border:4px solid #a07a44;
   border-radius:22px;
@@ -5070,7 +5172,7 @@ body.shop-epic-flash::after{
 
     <!-- ================ TAP-TO-BOOST UI ================ -->
     <div id="tap-area">
-      <!-- Bandeau Coureur : Niveau + XP bar + Titre + bouton PROFIL -->
+      <!-- Bandeau Coureur compact : Niveau + XP bar + bouton PROFIL -->
       <div class="runner-hud">
         <div class="runner-hud-left">
           <div class="runner-avatar" id="runner-avatar" role="button" aria-label="Profil du coureur">
@@ -5098,33 +5200,14 @@ body.shop-epic-flash::after{
           <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 22 q0-7 8-7 t8 7"/></svg>
         </button>
       </div>
-      <!-- Stat strip : médailles par tap + crit -->
-      <div class="tap-strip">
-        <div class="tap-stat">
-          <span class="tap-stat-lbl">PAR TAP</span>
-          <span class="tap-stat-val" id="tap-per-tap">+1</span>
-        </div>
-        <div class="tap-stat">
-          <span class="tap-stat-lbl">PAR TOUR</span>
-          <span class="tap-stat-val" id="tap-per-lap">+100</span>
-        </div>
-        <div class="tap-stat">
-          <span class="tap-stat-lbl">CRITIQUE</span>
-          <span class="tap-stat-val" id="tap-crit-rate">5%</span>
-        </div>
-      </div>
 
-      <!-- Le BIG BOOST button — l'âme du jeu -->
-      <button id="boost-btn" class="boost-btn" aria-label="Booster le coureur">
-        <span class="boost-shine"></span>
-        <span class="boost-icon">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 L4 14 h7 L9 22 L20 10 h-7 z"/></svg>
-        </span>
+      <!-- Bouton TAP legacy (caché, pour compat events) -->
+      <button id="boost-btn" class="boost-btn" aria-label="Booster le coureur" style="display:none">
         <span class="boost-label">TAP</span>
         <span class="boost-sub">+<span id="boost-per-tap">1</span> méd / clic</span>
       </button>
 
-      <!-- SKILLS ACTIFS (4 boutons à cooldown) -->
+      <!-- BARRE DE SKILLS FIXÉE juste sous le stade -->
       <div id="skills-bar" class="skills-bar"></div>
 
       <!-- Bouton ASCENSION (visible quand atteint 100 tours) -->
@@ -5137,50 +5220,86 @@ body.shop-epic-flash::after{
         🎁 RÉCOMPENSE QUOTIDIENNE · <span id="daily-btn-day">JOUR 1</span>
       </button>
 
-
-      <!-- UPGRADES — cœur addictif du jeu (Cookie Clicker style) — 4 colonnes -->
-      <div class="tap-upgrades">
-        <button class="upg-btn" data-upgrade="tapValue" aria-label="Améliorer tap">
-          <div class="upg-row1">
-            <span class="upg-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 L4 14 h7 L9 22 L20 10 h-7 z"/></svg></span>
-            <span class="upg-lvl" id="upg-tap-lvl">NIV 0</span>
-          </div>
-          <div class="upg-name">TAP +1</div>
-          <div class="upg-cost" id="upg-tap-cost">80 méd</div>
+      <!-- ============ TABS SYSTEM (Eatventure style) ============ -->
+      <div class="tabs-strip" id="tabs-strip">
+        <button class="tab-btn active" data-tab="team">
+          <span class="tab-ico">👥</span>
+          <span class="tab-label">ÉQUIPE</span>
+          <span class="tab-badge" id="tab-team-rate">+0/s</span>
         </button>
-        <button class="upg-btn" data-upgrade="critChance" aria-label="Améliorer critique">
-          <div class="upg-row1">
-            <span class="upg-ico"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 14,9 22,9 16,14 18,22 12,17 6,22 8,14 2,9 10,9"/></svg></span>
-            <span class="upg-lvl" id="upg-crit-lvl">NIV 0</span>
-          </div>
-          <div class="upg-name">CRIT +1%</div>
-          <div class="upg-cost" id="upg-crit-cost">400 méd</div>
+        <button class="tab-btn" data-tab="upgrades">
+          <span class="tab-ico">⚡</span>
+          <span class="tab-label">UPGRADES</span>
+          <span class="tab-badge" id="tab-upg-affordable"></span>
         </button>
-        <button class="upg-btn" data-upgrade="lapBonus" aria-label="Améliorer tour">
-          <div class="upg-row1">
-            <span class="upg-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 4 V20 L7 19 L9 20 L11 19 L13 20 L15 19 L17 20 L19 19 V4 Z"/></svg></span>
-            <span class="upg-lvl" id="upg-lap-lvl">NIV 0</span>
-          </div>
-          <div class="upg-name">TOUR +50</div>
-          <div class="upg-cost" id="upg-lap-cost">1.2k méd</div>
-        </button>
-        <button class="upg-btn" data-upgrade="autoTap" aria-label="Auto-tap passif">
-          <div class="upg-row1">
-            <span class="upg-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 v3 M12 19 v3 M2 12 h3 M19 12 h3 M5 5 l2 2 M17 17 l2 2 M5 19 l2-2 M17 7 l2-2" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="3"/></svg></span>
-            <span class="upg-lvl" id="upg-auto-lvl">NIV 0</span>
-          </div>
-          <div class="upg-name">AUTO 1/s</div>
-          <div class="upg-cost" id="upg-auto-cost">2k méd</div>
+        <button class="tab-btn" data-tab="stats">
+          <span class="tab-ico">📊</span>
+          <span class="tab-label">STATS</span>
         </button>
       </div>
 
-      <!-- ÉQUIPE de coureurs (façon Eatventure) -->
-      <div class="team-section">
-        <div class="team-head">
-          <span class="team-title">L'ÉQUIPE</span>
-          <span class="team-rate" id="team-rate">+0 méd/s</span>
+      <div class="tabs-content">
+        <!-- TAB : ÉQUIPE -->
+        <div class="tab-pane active" data-pane="team">
+          <div class="team-list" id="team-list"></div>
         </div>
-        <div class="team-list" id="team-list"></div>
+
+        <!-- TAB : UPGRADES -->
+        <div class="tab-pane" data-pane="upgrades">
+          <div class="tap-strip">
+            <div class="tap-stat">
+              <span class="tap-stat-lbl">PAR TAP</span>
+              <span class="tap-stat-val" id="tap-per-tap">+1</span>
+            </div>
+            <div class="tap-stat">
+              <span class="tap-stat-lbl">PAR TOUR</span>
+              <span class="tap-stat-val" id="tap-per-lap">+100</span>
+            </div>
+            <div class="tap-stat">
+              <span class="tap-stat-lbl">CRITIQUE</span>
+              <span class="tap-stat-val" id="tap-crit-rate">5%</span>
+            </div>
+          </div>
+          <div class="tap-upgrades">
+            <button class="upg-btn" data-upgrade="tapValue" aria-label="Améliorer tap">
+              <div class="upg-row1">
+                <span class="upg-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 L4 14 h7 L9 22 L20 10 h-7 z"/></svg></span>
+                <span class="upg-lvl" id="upg-tap-lvl">NIV 0</span>
+              </div>
+              <div class="upg-name">TAP +1</div>
+              <div class="upg-cost" id="upg-tap-cost">80 méd</div>
+            </button>
+            <button class="upg-btn" data-upgrade="critChance" aria-label="Améliorer critique">
+              <div class="upg-row1">
+                <span class="upg-ico"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 14,9 22,9 16,14 18,22 12,17 6,22 8,14 2,9 10,9"/></svg></span>
+                <span class="upg-lvl" id="upg-crit-lvl">NIV 0</span>
+              </div>
+              <div class="upg-name">CRIT +1%</div>
+              <div class="upg-cost" id="upg-crit-cost">400 méd</div>
+            </button>
+            <button class="upg-btn" data-upgrade="lapBonus" aria-label="Améliorer tour">
+              <div class="upg-row1">
+                <span class="upg-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 4 V20 L7 19 L9 20 L11 19 L13 20 L15 19 L17 20 L19 19 V4 Z"/></svg></span>
+                <span class="upg-lvl" id="upg-lap-lvl">NIV 0</span>
+              </div>
+              <div class="upg-name">TOUR +50</div>
+              <div class="upg-cost" id="upg-lap-cost">1.2k méd</div>
+            </button>
+            <button class="upg-btn" data-upgrade="autoTap" aria-label="Auto-tap passif">
+              <div class="upg-row1">
+                <span class="upg-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 v3 M12 19 v3 M2 12 h3 M19 12 h3 M5 5 l2 2 M17 17 l2 2 M5 19 l2-2 M17 7 l2-2" stroke="currentColor" stroke-width="2" fill="none"/><circle cx="12" cy="12" r="3"/></svg></span>
+                <span class="upg-lvl" id="upg-auto-lvl">NIV 0</span>
+              </div>
+              <div class="upg-name">AUTO 1/s</div>
+              <div class="upg-cost" id="upg-auto-cost">2k méd</div>
+            </button>
+          </div>
+        </div>
+
+        <!-- TAB : STATS (chiffres clés) -->
+        <div class="tab-pane" data-pane="stats">
+          <div class="stats-quick" id="stats-quick"></div>
+        </div>
       </div>
     </div>
   </main>
@@ -11817,9 +11936,40 @@ function tickTeamRender(dt){
 }
 function updateTeamRate(){
   const el = document.getElementById('team-rate');
-  if(!el) return;
+  const tabEl = document.getElementById('tab-team-rate');
   const total = teamTotalPerSec();
-  el.textContent = total > 0 ? ('+' + fmtBigNumber(total) + ' méd/s') : '+0 méd/s';
+  const txt = total > 0 ? ('+' + fmtBigNumber(total) + '/s') : '+0/s';
+  if(el) el.textContent = txt;
+  if(tabEl) tabEl.textContent = txt;
+}
+function renderStatsQuick(){
+  const wrap = document.getElementById('stats-quick');
+  if(!wrap) return;
+  ensureRecords();
+  const r = STATE.records || {};
+  wrap.innerHTML = `
+    <div class="stats-quick-cell">🏁 Tours bouclés <b>${fmtBigNumber(STATE.lapsRun||0)}</b></div>
+    <div class="stats-quick-cell">✨ Saison <b>${STATE.saison||1}</b></div>
+    <div class="stats-quick-cell">👆 Total taps <b>${fmtBigNumber(STATE.totalTaps||0)}</b></div>
+    <div class="stats-quick-cell">🔥 Best combo <b>×${r.maxCombo||1}</b></div>
+    <div class="stats-quick-cell">⚡ Vitesse <b>×${(typeof runnerSpeedMultiplier === 'function' ? runnerSpeedMultiplier() : 1).toFixed(1)}</b></div>
+    <div class="stats-quick-cell">💪 Forme <b>${Math.round((STATE.runnerStamina||0)*100)}%</b></div>
+  `;
+}
+function updateUpgAffordableBadge(){
+  const el = document.getElementById('tab-upg-affordable');
+  if(!el) return;
+  let count = 0;
+  for(const id in UPGRADES_TAP){
+    if((STATE.gold || 0) >= upgradeCost(id)) count++;
+  }
+  if(count > 0){
+    el.textContent = count;
+    el.classList.add('alert');
+  } else {
+    el.textContent = '';
+    el.classList.remove('alert');
+  }
 }
 function renderTeam(){
   const container = document.getElementById('team-list');
@@ -14680,6 +14830,17 @@ function boot(){
   if(typeof updateRunnerHUD === 'function') updateRunnerHUD();
   if(typeof renderTeam === 'function') renderTeam();
   if(typeof updateTeamRate === 'function') updateTeamRate();
+  // === TABS system : switch entre Équipe / Upgrades / Stats ===
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', ()=>{
+      const tab = btn.dataset.tab;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === btn));
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.toggle('active', p.dataset.pane === tab));
+      // Refresh content si stats
+      if(tab === 'stats' && typeof renderStatsQuick === 'function') renderStatsQuick();
+      if(A?.ctx) blip(550, .06, "triangle", .18, .35);
+    });
+  });
   bindModalClose('seal-modal','seal-close');
   bindModalClose('codex-page-modal','codex-page-close');
   document.getElementById('codex-page-prev')?.addEventListener('click', e=>{ e.stopPropagation(); if(typeof navCodexPage === 'function') navCodexPage(-1); });
@@ -14902,6 +15063,7 @@ function boot(){
     safe(updateTapStrip);
     safe(updateRunnerHUD);
     safe(updateTeamRate);
+    safe(updateUpgAffordableBadge);
     safe(tickDust);
     safe(()=>tickCandles(now));
     safe(tickThemed);

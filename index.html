@@ -5726,7 +5726,9 @@ body.shop-epic-flash::after{
           <rect x="151" y="467" width="2" height="6" fill="#3a2818"/>
           <rect x="167" y="467" width="2" height="6" fill="#3a2818"/>
         </g>
-        <!-- LE COUREUR : sprite agrandi (×1.6), proportions claires, contour noir -->
+        <!-- ÉQUIPE DE COUREURS (s'affichent quand recrutés) -->
+        <g id="rs-team-runners"></g>
+        <!-- LE COUREUR principal (toi, le joueur) -->
         <g id="rs-runner">
           <!-- Lignes de vitesse derrière (visibles quand rapide) -->
           <g class="rs-speedlines" opacity="0" style="opacity:0">
@@ -14143,13 +14145,81 @@ function placeRunnerOnTrack(progress){
   const runner = document.getElementById('rs-runner');
   if(!path || !runner) return;
   const total = path.getTotalLength();
-  const p = ((progress % 1) + 1) % 1; // wrap 0..1
+  const p = ((progress % 1) + 1) % 1;
   const pt = path.getPointAtLength(p * total);
-  // Tangente : direction du chemin pour rotation auto
   const dl = total * 0.001;
   const pt2 = path.getPointAtLength((p * total + dl) % total);
   const angle = Math.atan2(pt2.y - pt.y, pt2.x - pt.x) * 180 / Math.PI;
   runner.setAttribute('transform', `translate(${pt.x.toFixed(2)} ${pt.y.toFixed(2)}) rotate(${angle.toFixed(1)})`);
+}
+
+/* ÉQUIPE COUREURS : chaque coureur recruté apparaît sur la piste à sa propre position */
+const _teamRunnerStateLocal = {}; // progrès local pour anim fluide même si cycle 0
+function ensureTeamRunnersSVG(){
+  const g = document.getElementById('rs-team-runners');
+  if(!g) return;
+  // Pour chaque TEAM_RUNNERS hired, on crée un <g> avec sprite simple si pas déjà là
+  for(let i = 0; i < TEAM_RUNNERS.length; i++){
+    const r = TEAM_RUNNERS[i];
+    const lvl = (typeof runnerLevel === 'function') ? runnerLevel(r.id) : 0;
+    const existing = g.querySelector(`[data-tr="${r.id}"]`);
+    if(lvl > 0 && !existing){
+      // Crée un mini-sprite coureur coloré à la couleur du runner
+      const elem = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+      elem.setAttribute('data-tr', r.id);
+      const c = r.color;
+      // Petit sprite minimaliste (plus petit que le main)
+      elem.innerHTML = `
+        <g transform="scale(1.4)">
+          <ellipse cx="0" cy="6.5" rx="3.5" ry="1" fill="#000" opacity=".35"/>
+          <rect x="-2.5" y="-7" width="5" height="2" fill="#4a2818"/>
+          <rect x="-2.5" y="-5.5" width="5" height="3.5" fill="#f0c890"/>
+          <rect x="-3" y="-1.5" width="6" height="4" fill="${c}"/>
+          <rect x="-3" y="-1.5" width="6" height=".7" fill="#fff" opacity=".6"/>
+          <rect x="-1" y=".5" width="2" height="1.6" fill="#fff"/>
+          <rect class="rs-arm1" x="-4" y="-0.5" width="1.5" height="3" fill="#f0c890"/>
+          <rect class="rs-arm2" x="2.5" y="-0.5" width="1.5" height="3" fill="#f0c890"/>
+          <rect x="-2.5" y="2.5" width="5" height="2.5" fill="#fff"/>
+          <rect class="rs-leg1" x="-2" y="5" width="1.6" height="3" fill="#f0c890"/>
+          <rect class="rs-leg2" x=".5" y="5" width="1.6" height="3" fill="#f0c890"/>
+          <rect class="rs-shoe1" x="-2.2" y="7.5" width="2" height="1.2" fill="#1f3548"/>
+          <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#1f3548"/>
+        </g>
+      `;
+      g.appendChild(elem);
+    } else if(lvl === 0 && existing){
+      existing.remove();
+    }
+  }
+}
+function placeTeamRunnersOnTrack(){
+  const path = document.getElementById('rs-path');
+  if(!path) return;
+  const total = path.getTotalLength();
+  ensureTeamRunnersSVG();
+  // Offset chaque coureur sur la piste (différentes positions de départ)
+  // Le coureur principal est à lapProgress. Les coureurs d'équipe se positionnent
+  // par rapport à lapProgress avec un offset différent par coureur, et leur position
+  // avance à un rythme déterminé par leur cycle.
+  const mainP = STATE.lapProgress || 0;
+  TEAM_RUNNERS.forEach((r, i) => {
+    const lvl = (typeof runnerLevel === 'function') ? runnerLevel(r.id) : 0;
+    if(lvl <= 0) return;
+    const elem = document.querySelector(`#rs-team-runners [data-tr="${r.id}"]`);
+    if(!elem) return;
+    // Position : main progress + offset propre au coureur (espacés sur la piste)
+    // Plus le runner est haut level, plus il est devant. Cap espacement à 1/8 du track.
+    const baseOffset = (i + 1) / (TEAM_RUNNERS.length + 1) * 0.6;
+    // Petite oscillation locale due au cycle (pour rendre vivant même sans manager)
+    const cycle = (typeof runnerCycle === 'function') ? runnerCycle(r.id) : 0;
+    const cycleBoost = (cycle || 0) * 0.04;
+    const p = ((mainP + baseOffset + cycleBoost) % 1 + 1) % 1;
+    const pt = path.getPointAtLength(p * total);
+    const dl = total * 0.001;
+    const pt2 = path.getPointAtLength((p * total + dl) % total);
+    const angle = Math.atan2(pt2.y - pt.y, pt2.x - pt.x) * 180 / Math.PI;
+    elem.setAttribute('transform', `translate(${pt.x.toFixed(2)} ${pt.y.toFixed(2)}) rotate(${angle.toFixed(1)})`);
+  });
 }
 function updateRunner(){
   const stadium = document.getElementById('runner-stadium');
@@ -14159,6 +14229,8 @@ function updateRunner(){
   const mul = runnerSpeedMultiplier();
   // Position le coureur basé sur lapProgress (jamais de téléport)
   placeRunnerOnTrack(STATE.lapProgress || 0);
+  // Position chaque coureur d'équipe recruté sur la piste
+  if(typeof placeTeamRunnersOnTrack === 'function') placeTeamRunnersOnTrack();
   // Toggle "fast" mode pour speed lines persistants
   const fast = mul >= 1.8 ? '1' : '0';
   if(stadium.dataset.fast !== fast) stadium.dataset.fast = fast;

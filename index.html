@@ -17621,17 +17621,38 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
   grass2.receiveShadow = true;
   scene.add(grass2);
 
-  // === PODIUM 1-2-3 ===
+  // === PODIUM 1-2-3 avec glow doré et chiffres ===
+  let podiumGold = null;
   function addPodium(){
     const g1 = rb(.8, 1.2, .8, .12);
-    const m1 = new THREE.Mesh(g1, mat('#ffd060', {roughness:.6, metalness:.3}));
+    const m1 = new THREE.Mesh(g1, mat('#ffd060', {roughness:.5, metalness:.4}));
     m1.position.set(0, .6, 0); m1.castShadow=true; scene.add(m1);
+    podiumGold = m1;
     const g2 = rb(.7, .7, .7, .1);
-    const m2 = new THREE.Mesh(g2, mat('#d8d8e0', {roughness:.6}));
+    const m2 = new THREE.Mesh(g2, mat('#d8d8e0', {roughness:.6, metalness:.3}));
     m2.position.set(-.9, .35, 0); m2.castShadow=true; scene.add(m2);
     const g3 = rb(.65, .45, .65, .08);
-    const m3 = new THREE.Mesh(g3, mat('#c87a48', {roughness:.6}));
+    const m3 = new THREE.Mesh(g3, mat('#c87a48', {roughness:.6, metalness:.3}));
     m3.position.set(.9, .22, 0); m3.castShadow=true; scene.add(m3);
+    // Chiffres 1, 2, 3 peints sur les marches
+    function makeNumberTex(n, color){
+      const c = document.createElement('canvas');
+      c.width = c.height = 64;
+      const ctx = c.getContext('2d');
+      ctx.clearRect(0, 0, 64, 64);
+      ctx.fillStyle = color;
+      ctx.font = 'bold 48px Nunito, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(n, 32, 36);
+      return new THREE.CanvasTexture(c);
+    }
+    const num1 = new THREE.Mesh(new THREE.PlaneGeometry(.45, .45), new THREE.MeshBasicMaterial({map: makeNumberTex('1', '#3a2010'), transparent: true}));
+    num1.position.set(0, 1.21, 0); num1.rotation.x = -Math.PI/2; scene.add(num1);
+    const num2 = new THREE.Mesh(new THREE.PlaneGeometry(.4, .4), new THREE.MeshBasicMaterial({map: makeNumberTex('2', '#3a2010'), transparent: true}));
+    num2.position.set(-.9, .71, 0); num2.rotation.x = -Math.PI/2; scene.add(num2);
+    const num3 = new THREE.Mesh(new THREE.PlaneGeometry(.35, .35), new THREE.MeshBasicMaterial({map: makeNumberTex('3', '#3a2010'), transparent: true}));
+    num3.position.set(.9, .46, 0); num3.rotation.x = -Math.PI/2; scene.add(num3);
   }
   addPodium();
 
@@ -18300,6 +18321,7 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 
   let lastT = performance.now();
   let lastPlayerP = 0;
+  let playerSmoothVel = 0;
   function tick(now){
     const dt = Math.min((now - lastT) / 1000, 0.1);
     lastT = now;
@@ -18307,14 +18329,18 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     const p = (window.STATE && window.STATE.lapProgress) || 0;
     // Détection de wrap (lap completed) pour confetti burst
     if(p < lastPlayerP - 0.5){
-      // Le joueur vient de boucler ! Lance des confettis
+      // Le joueur vient de boucler ! Lance des confettis MASSIFS
       burstConfetti(player.position.x, 1, player.position.z);
+      burstConfetti(player.position.x + 1, 1.5, player.position.z + 1);
+      burstConfetti(player.position.x - 1, 1.5, player.position.z - 1);
     }
     const playerVel = Math.abs(p - lastPlayerP);
+    playerSmoothVel = playerSmoothVel * 0.9 + playerVel * 0.1; // smoothed for anim speed
     lastPlayerP = p;
     updateRunnerPosition(player, p);
-    // Anim course basée sur la vitesse de progression
-    animateRunner(player, playerVel * 10 + .05, now);
+    // Anim course basée sur la vitesse smoothée
+    const animSpeed = .05 + playerSmoothVel * 80;
+    animateRunner(player, animSpeed, now);
     // INDICATEUR VITESSE au-dessus du joueur
     speedIndicator.position.x = player.position.x;
     speedIndicator.position.y = 5.5 + Math.sin(now * .003) * .15;
@@ -18467,6 +18493,12 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     roofFlags.forEach((rf, i) => {
       rf.userData.flag.rotation.y = Math.sin(now * .003 + i * 1.2) * .35;
     });
+
+    // === PODIUM GOLD : emissive pulse subtil ===
+    if(podiumGold){
+      const pulse = .12 + Math.sin(now * .003) * .08;
+      podiumGold.material.emissive = new THREE.Color().setRGB(pulse, pulse * .85, pulse * .3);
+    }
 
     // === SCOREBOARD LIVE : update toutes les 0.5s ===
     if(!tick._sbT || now - tick._sbT > 500){

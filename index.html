@@ -18013,6 +18013,11 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     lastT = now;
     // PLAYER : lit STATE.lapProgress
     const p = (window.STATE && window.STATE.lapProgress) || 0;
+    // Détection de wrap (lap completed) pour confetti burst
+    if(p < lastPlayerP - 0.5){
+      // Le joueur vient de boucler ! Lance des confettis
+      burstConfetti(player.position.x, 1, player.position.z);
+    }
     const playerVel = Math.abs(p - lastPlayerP);
     lastPlayerP = p;
     updateRunnerPosition(player, p);
@@ -18087,6 +18092,49 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       }
       dust.geometry.attributes.position.needsUpdate = true;
     }
+
+    // === CONFETTIS : gravité + vies ===
+    {
+      const positions = confetti.geometry.attributes.position.array;
+      for(let i = 0; i < confettiN; i++){
+        const c = confettiData[i];
+        c.life += dt;
+        if(c.life >= c.maxLife){
+          positions[i*3+1] = -100;
+          continue;
+        }
+        c.x += c.vx * dt;
+        c.y += c.vy * dt;
+        c.z += c.vz * dt;
+        c.vy -= 8 * dt; // gravity
+        positions[i*3] = c.x;
+        positions[i*3+1] = c.y;
+        positions[i*3+2] = c.z;
+      }
+      confetti.geometry.attributes.position.needsUpdate = true;
+    }
+
+    // === BIRDS : flap + flight ===
+    [bird1, bird2].forEach(b => {
+      b.userData.t += dt;
+      const flap = Math.sin(b.userData.t * 18) * .35;
+      b.userData.wingL.rotation.x = -.3 + flap;
+      b.userData.wingR.rotation.x = .3 - flap;
+      // Avance lentement
+      b.position.x += dt * 2.5;
+      b.position.y += Math.sin(b.userData.t * .8) * dt * .3;
+      // Wrap autour quand sort
+      if(b.position.x > 25){
+        b.position.x = -25;
+        b.position.z = -10 + Math.random() * 20;
+        b.position.y = 6 + Math.random() * 3;
+      }
+    });
+
+    // === DRAPEAUX TRIBUNE : ondulation via rotation Y ===
+    roofFlags.forEach((rf, i) => {
+      rf.userData.flag.rotation.y = Math.sin(now * .003 + i * 1.2) * .35;
+    });
 
     composer.render();
     requestAnimationFrame(tick);
@@ -18176,6 +18224,92 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     d.maxLife = .8 + Math.random() * .4;
     dustIdx = (dustIdx + 1) % dustN;
   }
+
+  // === CONFETTIS : burst quand le joueur termine une boucle ===
+  const confettiN = 50;
+  const confettiGeom = new THREE.BufferGeometry();
+  const confettiPos = new Float32Array(confettiN * 3);
+  const confettiColors = new Float32Array(confettiN * 3);
+  const confettiData = [];
+  for(let i = 0; i < confettiN; i++){
+    confettiData.push({ x:0, y:-100, z:0, vx:0, vy:0, vz:0, life:0, maxLife:0 });
+    confettiPos[i*3+1] = -100;
+    // Couleurs variées pour les confettis
+    const pal = [[1,.31,.25],[1,.82,.37],[.29,.62,.85],[.5,.77,.41],[.91,.55,.69],[.78,.6,.94]];
+    const c = pal[i % pal.length];
+    confettiColors[i*3] = c[0]; confettiColors[i*3+1] = c[1]; confettiColors[i*3+2] = c[2];
+  }
+  confettiGeom.setAttribute('position', new THREE.BufferAttribute(confettiPos, 3));
+  confettiGeom.setAttribute('color', new THREE.BufferAttribute(confettiColors, 3));
+  const confettiMat = new THREE.PointsMaterial({
+    size:.22, sizeAttenuation:true, transparent:true, opacity:1, vertexColors:true, depthWrite:false
+  });
+  const confetti = new THREE.Points(confettiGeom, confettiMat);
+  scene.add(confetti);
+  let confettiIdx = 0;
+  function burstConfetti(x, y, z){
+    for(let i = 0; i < 12; i++){
+      const c = confettiData[confettiIdx];
+      c.x = x + (Math.random()-.5) * .3;
+      c.y = y;
+      c.z = z + (Math.random()-.5) * .3;
+      c.vx = (Math.random()-.5) * 4;
+      c.vy = 3 + Math.random() * 3;
+      c.vz = (Math.random()-.5) * 4;
+      c.life = 0;
+      c.maxLife = 1.6 + Math.random() * .8;
+      confettiIdx = (confettiIdx + 1) % confettiN;
+    }
+  }
+  // Trigger burst quand le joueur passe par la ligne d'arrivée (progress wraps)
+
+  // === BIRD flying à travers le ciel ===
+  function makeBird(){
+    const bg = new THREE.Group();
+    // Corps (simple sphere allongée)
+    const body = new THREE.Mesh(new THREE.SphereGeometry(.15, 10, 8), mat('#3a3a3a', {roughness:.6}));
+    body.scale.set(1.8, 1, 1);
+    bg.add(body);
+    // Aile gauche (sin animée)
+    const wingL = new THREE.Mesh(new THREE.PlaneGeometry(.4, .12), new THREE.MeshStandardMaterial({color:'#3a3a3a', roughness:.6, side:THREE.DoubleSide}));
+    wingL.position.set(0, .05, .25);
+    wingL.rotation.x = -.3;
+    bg.add(wingL);
+    const wingR = new THREE.Mesh(new THREE.PlaneGeometry(.4, .12), new THREE.MeshStandardMaterial({color:'#3a3a3a', roughness:.6, side:THREE.DoubleSide}));
+    wingR.position.set(0, .05, -.25);
+    wingR.rotation.x = .3;
+    bg.add(wingR);
+    bg.userData = { wingL, wingR, t: Math.random() * Math.PI * 2 };
+    return bg;
+  }
+  const bird1 = makeBird();
+  bird1.position.set(-20, 8, -10);
+  scene.add(bird1);
+  const bird2 = makeBird();
+  bird2.position.set(-25, 7, 8);
+  scene.add(bird2);
+  bird2.userData.t = Math.PI; // déphasage
+
+  // === DRAPEAU du toit qui ondule ===
+  const roofFlags = [];
+  function addRoofFlag(x, z, color){
+    const fg = new THREE.Group();
+    const pole = new THREE.Mesh(rb(.08, 2.5, .08, .02), mat('#5a4828', {roughness:.7}));
+    pole.position.y = 1.25; fg.add(pole);
+    // Drapeau (plan) qui va onduler via rotation Y simulée
+    const flag = new THREE.Mesh(rb(.8, .55, .03, .01), mat(color, {roughness:.6}));
+    flag.position.set(.4, 2.1, 0);
+    fg.add(flag);
+    fg.position.set(x, 1.42, z);
+    fg.userData = { flag };
+    roofFlags.push(fg);
+    return fg;
+  }
+  // 4 drapeaux sur le toit de la tribune (positions équidistantes)
+  scene.add(addRoofFlag(0, -7.2, '#e85040'));
+  scene.add(addRoofFlag(-9.8, 0, '#4a9fd9'));
+  scene.add(addRoofFlag(9.8, 0, '#ffd060'));
+  scene.add(addRoofFlag(0, 7.2, '#7ec46a'));
 
   // Expose pour debug
   window.STADIUM_3D = { scene, camera, renderer, player, npcs, heroAura, sparkles, dust };

@@ -17361,27 +17361,50 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
   leftCarpet.receiveShadow = true; scene.add(leftCarpet);
   const rightCarpet = leftCarpet.clone(); rightCarpet.position.x = 12; scene.add(rightCarpet);
 
-  // === STADE : ring orange (tribunes) en rounded torus ===
-  // RingGeometry rendu épais via ExtrudeGeometry ou TorusGeometry
+  // === STADE : tribune avec gradins concentriques visibles ===
+  // Base extrude (mur extérieur)
   const tribuneShape = new THREE.Shape();
   tribuneShape.absellipse(0, 0, 12, 8, 0, Math.PI*2, false, 0);
   const tribuneHole = new THREE.Path();
   tribuneHole.absellipse(0, 0, 8, 5, 0, Math.PI*2, false, 0);
   tribuneShape.holes.push(tribuneHole);
   const tribuneGeo = new THREE.ExtrudeGeometry(tribuneShape, {
-    depth: 1.4, bevelEnabled: true, bevelSize:.15, bevelThickness:.15, bevelSegments:3, curveSegments:48
+    depth: 1.2, bevelEnabled: true, bevelSize:.15, bevelThickness:.15, bevelSegments:3, curveSegments:48
   });
   const tribune = new THREE.Mesh(tribuneGeo, mat('#d88040', {roughness:.78}));
   tribune.rotation.x = -Math.PI/2;
-  tribune.position.y = 0.7;
+  tribune.position.y = 0.6;
   tribune.castShadow = true; tribune.receiveShadow = true;
   scene.add(tribune);
 
-  // Highlight top edge (light cream rim)
-  const rimGeo = new THREE.RingGeometry(11.85, 12.05, 64, 1, 0, Math.PI*2);
-  // RingGeometry est 2D, rendu plat sur le top
-  const rim = new THREE.Mesh(rimGeo, mat('#f0c080', {roughness:.6}));
-  rim.rotation.x = -Math.PI/2; rim.position.y = 1.42; scene.add(rim);
+  // 3 anneaux de gradins concentriques (effet escaliers)
+  const tribuneRings = [
+    { rxOut: 11.7, ryOut: 7.7, rxIn: 11.1, ryIn: 7.2, h: .25, y: 1.45, color: '#e09858' },
+    { rxOut: 11.0, ryOut: 7.1, rxIn: 10.4, ryIn: 6.6, h: .25, y: 1.2,  color: '#d88848' },
+    { rxOut: 10.3, ryOut: 6.5, rxIn: 9.7,  ryIn: 6.0, h: .25, y: .95,  color: '#c87838' },
+  ];
+  tribuneRings.forEach(r => {
+    const s = new THREE.Shape();
+    s.absellipse(0, 0, r.rxOut, r.ryOut, 0, Math.PI*2, false, 0);
+    const h = new THREE.Path();
+    h.absellipse(0, 0, r.rxIn, r.ryIn, 0, Math.PI*2, false, 0);
+    s.holes.push(h);
+    const g = new THREE.ExtrudeGeometry(s, {
+      depth: r.h, bevelEnabled: false, curveSegments: 40
+    });
+    const m = new THREE.Mesh(g, mat(r.color, {roughness:.78}));
+    m.rotation.x = -Math.PI/2;
+    m.position.y = r.y;
+    m.castShadow = true; m.receiveShadow = true;
+    scene.add(m);
+  });
+
+  // Highlight rim doré sur le rebord haut extérieur
+  const rim = new THREE.Mesh(
+    new THREE.RingGeometry(11.85, 12.05, 64, 1, 0, Math.PI*2),
+    mat('#f4d490', {roughness:.5})
+  );
+  rim.rotation.x = -Math.PI/2; rim.position.y = 1.82; scene.add(rim);
 
   // === PISTE ROUGE TARTAN ===
   const trackShape = new THREE.Shape();
@@ -17891,7 +17914,7 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
         hair.position.y = .6;
         specGroup.add(hair);
       }
-      specGroup.position.set(x, 1.45, z);
+      specGroup.position.set(x, 1.85, z);
       specGroup.userData.basePhase = i * 0.18;
       spectators.push(specGroup);
       crowdGroup.add(specGroup);
@@ -18042,7 +18065,7 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     crowd.userData.spectators.forEach((s) => {
       const phase = now * .002 + s.userData.basePhase;
       const bob = Math.sin(phase) * .15 + .15;
-      s.position.y = 1.45 + bob;
+      s.position.y = 1.85 + bob;
     });
     // CAMERA IDLE BREATHING
     const breathX = Math.sin(now * .0003) * .25;
@@ -18305,11 +18328,11 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     roofFlags.push(fg);
     return fg;
   }
-  // 4 drapeaux sur le toit de la tribune (positions équidistantes)
-  scene.add(addRoofFlag(0, -7.2, '#e85040'));
-  scene.add(addRoofFlag(-9.8, 0, '#4a9fd9'));
-  scene.add(addRoofFlag(9.8, 0, '#ffd060'));
-  scene.add(addRoofFlag(0, 7.2, '#7ec46a'));
+  // 4 drapeaux sur le toit de la tribune (positions équidistantes, ajustés sur le rebord doré y=1.85)
+  scene.add(addRoofFlag(0, -7.5, '#e85040'));
+  scene.add(addRoofFlag(-10.5, 0, '#4a9fd9'));
+  scene.add(addRoofFlag(10.5, 0, '#ffd060'));
+  scene.add(addRoofFlag(0, 7.5, '#7ec46a'));
 
   // Expose pour debug
   window.STADIUM_3D = { scene, camera, renderer, player, npcs, heroAura, sparkles, dust };

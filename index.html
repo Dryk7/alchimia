@@ -409,6 +409,101 @@ header{
   margin-top:2px;
 }
 
+/* === BOUTON DAILY (réclame quotidien) === */
+.daily-btn{
+  display:block; width:100%;
+  padding:10px;
+  background:linear-gradient(180deg, #7bc7f6, #4a9fd9);
+  border:3px solid #fff;
+  border-radius:14px;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:14px; letter-spacing:.06em;
+  color:#fff;
+  cursor:pointer;
+  box-shadow:0 4px 14px rgba(74,159,217,.40), 0 0 0 3px rgba(123,199,246,.30);
+  text-transform:uppercase;
+  text-shadow:0 1px 2px rgba(0,0,0,.20);
+  animation:dailyPulse 1.8s ease-in-out infinite;
+  margin-top:6px;
+}
+.daily-btn:active{ transform:translateY(2px); }
+@keyframes dailyPulse{
+  0%,100%{ box-shadow:0 4px 14px rgba(74,159,217,.40), 0 0 0 3px rgba(123,199,246,.30); }
+  50%   { box-shadow:0 6px 20px rgba(74,159,217,.60), 0 0 0 6px rgba(123,199,246,.45); }
+}
+
+/* === DAILY MODAL === */
+.daily-body{ overflow-y:auto; max-height:60vh; padding:4px 2px; }
+.daily-intro{
+  text-align:center;
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:13px; color:var(--ink-2);
+  margin-bottom:12px;
+}
+.daily-streak-info{
+  text-align:center;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:18px; color:var(--ember);
+  margin-bottom:10px;
+}
+.daily-grid{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  gap:6px;
+}
+.daily-day{
+  position:relative;
+  padding:10px 4px;
+  text-align:center;
+  background:#fff;
+  border:2px solid rgba(160,122,68,.30);
+  border-radius:12px;
+  transition:transform .12s, border-color .15s;
+}
+.daily-day:nth-child(7){
+  grid-column:span 2;
+  background:linear-gradient(180deg, #fff3d0, #ffd896);
+  border-color:#d99830;
+}
+.daily-day.claimed{
+  opacity:.45; filter:grayscale(.5);
+}
+.daily-day.claimed::after{
+  content:'✓';
+  position:absolute; top:4px; right:6px;
+  color:#3a8c3a; font-weight:900; font-size:14px;
+}
+.daily-day.ready{
+  border-color:#4a9fd9;
+  background:linear-gradient(180deg, #e8f4ff, #c4e2f8);
+  cursor:pointer;
+  animation:dailyDayPulse 1.4s ease-in-out infinite;
+}
+.daily-day.ready:active{ transform:scale(.96); }
+@keyframes dailyDayPulse{
+  0%,100%{ box-shadow:0 0 0 0 rgba(74,159,217,.50); }
+  50%   { box-shadow:0 0 0 6px rgba(74,159,217,.00); }
+}
+.daily-day-num{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:10px; color:var(--ink-2); letter-spacing:.10em;
+}
+.daily-day-rwd{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:13px; color:var(--ember);
+  margin-top:4px;
+}
+.daily-day:nth-child(7) .daily-day-rwd{
+  color:#d99830;
+  font-size:14px;
+}
+.daily-next{
+  text-align:center;
+  font-family:"Nunito", sans-serif; font-weight:600;
+  font-size:11px; color:var(--ink-2);
+  margin-top:12px;
+}
+
 /* === PROFILE MODAL === */
 .profile-body{ overflow-y:auto; max-height:60vh; padding:4px 2px; }
 .profile-hero{
@@ -3959,6 +4054,11 @@ body.shop-epic-flash::after{
         ✦ ASCENSION DISPO · <span id="saison-btn-stars">+0 ★</span>
       </button>
 
+      <!-- Bouton DAILY (visible si une récompense est disponible) -->
+      <button id="daily-btn" class="daily-btn" style="display:none">
+        🎁 RÉCOMPENSE QUOTIDIENNE · <span id="daily-btn-day">JOUR 1</span>
+      </button>
+
       <!-- Combo counter (visible quand chaîne active) -->
       <div id="combo-display" class="combo-display">
         <span class="combo-x" id="combo-x">×1</span>
@@ -4713,6 +4813,16 @@ body.shop-epic-flash::after{
     <h2>ASCENSION</h2>
     <div class="divider"></div>
     <div class="saison-body" id="saison-body"></div>
+  </div>
+</div>
+
+<!-- DAILY REWARD -->
+<div id="daily-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-close" id="daily-close" aria-label="Fermer">×</div>
+    <h2>RÉCOMPENSE QUOTIDIENNE</h2>
+    <div class="divider"></div>
+    <div class="daily-body" id="daily-body"></div>
   </div>
 </div>
 
@@ -9895,6 +10005,117 @@ function saisonCritBonus(){ return (STATE.perkCritBase||0) * 0.005; }
 function saisonXpMul(){ return 1 + (STATE.perkXpMul||0) * 0.05; }
 function saisonAutoBase(){ return (STATE.perkAutoBase||0) * 0.2; }
 
+/* ================ DAILY REWARDS — calendrier 7 jours ================ */
+const DAILY_REWARDS = [
+  { day:1, type:'gold',  amount:50,   label:'50 méd' },
+  { day:2, type:'gold',  amount:150,  label:'150 méd' },
+  { day:3, type:'gold',  amount:400,  label:'400 méd' },
+  { day:4, type:'gold',  amount:1000, label:'1000 méd' },
+  { day:5, type:'gold',  amount:2500, label:'2.5k méd' },
+  { day:6, type:'gold',  amount:6000, label:'6k méd' },
+  { day:7, type:'mixed', amount:0,    label:'15k méd + 5 ★' },
+];
+function _dayStamp(ts){
+  const d = new Date(ts);
+  return d.getFullYear()*10000 + (d.getMonth()+1)*100 + d.getDate();
+}
+function _todayStamp(){ return _dayStamp(Date.now()); }
+/* Décide si une récompense est disponible aujourd'hui */
+function dailyAvailable(){
+  const lastClaim = STATE.dailyLast || 0;
+  if(!lastClaim) return true;
+  return _dayStamp(lastClaim) !== _todayStamp();
+}
+/* Streak courant (1..7). Reset à 1 si gap > 1 jour */
+function dailyCurrentDay(){
+  const lastClaim = STATE.dailyLast || 0;
+  const streak = STATE.dailyStreak || 0;
+  if(!lastClaim) return 1;
+  const today = _todayStamp();
+  const lastDay = _dayStamp(lastClaim);
+  if(lastDay === today) return streak; // déjà réclamé aujourd'hui
+  // Calcul gap en jours
+  const oneDayMs = 86400000;
+  const diff = Math.floor((Date.now() - lastClaim) / oneDayMs);
+  if(diff <= 1) return Math.min(7, streak + 1);
+  return 1; // gap → reset streak
+}
+function claimDailyReward(){
+  if(!dailyAvailable()){
+    if(typeof sfxDeny === 'function') sfxDeny();
+    return;
+  }
+  const day = dailyCurrentDay();
+  const idx = Math.max(0, Math.min(6, day - 1));
+  const rwd = DAILY_REWARDS[idx];
+  if(rwd.type === 'gold'){
+    STATE.gold = (STATE.gold || 0) + rwd.amount;
+    if(typeof floatNumber === 'function') floatNumber('+' + rwd.amount + ' méd');
+  } else if(rwd.type === 'mixed'){
+    STATE.gold = (STATE.gold || 0) + 15000;
+    STATE.stars = (STATE.stars || 0) + 5;
+    if(typeof showRunnerBubble === 'function'){
+      showRunnerBubble('🎁 +15k méd + 5 ★ !');
+    }
+  }
+  STATE.dailyLast = Date.now();
+  STATE.dailyStreak = day === 7 ? 0 : day; // après jour 7 → recommence à 1 demain
+  // FX + son
+  if(A?.ctx){
+    blip(660, .15, "triangle", .22, .6);
+    setTimeout(()=>blip(990, .18, "sine", .22, .65), 90);
+  }
+  vibrate([20, 30, 20]);
+  if(typeof renderDailyModal === 'function') renderDailyModal();
+  if(typeof renderStats === 'function') renderStats();
+  // Cache le bouton tant qu'il n'y a plus rien à réclamer
+  const btn = document.getElementById('daily-btn');
+  if(btn) btn.style.display = 'none';
+}
+function openDailyModal(){
+  renderDailyModal();
+  document.getElementById('daily-modal')?.classList.add('show');
+}
+function renderDailyModal(){
+  const body = document.getElementById('daily-body');
+  if(!body) return;
+  const day = dailyCurrentDay();
+  const available = dailyAvailable();
+  const cells = DAILY_REWARDS.map(r=>{
+    const isReady = available && r.day === day;
+    const isClaimed = !available && r.day === day; // déjà réclamé aujourd'hui
+    const isPast = r.day < day && !isClaimed;
+    const cls = isReady ? 'ready' : (isClaimed || isPast) ? 'claimed' : '';
+    return `<div class="daily-day ${cls}" data-day="${r.day}">
+      <div class="daily-day-num">JOUR ${r.day}</div>
+      <div class="daily-day-rwd">${r.label}</div>
+    </div>`;
+  }).join('');
+  const nextText = available
+    ? `<b style="color:#4a9fd9">🎁 Récompense disponible !</b>`
+    : `Reviens demain pour le jour ${day === 7 ? 1 : day + 1}`;
+  body.innerHTML = `
+    <div class="daily-streak-info">JOUR ${day} / 7</div>
+    <div class="daily-intro">Connecte-toi chaque jour pour grimper le calendrier.</div>
+    <div class="daily-grid">${cells}</div>
+    <div class="daily-next">${nextText}</div>
+  `;
+  if(available){
+    body.querySelector('.daily-day.ready')?.addEventListener('click', claimDailyReward);
+  }
+}
+/* Met à jour la visibilité du bouton daily */
+function updateDailyButton(){
+  const btn = document.getElementById('daily-btn');
+  if(!btn) return;
+  const avail = dailyAvailable();
+  btn.style.display = avail ? '' : 'none';
+  if(avail){
+    const dayEl = document.getElementById('daily-btn-day');
+    if(dayEl) dayEl.textContent = 'JOUR ' + dailyCurrentDay();
+  }
+}
+
 /* Calcule les stats du coureur dérivées du niveau + upgrades */
 function getRunnerStats(){
   const lvl = alchLevel();
@@ -11742,6 +11963,8 @@ function save(){
       perkCritBase:STATE.perkCritBase ?? 0,
       perkXpMul:STATE.perkXpMul ?? 0,
       perkAutoBase:STATE.perkAutoBase ?? 0,
+      dailyLast:STATE.dailyLast ?? 0,
+      dailyStreak:STATE.dailyStreak ?? 0,
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
   }catch(e){}
@@ -11787,6 +12010,8 @@ function load(){
     STATE.perkCritBase = s.perkCritBase ?? 0;
     STATE.perkXpMul = s.perkXpMul ?? 0;
     STATE.perkAutoBase = s.perkAutoBase ?? 0;
+    STATE.dailyLast = s.dailyLast ?? 0;
+    STATE.dailyStreak = s.dailyStreak ?? 0;
     // Migration : si on a maxTier mais pas de codexUnlocks → backfill
     for(let c=0;c<3;c++){
       for(let t=0; t<=STATE.totals.maxTier[c]; t++){
@@ -11977,11 +12202,25 @@ function boot(){
   bindModalClose('shop-modal','shop-close');
   bindModalClose('profile-modal','profile-close');
   bindModalClose('saison-modal','saison-close');
+  bindModalClose('daily-modal','daily-close');
   // Bouton ASCENSION → ouvre le modal Saison
   document.getElementById('saison-btn')?.addEventListener('click', (e)=>{
     e.stopPropagation();
     if(typeof openSaisonModal === 'function') openSaisonModal();
   });
+  // Bouton DAILY → ouvre le modal récompense quotidienne
+  document.getElementById('daily-btn')?.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    if(typeof openDailyModal === 'function') openDailyModal();
+  });
+  // Init du bouton daily au démarrage
+  if(typeof updateDailyButton === 'function') updateDailyButton();
+  // Auto-ouvre la modal daily si disponible (au boot) — petit délai pour laisser l'UI charger
+  if(typeof dailyAvailable === 'function' && dailyAvailable()){
+    setTimeout(()=>{
+      if(typeof openDailyModal === 'function') openDailyModal();
+    }, 900);
+  }
   // Bandeau "prochain achat" → ouvre directement le Marché
   document.getElementById('shop-hint')?.addEventListener('click', (e)=>{
     e.stopPropagation();

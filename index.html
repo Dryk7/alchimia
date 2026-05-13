@@ -2485,12 +2485,12 @@ header{
 #runner-stadium{
   position:relative;
   width:100%;
+  /* v8 LINEAR : stade moins haut, garde du space pour UI overlay */
   aspect-ratio:320/340;
   max-height:56vh;
   flex-shrink:0;
-  /* PALETTE PREMIUM MOBILE : sage uniforme top-down comme la référence */
-  background:#b8d490;
-  border:none;
+  background:linear-gradient(180deg, #b8def0 0%, #cbe5f5 40%, #e8d8a8 100%);
+  border:4px solid #a07a44;
   border-radius:22px;
   overflow:hidden;
   flex-shrink:0;
@@ -2498,15 +2498,19 @@ header{
   user-select:none;
   -webkit-tap-highlight-color:transparent;
   touch-action:manipulation;
-  /* Soft shadow premium (pas d'inset doré old-school) */
   box-shadow:
-    0 6px 20px rgba(60,80,60,.12),
-    0 2px 6px rgba(60,80,60,.08);
+    inset 0 3px 0 rgba(255,255,255,.55),
+    inset 0 -3px 6px rgba(160,122,68,.22),
+    0 6px 18px rgba(80,55,30,.22),
+    0 2px 4px rgba(80,55,30,.10);
   transition:transform .12s cubic-bezier(.2,.9,.2,1.4), box-shadow .12s;
 }
 #runner-stadium:active, #runner-stadium.stadium-tapped{
   transform:scale(.992);
-  box-shadow:0 3px 10px rgba(60,80,60,.10);
+  box-shadow:
+    inset 0 3px 0 rgba(255,255,255,.55),
+    inset 0 -3px 6px rgba(160,122,68,.22),
+    0 3px 8px rgba(80,55,30,.18);
 }
 #runner-stadium.stadium-tapped::after{
   content:'';
@@ -5792,7 +5796,7 @@ body.shop-epic-flash::after{
       <svg class="fleur brand-runner" viewBox="-12 -12 24 24" shape-rendering="crispEdges">
         <g>
           <!-- cheveux -->
-          <rect x="-3" y="-9" width="5" height="2" fill="#8a6848"/>
+          <rect x="-3" y="-9" width="5" height="2" fill="#4a2818"/>
           <!-- tête -->
           <rect x="-3" y="-7" width="5" height="4" fill="#f0c890"/>
           <!-- œil -->
@@ -5811,8 +5815,8 @@ body.shop-epic-flash::after{
           <rect class="brand-leg1" x="-2" y="3" width="2" height="4" fill="#f0c890"/>
           <rect class="brand-leg2" x="1" y="3" width="2" height="4" fill="#f0c890"/>
           <!-- chaussures -->
-          <rect class="brand-shoe1" x="-2.5" y="6" width="2.5" height="1" fill="#7a8090"/>
-          <rect class="brand-shoe2" x="0.5" y="6" width="2.5" height="1" fill="#7a8090"/>
+          <rect class="brand-shoe1" x="-2.5" y="6" width="2.5" height="1" fill="#1f3548"/>
+          <rect class="brand-shoe2" x="0.5" y="6" width="2.5" height="1" fill="#1f3548"/>
         </g>
       </svg>
       <div class="name-wrap">
@@ -5882,39 +5886,34 @@ body.shop-epic-flash::after{
       </div>
       <svg id="runner-svg" viewBox="0 0 320 340" preserveAspectRatio="xMidYMid meet">
         <defs>
-          <path id="rs-path" d="M 80,216 A 80,50 0 1 0 240,216 A 80,50 0 1 0 80,216 Z" fill="none"/>
-          <!-- ═══ PALETTE PREMIUM MOBILE : pastel mute, soft, élégant ═══ -->
-          <!-- CIEL : gris doux quasi blanc -->
+          <path id="rs-path" d="M 30,210 A 130,80 0 1 0 290,210 A 130,80 0 1 0 30,210 Z" fill="none"/>
+          <!-- ═══ PALETTE EATVENTURE : flat, saturée, joyeuse ═══ -->
+          <!-- CIEL : bleu franc 2 stops -->
           <linearGradient id="rs-sky-grad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#c8d8e8"/>
-            <stop offset="100%" stop-color="#d8e4ee"/>
+            <stop offset="0%"   stop-color="#58c4ee"/>
+            <stop offset="100%" stop-color="#a8e0f5"/>
           </linearGradient>
-          <!-- VIGNETTE haut : très subtile ombre pour donner profondeur -->
-          <linearGradient id="rs-sky-transition" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#000" stop-opacity=".15"/>
-            <stop offset="100%" stop-color="#000" stop-opacity="0"/>
-          </linearGradient>
-          <!-- GAZON : vert sauge doux (pas vert pomme) -->
+          <!-- GAZON : vert pomme flat -->
           <linearGradient id="rs-grass-grad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"  stop-color="#b8d490"/>
-            <stop offset="100%" stop-color="#a8c480"/>
+            <stop offset="0%"  stop-color="#88cc4a"/>
+            <stop offset="100%" stop-color="#78bc3a"/>
           </linearGradient>
-          <!-- TRIBUNES : cream/beige doux avec face supérieure plus claire -->
+          <!-- TRIBUNES : orange/terracotta chaud Eatventure -->
           <linearGradient id="rs-tribune-grad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#e8d8b8"/>
-            <stop offset="100%" stop-color="#c8b890"/>
+            <stop offset="0%"   stop-color="#e89858"/>
+            <stop offset="100%" stop-color="#d07840"/>
           </linearGradient>
           <radialGradient id="rs-tribune-shade" cx="50%" cy="50%" r="50%">
             <stop offset="0%"   stop-color="#000" stop-opacity="0"/>
-            <stop offset="100%" stop-color="#000" stop-opacity=".12"/>
+            <stop offset="100%" stop-color="#000" stop-opacity=".2"/>
           </radialGradient>
-          <!-- PISTE : rouge brique mute (pas saturé) -->
+          <!-- PISTE : rouge vif Eatventure (pas tartan réaliste) -->
           <linearGradient id="rs-track-grad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#d68a72"/>
-            <stop offset="100%" stop-color="#c47860"/>
+            <stop offset="0%"   stop-color="#e44a30"/>
+            <stop offset="100%" stop-color="#c43820"/>
           </linearGradient>
           <linearGradient id="rs-track-shine" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stop-color="#fff" stop-opacity=".15"/>
+            <stop offset="0%"   stop-color="#fff" stop-opacity=".18"/>
             <stop offset="60%"  stop-color="#fff" stop-opacity="0"/>
           </linearGradient>
           <!-- HALO DE PROJECTEUR (lumière chaude) -->
@@ -5933,18 +5932,11 @@ body.shop-epic-flash::after{
             <rect x="0" y="0" width="20" height="20" fill="#88cc4a"/>
             <rect x="0" y="0" width="20" height="10" fill="#7ec042"/>
           </pattern>
-          <!-- OMBRE PORTÉE PREMIUM : douce, diffuse, comme dans les jeux mobiles AAA -->
-          <filter id="rs-shadow" x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur in="SourceAlpha" stdDeviation="3.5"/>
-            <feOffset dx="0" dy="4" result="offsetblur"/>
-            <feComponentTransfer><feFuncA type="linear" slope="0.28"/></feComponentTransfer>
-            <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
-          </filter>
-          <!-- OMBRE plus dure et plus serrée pour les petits éléments -->
-          <filter id="rs-shadow-tight" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur in="SourceAlpha" stdDeviation="1.5"/>
-            <feOffset dx="0" dy="1.5" result="offsetblur"/>
-            <feComponentTransfer><feFuncA type="linear" slope="0.32"/></feComponentTransfer>
+          <!-- OMBRE PORTÉE générique (effets 3D) -->
+          <filter id="rs-shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="2"/>
+            <feOffset dx="0" dy="2" result="offsetblur"/>
+            <feComponentTransfer><feFuncA type="linear" slope="0.4"/></feComponentTransfer>
             <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
           </filter>
           <!-- BLUR pour le lointain (profondeur de champ) -->
@@ -5961,135 +5953,175 @@ body.shop-epic-flash::after{
 
         <!-- ============ CINEMATIC ARENA — vue à 50m de haut avec perspective ============ -->
 
-        <!-- SOL UNIFIÉ : pas de bande ciel, vue top-down totale comme la référence -->
-        <rect id="rs-sky-bg" x="0" y="0" width="320" height="340" fill="#b8d490"/>
-        <!-- Subtle vignette douce dans le coin -->
-        <rect x="0" y="0" width="320" height="40" fill="url(#rs-sky-transition)" opacity=".4"/>
+        <!-- CIEL (bande haute) avec gradient -->
+        <rect id="rs-sky-bg" x="0" y="0" width="320" height="65" fill="url(#rs-sky-grad)"/>
 
-        <!-- Plus de ciel : vue 100% top-down (les éléments soleil/nuages/blimp deviennent invisibles) -->
-        <g id="rs-celestial" style="display:none"></g>
-        <g id="rs-clouds" style="display:none"></g>
-        <g id="rs-blimp" style="display:none"></g>
+        <!-- SOLEIL + 2 halos -->
+        <circle id="rs-celestial" cx="280" cy="28" r="13" fill="#ffd86a"/>
+        <circle cx="280" cy="28" r="22" fill="#fff3b0" opacity=".35"/>
+        <circle cx="280" cy="28" r="34" fill="#fff3b0" opacity=".15"/>
 
-        <!-- ════════ STADE STYLE PREMIUM MOBILE — pastel, soft 3D, no outlines ════════ -->
-
-        <!-- SOL EXTÉRIEUR : herbe sauge douce -->
-        <rect x="0" y="60" width="320" height="280" fill="#b8d490"/>
-        <!-- Subtle texture bands -->
-        <rect x="0" y="60" width="320" height="3" fill="#a8c480" opacity=".4"/>
-        <rect x="0" y="180" width="320" height="2" fill="#a8c480" opacity=".3"/>
-        <rect x="0" y="320" width="320" height="3" fill="#a8c480" opacity=".4"/>
-
-        <!-- OMBRE PROJETÉE douce du stade (réduite à 70%) -->
-        <ellipse cx="160" cy="278" rx="115" ry="12" fill="#000" opacity=".10"/>
-        <ellipse cx="160" cy="276" rx="110" ry="8" fill="#000" opacity=".08"/>
-
-        <!-- STADE 3D : FACE CÔTÉ (bas, plus sombre) -->
-        <ellipse cx="160" cy="216" rx="108" ry="72" fill="#b8a878"/>
-        <!-- STADE 3D : FACE DESSUS (haut, plus clair) -->
-        <ellipse cx="160" cy="210" rx="108" ry="72" fill="url(#rs-tribune-grad)"/>
-
-        <!-- SECTIONS GRADINS subtiles -->
-        <g fill="none" stroke="#a89868" stroke-width=".5" opacity=".4">
-          <ellipse cx="160" cy="210" rx="100" ry="64"/>
-          <ellipse cx="160" cy="211" rx="90" ry="55"/>
+        <!-- NUAGES -->
+        <g opacity=".9" id="rs-clouds">
+          <ellipse cx="50" cy="25" rx="18" ry="5" fill="#fff"/>
+          <ellipse cx="62" cy="22" rx="10" ry="4" fill="#fff"/>
+          <ellipse cx="160" cy="18" rx="22" ry="5" fill="#fff"/>
+          <ellipse cx="180" cy="14" rx="11" ry="3.5" fill="#fff"/>
         </g>
 
-        <!-- SPECTATEURS : têtes rondes vues du dessus (généré par buildCrowd) -->
+        <!-- BLIMP / DIRIGEABLE animé -->
+        <g id="rs-blimp" transform="translate(-50 35)">
+          <ellipse cx="0" cy="0" rx="12" ry="4" fill="#d04040"/>
+          <ellipse cx="0" cy="0" rx="12" ry="4" fill="none" stroke="#a02020" stroke-width=".5"/>
+          <rect x="-3" y="3" width="6" height="1.5" fill="#333" rx=".5"/>
+          <text x="0" y="1.2" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="3.5" fill="#fff">F</text>
+        </g>
+
+        <!-- ════════ STADE STYLE EATVENTURE — flat, vibrant, lisible ════════ -->
+
+        <!-- HERBE EXTÉRIEURE : vert pomme flat tout simple -->
+        <rect x="0" y="60" width="320" height="280" fill="#88cc4a"/>
+
+        <!-- OMBRE PROJETÉE de l'arena (légère et douce) -->
+        <ellipse cx="160" cy="300" rx="155" ry="14" fill="#000" opacity=".18"/>
+
+        <!-- TRIBUNE EXTÉRIEURE (mur/structure) avec outline Eatventure -->
+        <ellipse cx="160" cy="210" rx="150" ry="100" fill="#a85820" stroke="#2a1008" stroke-width="2.5"/>
+        <!-- TRIBUNE inner (gradins orange) -->
+        <ellipse cx="160" cy="208" rx="148" ry="98" fill="url(#rs-tribune-grad)"/>
+        <!-- Highlight clair sur le rebord supérieur (effet lumière du jour) -->
+        <ellipse cx="160" cy="200" rx="146" ry="92" fill="none" stroke="#fac890" stroke-width="2" opacity=".7"/>
+
+        <!-- RANGÉES DE GRADINS visibles (4 anneaux concentriques) -->
+        <g fill="none" stroke="#7a3810" stroke-width=".8" opacity=".55">
+          <ellipse cx="160" cy="208" rx="144" ry="93"/>
+          <ellipse cx="160" cy="210" rx="135" ry="85"/>
+          <ellipse cx="160" cy="212" rx="126" ry="78"/>
+          <ellipse cx="160" cy="214" rx="118" ry="72"/>
+        </g>
+
+        <!-- SECTIONS COLORÉES BACKGROUND (4 quadrants : front/back/L/R) — légère teinte sous les fans -->
+        <g opacity=".18">
+          <!-- Section FRONT (bas) : tinte rouge sous les fans home -->
+          <path d="M 50,220 Q 160,310 270,220 L 270,290 L 50,290 Z" fill="#e84a30"/>
+          <!-- Section BACK (haut) : tinte bleue sous les fans visiteurs -->
+          <path d="M 50,200 Q 160,130 270,200 L 270,130 L 50,130 Z" fill="#3e8db8"/>
+        </g>
+
+        <!-- SPECTATEURS : vrais petits bonhommes (généré par buildCrowd) -->
         <g id="rs-crowd"></g>
 
-        <!-- BORDURE INTÉRIEURE TRIBUNE -->
-        <ellipse cx="160" cy="216" rx="84" ry="52" fill="#a89868"/>
-        <ellipse cx="160" cy="214" rx="82" ry="50" fill="#c8b890"/>
-
-        <!-- PISTE rouge brique mute -->
-        <ellipse cx="160" cy="216" rx="78" ry="48" fill="url(#rs-track-grad)"/>
-        <!-- Subtil highlight haut -->
-        <ellipse cx="160" cy="200" rx="75" ry="22" fill="url(#rs-track-shine)" opacity=".5"/>
-
-        <!-- 2 COULOIRS BLANCS minimalistes -->
-        <g fill="none" stroke="#fff" stroke-width=".8" opacity=".7">
-          <ellipse cx="160" cy="216" rx="72" ry="42"/>
-          <ellipse cx="160" cy="216" rx="65" ry="35"/>
+        <!-- BANDEAUX SPONSORS / BRANDING haut et bas du bord intérieur de tribune -->
+        <!-- Bandeau haut (FOULÉE branding bleu) -->
+        <g>
+          <path d="M 70,160 L 250,160 L 245,166 L 75,166 Z" fill="#2c6090" stroke="#1a3050" stroke-width=".8"/>
+          <path d="M 70,160 L 250,160 L 245,163 L 75,163 Z" fill="#4a9fd9"/>
+          <text x="160" y="165" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="4.5" fill="#fff" letter-spacing=".5">★ FOULÉE OLYMPIC ARENA ★</text>
+        </g>
+        <!-- Bandeau bas (sponsors orange/rouge) -->
+        <g>
+          <path d="M 48,265 L 272,265 L 280,272 L 40,272 Z" fill="#c83020" stroke="#7a1810" stroke-width=".8"/>
+          <path d="M 48,265 L 272,265 L 280,268.5 L 40,268.5 Z" fill="#e84a30"/>
+          <text x="160" y="270.5" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="5" fill="#ffd84a" letter-spacing=".8">VITA-RUN · SPRINTER COLA · NIKE</text>
         </g>
 
-        <!-- GAZON CENTRAL -->
-        <ellipse cx="160" cy="217" rx="59" ry="29" fill="#98b870"/>
-        <ellipse cx="160" cy="216" rx="59" ry="29" fill="#a8c880"/>
-        <ellipse cx="160" cy="212" rx="56" ry="14" fill="#b0d088" opacity=".5"/>
+        <!-- BORDURE INTÉRIEURE TRIBUNE (sépare gradins de la piste) -->
+        <ellipse cx="160" cy="216" rx="120" ry="74" fill="none" stroke="#2a1008" stroke-width="2"/>
+        <!-- Ombre intérieure douce -->
+        <ellipse cx="160" cy="222" rx="118" ry="72" fill="none" stroke="#3a1808" stroke-width="3" opacity=".3"/>
 
-        <!-- ═══ TERRAIN ATHLÉ : éléments adaptés au nouveau scale ═══ -->
-        <!-- Zone saut sable doux -->
-        <rect x="183" y="208" width="13" height="4" rx=".8" fill="#e8d8a8" filter="url(#rs-shadow-tight)"/>
+        <!-- PISTE ROUGE VIVE flat (style Eatventure) -->
+        <ellipse cx="160" cy="220" rx="118" ry="76" fill="url(#rs-track-grad)" stroke="#3a1010" stroke-width="2"/>
+        <!-- Highlight glossy doux en haut -->
+        <ellipse cx="160" cy="198" rx="115" ry="35" fill="url(#rs-track-shine)" opacity=".8"/>
 
-        <!-- Podium soft (3 marches arrondies) -->
-        <g filter="url(#rs-shadow-tight)">
-          <rect x="148" y="218" width="7" height="4" rx="1" fill="#d4d4dc"/>
-          <rect x="156" y="214" width="7" height="8" rx="1" fill="#ffd070"/>
-          <rect x="164" y="219" width="7" height="3" rx="1" fill="#d49060"/>
+        <!-- 3 COULOIRS BLANCS lisibles (au lieu de 8 saturés) -->
+        <g fill="none" stroke="#fff" stroke-width="1.2" opacity=".9">
+          <ellipse cx="160" cy="220" rx="110" ry="68"/>
+          <ellipse cx="160" cy="220" rx="100" ry="58"/>
+          <ellipse cx="160" cy="220" rx="92" ry="50"/>
         </g>
 
-        <!-- Ligne d'arrivée : checkered fine -->
+        <!-- GAZON CENTRAL : bandes alternées vert pomme avec outline -->
+        <ellipse cx="160" cy="220" rx="88" ry="46" fill="url(#rs-mowed)" stroke="#2a1808" stroke-width="1.8"/>
+
+        <!-- ═══ TERRAIN INTÉRIEUR : éléments de stade athlé ═══ -->
+        <!-- ZONE DE LANCER DE POIDS (cercle clair en haut-gauche) -->
+        <circle cx="120" cy="205" r="6" fill="#f0e0a0" stroke="#a08068" stroke-width="1"/>
+        <circle cx="120" cy="205" r="2" fill="#d4a060"/>
+
+        <!-- PISTE DE SAUT EN LONGUEUR (rectangle sable + planche d'appel) -->
+        <rect x="184" y="200" width="20" height="6" rx="1" fill="#f0d890" stroke="#a08868" stroke-width=".8"/>
+        <rect x="183" y="201" width="2" height="4" fill="#fff" stroke="#3a2818" stroke-width=".3"/>
+
+        <!-- HAIES (3 mini haies décoratives dans le terrain) -->
         <g shape-rendering="crispEdges">
-          <rect x="155" y="261" width="2.5" height="2" fill="#fff"/>
-          <rect x="157.5" y="261" width="2.5" height="2" fill="#3a3a3a"/>
-          <rect x="160" y="261" width="2.5" height="2" fill="#fff"/>
-          <rect x="162.5" y="261" width="2.5" height="2" fill="#3a3a3a"/>
-          <rect x="155" y="263" width="2.5" height="2" fill="#3a3a3a"/>
-          <rect x="157.5" y="263" width="2.5" height="2" fill="#fff"/>
-          <rect x="160" y="263" width="2.5" height="2" fill="#3a3a3a"/>
-          <rect x="162.5" y="263" width="2.5" height="2" fill="#fff"/>
+          <rect x="105" y="240" width="6" height="3" fill="#fff" stroke="#3a2818" stroke-width=".4"/>
+          <rect x="105" y="240" width="6" height="1" fill="#e84a30"/>
+          <rect x="207" y="240" width="6" height="3" fill="#fff" stroke="#3a2818" stroke-width=".4"/>
+          <rect x="207" y="240" width="6" height="1" fill="#e84a30"/>
         </g>
 
-        <!-- ARBRES décoratifs framant la scène (2 paires, sides) -->
-        <g id="rs-trees" filter="url(#rs-shadow)">
-          <!-- Gauche : 2 arbres groupés -->
-          <ellipse cx="32" cy="172" rx="16" ry="18" fill="#88a868"/>
-          <ellipse cx="32" cy="168" rx="14" ry="15" fill="#98b878"/>
-          <rect x="30" y="184" width="3" height="8" fill="#7a5838"/>
-          <ellipse cx="48" cy="200" rx="11" ry="13" fill="#88a868"/>
-          <ellipse cx="48" cy="197" rx="9" ry="10" fill="#98b878"/>
-          <rect x="46" y="210" width="3" height="6" fill="#7a5838"/>
-          <!-- Droite : 2 arbres groupés -->
-          <ellipse cx="288" cy="172" rx="16" ry="18" fill="#88a868"/>
-          <ellipse cx="288" cy="168" rx="14" ry="15" fill="#98b878"/>
-          <rect x="286" y="184" width="3" height="8" fill="#7a5838"/>
-          <ellipse cx="272" cy="200" rx="11" ry="13" fill="#88a868"/>
-          <ellipse cx="272" cy="197" rx="9" ry="10" fill="#98b878"/>
-          <rect x="270" y="210" width="3" height="6" fill="#7a5838"/>
+        <!-- PODIUM au centre du terrain (1-2-3 marches) -->
+        <g>
+          <!-- Plateforme 2 (gauche, argent) -->
+          <rect x="143" y="222" width="9" height="5" fill="#c8c8d4" stroke="#3a2818" stroke-width=".5"/>
+          <text x="147.5" y="226" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="4" fill="#3a2818">2</text>
+          <!-- Plateforme 1 (centre, or, plus haute) -->
+          <rect x="153" y="218" width="9" height="9" fill="#ffd84a" stroke="#3a2818" stroke-width=".5"/>
+          <text x="157.5" y="224" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="4.5" fill="#3a2818">1</text>
+          <!-- Plateforme 3 (droite, bronze) -->
+          <rect x="163" y="224" width="9" height="3" fill="#d4884a" stroke="#3a2818" stroke-width=".5"/>
+          <text x="167.5" y="227" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="3.5" fill="#3a2818">3</text>
         </g>
 
-        <!-- AVANT-PLAN : buissons + caissons + détails (composition framing) -->
-        <g filter="url(#rs-shadow-tight)">
-          <!-- Buissons gauche -->
-          <ellipse cx="55" cy="298" rx="10" ry="6" fill="#98b878"/>
-          <ellipse cx="62" cy="295" rx="7" ry="4.5" fill="#a8c888"/>
-          <!-- Buissons droite -->
-          <ellipse cx="265" cy="298" rx="10" ry="6" fill="#98b878"/>
-          <ellipse cx="258" cy="295" rx="7" ry="4.5" fill="#a8c888"/>
-          <!-- Caissons en bois (2, comme un coin "matos" stade) -->
-          <rect x="105" y="308" width="12" height="14" rx="1" fill="#a87850"/>
-          <rect x="105" y="308" width="12" height="2.5" fill="#b88860"/>
-          <rect x="110" y="312" width="2" height="9" fill="#7a5838" opacity=".4"/>
-          <rect x="118" y="304" width="11" height="18" rx="1" fill="#9a6c48"/>
-          <rect x="118" y="304" width="11" height="2.5" fill="#aa7c58"/>
-          <rect x="122" y="308" width="2" height="13" fill="#6a4828" opacity=".4"/>
-          <!-- Petit cône orange de signalisation à droite (touche athlé) -->
-          <path d="M 200,322 L 196,310 L 204,310 Z" fill="#d68a72"/>
-          <rect x="194" y="320" width="12" height="3" rx=".5" fill="#c8786a"/>
-          <rect x="196" y="313" width="8" height="1.5" fill="#fff" opacity=".6"/>
+        <!-- LIGNE D'ARRIVÉE checkered épaisse (sur la piste front) -->
+        <g shape-rendering="crispEdges">
+          <rect x="152" y="289" width="4" height="3" fill="#fff"/>
+          <rect x="156" y="289" width="4" height="3" fill="#1a1010"/>
+          <rect x="160" y="289" width="4" height="3" fill="#fff"/>
+          <rect x="164" y="289" width="4" height="3" fill="#1a1010"/>
+          <rect x="152" y="292" width="4" height="3" fill="#1a1010"/>
+          <rect x="156" y="292" width="4" height="3" fill="#fff"/>
+          <rect x="160" y="292" width="4" height="3" fill="#1a1010"/>
+          <rect x="164" y="292" width="4" height="3" fill="#fff"/>
         </g>
 
-        <!-- PAS de scoreboard, pas de drapeaux, pas de fleurs : sobriété mobile premium -->
+        <!-- 4 PROJECTEURS Eatventure : simples, ronds, mignons -->
+        <g id="rs-lights">
+          <!-- Haut-gauche -->
+          <rect x="14" y="118" width="2" height="32" fill="#3a2818" stroke="#1a1010" stroke-width=".5"/>
+          <circle cx="15" cy="116" r="6" fill="#ffd84a" stroke="#3a2818" stroke-width="1.2"/>
+          <circle cx="15" cy="116" r="2.5" fill="#fff"/>
+          <ellipse class="rs-light-glow" cx="15" cy="116" rx="18" ry="12" fill="url(#rs-spot-glow)"/>
+          <!-- Haut-droite -->
+          <rect x="304" y="118" width="2" height="32" fill="#3a2818" stroke="#1a1010" stroke-width=".5"/>
+          <circle cx="305" cy="116" r="6" fill="#ffd84a" stroke="#3a2818" stroke-width="1.2"/>
+          <circle cx="305" cy="116" r="2.5" fill="#fff"/>
+          <ellipse class="rs-light-glow" cx="305" cy="116" rx="18" ry="12" fill="url(#rs-spot-glow)"/>
+          <!-- Bas-gauche -->
+          <rect x="14" y="240" width="2" height="38" fill="#3a2818" stroke="#1a1010" stroke-width=".5"/>
+          <circle cx="15" cy="238" r="6" fill="#ffd84a" stroke="#3a2818" stroke-width="1.2"/>
+          <circle cx="15" cy="238" r="2.5" fill="#fff"/>
+          <ellipse class="rs-light-glow" cx="15" cy="238" rx="20" ry="14" fill="url(#rs-spot-glow)"/>
+          <!-- Bas-droite -->
+          <rect x="304" y="240" width="2" height="38" fill="#3a2818" stroke="#1a1010" stroke-width=".5"/>
+          <circle cx="305" cy="238" r="6" fill="#ffd84a" stroke="#3a2818" stroke-width="1.2"/>
+          <circle cx="305" cy="238" r="2.5" fill="#fff"/>
+          <ellipse class="rs-light-glow" cx="305" cy="238" rx="20" ry="14" fill="url(#rs-spot-glow)"/>
+        </g>
+
+        <!-- (PAS de scoreboard intégré au SVG : déjà du HUD au-dessus + en bas)
+             (PAS de pancartes sponsors, drapeau, texte central — clutter supprimé)
+             (PAS de buissons / fleurs : herbe verte propre) -->
         <g id="rs-foreground"></g>
-        <g id="rs-lights" style="display:none"></g>
         <!-- ÉQUIPE DE COUREURS (s'affichent quand recrutés) -->
         <g id="rs-team-runners"></g>
         <!-- LE COUREUR principal (toi, le joueur) -->
         <g id="rs-runner">
-          <!-- AURA HERO discrète (palette pastel premium) -->
-          <circle class="rs-hero-aura" cx="0" cy="2" r="18" fill="#fff" opacity=".18"/>
-          <circle class="rs-hero-aura" cx="0" cy="2" r="12" fill="#fff" opacity=".25"/>
+          <!-- AURA HERO (cercle doré subtil derrière le héros) -->
+          <circle class="rs-hero-aura" cx="0" cy="2" r="22" fill="#ffd84a" opacity=".22"/>
+          <circle class="rs-hero-aura" cx="0" cy="2" r="16" fill="#fff" opacity=".15"/>
           <!-- Lignes de vitesse derrière (visibles quand rapide) -->
           <g class="rs-speedlines" opacity="0" style="opacity:0">
             <rect x="-22" y="-4" width="11" height="1.6" fill="#fff" opacity=".8"/>
@@ -6098,34 +6130,40 @@ body.shop-epic-flash::after{
           </g>
           <g class="rs-body" transform="scale(6)">
             <g shape-rendering="crispEdges">
-              <!-- ombre au sol douce (palette mute) -->
-              <ellipse cx="0" cy="10.5" rx="7" ry="1.5" fill="#000" opacity=".18"/>
+              <!-- ombre au sol plus large -->
+              <ellipse cx="0" cy="10.5" rx="7" ry="1.6" fill="#000" opacity=".35"/>
+              <!-- OUTLINE noire Eatventure (silhouette derrière, plus large d'1px) -->
+              <rect x="-6" y="-13" width="11" height="1" fill="#1a1010"/>
+              <rect x="-5" y="-13" width="1" height="25" fill="#1a1010"/>
+              <rect x="4" y="-13" width="1" height="25" fill="#1a1010"/>
+              <rect x="-6" y="11" width="11" height="1" fill="#1a1010"/>
               <!-- cheveux -->
-              <rect data-skin="hair" x="-4" y="-12" width="7" height="3" fill="#7a5838"/>
-              <!-- tête (peau pastel) -->
-              <rect x="-4" y="-10" width="7" height="6" fill="#f0d4b0"/>
-              <rect x="-4" y="-10" width="7" height="1" fill="#dcb898"/>
-              <!-- œil discret -->
-              <rect x="0.5" y="-7.5" width="1.5" height="1.5" fill="#3a3030"/>
-              <!-- joue rose poudré -->
-              <rect x="1.5" y="-5.5" width="1.5" height="1" fill="#e8a8a0" opacity=".5"/>
-              <!-- maillot (rouge brique mute, assorti à la piste) -->
-              <rect data-skin="jersey" x="-5" y="-4" width="9" height="6" fill="#c87860"/>
-              <rect data-skin="accent" x="-5" y="-4" width="9" height="1.2" fill="#e0a890"/>
-              <!-- dossard cream -->
-              <rect x="-1.5" y="-2" width="3" height="3" fill="#f0e4cc"/>
+              <rect data-skin="hair" x="-4" y="-12" width="7" height="3" fill="#4a2818"/>
+              <!-- tête plus large et plus mignonne (Eatventure : grosse tête) -->
+              <rect x="-4" y="-10" width="7" height="6" fill="#f0c890"/>
+              <rect x="-4" y="-10" width="7" height="1" fill="#dba070"/>
+              <!-- œil tout rond et noir Eatventure -->
+              <rect x="0.5" y="-7.5" width="2" height="2" fill="#1a1010"/>
+              <!-- pommette/joue rose mignonne -->
+              <rect x="1.5" y="-5.5" width="1.5" height="1" fill="#ff8a90" opacity=".6"/>
+              <!-- maillot -->
+              <rect data-skin="jersey" x="-5" y="-4" width="9" height="6" fill="#e84a30"/>
+              <rect data-skin="accent" x="-5" y="-4" width="9" height="1.5" fill="#ffd84a"/>
+              <!-- dossard -->
+              <rect x="-1.5" y="-2" width="3" height="3" fill="#fff"/>
+              <rect x="-1.5" y="-2" width="3" height="3" fill="none" stroke="#1a1010" stroke-width=".3"/>
               <!-- bras -->
-              <rect class="rs-arm1" x="-7" y="-3" width="2" height="4" fill="#f0d4b0"/>
-              <rect class="rs-arm2" x="4" y="-3" width="2" height="4" fill="#f0d4b0"/>
-              <!-- short cream -->
-              <rect x="-4" y="2" width="7" height="4" fill="#f0e4cc"/>
-              <rect x="-4" y="2" width="7" height="1" fill="#b8a890"/>
+              <rect class="rs-arm1" x="-7" y="-3" width="2" height="4" fill="#f0c890" stroke="#1a1010" stroke-width=".3"/>
+              <rect class="rs-arm2" x="4" y="-3" width="2" height="4" fill="#f0c890" stroke="#1a1010" stroke-width=".3"/>
+              <!-- short -->
+              <rect x="-4" y="2" width="7" height="4" fill="#fff"/>
+              <rect x="-4" y="2" width="7" height="1.2" fill="#1f3548"/>
               <!-- jambes -->
-              <rect class="rs-leg1" x="-3" y="6" width="2.5" height="5" fill="#f0d4b0"/>
-              <rect class="rs-leg2" x="1" y="6" width="2.5" height="5" fill="#f0d4b0"/>
-              <!-- chaussures brique mute -->
-              <rect class="rs-shoe1" x="-3.5" y="10" width="3" height="1.8" fill="#c87860"/>
-              <rect class="rs-shoe2" x="0.5" y="10" width="3" height="1.8" fill="#c87860"/>
+              <rect class="rs-leg1" x="-3" y="6" width="2.5" height="5" fill="#f0c890"/>
+              <rect class="rs-leg2" x="1" y="6" width="2.5" height="5" fill="#f0c890"/>
+              <!-- chaussures style Eatventure (plus stylisées) -->
+              <rect class="rs-shoe1" x="-3.5" y="10" width="3" height="1.8" fill="#e84a30"/>
+              <rect class="rs-shoe2" x="0.5" y="10" width="3" height="1.8" fill="#e84a30"/>
             </g>
           </g>
           <circle class="rs-sweat" cx="4" cy="-18" r="1" fill="#7ec8e8" opacity="0"/>
@@ -6155,7 +6193,7 @@ body.shop-epic-flash::after{
         <div class="runner-hud-left">
           <div class="runner-avatar" id="runner-avatar" role="button" aria-label="Profil du coureur">
             <svg viewBox="-12 -12 24 24" shape-rendering="crispEdges">
-              <rect data-skin="hair" x="-4" y="-9" width="7" height="2" fill="#8a6848"/>
+              <rect data-skin="hair" x="-4" y="-9" width="7" height="2" fill="#4a2818"/>
               <rect x="-4" y="-7" width="7" height="5" fill="#f0c890"/>
               <rect x="1" y="-5" width="1" height="1" fill="#1a1010"/>
               <rect data-skin="jersey" x="-5" y="-2" width="9" height="6" fill="#e85a30"/>
@@ -6799,7 +6837,7 @@ body.shop-epic-flash::after{
     <g>
       <g shape-rendering="crispEdges">
         <ellipse cx="0" cy="6" rx="3" ry=".8" fill="#000" opacity=".35"/>
-        <rect x="-2" y="-6" width="4" height="1.5" fill="#8a6848"/>
+        <rect x="-2" y="-6" width="4" height="1.5" fill="#4a2818"/>
         <rect x="-2" y="-4.5" width="4" height="3" fill="#f0c890"/>
         <rect x="-2.5" y="-1.5" width="5" height="3" fill="#e85a30"/>
         <rect x="-2.5" y="-1.5" width="5" height=".6" fill="#ffd070"/>
@@ -9044,22 +9082,22 @@ const SPRITE_DEFS = [
      <!-- col -->
      <rect x="13" y="6" width="6" height="2" fill="#9a9a9a"/>
      <!-- corps bouteille translucide bleu clair -->
-     <rect x="10" y="8" width="12" height="20" fill="#7a8090"/>
+     <rect x="10" y="8" width="12" height="20" fill="#1f3548"/>
      <rect x="11" y="9" width="10" height="18" fill="#a0d8f0" opacity=".85"/>
      <rect x="11" y="9" width="2" height="18" fill="#d8e8f8" opacity=".8"/>
      <!-- étiquette -->
      <rect x="11" y="14" width="10" height="6" fill="#3e8db8"/>
      <rect x="11" y="14" width="10" height="1" fill="#7ec8e8"/>
-     <rect x="11" y="19" width="10" height="1" fill="#7a8090"/>
+     <rect x="11" y="19" width="10" height="1" fill="#1f3548"/>
      <rect x="12" y="16" width="3" height="2" fill="#fff"/>
      <rect x="16" y="16" width="4" height="2" fill="#fff" opacity=".5"/>
      <!-- fond -->
-     <rect x="10" y="26" width="12" height="2" fill="#7a8090"/>
+     <rect x="10" y="26" width="12" height="2" fill="#1f3548"/>
      <!-- reliefs latéraux -->
-     <rect x="10" y="13" width="1" height="2" fill="#7a8090"/>
-     <rect x="21" y="13" width="1" height="2" fill="#7a8090"/>
-     <rect x="10" y="22" width="1" height="2" fill="#7a8090"/>
-     <rect x="21" y="22" width="1" height="2" fill="#7a8090"/>`,
+     <rect x="10" y="13" width="1" height="2" fill="#1f3548"/>
+     <rect x="21" y="13" width="1" height="2" fill="#1f3548"/>
+     <rect x="10" y="22" width="1" height="2" fill="#1f3548"/>
+     <rect x="21" y="22" width="1" height="2" fill="#1f3548"/>`,
     // T2 — Bidon Iso : bouteille de sport avec bec et goutte d'eau visible
     `<!-- bec verseur incliné -->
      <polygon points="14,4 18,5 20,8 14,8" fill="#1a1a1a"/>
@@ -9085,10 +9123,10 @@ const SPRITE_DEFS = [
      <rect x="11" y="6" width="10" height="1" fill="#a8d8f0"/>
      <rect x="13" y="3" width="6" height="3" fill="#7ec8e8"/>
      <rect x="14" y="4" width="4" height="1" fill="#fff"/>
-     <polygon points="16,7 20,11 18,11 18,18 14,18 14,11 12,11" fill="#7a8090"/>
+     <polygon points="16,7 20,11 18,11 18,18 14,18 14,11 12,11" fill="#1f3548"/>
      <polygon points="16,8 19,11 17,11 17,17 15,17 15,11 13,11" fill="#3e8db8"/>
      <rect x="15" y="19" width="2" height="6" fill="#7a5234"/>
-     <rect x="11" y="25" width="10" height="2" fill="#7a8090"/>
+     <rect x="11" y="25" width="10" height="2" fill="#1f3548"/>
      <rect x="12" y="26" width="8" height="1" fill="#7a5234"/>
      <rect x="9" y="2" width="1" height="1" fill="#fff"/>
      <rect x="22" y="3" width="1" height="1" fill="#fff"/>
@@ -9097,7 +9135,7 @@ const SPRITE_DEFS = [
     `<polygon points="6,24 14,8 22,16 26,24" fill="#3e8db8"/>
      <polygon points="14,8 17,12 11,16" fill="#fff"/>
      <polygon points="22,16 25,21 19,24" fill="#a8d8f0"/>
-     <rect x="6" y="24" width="20" height="2" fill="#7a8090"/>
+     <rect x="6" y="24" width="20" height="2" fill="#1f3548"/>
      <rect x="14" y="14" width="2" height="8" fill="#7ec8e8"/>
      <rect x="15" y="16" width="1" height="2" fill="#fff"/>
      <rect x="15" y="20" width="1" height="2" fill="#fff"/>
@@ -9108,12 +9146,12 @@ const SPRITE_DEFS = [
     `<circle cx="16" cy="14" r="11" fill="#ffd070" opacity=".25"/>
      <circle cx="16" cy="14" r="8" fill="#ffd070" opacity=".4"/>
      <rect x="14" y="6" width="4" height="2" fill="#a87830"/>
-     <rect x="14" y="8" width="4" height="1" fill="#7a8090"/>
-     <rect x="11" y="9" width="10" height="15" fill="#7a8090"/>
+     <rect x="14" y="8" width="4" height="1" fill="#1f3548"/>
+     <rect x="11" y="9" width="10" height="15" fill="#1f3548"/>
      <rect x="12" y="10" width="8" height="13" fill="#7ec8e8"/>
      <rect x="13" y="11" width="6" height="3" fill="#d8e8f8"/>
      <rect x="14" y="15" width="4" height="4" fill="#fff"/>
-     <rect x="13" y="22" width="6" height="2" fill="#7a8090"/>
+     <rect x="13" y="22" width="6" height="2" fill="#1f3548"/>
      <rect x="9" y="11" width="1" height="1" fill="#ffd070"/>
      <rect x="22" y="13" width="1" height="1" fill="#ffd070"/>`,
     // T6 — Ambroisie Liquide (coupe dorée ornée)
@@ -9121,7 +9159,7 @@ const SPRITE_DEFS = [
      <rect x="9" y="5" width="14" height="1" fill="#fff"/>
      <rect x="10" y="7" width="12" height="1" fill="#a87830"/>
      <rect x="10" y="9" width="12" height="2" fill="#a87830"/>
-     <rect x="11" y="11" width="10" height="8" fill="#7a8090"/>
+     <rect x="11" y="11" width="10" height="8" fill="#1f3548"/>
      <rect x="12" y="12" width="8" height="6" fill="#3e8db8"/>
      <rect x="13" y="13" width="6" height="3" fill="#7ec8e8"/>
      <rect x="14" y="14" width="4" height="1" fill="#fff"/>
@@ -9142,7 +9180,7 @@ const SPRITE_DEFS = [
      <circle cx="16" cy="16" r="9" fill="#7ec8e8" opacity=".3"/>
      <rect x="8" y="6" width="16" height="2" fill="#ffd070"/>
      <rect x="9" y="8" width="14" height="2" fill="#a87830"/>
-     <rect x="10" y="10" width="12" height="10" fill="#7a8090"/>
+     <rect x="10" y="10" width="12" height="10" fill="#1f3548"/>
      <rect x="11" y="11" width="10" height="8" fill="#3e8db8"/>
      <rect x="12" y="12" width="8" height="5" fill="#7ec8e8"/>
      <rect x="13" y="13" width="6" height="2" fill="#fff"/>
@@ -9175,7 +9213,7 @@ const SPRITE_DEFS = [
      <rect x="6" y="10" width="2" height="12" fill="#fff" opacity=".15"/>`,
     // T2 — Gel énergétique (sachet)
     `<rect x="11" y="3" width="10" height="3" fill="#3a3a3a"/>
-     <polygon points="11,6 21,6 22,28 10,28" fill="#7a8090"/>
+     <polygon points="11,6 21,6 22,28 10,28" fill="#1f3548"/>
      <polygon points="12,7 20,7 21,27 11,27" fill="#f0a050"/>
      <rect x="13" y="10" width="6" height="3" fill="#ffd070"/>
      <rect x="13" y="14" width="6" height="2" fill="#d04030"/>
@@ -9199,9 +9237,9 @@ const SPRITE_DEFS = [
     // T4 — Smoothie (gobelet + paille)
     `<rect x="18" y="3" width="2" height="10" fill="#d04030"/>
      <rect x="17" y="2" width="4" height="2" fill="#fff"/>
-     <rect x="9" y="9" width="14" height="3" fill="#7a8090"/>
+     <rect x="9" y="9" width="14" height="3" fill="#1f3548"/>
      <rect x="10" y="11" width="12" height="2" fill="#a8d8f0"/>
-     <polygon points="10,12 22,12 21,26 11,26" fill="#7a8090"/>
+     <polygon points="10,12 22,12 21,26 11,26" fill="#1f3548"/>
      <polygon points="11,13 21,13 20,25 12,25" fill="#f0a050"/>
      <polygon points="11,13 21,13 20,17 12,17" fill="#d04030"/>
      <rect x="13" y="18" width="6" height="3" fill="#ffd070"/>
@@ -14206,11 +14244,11 @@ function openRunnerProfile(){
           <rect x="-7" y="-3" width="2" height="4" fill="#f0c890"/>
           <rect x="4" y="-3" width="2" height="4" fill="#f0c890"/>
           <rect x="-4" y="2" width="7" height="4" fill="#fff"/>
-          <rect x="-4" y="2" width="7" height="1" fill="#7a8090"/>
+          <rect x="-4" y="2" width="7" height="1" fill="#1f3548"/>
           <rect x="-3" y="6" width="2.5" height="5" fill="#f0c890"/>
           <rect x="1" y="6" width="2.5" height="5" fill="#f0c890"/>
-          <rect x="-3.5" y="10" width="3" height="1.8" fill="#7a8090"/>
-          <rect x="0.5" y="10" width="3" height="1.8" fill="#7a8090"/>
+          <rect x="-3.5" y="10" width="3" height="1.8" fill="#1f3548"/>
+          <rect x="0.5" y="10" width="3" height="1.8" fill="#1f3548"/>
         </svg>
       </div>
       <div class="profile-info">
@@ -14635,52 +14673,65 @@ function buildCrowd(){
   if(tier === 0){ g.innerHTML = ''; return; }
   const laps = STATE.lapsRun || 0;
   const saison = (STATE.saison || 1) - 1;
-  // ═══ Palette PASTEL MOBILE PREMIUM : tons mute, élégants, doux ═══
+  // Palette Eatventure : couleurs saturées + cohérentes par section
+  // 4 sections (front, back, left, right) ont des couleurs dominantes différentes (sections fans)
   const sectionPalettes = [
-    ['#c8907e','#d8a890','#e8c0a8','#f0d8c0'],   // FRONT : terracotta soft
-    ['#7e9bb8','#90b0c8','#a8c4d8','#c0d8e8'],   // BACK : bleu soft
-    ['#88a878','#a0c090','#b8d4a8','#d0e4c0'],   // GAUCHE : vert sauge
-    ['#b88aa8','#c8a0b8','#d8b8c8','#e8d0d8'],   // DROITE : rose poudré
+    ['#e84a30','#f08a48','#ffd84a','#fff'],   // SECTION FRONT : ROUGE/OR (équipe home)
+    ['#3e8db8','#5ab4d8','#a8d8e8','#fff'],   // SECTION ARRIÈRE : BLEU (visiteurs)
+    ['#7ec46a','#5a9040','#ffd84a','#fff'],   // SECTION GAUCHE : VERT (familles)
+    ['#e85aa0','#c83880','#ffd84a','#fff'],   // SECTION DROITE : ROSE/MAGENTA (jeunes)
   ];
-  const skinTones = ['#f0d4b0','#e0c098','#d0a880','#c09068'];
+  const skinTones = ['#f0c890','#e0b078','#d4a070','#c89060','#a87850'];
   const fillLevel = Math.min(1, (tier - 1) * 0.18 + laps / 100 + saison * 0.2);
   let html = '';
   const cx = 160, cy = 210;
-  // 3 rangées concentriques de têtes top-down (adapté nouveau scale stade)
+  // 3 rangées concentriques de bancs : MOINS de spectateurs mais BIEN PLUS GROS
   const ringConfigs = [
-    { rx: 100, ry: 64, count: 26, headR: 1.8 },
-    { rx: 92, ry: 58, count: 22, headR: 2.0 },
-    { rx: 84, ry: 52, count: 18, headR: 2.2 },
+    { rx: 144, ry: 92, count: 28, headR: 1.6, bodyW: 3.2, bodyH: 3.5 },  // rangée du fond (loin)
+    { rx: 134, ry: 84, count: 26, headR: 1.8, bodyW: 3.6, bodyH: 4.0 },  // milieu
+    { rx: 124, ry: 76, count: 24, headR: 2.0, bodyW: 4.0, bodyH: 4.5 },  // 1ère rangée (proche piste, plus grosse car en avant)
   ];
   ringConfigs.forEach((ring, ri) => {
     for(let i = 0; i < ring.count; i++){
       const angle = (i / ring.count) * Math.PI * 2;
       const x = cx + Math.cos(angle) * ring.rx;
       const y = cy + Math.sin(angle) * ring.ry;
+      // Densité variable selon fillLevel + un peu de hasard reproductible
       const rand = ((i * 31 + ri * 17 + 7) % 100) / 100;
       if(rand > fillLevel) continue;
-      // Section selon angle
+      // Section selon l'angle (4 quadrants : front/back/gauche/droite)
       let section = 0;
-      if(angle > Math.PI * 0.25 && angle < Math.PI * 0.75) section = 0;
-      else if(angle > Math.PI * 1.25 && angle < Math.PI * 1.75) section = 1;
-      else if(angle >= Math.PI * 0.75 && angle <= Math.PI * 1.25) section = 2;
-      else section = 3;
+      if(angle > Math.PI * 0.25 && angle < Math.PI * 0.75) section = 0;         // bas = front (rouge/or)
+      else if(angle > Math.PI * 1.25 && angle < Math.PI * 1.75) section = 1;     // haut = back (bleu)
+      else if(angle >= Math.PI * 0.75 && angle <= Math.PI * 1.25) section = 2;   // gauche (vert)
+      else section = 3;                                                          // droite (rose)
       const palette = sectionPalettes[section];
-      // Mix entre couleur maillot (visible top-down comme épaules) et peau (tête)
       const jerseyColor = palette[Math.floor(rand * palette.length) % palette.length];
       const skinColor = skinTones[Math.floor((i * 13 + ri * 5) % skinTones.length)];
+      // Petits bonhommes : tête (cercle) + corps (rect arrondi)
       const headR = ring.headR;
-      // Top-down : épaules (cercle légèrement plus grand, couleur maillot) + tête (cercle plus petit dessus, couleur peau)
-      // Petite ombre dessous
-      html += `<ellipse cx="${x.toFixed(1)}" cy="${(y + headR * 0.6).toFixed(1)}" rx="${(headR * 1.1).toFixed(1)}" ry=".5" fill="#000" opacity=".15"/>`;
-      // Épaules (maillot)
-      html += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(headR * 1.15).toFixed(1)}" fill="${jerseyColor}"/>`;
-      // Tête (peau, recouvre le centre des épaules)
-      html += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${(headR * 0.7).toFixed(1)}" fill="${skinColor}"/>`;
+      const bodyW = ring.bodyW;
+      const bodyH = ring.bodyH;
+      // Tête (rond)
+      html += `<circle cx="${x.toFixed(1)}" cy="${(y - bodyH - headR*0.5).toFixed(1)}" r="${headR.toFixed(1)}" fill="${skinColor}"/>`;
+      // Corps (rect coloré maillot)
+      html += `<rect x="${(x - bodyW/2).toFixed(1)}" y="${(y - bodyH + headR*0.3).toFixed(1)}" width="${bodyW.toFixed(1)}" height="${bodyH.toFixed(1)}" rx=".5" fill="${jerseyColor}"/>`;
+      // Petit chapeau / casquette aléatoire (20% chance)
+      if(rand > 0.8){
+        const hatColor = palette[0];
+        html += `<rect x="${(x - headR).toFixed(1)}" y="${(y - bodyH - headR*1.3).toFixed(1)}" width="${(headR*2).toFixed(1)}" height=".8" fill="${hatColor}"/>`;
+      }
     }
   });
+  // Drapeaux au sommet de l'arena (visibles depuis saison 2+)
+  if(saison >= 1){
+    html += `<rect x="40" y="100" width="1" height="10" fill="#3a2818"/>`;
+    html += `<rect x="40" y="100" width="9" height="5" fill="#e84a30"/>`;
+    html += `<rect x="280" y="100" width="1" height="10" fill="#3a2818"/>`;
+    html += `<rect x="271" y="100" width="9" height="5" fill="#3e8db8"/>`;
+  }
   g.innerHTML = html;
-  // Animation ola : delays sur têtes
+  // Animation de wave/ola : delays sur les têtes
   g.querySelectorAll('circle').forEach((el, i) => {
     el.style.setProperty('--crowd-delay', ((i % 30) * 0.06).toFixed(2) + 's');
   });
@@ -14735,14 +14786,13 @@ function applyStadiumTier(){
   }
 }
 
-/* Stades unlockables par saison — palette pastel mute pour tous (style premium mobile)
-   "sky" sert de couleur de fond unifiée (vue top-down, plus de bandeau ciel). */
+/* Stades unlockables par saison — change le visuel complet du décor */
 const STADIUMS = [
-  { id:'municipal', name:'Stade Municipal',   sky:'#b8d490', celestial:'#fde8a0', celX:265, celY:28, celR:11, grass:'#a8c880', track:'#c87860', minSaison:1 },
-  { id:'olympic',   name:'Stade Olympique',   sky:'#b0cc88', celestial:'#fff',    celX:230, celY:24, celR:11, grass:'#a0c078', track:'#d68a72', minSaison:2 },
-  { id:'coliseum',  name:'Coliseum',          sky:'#d8c8a8', celestial:'#e8b078', celX:280, celY:35, celR:13, grass:'#b8a888', track:'#c89868', minSaison:3 },
-  { id:'sunset',    name:'Stade du Couchant', sky:'#e8c0a8', celestial:'#e8a890', celX:50,  celY:40, celR:13, grass:'#a89878', track:'#b08068', minSaison:5 },
-  { id:'cosmic',    name:'Stade Cosmique',    sky:'#3a3858', celestial:'#fff',    celX:265, celY:28, celR:9,  grass:'#6868a0', track:'#7868b0', minSaison:8 },
+  { id:'municipal', name:'Stade Municipal',   sky:'#bedeed', celestial:'#ffd86a', celX:265, celY:28, celR:14, grass:'#9ec858', track:'#c8884e', minSaison:1 },
+  { id:'olympic',   name:'Stade Olympique',   sky:'#7ec8ee', celestial:'#fff3b0', celX:230, celY:24, celR:16, grass:'#7eb858', track:'#e02818', minSaison:2 },
+  { id:'coliseum',  name:'Coliseum',          sky:'#ffb070', celestial:'#ff6020', celX:280, celY:35, celR:18, grass:'#a09040', track:'#d8a040', minSaison:3 },
+  { id:'sunset',    name:'Stade du Couchant', sky:'#ff8060', celestial:'#ffd070', celX:50,  celY:40, celR:20, grass:'#90a060', track:'#b04030', minSaison:5 },
+  { id:'cosmic',    name:'Stade Cosmique',    sky:'#1a1640', celestial:'#fff',    celX:265, celY:28, celR:10, grass:'#3c4a78', track:'#5040b0', minSaison:8 },
 ];
 function currentStadium(){
   const saison = STATE.saison || 1;
@@ -14930,7 +14980,7 @@ const NPC_TYPES = [
   // Jogger classique homme
   { id:'jogger', speed:0.7, sprite: c => `<g transform="scale(2)">
       <ellipse cx="0" cy="6.5" rx="3.5" ry="1" fill="#000" opacity=".35"/>
-      <rect x="-2.5" y="-7" width="5" height="2" fill="#8a6848"/>
+      <rect x="-2.5" y="-7" width="5" height="2" fill="#4a2818"/>
       <rect x="-2.5" y="-5.5" width="5" height="3.5" fill="#f0c890"/>
       <rect x="-3" y="-1.5" width="6" height="4" fill="${c}"/>
       <rect class="rs-arm1" x="-4" y="-0.5" width="1.5" height="3" fill="#f0c890"/>
@@ -14938,24 +14988,24 @@ const NPC_TYPES = [
       <rect x="-2.5" y="2.5" width="5" height="2.5" fill="#fff"/>
       <rect class="rs-leg1" x="-2" y="5" width="1.6" height="3" fill="#f0c890"/>
       <rect class="rs-leg2" x=".5" y="5" width="1.6" height="3" fill="#f0c890"/>
-      <rect class="rs-shoe1" x="-2.2" y="7.5" width="2" height="1.2" fill="#7a8090"/>
-      <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#7a8090"/>
+      <rect class="rs-shoe1" x="-2.2" y="7.5" width="2" height="1.2" fill="#1f3548"/>
+      <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#1f3548"/>
     </g>` },
   // Femme runner (cheveux longs)
   { id:'woman', speed:0.65, sprite: c => `<g transform="scale(2)">
       <ellipse cx="0" cy="6.5" rx="3.5" ry="1" fill="#000" opacity=".35"/>
-      <rect x="-3" y="-7" width="6" height="2" fill="#8a6848"/>
-      <rect x="-3" y="-5" width="1" height="3" fill="#8a6848"/>
-      <rect x="2" y="-5" width="1" height="3" fill="#8a6848"/>
+      <rect x="-3" y="-7" width="6" height="2" fill="#4a2818"/>
+      <rect x="-3" y="-5" width="1" height="3" fill="#4a2818"/>
+      <rect x="2" y="-5" width="1" height="3" fill="#4a2818"/>
       <rect x="-2.5" y="-5.5" width="5" height="3.5" fill="#f0c890"/>
       <rect x="-3" y="-1.5" width="6" height="4" fill="${c}"/>
       <rect class="rs-arm1" x="-4" y="-0.5" width="1.5" height="3" fill="#f0c890"/>
       <rect class="rs-arm2" x="2.5" y="-0.5" width="1.5" height="3" fill="#f0c890"/>
-      <rect x="-2.5" y="2.5" width="5" height="2.5" fill="#c87860"/>
+      <rect x="-2.5" y="2.5" width="5" height="2.5" fill="#c84030"/>
       <rect class="rs-leg1" x="-2" y="5" width="1.6" height="3" fill="#f0c890"/>
       <rect class="rs-leg2" x=".5" y="5" width="1.6" height="3" fill="#f0c890"/>
-      <rect class="rs-shoe1" x="-2.2" y="7.5" width="2" height="1.2" fill="#d8a8b8"/>
-      <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#d8a8b8"/>
+      <rect class="rs-shoe1" x="-2.2" y="7.5" width="2" height="1.2" fill="#ee5a9a"/>
+      <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#ee5a9a"/>
     </g>` },
   // Senior (cheveux gris, plus lent)
   { id:'senior', speed:0.45, sprite: c => `<g transform="scale(1.9)">
@@ -14982,8 +15032,8 @@ const NPC_TYPES = [
       <rect x="-2" y="2" width="4" height="2" fill="#3e8db8"/>
       <rect class="rs-leg1" x="-1.5" y="4" width="1.4" height="2.5" fill="#f0c890"/>
       <rect class="rs-leg2" x=".1" y="4" width="1.4" height="2.5" fill="#f0c890"/>
-      <rect class="rs-shoe1" x="-1.6" y="6.5" width="1.6" height="1" fill="#c87860"/>
-      <rect class="rs-shoe2" x="0" y="6.5" width="1.6" height="1" fill="#c87860"/>
+      <rect class="rs-shoe1" x="-1.6" y="6.5" width="1.6" height="1" fill="#c84030"/>
+      <rect class="rs-shoe2" x="0" y="6.5" width="1.6" height="1" fill="#c84030"/>
     </g>` },
   // Promeneur avec chien
   { id:'dog-walker', speed:0.35, sprite: c => `<g transform="scale(2)">
@@ -15052,8 +15102,7 @@ const NPC_TYPES = [
       <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#5a4028"/>
     </g>` },
 ];
-// Palette NPCs : pastel mute matche le nouveau style premium
-const NPC_COLORS_ALL = ['#7e9bb8','#a0c090','#b8a8c8','#e8d090','#d49880','#c8a0b8','#c87860','#a0b890','#d8a8b8','#8aa8c4'];
+const NPC_COLORS_ALL = ['#3e8db8','#5a9040','#9080c0','#ffd070','#f55a5a','#c89af0','#e85a30','#7ec46a','#ee5a9a','#4a9fd9'];
 const NPC_COUNT = 5;
 function _npcSprite(npcType, color){
   return npcType.sprite(color);
@@ -15069,19 +15118,19 @@ function _teamRunnerSprite(r, lvl){
   }
   // Tier 2+ : médaille bronze (au cou)
   if(tier === 2){
-    extras += `<rect x="-0.7" y="-2.2" width="1.4" height=".6" fill="#c87860"/>
+    extras += `<rect x="-0.7" y="-2.2" width="1.4" height=".6" fill="#c84030"/>
                <rect x="-1.1" y="-1.6" width="2.2" height="1.4" fill="#c8804a"/>`;
   }
   // Tier 3+ : médaille or
   if(tier === 3){
-    extras += `<rect x="-0.7" y="-2.2" width="1.4" height=".6" fill="#c87860"/>
+    extras += `<rect x="-0.7" y="-2.2" width="1.4" height=".6" fill="#c84030"/>
                <rect x="-1.1" y="-1.6" width="2.2" height="1.4" fill="#ffd070"/>
                <rect x="-0.7" y="-1.2" width="1.4" height=".6" fill="#ffe898"/>`;
   }
   // Tier 4+ : couronne de laurier sur la tête
   if(tier >= 4){
     // garde médaille or
-    extras += `<rect x="-0.7" y="-2.2" width="1.4" height=".6" fill="#c87860"/>
+    extras += `<rect x="-0.7" y="-2.2" width="1.4" height=".6" fill="#c84030"/>
                <rect x="-1.1" y="-1.6" width="2.2" height="1.4" fill="#ffd070"/>
                <rect x="-0.7" y="-1.2" width="1.4" height=".6" fill="#ffe898"/>
                <rect x="-3.5" y="-6" width="7" height=".7" fill="#5a9040"/>
@@ -15097,7 +15146,7 @@ function _teamRunnerSprite(r, lvl){
     <g transform="scale(2.2)">
       ${aura}
       <ellipse cx="0" cy="6.5" rx="3.5" ry="1" fill="#000" opacity=".35"/>
-      <rect x="-2.5" y="-7" width="5" height="2" fill="#8a6848"/>
+      <rect x="-2.5" y="-7" width="5" height="2" fill="#4a2818"/>
       <rect x="-2.5" y="-5.5" width="5" height="3.5" fill="#f0c890"/>
       <rect x="-3" y="-1.5" width="6" height="4" fill="${c}"/>
       <rect x="-3" y="-1.5" width="6" height=".7" fill="#fff" opacity=".6"/>
@@ -15107,8 +15156,8 @@ function _teamRunnerSprite(r, lvl){
       <rect x="-2.5" y="2.5" width="5" height="2.5" fill="#fff"/>
       <rect class="rs-leg1" x="-2" y="5" width="1.6" height="3" fill="#f0c890"/>
       <rect class="rs-leg2" x=".5" y="5" width="1.6" height="3" fill="#f0c890"/>
-      <rect class="rs-shoe1" x="-2.2" y="7.5" width="2" height="1.2" fill="#7a8090"/>
-      <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#7a8090"/>
+      <rect class="rs-shoe1" x="-2.2" y="7.5" width="2" height="1.2" fill="#1f3548"/>
+      <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#1f3548"/>
       ${extras}
     </g>
   `;

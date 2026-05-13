@@ -17442,92 +17442,355 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
   }
   addAwning();
 
-  // === RUNNER : groupe avec head + body + legs ===
-  function makeRunner(jerseyColor='#e85040', hairColor='#7a5838', skinColor='#f0d4b0'){
+  // === RUNNER : Group avec sous-Groups pour pivots (anim course) ===
+  function makeRunner(opts = {}){
+    const {
+      jerseyColor='#e85040', hairColor='#7a5838', skinColor='#f0d4b0',
+      shortColor='#fff', shoeColor=null, scale=1, hairStyle='normal',
+      accessory=null  // 'cap', 'helmet', 'bun', null
+    } = opts;
+    const shoeC = shoeColor || jerseyColor;
     const g = new THREE.Group();
-    // Ombre sous les pieds (decal noir)
+    // Ombre sous les pieds
     const shadow = new THREE.Mesh(
-      new THREE.CircleGeometry(.4, 16),
-      new THREE.MeshBasicMaterial({color:'#000', transparent:true, opacity:.25})
+      new THREE.CircleGeometry(.5, 16),
+      new THREE.MeshBasicMaterial({color:'#000', transparent:true, opacity:.28})
     );
-    shadow.rotation.x = -Math.PI/2;
-    shadow.position.y = .15;
-    g.add(shadow);
-    // Jambes (capsules)
+    shadow.rotation.x = -Math.PI/2; shadow.position.y = .04; g.add(shadow);
+
+    // JAMBES : sous-Group qui pivote sur la hanche (top du leg)
     const legMat = mat(skinColor, {roughness:.85});
-    const legL = new THREE.Mesh(rb(.18, .55, .18, .07), legMat);
-    legL.position.set(-.12, .42, 0); legL.castShadow=true; g.add(legL);
-    const legR = new THREE.Mesh(rb(.18, .55, .18, .07), legMat);
-    legR.position.set(.12, .42, 0); legR.castShadow=true; g.add(legR);
-    // Chaussures
-    const shoeMat = mat(jerseyColor, {roughness:.5});
-    const shoeL = new THREE.Mesh(rb(.24, .15, .35, .07), shoeMat);
-    shoeL.position.set(-.12, .12, .05); g.add(shoeL);
-    const shoeR = new THREE.Mesh(rb(.24, .15, .35, .07), shoeMat);
-    shoeR.position.set(.12, .12, .05); g.add(shoeR);
-    // Short blanc
-    const short = new THREE.Mesh(rb(.5, .25, .35, .1), mat('#ffffff', {roughness:.85}));
-    short.position.set(0, .82, 0); short.castShadow=true; g.add(short);
-    // Corps maillot
-    const body = new THREE.Mesh(rb(.6, .55, .4, .15), mat(jerseyColor, {roughness:.7}));
-    body.position.set(0, 1.18, 0); body.castShadow=true; g.add(body);
-    // Bras
+    const legLPivot = new THREE.Group();
+    legLPivot.position.set(-.13, .82, 0);
+    const legLMesh = new THREE.Mesh(rb(.2, .65, .2, .08), legMat);
+    legLMesh.position.y = -.35; legLMesh.castShadow=true;
+    legLPivot.add(legLMesh);
+    // Chaussure attachée au pied de la jambe
+    const shoeMat = mat(shoeC, {roughness:.5});
+    const shoeLMesh = new THREE.Mesh(rb(.26, .16, .38, .07), shoeMat);
+    shoeLMesh.position.set(0, -.7, .07); shoeLMesh.castShadow=true;
+    legLPivot.add(shoeLMesh);
+    g.add(legLPivot);
+
+    const legRPivot = new THREE.Group();
+    legRPivot.position.set(.13, .82, 0);
+    const legRMesh = new THREE.Mesh(rb(.2, .65, .2, .08), legMat);
+    legRMesh.position.y = -.35; legRMesh.castShadow=true;
+    legRPivot.add(legRMesh);
+    const shoeRMesh = new THREE.Mesh(rb(.26, .16, .38, .07), shoeMat);
+    shoeRMesh.position.set(0, -.7, .07); shoeRMesh.castShadow=true;
+    legRPivot.add(shoeRMesh);
+    g.add(legRPivot);
+
+    // Short
+    const short = new THREE.Mesh(rb(.56, .28, .4, .12), mat(shortColor, {roughness:.85}));
+    short.position.set(0, .86, 0); short.castShadow=true; g.add(short);
+
+    // Corps maillot (légèrement penché en avant pour effet "course")
+    const body = new THREE.Mesh(rb(.65, .6, .42, .18), mat(jerseyColor, {roughness:.7}));
+    body.position.set(0, 1.25, 0); body.castShadow=true;
+    body.rotation.x = -.05; // léger lean forward
+    g.add(body);
+    // Dossard rond sur la poitrine
+    const bib = new THREE.Mesh(new THREE.CircleGeometry(.13, 16), new THREE.MeshBasicMaterial({color:'#fff'}));
+    bib.position.set(0, 1.25, .22); g.add(bib);
+
+    // BRAS : pivots sur l'épaule
     const armMat = mat(skinColor, {roughness:.85});
-    const armL = new THREE.Mesh(rb(.14, .45, .14, .06), armMat);
-    armL.position.set(-.36, 1.18, 0); armL.castShadow=true; g.add(armL);
-    const armR = new THREE.Mesh(rb(.14, .45, .14, .06), armMat);
-    armR.position.set(.36, 1.18, 0); armR.castShadow=true; g.add(armR);
-    // Tête (sphere)
+    const armLPivot = new THREE.Group();
+    armLPivot.position.set(-.37, 1.5, 0);
+    const armLMesh = new THREE.Mesh(rb(.16, .55, .16, .07), armMat);
+    armLMesh.position.y = -.28; armLMesh.castShadow=true;
+    armLPivot.add(armLMesh);
+    g.add(armLPivot);
+
+    const armRPivot = new THREE.Group();
+    armRPivot.position.set(.37, 1.5, 0);
+    const armRMesh = new THREE.Mesh(rb(.16, .55, .16, .07), armMat);
+    armRMesh.position.y = -.28; armRMesh.castShadow=true;
+    armRPivot.add(armRMesh);
+    g.add(armRPivot);
+
+    // TÊTE (sphere)
+    const headGroup = new THREE.Group();
+    headGroup.position.set(0, 1.95, 0);
     const head = new THREE.Mesh(
-      new THREE.SphereGeometry(.32, 24, 18),
+      new THREE.SphereGeometry(.36, 24, 20),
       mat(skinColor, {roughness:.85})
     );
-    head.position.set(0, 1.85, 0); head.castShadow=true; g.add(head);
-    // Cheveux (demi-sphere)
-    const hair = new THREE.Mesh(
-      new THREE.SphereGeometry(.33, 24, 18, 0, Math.PI*2, 0, Math.PI/2),
-      mat(hairColor, {roughness:.95})
-    );
-    hair.position.set(0, 1.85, 0); g.add(hair);
-    // Yeux (petits cubes noirs)
+    head.castShadow=true; headGroup.add(head);
+    // Cheveux selon style
+    let hair = null;
+    if(hairStyle === 'normal'){
+      hair = new THREE.Mesh(
+        new THREE.SphereGeometry(.38, 24, 18, 0, Math.PI*2, 0, Math.PI/2),
+        mat(hairColor, {roughness:.95})
+      );
+      hair.position.y = .02; headGroup.add(hair);
+    } else if(hairStyle === 'long'){
+      hair = new THREE.Mesh(
+        new THREE.SphereGeometry(.38, 24, 18, 0, Math.PI*2, 0, Math.PI*.65),
+        mat(hairColor, {roughness:.95})
+      );
+      hair.position.y = .02; headGroup.add(hair);
+    } else if(hairStyle === 'bun'){
+      hair = new THREE.Mesh(
+        new THREE.SphereGeometry(.38, 24, 18, 0, Math.PI*2, 0, Math.PI/2),
+        mat(hairColor, {roughness:.95})
+      );
+      hair.position.y = .02; headGroup.add(hair);
+      const bun = new THREE.Mesh(new THREE.SphereGeometry(.18, 16, 12), mat(hairColor, {roughness:.95}));
+      bun.position.set(0, .42, -.05); headGroup.add(bun);
+    } else if(hairStyle === 'short'){
+      hair = new THREE.Mesh(
+        new THREE.SphereGeometry(.37, 24, 18, 0, Math.PI*2, 0, Math.PI*.4),
+        mat(hairColor, {roughness:.95})
+      );
+      hair.position.y = .04; headGroup.add(hair);
+    }
+    // Accessoires
+    if(accessory === 'cap'){
+      const cap = new THREE.Mesh(
+        new THREE.SphereGeometry(.4, 24, 14, 0, Math.PI*2, 0, Math.PI*.4),
+        mat(jerseyColor, {roughness:.6})
+      );
+      cap.position.y = .08; headGroup.add(cap);
+      // Visière de casquette
+      const visor = new THREE.Mesh(rb(.45, .04, .25, .02), mat(jerseyColor, {roughness:.6}));
+      visor.position.set(0, .12, .28); headGroup.add(visor);
+    } else if(accessory === 'helmet'){
+      const helmet = new THREE.Mesh(
+        new THREE.SphereGeometry(.42, 24, 16, 0, Math.PI*2, 0, Math.PI*.55),
+        mat('#3a3a3a', {roughness:.4, metalness:.4})
+      );
+      helmet.position.y = .04; headGroup.add(helmet);
+    }
+    // Yeux noirs (sphères)
     const eyeMat = new THREE.MeshBasicMaterial({color:'#1a1010'});
-    const eyeL = new THREE.Mesh(new THREE.SphereGeometry(.04, 8, 6), eyeMat);
-    eyeL.position.set(-.1, 1.9, .29); g.add(eyeL);
-    const eyeR = new THREE.Mesh(new THREE.SphereGeometry(.04, 8, 6), eyeMat);
-    eyeR.position.set(.1, 1.9, .29); g.add(eyeR);
-    // Pommettes roses (decals)
-    const cheekMat = new THREE.MeshBasicMaterial({color:'#ff8a90', transparent:true, opacity:.45});
-    const cheekL = new THREE.Mesh(new THREE.CircleGeometry(.07, 12), cheekMat);
-    cheekL.position.set(-.18, 1.82, .27); g.add(cheekL);
-    const cheekR = new THREE.Mesh(new THREE.CircleGeometry(.07, 12), cheekMat);
-    cheekR.position.set(.18, 1.82, .27); g.add(cheekR);
+    const eyeL = new THREE.Mesh(new THREE.SphereGeometry(.045, 8, 6), eyeMat);
+    eyeL.position.set(-.11, .04, .31); headGroup.add(eyeL);
+    const eyeR = new THREE.Mesh(new THREE.SphereGeometry(.045, 8, 6), eyeMat);
+    eyeR.position.set(.11, .04, .31); headGroup.add(eyeR);
+    // Reflets blancs dans les yeux (mignonnerie)
+    const eyeWhiteMat = new THREE.MeshBasicMaterial({color:'#fff'});
+    const eyeWL = new THREE.Mesh(new THREE.SphereGeometry(.015, 6, 4), eyeWhiteMat);
+    eyeWL.position.set(-.09, .06, .345); headGroup.add(eyeWL);
+    const eyeWR = new THREE.Mesh(new THREE.SphereGeometry(.015, 6, 4), eyeWhiteMat);
+    eyeWR.position.set(.13, .06, .345); headGroup.add(eyeWR);
+    // Pommettes roses (circles plats)
+    const cheekMat = new THREE.MeshBasicMaterial({color:'#ff8a90', transparent:true, opacity:.5});
+    const cheekL = new THREE.Mesh(new THREE.CircleGeometry(.08, 12), cheekMat);
+    cheekL.position.set(-.19, -.04, .305); headGroup.add(cheekL);
+    const cheekR = new THREE.Mesh(new THREE.CircleGeometry(.08, 12), cheekMat);
+    cheekR.position.set(.19, -.04, .305); headGroup.add(cheekR);
+    g.add(headGroup);
+
+    // Scale global du runner
+    g.scale.set(scale, scale, scale);
+
+    // Expose les pivots pour anim
+    g.userData.parts = { legLPivot, legRPivot, armLPivot, armRPivot, headGroup, body, shadow };
     return g;
   }
 
-  // RUNNER PRINCIPAL (joueur) — héros plus gros
-  const player = makeRunner('#e85040', '#7a5838', '#f0d4b0');
-  player.scale.set(2.5, 2.5, 2.5);
+  // === ENVIRONNEMENT : arbres + buissons + petits objets décor ===
+  function makeTree(x, z, scale=1, variant=0){
+    const tg = new THREE.Group();
+    // Tronc rounded box
+    const trunk = new THREE.Mesh(rb(.4, 1.6, .4, .08), mat('#7a5838', {roughness:.95}));
+    trunk.position.y = .8; trunk.castShadow=true;
+    tg.add(trunk);
+    // Feuillage : 2-3 sphères empilées style "low-poly tree"
+    const leafColors = ['#7eaa58','#94c068','#88a868','#a0c878'];
+    const leafColor = leafColors[variant % leafColors.length];
+    const leafMat = mat(leafColor, {roughness:.95});
+    // Boule basse (large)
+    const leaf1 = new THREE.Mesh(new THREE.SphereGeometry(1.1, 14, 10), leafMat);
+    leaf1.position.y = 2; leaf1.castShadow=true;
+    tg.add(leaf1);
+    // Boule haut (un peu plus haute)
+    const leaf2 = new THREE.Mesh(new THREE.SphereGeometry(.85, 14, 10), leafMat);
+    leaf2.position.set(.15, 2.8, .1); leaf2.castShadow=true;
+    tg.add(leaf2);
+    // Tiny accent
+    const leaf3 = new THREE.Mesh(new THREE.SphereGeometry(.55, 12, 9), mat(leafColors[(variant+1) % leafColors.length], {roughness:.95}));
+    leaf3.position.set(-.3, 2.4, -.15); leaf3.castShadow=true;
+    tg.add(leaf3);
+    tg.position.set(x, 0, z);
+    tg.scale.setScalar(scale);
+    return tg;
+  }
+  function makeBush(x, z, scale=1, color='#88a868'){
+    const bg = new THREE.Group();
+    const b1 = new THREE.Mesh(new THREE.SphereGeometry(.55, 12, 9), mat(color, {roughness:.95}));
+    b1.position.y = .35; b1.castShadow=true; bg.add(b1);
+    const b2 = new THREE.Mesh(new THREE.SphereGeometry(.42, 12, 9), mat('#a0c878', {roughness:.95}));
+    b2.position.set(.35, .25, .1); b2.castShadow=true; bg.add(b2);
+    bg.position.set(x, 0, z);
+    bg.scale.setScalar(scale);
+    return bg;
+  }
+  function makeCrate(x, z, color='#a87850', scale=1){
+    const cg = new THREE.Group();
+    const c = new THREE.Mesh(rb(.7, .9, .7, .03), mat(color, {roughness:.85}));
+    c.position.y = .45; c.castShadow=true; cg.add(c);
+    // Planches détail
+    const plank = new THREE.Mesh(rb(.74, .04, .74, .015), mat('#7a5838', {roughness:.9}));
+    plank.position.y = .9; cg.add(plank);
+    cg.position.set(x, 0, z);
+    cg.scale.setScalar(scale);
+    return cg;
+  }
+  // Arbres : grappes des 2 côtés du stade + à l'arrière
+  const trees = [
+    makeTree(-14, -2, 1.2, 0),
+    makeTree(-15.5, 2, 1.0, 1),
+    makeTree(-13.5, 6, 1.1, 2),
+    makeTree(14, -2, 1.2, 1),
+    makeTree(15.5, 2, 1.0, 0),
+    makeTree(13.5, 6, 1.1, 3),
+    makeTree(-8, -11, .9, 2),
+    makeTree(0, -12, 1.2, 0),
+    makeTree(8, -11, .9, 1),
+  ];
+  trees.forEach(t => scene.add(t));
+  // Buissons avant-plan
+  const bushes = [
+    makeBush(-9, 11.5, 1.0),
+    makeBush(-7.5, 12, 0.8, '#a0c878'),
+    makeBush(9, 11.5, 1.0),
+    makeBush(7.5, 12, 0.8, '#a0c878'),
+  ];
+  bushes.forEach(b => scene.add(b));
+  // Caissons en avant-plan (style life-sim référence)
+  const crates = [
+    makeCrate(-4, 11.5, '#a87850', 1.0),
+    makeCrate(-3.2, 11.8, '#9a6c48', 0.85),
+    makeCrate(4, 11.5, '#9a6c48', 0.9),
+  ];
+  crates.forEach(c => scene.add(c));
+
+  // === 4 PROJECTEURS aux coins du stade ===
+  function makeProjector(x, z){
+    const pg = new THREE.Group();
+    // Mât (rounded box mince et haut)
+    const pole = new THREE.Mesh(rb(.25, 8, .25, .06), mat('#3a3a3a', {roughness:.6, metalness:.3}));
+    pole.position.y = 4; pole.castShadow=true;
+    pg.add(pole);
+    // Plateforme support en haut
+    const platform = new THREE.Mesh(rb(.8, .15, .5, .04), mat('#2a2a2a', {roughness:.5, metalness:.3}));
+    platform.position.y = 8;
+    pg.add(platform);
+    // Lampe (cône avec lumière chaude)
+    const lampGeo = new THREE.BoxGeometry(.85, .35, .55);
+    const lamp = new THREE.Mesh(lampGeo, mat('#2a2a2a', {roughness:.3, metalness:.5}));
+    lamp.position.y = 8.3;
+    // Face avant lumineuse
+    pg.add(lamp);
+    const glassGeo = new THREE.PlaneGeometry(.75, .25);
+    const glass = new THREE.Mesh(glassGeo, new THREE.MeshBasicMaterial({color:'#fff8d4'}));
+    glass.position.set(0, 8.3, .29);
+    // Oriente la lampe vers le centre du stade
+    pg.add(glass);
+    // Position et orientation vers centre
+    pg.position.set(x, 0, z);
+    pg.lookAt(0, 4, 0);
+    return pg;
+  }
+  // 4 corners (slight outside the tribune ring)
+  const projectors = [
+    makeProjector(-13, -8),
+    makeProjector(13, -8),
+    makeProjector(-13, 8),
+    makeProjector(13, 8),
+  ];
+  projectors.forEach(p => scene.add(p));
+
+  // === FOULE 3D : spectateurs sur le toit de la tribune (ola) ===
+  function makeCrowd(){
+    const crowdGroup = new THREE.Group();
+    // Palette section : 4 quadrants colorés
+    const sectionColors = [
+      ['#e85040','#f08040','#ffd060'],  // FRONT rouge/jaune
+      ['#4a9fd9','#7ec4ec','#a8d8e8'],  // BACK bleu
+      ['#7ec46a','#a0c890','#ffd060'],  // GAUCHE vert
+      ['#e890b0','#c87890','#ffd060'],  // DROITE rose
+    ];
+    const skinTones = ['#f0d4b0','#e0c098','#d0a880','#c09068'];
+    // 80 spectateurs distribués sur la tribune (rx=10, rz=6.5)
+    const N = 80;
+    const spectators = [];
+    for(let i = 0; i < N; i++){
+      const angle = (i / N) * Math.PI * 2 + (i % 3) * .04; // léger décalage
+      const rx = 10.2 + (i % 3) * .5;
+      const rz = 6.7 + (i % 3) * .35;
+      const x = Math.cos(angle) * rx;
+      const z = Math.sin(angle) * rz;
+      // Section selon angle
+      let section = 0;
+      const a = (angle + Math.PI*2) % (Math.PI*2);
+      if(a > Math.PI*0.25 && a < Math.PI*0.75) section = 0;
+      else if(a > Math.PI*1.25 && a < Math.PI*1.75) section = 1;
+      else if(a >= Math.PI*0.75 && a <= Math.PI*1.25) section = 2;
+      else section = 3;
+      const palette = sectionColors[section];
+      const jersey = palette[i % palette.length];
+      const skin = skinTones[i % skinTones.length];
+      // Spectateur simplifié : corps (rounded box) + tête (sphere)
+      const specGroup = new THREE.Group();
+      const body = new THREE.Mesh(rb(.32, .42, .32, .07), mat(jersey, {roughness:.85}));
+      body.position.y = .21; body.castShadow=true;
+      specGroup.add(body);
+      const head = new THREE.Mesh(new THREE.SphereGeometry(.22, 12, 10), mat(skin, {roughness:.9}));
+      head.position.y = .58; head.castShadow=true;
+      specGroup.add(head);
+      // Tiny hair on top
+      if(i % 3 !== 0){
+        const hairColors = ['#3a2818','#7a5838','#c0c0c0','#d8a060'];
+        const hair = new THREE.Mesh(
+          new THREE.SphereGeometry(.24, 12, 10, 0, Math.PI*2, 0, Math.PI*.55),
+          mat(hairColors[i % hairColors.length], {roughness:.95})
+        );
+        hair.position.y = .6;
+        specGroup.add(hair);
+      }
+      specGroup.position.set(x, 1.45, z);
+      specGroup.userData.basePhase = i * 0.18;
+      spectators.push(specGroup);
+      crowdGroup.add(specGroup);
+    }
+    crowdGroup.userData.spectators = spectators;
+    return crowdGroup;
+  }
+  const crowd = makeCrowd();
+  scene.add(crowd);
+
+  // RUNNER PRINCIPAL (joueur) — héros plus gros, maillot rouge vif
+  const player = makeRunner({
+    jerseyColor:'#e85040', hairColor:'#7a5838', skinColor:'#f0d4b0',
+    shortColor:'#fff', hairStyle:'normal', scale:2.5
+  });
   scene.add(player);
-  // Aura du héros (cercle blanc sous lui)
+  // Aura du héros (cercle doré pulsant)
   const heroAura = new THREE.Mesh(
-    new THREE.CircleGeometry(.7, 24),
-    new THREE.MeshBasicMaterial({color:'#fff', transparent:true, opacity:.35})
+    new THREE.CircleGeometry(.8, 24),
+    new THREE.MeshBasicMaterial({color:'#ffe88a', transparent:true, opacity:.4})
   );
   heroAura.rotation.x = -Math.PI/2;
-  heroAura.position.y = .18;
+  heroAura.position.y = .06;
   scene.add(heroAura);
 
-  // NPCs : 5 coureurs de couleurs/types variés
+  // NPCs : 6 coureurs variés avec accessoires/styles distincts
   const npcConfigs = [
-    { jersey:'#4a9fd9', hair:'#3a2818', skin:'#a8804a', progressOffset:0.18, speed:.65 },  // sprinter
-    { jersey:'#7ec46a', hair:'#8a6848', skin:'#f0d4b0', progressOffset:0.35, speed:.55 },  // woman
-    { jersey:'#ffd060', hair:'#c0c0c0', skin:'#e0c098', progressOffset:0.52, speed:.45 },  // senior
-    { jersey:'#d8a8b8', hair:'#dcd0c0', skin:'#e0c098', progressOffset:0.7, speed:.40 },   // grandma
-    { jersey:'#c89af0', hair:'#d8a060', skin:'#f0d4b0', progressOffset:0.88, speed:.55 },  // child
+    { jerseyColor:'#4a9fd9', hairColor:'#3a2818', skinColor:'#a8804a', shortColor:'#1a1a2a', hairStyle:'short', accessory:'cap', scale:1.85, progressOffset:0.15, speed:.65 },  // sprinter
+    { jerseyColor:'#7ec46a', hairColor:'#8a6848', skinColor:'#f0d4b0', shortColor:'#c87860', hairStyle:'long',  scale:1.78, progressOffset:0.32, speed:.55 },  // woman
+    { jerseyColor:'#ffd060', hairColor:'#c0c0c0', skinColor:'#e0c098', shortColor:'#9aa8b8', hairStyle:'short', scale:1.75, progressOffset:0.48, speed:.45 },  // senior
+    { jerseyColor:'#d8a8b8', hairColor:'#dcd0c0', skinColor:'#e0c098', shortColor:'#b8a8c0', hairStyle:'bun',   scale:1.7,  progressOffset:0.62, speed:.40 },  // grandma
+    { jerseyColor:'#c89af0', hairColor:'#d8a060', skinColor:'#f0d4b0', shortColor:'#4a6a98', hairStyle:'normal',scale:1.45, progressOffset:0.78, speed:.55 },  // child (plus petit)
+    { jerseyColor:'#f08040', hairColor:'#5a4028', skinColor:'#d8b888', shortColor:'#fff',    hairStyle:'normal',scale:1.85, progressOffset:0.92, speed:.50 },  // jogger
   ];
   const npcs = npcConfigs.map(c => {
-    const npc = makeRunner(c.jersey, c.hair, c.skin);
-    npc.scale.set(1.8, 1.8, 1.8);
+    const npc = makeRunner(c);
     npc.userData.progress = c.progressOffset;
     npc.userData.speed = c.speed;
     scene.add(npc);
@@ -17568,26 +17831,59 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
     elem.rotation.y = Math.atan2(dx, dz);
   }
 
+  // ═══ ANIM COURSE : oscillation des jambes/bras en fonction de la vitesse ═══
+  function animateRunner(runner, runSpeed, time){
+    const parts = runner.userData.parts;
+    if(!parts) return;
+    // Phase de course (plus rapide = oscillation plus rapide)
+    const phase = time * .015 * (1 + runSpeed * 8);
+    const swing = Math.sin(phase);
+    const swingCo = Math.cos(phase);
+    // Jambes alternées
+    parts.legLPivot.rotation.x = swing * .55;
+    parts.legRPivot.rotation.x = -swing * .55;
+    // Bras alternés (contre-phase avec les jambes)
+    parts.armLPivot.rotation.x = -swing * .65;
+    parts.armRPivot.rotation.x = swing * .65;
+    // Léger balancement haut/bas du corps (rebond)
+    const bounce = Math.abs(swingCo) * .06;
+    runner.position.y = bounce;
+    // Léger tilt de la tête (regarde devant)
+    parts.headGroup.rotation.x = -.05 - Math.abs(swing) * .03;
+  }
+
   let lastT = performance.now();
+  let lastPlayerP = 0;
   function tick(now){
     const dt = Math.min((now - lastT) / 1000, 0.1);
     lastT = now;
-    // PLAYER : lit STATE.lapProgress (existe dans le jeu)
+    // PLAYER : lit STATE.lapProgress
     const p = (window.STATE && window.STATE.lapProgress) || 0;
+    const playerVel = Math.abs(p - lastPlayerP);
+    lastPlayerP = p;
     updateRunnerPosition(player, p);
-    // Bobbing subtile
-    player.position.y = Math.sin(now * 0.012) * 0.04;
-    // Aura suit le joueur (au sol)
+    // Anim course basée sur la vitesse de progression
+    animateRunner(player, playerVel * 10 + .05, now);
+    // Aura suit le joueur et pulse
     heroAura.position.x = player.position.x;
     heroAura.position.z = player.position.z;
-    heroAura.material.opacity = .25 + Math.sin(now * .003) * .12;
-    // NPCs : chacun avance à sa vitesse propre
+    heroAura.position.y = .06;
+    heroAura.material.opacity = .35 + Math.sin(now * .003) * .15;
+    heroAura.scale.setScalar(1 + Math.sin(now * .004) * .1);
+    // NPCs : chacun avance à sa vitesse propre + anim course
     npcs.forEach((npc, i) => {
-      npc.userData.progress += dt * 0.04 * npc.userData.speed;
+      const oldP = npc.userData.progress;
+      npc.userData.progress += dt * 0.06 * npc.userData.speed;
       if(npc.userData.progress > 1) npc.userData.progress -= 1;
+      const npcVel = Math.abs(npc.userData.progress - oldP);
       updateRunnerPosition(npc, npc.userData.progress);
-      // Bobbing désynchronisé
-      npc.position.y = Math.sin(now * 0.012 + i * 1.3) * 0.035;
+      animateRunner(npc, npc.userData.speed * .8 + .03, now + i * 200);
+    });
+    // FOULE OLA : chaque spectateur bobbe avec un délai propre
+    crowd.userData.spectators.forEach((s) => {
+      const phase = now * .002 + s.userData.basePhase;
+      const bob = Math.sin(phase) * .15 + .15;
+      s.position.y = 1.45 + bob;
     });
     renderer.render(scene, camera);
     requestAnimationFrame(tick);

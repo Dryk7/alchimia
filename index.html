@@ -330,29 +330,90 @@ header{
   100% { transform:translate(-50%, -60px) scale(1); opacity:0; }
 }
 
-/* Quick actions row */
-.tap-actions{
+/* Combo display : visible quand chaîne en cours */
+.combo-display{
+  position:absolute; top:42vh; left:50%; transform:translateX(-50%);
+  display:none; align-items:center; gap:6px;
+  pointer-events:none; z-index:5;
+  background:linear-gradient(180deg, #ff6020, #c83020);
+  border:3px solid #fff;
+  border-radius:18px;
+  padding:5px 16px;
+  box-shadow:0 4px 12px rgba(217,40,20,.45);
+  font-family:"Nunito", sans-serif; font-weight:900;
+  color:#fff;
+  letter-spacing:.04em;
+}
+.combo-display.show{ display:inline-flex; animation:comboPop .25s cubic-bezier(.2,.9,.2,1.4) }
+@keyframes comboPop{
+  0%   { transform:translateX(-50%) scale(.6); opacity:0; }
+  100% { transform:translateX(-50%) scale(1); opacity:1; }
+}
+.combo-x{ font-size:22px; text-shadow:0 2px 4px rgba(160,40,0,.5); }
+.combo-fire{
+  display:inline-block; width:18px; height:18px;
+  background:radial-gradient(circle at 50% 70%, #ffd070, #ff6020 60%, transparent 75%);
+  animation:comboFlame .35s ease-in-out infinite alternate;
+}
+@keyframes comboFlame{
+  0%   { transform:scale(.9); opacity:.85; }
+  100% { transform:scale(1.15); opacity:1; }
+}
+
+/* Upgrade buttons — la VRAIE progression */
+.tap-upgrades{
   display:grid;
   grid-template-columns:1fr 1fr 1fr;
   gap:8px;
   padding:0 4px;
 }
-.tap-act{
-  display:flex; flex-direction:column; align-items:center; gap:3px;
-  padding:8px 4px 9px;
+.upg-btn{
+  display:flex; flex-direction:column; align-items:center; gap:2px;
+  padding:7px 4px 8px;
   background:linear-gradient(180deg, #fff8e4, #f4e2b4);
   border:2px solid rgba(160,122,68,.40);
   border-radius:14px;
   cursor:pointer;
   font-family:"Nunito", sans-serif; font-weight:800;
-  font-size:9.5px; letter-spacing:.10em;
   color:var(--ink);
-  text-transform:uppercase;
   box-shadow:0 2px 4px rgba(80,55,30,.16);
-  transition:transform .12s;
+  transition:transform .12s, box-shadow .12s, border-color .15s;
 }
-.tap-act svg{ width:22px; height:22px; color:var(--ember); }
-.tap-act:active{ transform:translateY(2px); box-shadow:0 1px 2px rgba(80,55,30,.16); }
+.upg-btn.affordable{
+  border-color:var(--ember);
+  background:linear-gradient(180deg, #fff3d0, #ffd896);
+  box-shadow:0 3px 8px rgba(217,104,40,.30), 0 0 0 3px rgba(255,208,112,.30);
+  animation:upgPulse 1.5s ease-in-out infinite;
+}
+.upg-btn.locked{ filter:grayscale(.5) brightness(.85); opacity:.7; cursor:not-allowed; }
+.upg-btn:active:not(.locked){ transform:translateY(2px) scale(.98); }
+.upg-row1{ display:flex; align-items:center; justify-content:space-between; width:100%; padding:0 4px; }
+.upg-ico{ width:22px; height:22px; color:var(--ember); }
+.upg-ico svg{ width:100%; height:100%; }
+.upg-lvl{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:9px; letter-spacing:.06em;
+  color:var(--ink);
+  background:#fff; border-radius:8px; padding:1px 6px;
+  border:1.5px solid rgba(160,122,68,.30);
+}
+.upg-name{
+  font-family:"Nunito", sans-serif; font-weight:800;
+  font-size:11px; letter-spacing:.04em;
+  margin-top:2px;
+  color:var(--ink);
+}
+.upg-cost{
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:10px;
+  color:var(--ember);
+  margin-top:1px;
+}
+.upg-btn.affordable .upg-cost{ color:#000; font-weight:900; }
+@keyframes upgPulse{
+  0%,100%{ box-shadow:0 3px 8px rgba(217,104,40,.30), 0 0 0 3px rgba(255,208,112,.30); }
+  50%   { box-shadow:0 3px 10px rgba(217,104,40,.45), 0 0 0 5px rgba(255,208,112,.45); }
+}
 
 /* ================ LE STADE ================ */
 /* Piste ovale + coureur qui accélère selon la progression. C'est la boucle
@@ -3582,19 +3643,43 @@ body.shop-epic-flash::after{
         <span class="boost-sub">Donne au coureur</span>
       </button>
 
-      <!-- Quick actions : skins, shop, leaderboard -->
-      <div class="tap-actions">
-        <button class="tap-act" data-action="skins" aria-label="Tenues">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 7 L8 4 L10 5 L14 5 L16 4 L20 7 L18 11 L16 10 V20 H8 V10 L6 11 Z"/></svg>
-          <span>TENUES</span>
+      <!-- Combo counter (visible quand chaîne active) -->
+      <div id="combo-display" class="combo-display">
+        <span class="combo-x" id="combo-x">×1</span>
+        <span class="combo-fire" id="combo-fire"></span>
+      </div>
+
+      <!-- UPGRADES — cœur addictif du jeu (Cookie Clicker style) -->
+      <div class="tap-upgrades">
+        <button class="upg-btn" data-upgrade="tapValue" aria-label="Améliorer tap">
+          <div class="upg-row1">
+            <span class="upg-ico">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 L4 14 h7 L9 22 L20 10 h-7 z"/></svg>
+            </span>
+            <span class="upg-lvl" id="upg-tap-lvl">NIV 0</span>
+          </div>
+          <div class="upg-name">TAP +1</div>
+          <div class="upg-cost" id="upg-tap-cost">50 méd</div>
         </button>
-        <button class="tap-act" data-action="shop" aria-label="Boutique">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 8 H19 L17.5 19 H6.5 z"/><path d="M9 8 V5 a3 3 0 0 1 6 0 V8" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
-          <span>BOUTIQUE</span>
+        <button class="upg-btn" data-upgrade="critChance" aria-label="Améliorer critique">
+          <div class="upg-row1">
+            <span class="upg-ico">
+              <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 14,9 22,9 16,14 18,22 12,17 6,22 8,14 2,9 10,9"/></svg>
+            </span>
+            <span class="upg-lvl" id="upg-crit-lvl">NIV 0</span>
+          </div>
+          <div class="upg-name">CRIT +2%</div>
+          <div class="upg-cost" id="upg-crit-cost">200 méd</div>
         </button>
-        <button class="tap-act" data-action="leaderboard" aria-label="Classement">
-          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="13" width="4" height="7"/><rect x="10" y="9" width="4" height="11"/><rect x="16" y="5" width="4" height="15"/></svg>
-          <span>RECORDS</span>
+        <button class="upg-btn" data-upgrade="lapBonus" aria-label="Améliorer tour">
+          <div class="upg-row1">
+            <span class="upg-ico">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 4 V20 L7 19 L9 20 L11 19 L13 20 L15 19 L17 20 L19 19 V4 Z"/></svg>
+            </span>
+            <span class="upg-lvl" id="upg-lap-lvl">NIV 0</span>
+          </div>
+          <div class="upg-name">TOUR +50</div>
+          <div class="upg-cost" id="upg-lap-cost">500 méd</div>
         </button>
       </div>
     </div>
@@ -9177,18 +9262,34 @@ function bumpStamina(amount){
 }
 
 /* ================ TAP-TO-BOOST CORE (v2 pivot) ================ */
-const TAP_COOLDOWN_MS = 200; // anti-spam léger
+const TAP_COOLDOWN_MS = 150; // anti-spam léger (reduit pour permettre combo)
+const TAP_COMBO_WINDOW = 900; // fenêtre entre 2 taps pour garder combo
 let _lastTapAt = 0;
+let _comboCount = 0;
+let _comboTimer = null;
 function tapBoost(e){
   const now = Date.now();
   if(now - _lastTapAt < TAP_COOLDOWN_MS) return;
+  // Combo : si tap < COMBO_WINDOW depuis le précédent, +1, sinon reset
+  if(now - _lastTapAt < TAP_COMBO_WINDOW && _lastTapAt > 0){
+    _comboCount++;
+  } else {
+    _comboCount = 1;
+  }
   _lastTapAt = now;
+  // Renouveler le timer de reset combo
+  if(_comboTimer) clearTimeout(_comboTimer);
+  _comboTimer = setTimeout(()=>{ _comboCount = 0; updateComboDisplay(); }, TAP_COMBO_WINDOW + 50);
+  updateComboDisplay();
+  // Combo multiplier : 1× (1 tap), 1.5× (3+), 2× (6+), 3× (12+), 5× (25+)
+  const comboMul = _comboCount >= 25 ? 5 : _comboCount >= 12 ? 3 : _comboCount >= 6 ? 2 : _comboCount >= 3 ? 1.5 : 1;
   // Bump stamina = boost de vitesse temporaire
-  if(typeof bumpStamina === 'function') bumpStamina(0.18);
-  // Médailles par tap : base 1 + upgrades du shop
-  const perTap = 1 + (STATE.upgradeTapValue||0);
-  const isCrit = Math.random() < (0.05 + (STATE.upgradeCritChance||0));
-  const gain = isCrit ? perTap * 5 : perTap;
+  if(typeof bumpStamina === 'function') bumpStamina(0.14 + _comboCount * 0.005);
+  // Médailles par tap : base 1 + niveau upgrade
+  const perTap = (1 + (STATE.upgradeTapValue||0)) * comboMul;
+  const critChance = 0.05 + (STATE.upgradeCritChance||0) * 0.02;
+  const isCrit = Math.random() < critChance;
+  const gain = Math.floor(isCrit ? perTap * 5 : perTap);
   STATE.gold += gain;
   // Pop visuel sur le bouton
   const btn = document.getElementById('boost-btn');
@@ -9233,11 +9334,95 @@ function updateTapStrip(){
   const critRate = document.getElementById('tap-crit-rate');
   if(perTap) perTap.textContent = '+' + (1 + (STATE.upgradeTapValue||0));
   if(perLap){
-    const totalMaxTier = (STATE.totals?.maxTier||[0,0,0]).reduce((a,b)=>a+b, 0);
-    const lapReward = 100 + (STATE.lapsRun||0) * 50 + totalMaxTier * 20;
+    const lapBonus = (STATE.upgradeLapBonus||0) * 50;
+    const lapReward = 100 + (STATE.lapsRun||0) * 50 + lapBonus;
     perLap.textContent = '+' + lapReward;
   }
-  if(critRate) critRate.textContent = Math.round((5 + (STATE.upgradeCritChance||0)*100)) + '%';
+  if(critRate) critRate.textContent = Math.round((5 + (STATE.upgradeCritChance||0)*2)) + '%';
+  updateUpgradesUI();
+}
+
+/* Combo display */
+function updateComboDisplay(){
+  const el = document.getElementById('combo-display');
+  const xEl = document.getElementById('combo-x');
+  if(!el) return;
+  if(_comboCount < 3){
+    el.classList.remove('show');
+    return;
+  }
+  const comboMul = _comboCount >= 25 ? '×5' : _comboCount >= 12 ? '×3' : _comboCount >= 6 ? '×2' : '×1.5';
+  if(xEl) xEl.textContent = comboMul + ' (' + _comboCount + ')';
+  if(!el.classList.contains('show')){
+    el.classList.add('show');
+  }
+}
+
+/* ================ UPGRADE SYSTEM (Cookie Clicker style) ================ */
+const UPGRADES_TAP = {
+  tapValue: {
+    name: 'TAP +1',
+    base: 50,
+    factor: 1.55,
+    state: 'upgradeTapValue',
+  },
+  critChance: {
+    name: 'CRIT +2%',
+    base: 200,
+    factor: 1.85,
+    state: 'upgradeCritChance',
+  },
+  lapBonus: {
+    name: 'TOUR +50',
+    base: 500,
+    factor: 1.75,
+    state: 'upgradeLapBonus',
+  },
+};
+function upgradeCost(id){
+  const u = UPGRADES_TAP[id];
+  if(!u) return Infinity;
+  const lvl = STATE[u.state] || 0;
+  return Math.floor(u.base * Math.pow(u.factor, lvl));
+}
+function buyUpgrade(id){
+  const u = UPGRADES_TAP[id];
+  if(!u) return;
+  const cost = upgradeCost(id);
+  if(STATE.gold < cost){ if(typeof sfxDeny === 'function') sfxDeny(); flashStat?.('gold-val'); return; }
+  STATE.gold -= cost;
+  STATE[u.state] = (STATE[u.state] || 0) + 1;
+  // Feedback
+  if(typeof A !== 'undefined' && A.ctx){
+    blip(880, .12, "triangle", .22, .5);
+    setTimeout(()=>blip(1320, .15, "sine", .22, .55), 80);
+  }
+  vibrate([15, 30, 15]);
+  // Particles depuis le bouton vers le coureur
+  const btn = document.querySelector(`.upg-btn[data-upgrade="${id}"]`);
+  if(btn){
+    const r = btn.getBoundingClientRect();
+    if(typeof particles === 'function') particles(r.left + r.width/2, r.top + r.height/2, '#ffd070', 16);
+  }
+  if(typeof renderStats === 'function') renderStats();
+  updateTapStrip();
+}
+function updateUpgradesUI(){
+  for(const id in UPGRADES_TAP){
+    const u = UPGRADES_TAP[id];
+    const lvl = STATE[u.state] || 0;
+    const cost = upgradeCost(id);
+    const lvlEl = document.getElementById('upg-' + (id==='tapValue'?'tap':id==='critChance'?'crit':'lap') + '-lvl');
+    const costEl = document.getElementById('upg-' + (id==='tapValue'?'tap':id==='critChance'?'crit':'lap') + '-cost');
+    const btn = document.querySelector(`.upg-btn[data-upgrade="${id}"]`);
+    if(lvlEl) lvlEl.textContent = 'NIV ' + lvl;
+    if(costEl) costEl.textContent = (cost >= 1000 ? (cost/1000).toFixed(cost>=10000?0:1) + 'k' : cost) + ' méd';
+    if(btn){
+      const affordable = STATE.gold >= cost;
+      btn.classList.toggle('affordable', affordable);
+      btn.classList.toggle('locked', !affordable);
+    }
+  }
 }
 /* Tick lap + stamina decay — appelé dans la boucle principale chaque frame */
 function tickRunnerLap(dt){
@@ -9256,12 +9441,22 @@ function tickRunnerLap(dt){
 function completeLap(){
   STATE.lapsRun = (STATE.lapsRun || 0) + 1;
   const lapNum = STATE.lapsRun;
-  const totalMaxTier = (STATE.totals?.maxTier||[0,0,0]).reduce((a,b)=>a+b, 0);
-  const baseReward = 100 + lapNum * 50 + totalMaxTier * 20;
+  const upgradeBonus = (STATE.upgradeLapBonus||0) * 50;
+  const baseReward = 100 + lapNum * 50 + upgradeBonus;
   const stamBonus = Math.floor(baseReward * Math.max(0, (STATE.runnerStamina||1) - 1) * 0.5);
   const totalReward = baseReward + stamBonus;
   STATE.gold += totalReward;
   STATE.runnerStamina = STAMINA_MAX;
+  // Milestone celebrations : tous les 5/10/25/100 tours
+  const isMilestone = lapNum % 100 === 0 ? 'mega' : lapNum % 25 === 0 ? 'big' : lapNum % 10 === 0 ? 'mid' : lapNum % 5 === 0 ? 'small' : null;
+  if(isMilestone){
+    const bonusMul = isMilestone === 'mega' ? 10 : isMilestone === 'big' ? 5 : isMilestone === 'mid' ? 3 : 2;
+    const milestoneBonus = baseReward * bonusMul;
+    STATE.gold += milestoneBonus;
+    if(typeof showRunnerBubble === 'function'){
+      showRunnerBubble(`✦ JALON ${lapNum} ! · +${milestoneBonus + totalReward} méd`);
+    }
+  }
   // Spawn 2 items random T1-T2 en bonus
   const empties = (typeof findEmpty === 'function') ? findEmpty() : [];
   for(let i=0; i<2 && empties.length; i++){
@@ -10906,6 +11101,9 @@ function save(){
       runnerStamina:STATE.runnerStamina ?? 1,
       lapProgress:STATE.lapProgress ?? 0,
       lapsRun:STATE.lapsRun ?? 0,
+      upgradeTapValue:STATE.upgradeTapValue ?? 0,
+      upgradeCritChance:STATE.upgradeCritChance ?? 0,
+      upgradeLapBonus:STATE.upgradeLapBonus ?? 0,
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
   }catch(e){}
@@ -10940,6 +11138,9 @@ function load(){
     STATE.runnerStamina = s.runnerStamina ?? 1.5;
     STATE.lapProgress = s.lapProgress ?? 0;
     STATE.lapsRun = s.lapsRun ?? 0;
+    STATE.upgradeTapValue = s.upgradeTapValue ?? 0;
+    STATE.upgradeCritChance = s.upgradeCritChance ?? 0;
+    STATE.upgradeLapBonus = s.upgradeLapBonus ?? 0;
     // Migration : si on a maxTier mais pas de codexUnlocks → backfill
     for(let c=0;c<3;c++){
       for(let t=0; t<=STATE.totals.maxTier[c]; t++){
@@ -11141,24 +11342,16 @@ function boot(){
     // Empêche le double-tap zoom mobile
     boostBtn.addEventListener('touchend', (e)=>{ e.preventDefault(); }, { passive:false });
   }
-  // Tap actions row : Tenues / Boutique / Records
-  document.querySelectorAll('.tap-act').forEach(btn=>{
+  // Upgrade buttons : Tap+, Crit+, Tour+
+  document.querySelectorAll('.upg-btn').forEach(btn=>{
     btn.addEventListener('click', e=>{
-      const a = btn.dataset.action;
-      if(a === 'shop'){ if(typeof renderShop === 'function') renderShop(); openModal('shop-modal'); }
-      else if(a === 'skins'){
-        // Pour l'instant : redirige vers stats (skins là-bas). Future modal skins dédié.
-        if(typeof renderStatsBody === 'function') renderStatsBody();
-        openModal('stats-modal');
-      }
-      else if(a === 'leaderboard'){
-        if(typeof renderStatsBody === 'function') renderStatsBody();
-        openModal('stats-modal');
-      }
+      const id = btn.dataset.upgrade;
+      if(id && typeof buyUpgrade === 'function') buyUpgrade(id);
     });
   });
   // Init des stats du tap au démarrage
   if(typeof updateTapStrip === 'function') updateTapStrip();
+  if(typeof updateUpgradesUI === 'function') updateUpgradesUI();
   bindModalClose('seal-modal','seal-close');
   bindModalClose('codex-page-modal','codex-page-close');
   document.getElementById('codex-page-prev').addEventListener('click', e=>{ e.stopPropagation(); navCodexPage(-1); });

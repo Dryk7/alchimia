@@ -649,6 +649,200 @@ header{
   margin-top:12px;
 }
 
+/* === COFFRES + REVEAL === */
+.chests-body{ overflow-y:auto; max-height:65vh; padding:4px 2px; position:relative; }
+#chest-stage{
+  display:none;
+  position:fixed; inset:0;
+  z-index:300;
+  background:radial-gradient(circle, rgba(0,0,0,.7) 0%, rgba(0,0,0,.85) 70%);
+  align-items:center; justify-content:center;
+  pointer-events:auto;
+}
+#chest-stage.active{ display:flex; }
+
+/* Anim coffre qui shake + burst */
+.chest-anim{
+  position:relative;
+  width:160px; height:160px;
+  display:flex; align-items:center; justify-content:center;
+  animation:chestShakeOpen 0.9s ease-in-out;
+}
+.chest-anim-emoji{
+  font-size:96px;
+  filter:drop-shadow(0 0 20px var(--c-color, #ffba30));
+  animation:chestEmojiOpen 0.9s ease-in-out;
+}
+.chest-anim-burst{
+  position:absolute; inset:-20px;
+  background:radial-gradient(circle, var(--c-color, #ffba30) 0%, transparent 70%);
+  opacity:0;
+  animation:chestBurst 0.9s ease-in-out;
+}
+@keyframes chestShakeOpen{
+  0%   { transform:scale(.3) rotate(-180deg); opacity:0; }
+  20%  { transform:scale(1.1) rotate(-10deg); opacity:1; }
+  35%  { transform:scale(1) rotate(10deg); }
+  50%  { transform:scale(1.05) rotate(-5deg); }
+  65%  { transform:scale(1) rotate(5deg); }
+  80%  { transform:scale(1.15) rotate(0); }
+  100% { transform:scale(1.5) rotate(0); opacity:0; }
+}
+@keyframes chestEmojiOpen{
+  0%   { transform:scale(1); }
+  80%  { transform:scale(1.2); filter:drop-shadow(0 0 50px var(--c-color, #ffba30)); }
+  100% { transform:scale(0); }
+}
+@keyframes chestBurst{
+  0%   { opacity:0; transform:scale(.5); }
+  60%  { opacity:.7; }
+  100% { opacity:0; transform:scale(2); }
+}
+
+/* Reveal item après ouverture */
+.reveal-item{
+  position:relative;
+  background:linear-gradient(180deg, #fff8e4, #fff3d8);
+  border:4px solid var(--rar-color, #9b9b9b);
+  border-radius:18px;
+  padding:24px 30px;
+  text-align:center;
+  box-shadow:0 0 60px var(--rar-color, #9b9b9b), 0 8px 30px rgba(0,0,0,.4);
+  animation:revealPop .5s cubic-bezier(.2,.9,.2,1.4);
+  min-width:260px;
+}
+@keyframes revealPop{
+  0%   { transform:scale(.3); opacity:0; }
+  60%  { transform:scale(1.15); opacity:1; }
+  100% { transform:scale(1); }
+}
+.reveal-item.rar-legendary{ animation:revealPop .5s cubic-bezier(.2,.9,.2,1.4), legendaryShine 1.5s ease-in-out infinite alternate .5s; }
+@keyframes legendaryShine{
+  0%   { box-shadow:0 0 60px var(--rar-color), 0 8px 30px rgba(0,0,0,.4); }
+  100% { box-shadow:0 0 120px var(--rar-color), 0 8px 30px rgba(0,0,0,.4); }
+}
+.reveal-glow{
+  position:absolute; inset:-30px;
+  background:radial-gradient(circle, var(--rar-color, #9b9b9b) 0%, transparent 60%);
+  opacity:.35;
+  pointer-events:none;
+  animation:revealGlowPulse 2s ease-in-out infinite;
+}
+@keyframes revealGlowPulse{
+  0%,100% { opacity:.25; transform:scale(.95); }
+  50%     { opacity:.5;  transform:scale(1.1); }
+}
+.reveal-emoji{ font-size:72px; line-height:1; margin-bottom:8px; }
+.reveal-rarity{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:12px; letter-spacing:.16em;
+  text-transform:uppercase;
+}
+.reveal-name{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:18px; color:var(--ink); margin-top:2px;
+}
+.reveal-bonus{
+  font-family:"Nunito", sans-serif; font-weight:800;
+  font-size:13px; color:#3a8c3a; margin-top:6px;
+}
+.reveal-compare{
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:11px; color:var(--ink-2); margin-top:4px;
+}
+.reveal-actions{
+  display:flex; gap:8px; margin-top:14px;
+}
+.reveal-btn{
+  flex:1;
+  padding:10px 12px;
+  border:none; border-radius:12px;
+  cursor:pointer;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:12px; letter-spacing:.04em;
+  transition:transform .12s, box-shadow .15s;
+}
+.reveal-btn:active{ transform:scale(.96); }
+.reveal-btn.equip{
+  background:#f3ead4; color:var(--ink);
+}
+.reveal-btn.equip.recommended{
+  background:linear-gradient(180deg, #7ec46a, #4e9438);
+  color:#fff;
+  box-shadow:0 2px 8px rgba(78,148,56,.5);
+}
+.reveal-btn.scrap{
+  background:linear-gradient(180deg, #e8a050, #c8783a);
+  color:#fff;
+  box-shadow:0 2px 6px rgba(200,120,58,.4);
+}
+
+/* Grille des coffres */
+.chests-grid{
+  display:grid; grid-template-columns:repeat(2, 1fr);
+  gap:8px;
+  margin-bottom:14px;
+}
+.chest-card{
+  padding:12px 10px;
+  background:#fff;
+  border:3px solid var(--c-color, #9b9b9b);
+  border-radius:14px;
+  text-align:center;
+  transition:transform .15s;
+}
+.chest-card.empty{ opacity:.4; }
+.chest-card.has{
+  box-shadow:0 0 0 1px var(--c-color), 0 4px 12px rgba(80,55,30,.15);
+}
+.chest-emoji{ font-size:36px; line-height:1; margin-bottom:4px; }
+.chest-name{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:12px; letter-spacing:.04em;
+}
+.chest-count{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:22px; color:var(--ink);
+  margin:2px 0 6px;
+  font-variant-numeric:tabular-nums;
+}
+.chest-actions{ display:flex; flex-direction:column; gap:4px; }
+.chest-open, .chest-open-all{
+  padding:6px 10px;
+  background:linear-gradient(180deg, #ffd070, #f0a050);
+  color:#5a2810;
+  border:none; border-radius:8px;
+  cursor:pointer;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:11px; letter-spacing:.06em;
+  transition:transform .12s;
+}
+.chest-open:active{ transform:scale(.95); }
+.chest-open.disabled, .chest-open:disabled{ background:#e0d0b8; color:#999; cursor:not-allowed; }
+.chest-open-all{ background:linear-gradient(180deg, #c89af0, #9b6cd0); color:#fff; font-size:10px; }
+.chests-help{
+  text-align:center;
+  font-family:"Nunito", sans-serif; font-weight:600;
+  font-size:10.5px; color:var(--ink-2);
+  padding:8px 12px;
+  background:#fffaee;
+  border:1.5px dashed rgba(160,122,68,.30);
+  border-radius:10px;
+}
+
+/* Badge nombre sur menu Coffres */
+.mi-badge-num{
+  position:absolute; top:8px; right:10px;
+  min-width:20px; height:20px; padding:0 6px;
+  display:inline-flex; align-items:center; justify-content:center;
+  background:#d04030; color:#fff;
+  font-family:"Nunito", sans-serif; font-weight:900; font-size:11px;
+  border-radius:10px;
+  box-shadow:0 0 8px rgba(208,64,48,.6);
+  pointer-events:none;
+  animation:badgePulse 1.5s ease-in-out infinite;
+}
+
 /* === ÉQUIPEMENT (loot RPG) === */
 .drop-toast{
   position:fixed; top:80px; right:-280px;
@@ -5845,11 +6039,19 @@ body.shop-epic-flash::after{
         </svg>
         <div class="mi-meta"><div class="mi-title">💎 Boutique</div><div class="mi-sub">boosts, packs, médailles avec gemmes</div></div>
       </button>
+      <button class="menu-item" data-action="chests">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <rect x="4" y="8" width="16" height="11" rx="1"/>
+          <path d="M4 12 H20 M12 8 V19"/>
+          <rect x="10.5" y="11" width="3" height="3"/>
+        </svg>
+        <div class="mi-meta"><div class="mi-title">📦 Coffres</div><div class="mi-sub">ouvrir pour révéler items</div></div>
+      </button>
       <button class="menu-item" data-action="equip">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
           <path d="M8 4 L16 4 L18 8 L14 9 L13 20 L11 20 L10 9 L6 8 z"/>
         </svg>
-        <div class="mi-meta"><div class="mi-title">🎽 Équipement</div><div class="mi-sub">5 slots · drops à chaque tour</div></div>
+        <div class="mi-meta"><div class="mi-title">🎽 Équipement</div><div class="mi-sub">5 slots · stats actives</div></div>
       </button>
       <button class="menu-item" data-action="wardrobe">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
@@ -6265,6 +6467,16 @@ body.shop-epic-flash::after{
     <h2>ASCENSION</h2>
     <div class="divider"></div>
     <div class="saison-body" id="saison-body"></div>
+  </div>
+</div>
+
+<!-- COFFRES (loot box style) -->
+<div id="chests-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-close" id="chests-close" aria-label="Fermer">×</div>
+    <h2>📦 COFFRES</h2>
+    <div class="divider"></div>
+    <div class="chests-body" id="chests-body"></div>
   </div>
 </div>
 
@@ -11418,9 +11630,249 @@ function _showDropToast(item, action, scrapMed){
     }
   }
 }
+/* === COFFRES — drop à chaque tour, le joueur ouvre quand il veut === */
+const CHEST_TYPES = [
+  { id:'wood',      name:'Coffre Bois',       emoji:'📦', color:'#9b7f50', weight:60,
+    // % chance de chaque rareté DANS le coffre :
+    rarityWeights:{ common:75, uncommon:20, rare:4,  epic:1,  legendary:0   } },
+  { id:'iron',      name:'Coffre Fer',        emoji:'🗃️', color:'#9b9b9b', weight:25,
+    rarityWeights:{ common:30, uncommon:50, rare:15, epic:4,  legendary:1   } },
+  { id:'gold',      name:'Coffre Or',         emoji:'🏆', color:'#ffba30', weight:12,
+    rarityWeights:{ common:5,  uncommon:25, rare:50, epic:17, legendary:3   } },
+  { id:'legendary', name:'Coffre Légendaire', emoji:'✨', color:'#ff8030', weight:3,
+    rarityWeights:{ common:0,  uncommon:0,  rare:30, epic:55, legendary:15  } },
+];
+function _rollChestType(){
+  const tot = CHEST_TYPES.reduce((a,c)=>a+c.weight, 0);
+  let roll = Math.random() * tot;
+  for(const c of CHEST_TYPES){
+    roll -= c.weight;
+    if(roll < 0) return c;
+  }
+  return CHEST_TYPES[0];
+}
+function chestDef(id){ return CHEST_TYPES.find(c => c.id === id); }
+function _ensureChestState(){
+  if(!STATE.chests) STATE.chests = { wood:0, iron:0, gold:0, legendary:0 };
+  for(const c of CHEST_TYPES) if(typeof STATE.chests[c.id] !== 'number') STATE.chests[c.id] = 0;
+}
+function totalChestsAvailable(){
+  _ensureChestState();
+  return CHEST_TYPES.reduce((a,c)=>a + (STATE.chests[c.id] || 0), 0);
+}
+/* Drop coffre à chaque tour (remplace maybeDropItem) */
 function maybeDropItem(){
-  const item = rollItem();
-  _spawnDrop(item);
+  _ensureChestState();
+  const chest = _rollChestType();
+  STATE.chests[chest.id] = (STATE.chests[chest.id] || 0) + 1;
+  _showChestDropToast(chest);
+  if(typeof updateChestBadge === 'function') updateChestBadge();
+}
+function _showChestDropToast(chest){
+  const t = document.createElement('div');
+  t.className = 'drop-toast chest-' + chest.id + (chest.id === 'legendary' ? ' drop-legendary' : '');
+  t.innerHTML = `
+    <div class="dt-ico" style="border-color:${chest.color}">${chest.emoji}</div>
+    <div class="dt-body">
+      <div class="dt-name" style="color:${chest.color}">${chest.name} reçu !</div>
+      <div class="dt-bonus">Touche 📦 pour ouvrir quand tu veux</div>
+    </div>`;
+  document.body.appendChild(t);
+  setTimeout(()=>t.classList.add('show'), 30);
+  setTimeout(()=>t.classList.remove('show'), 2400);
+  setTimeout(()=>t.remove(), 2800);
+  if(A?.ctx){
+    blip(550, .1, "triangle", .24, .5);
+    if(chest.id === 'gold' || chest.id === 'legendary'){
+      setTimeout(()=>blip(880, .1, "sine", .24, .55), 80);
+      setTimeout(()=>blip(1320, .15, "triangle", .24, .6), 180);
+    }
+  }
+}
+/* Roule un item à partir d'un coffre */
+function _rollItemFromChest(chest){
+  // Tire la rareté selon les poids du coffre
+  const weights = chest.rarityWeights;
+  const total = Object.values(weights).reduce((a,b)=>a+b, 0);
+  let roll = Math.random() * total;
+  let chosenRarityId = 'common';
+  for(const r of RARITIES){
+    roll -= (weights[r.id] || 0);
+    if(roll < 0){ chosenRarityId = r.id; break; }
+  }
+  const rarity = rarityDef(chosenRarityId);
+  const type = ITEM_TYPES[Math.floor(Math.random() * ITEM_TYPES.length)];
+  const level = _rollItemLevel();
+  return {
+    typeId: type.id,
+    rarityId: rarity.id,
+    level,
+    bonus: +(type.baseBonus * rarity.mul * level).toFixed(4),
+  };
+}
+/* Ouverture coffre : anim + reveal item + choix joueur */
+function openChest(chestId){
+  _ensureChestState();
+  if((STATE.chests[chestId] || 0) <= 0) return;
+  const chest = chestDef(chestId);
+  if(!chest) return;
+  STATE.chests[chestId] -= 1;
+  // Anim chest + reveal
+  const modal = document.getElementById('chests-modal');
+  const stage = document.getElementById('chest-stage');
+  if(!stage){ if(typeof renderChestsModal === 'function') renderChestsModal(); return; }
+  // Roule l'item maintenant pour la reveal anim
+  const newItem = _rollItemFromChest(chest);
+  // Construit le HTML de l'anim
+  stage.innerHTML = `
+    <div class="chest-anim chest-${chest.id}" style="--c-color:${chest.color}">
+      <div class="chest-anim-emoji">${chest.emoji}</div>
+      <div class="chest-anim-burst"></div>
+    </div>
+  `;
+  stage.classList.add('active');
+  if(A?.ctx){
+    blip(440, .15, "triangle", .26, .6);
+    setTimeout(()=>blip(660, .15, "triangle", .26, .65), 200);
+    setTimeout(()=>blip(990, .2, "sine", .26, .7), 400);
+    if(newItem.rarityId === 'legendary' || newItem.rarityId === 'epic'){
+      setTimeout(()=>blip(1320, .25, "triangle", .26, .75), 600);
+    }
+  }
+  vibrate([30, 60, 30]);
+  // Reveal item après 900ms
+  setTimeout(()=>{
+    const type = itemDef(newItem.typeId);
+    const rar = rarityDef(newItem.rarityId);
+    const current = STATE.equipment?.[newItem.typeId];
+    const isBetter = !current || itemValue(newItem) > itemValue(current);
+    const scrapMed = itemScrapMed(newItem);
+    stage.innerHTML = `
+      <div class="reveal-item rar-${newItem.rarityId}" style="--rar-color:${rar.color}">
+        <div class="reveal-glow"></div>
+        <div class="reveal-emoji">${type.emoji}</div>
+        <div class="reveal-rarity" style="color:${rar.color}">${rar.name}</div>
+        <div class="reveal-name">${type.name} NIV ${newItem.level}</div>
+        <div class="reveal-bonus">+${(newItem.bonus*100).toFixed(1)}% ${type.desc}</div>
+        ${current ? `<div class="reveal-compare">vs équipé : +${(current.bonus*100).toFixed(1)}% (${isBetter ? '↑ MEILLEUR' : '↓ inférieur'})</div>` : `<div class="reveal-compare">Aucun équipement actuel</div>`}
+        <div class="reveal-actions">
+          <button class="reveal-btn equip ${isBetter ? 'recommended' : ''}" data-action="equip">ÉQUIPER</button>
+          <button class="reveal-btn scrap" data-action="scrap">SCRAP · +${fmtBigNumber(scrapMed)} méd</button>
+        </div>
+      </div>
+    `;
+    // Wire actions
+    stage.querySelector('[data-action="equip"]')?.addEventListener('click', ()=>{
+      // Scrap l'ancien si présent
+      if(current){
+        const med = itemScrapMed(current);
+        STATE.gold = (STATE.gold || 0) + med;
+      }
+      if(!STATE.equipment) STATE.equipment = {};
+      STATE.equipment[newItem.typeId] = newItem;
+      if(typeof showRunnerBubble === 'function') showRunnerBubble('✓ ' + type.name + ' équipé');
+      if(A?.ctx) blip(990, .1, "triangle", .22, .55);
+      stage.classList.remove('active');
+      stage.innerHTML = '';
+      if(typeof renderChestsModal === 'function') renderChestsModal();
+      if(typeof renderEquipment === 'function') renderEquipment();
+      if(typeof renderStats === 'function') renderStats();
+      if(typeof updateChestBadge === 'function') updateChestBadge();
+    });
+    stage.querySelector('[data-action="scrap"]')?.addEventListener('click', ()=>{
+      STATE.gold = (STATE.gold || 0) + scrapMed;
+      if(A?.ctx) blip(660, .08, "triangle", .22, .45);
+      stage.classList.remove('active');
+      stage.innerHTML = '';
+      if(typeof renderChestsModal === 'function') renderChestsModal();
+      if(typeof renderStats === 'function') renderStats();
+      if(typeof updateChestBadge === 'function') updateChestBadge();
+    });
+  }, 900);
+}
+function openAllChests(chestId){
+  // Ouverture rapide multiple (bonus QoL late game)
+  const n = STATE.chests[chestId] || 0;
+  if(n <= 0) return;
+  const chest = chestDef(chestId);
+  let gained = 0;
+  let bestItem = null;
+  for(let i=0; i<n; i++){
+    const newItem = _rollItemFromChest(chest);
+    const current = STATE.equipment?.[newItem.typeId];
+    if(!current || itemValue(newItem) > itemValue(current)){
+      if(current) gained += itemScrapMed(current);
+      if(!STATE.equipment) STATE.equipment = {};
+      STATE.equipment[newItem.typeId] = newItem;
+      if(!bestItem || itemValue(newItem) > itemValue(bestItem)) bestItem = newItem;
+    } else {
+      gained += itemScrapMed(newItem);
+    }
+  }
+  STATE.chests[chestId] = 0;
+  STATE.gold = (STATE.gold || 0) + gained;
+  if(typeof showRunnerBubble === 'function'){
+    let msg = `${n} ${chest.name}s ouverts · +${fmtBigNumber(gained)} méd`;
+    if(bestItem) msg += ` · ${rarityDef(bestItem.rarityId).name} équipé`;
+    showRunnerBubble(msg);
+  }
+  if(A?.ctx){
+    blip(660, .15, "triangle", .26, .6);
+    setTimeout(()=>blip(990, .2, "sine", .26, .7), 100);
+  }
+  if(typeof renderChestsModal === 'function') renderChestsModal();
+  if(typeof renderEquipment === 'function') renderEquipment();
+  if(typeof renderStats === 'function') renderStats();
+  if(typeof updateChestBadge === 'function') updateChestBadge();
+}
+function openChestsModal(){
+  if(typeof renderChestsModal === 'function') renderChestsModal();
+  document.getElementById('chests-modal')?.classList.add('show');
+}
+function renderChestsModal(){
+  const body = document.getElementById('chests-body');
+  if(!body) return;
+  _ensureChestState();
+  const cards = CHEST_TYPES.map(c => {
+    const n = STATE.chests[c.id] || 0;
+    return `<div class="chest-card ${n > 0 ? 'has' : 'empty'}" style="--c-color:${c.color}">
+      <div class="chest-emoji">${c.emoji}</div>
+      <div class="chest-name" style="color:${c.color}">${c.name}</div>
+      <div class="chest-count">×${n}</div>
+      <div class="chest-actions">
+        <button class="chest-open ${n>0?'':'disabled'}" data-open-chest="${c.id}" ${n>0?'':'disabled'}>OUVRIR</button>
+        ${n > 1 ? `<button class="chest-open-all" data-openall-chest="${c.id}">TOUT (${n}) ×</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+  body.innerHTML = `
+    <div id="chest-stage"></div>
+    <div class="chests-grid">${cards}</div>
+    <div class="chests-help">🎁 Tu reçois 1 coffre à chaque tour bouclé. Plus la rareté du coffre est haute, meilleurs sont les items à l'intérieur.</div>
+  `;
+  body.querySelectorAll('[data-open-chest]').forEach(btn => {
+    btn.addEventListener('click', ()=>openChest(btn.dataset.openChest));
+  });
+  body.querySelectorAll('[data-openall-chest]').forEach(btn => {
+    btn.addEventListener('click', ()=>openAllChests(btn.dataset.openallChest));
+  });
+}
+/* Badge sur l'icône menu "Coffres" quand des coffres en attente */
+function updateChestBadge(){
+  const item = document.querySelector('.menu-item[data-action="chests"]');
+  if(!item) return;
+  const n = totalChestsAvailable();
+  let badge = item.querySelector('.mi-badge-num');
+  if(n > 0){
+    if(!badge){
+      badge = document.createElement('span');
+      badge.className = 'mi-badge-num';
+      item.appendChild(badge);
+    }
+    badge.textContent = n > 99 ? '99+' : n;
+  } else if(badge){
+    badge.remove();
+  }
 }
 function openEquip(){
   if(typeof renderEquipment === 'function') renderEquipment();
@@ -15176,6 +15628,7 @@ function save(){
       dailyQuests:STATE.dailyQuests || null,
       selectedStadiumId:STATE.selectedStadiumId || null,
       equipment:STATE.equipment || {},
+      chests:STATE.chests || {},
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
   }catch(e){}
@@ -15240,6 +15693,7 @@ function load(){
     STATE.dailyQuests = s.dailyQuests || null;
     STATE.selectedStadiumId = s.selectedStadiumId || null;
     STATE.equipment = s.equipment || {};
+    STATE.chests = s.chests || {};
     // Migration : si on a maxTier mais pas de codexUnlocks → backfill
     for(let c=0;c<3;c++){
       for(let t=0; t<=STATE.totals.maxTier[c]; t++){
@@ -15454,6 +15908,9 @@ function boot(){
   bindModalClose('quests-daily-modal','quests-daily-close');
   bindModalClose('stadium-modal','stadium-close');
   bindModalClose('equip-modal','equip-close');
+  bindModalClose('chests-modal','chests-close');
+  // Update chest badge at boot
+  if(typeof updateChestBadge === 'function') updateChestBadge();
   document.getElementById('starter-close')?.addEventListener('click', ()=>{
     document.getElementById('starter-modal')?.classList.remove('show');
     STATE.starterPackDeclined = true; // ne plus re-spam
@@ -15588,6 +16045,7 @@ function boot(){
         else if(action === 'shop-premium' && typeof openShopModal === 'function') openShopModal();
         else if(action === 'wardrobe' && typeof openWardrobe === 'function') openWardrobe();
         else if(action === 'equip' && typeof openEquip === 'function') openEquip();
+        else if(action === 'chests' && typeof openChestsModal === 'function') openChestsModal();
         else if(action === 'records' && typeof openRecords === 'function') openRecords();
         else if(action === 'quests-daily' && typeof openQuestsModal === 'function') openQuestsModal();
         else if(action === 'stadium' && typeof openStadiumPicker === 'function') openStadiumPicker();

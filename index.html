@@ -18186,11 +18186,25 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       updateRunnerPosition(npc, npc.userData.progress);
       animateRunner(npc, npc.userData.speed * .8 + .03, now + i * 200);
     });
-    // FOULE OLA : chaque spectateur bobbe avec un délai propre
-    crowd.userData.spectators.forEach((s) => {
-      const phase = now * .002 + s.userData.basePhase;
-      const bob = Math.sin(phase) * .15 + .15;
-      s.position.y = 1.85 + bob;
+    // FOULE OLA : vague synchronisée qui tourne autour du stade
+    crowd.userData.spectators.forEach((s, i) => {
+      // Position angulaire de chaque spectateur
+      const angle = Math.atan2(s.position.z, s.position.x);
+      const aWrap = (angle + Math.PI * 2) % (Math.PI * 2);
+      // Vague qui tourne (1 tour en 6 secondes)
+      const wavePhase = (now / 6000) * Math.PI * 2;
+      // Delta entre la position du spectateur et la "tête" de la vague
+      let delta = aWrap - (wavePhase % (Math.PI * 2));
+      if(delta < -Math.PI) delta += Math.PI * 2;
+      if(delta > Math.PI) delta -= Math.PI * 2;
+      // Vague gaussienne (intensité décroissante)
+      const intensity = Math.exp(-(delta * delta) * 4);
+      // Bobbing normal + boost à la vague
+      const idleBob = Math.sin(now * .002 + s.userData.basePhase) * .08;
+      const waveBob = intensity * 1.2;
+      s.position.y = 1.85 + idleBob + waveBob;
+      // Pendant la vague, leve les bras (scale Y plus grand)
+      s.scale.y = 1 + intensity * .35;
     });
     // CAMERA IDLE BREATHING
     const breathX = Math.sin(now * .0003) * .25;
@@ -18261,6 +18275,12 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       }
       confetti.geometry.attributes.position.needsUpdate = true;
     }
+
+    // === NUAGES : drift slow horizontal ===
+    clouds.forEach(c => {
+      c.position.x += c.userData.driftSpeed * dt;
+      if(c.position.x > 22){ c.position.x = -22; c.position.z = -10 - Math.random() * 10; }
+    });
 
     // === BIRDS : flap + flight ===
     [bird1, bird2].forEach(b => {
@@ -18428,6 +18448,56 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     }
   }
   // Trigger burst quand le joueur passe par la ligne d'arrivée (progress wraps)
+
+  // === NUAGES 3D dans le ciel (clusters de sphères blanches) ===
+  function makeCloud(x, y, z, scale=1){
+    const cg = new THREE.Group();
+    const cloudMat = mat('#fff', {roughness:.95});
+    const parts = [
+      { x: 0, y: 0, z: 0, r: 1 },
+      { x: -1, y: -.2, z: .2, r: .75 },
+      { x: 1.1, y: -.1, z: -.2, r: .8 },
+      { x: .3, y: .4, z: .15, r: .65 },
+      { x: -.5, y: .35, z: -.1, r: .5 },
+    ];
+    parts.forEach(p => {
+      const s = new THREE.Mesh(new THREE.SphereGeometry(p.r, 12, 9), cloudMat);
+      s.position.set(p.x, p.y, p.z);
+      cg.add(s);
+    });
+    cg.position.set(x, y, z);
+    cg.scale.setScalar(scale);
+    cg.userData.driftSpeed = .3 + Math.random() * .4;
+    return cg;
+  }
+  const clouds = [
+    makeCloud(-15, 12, -15, 1.2),
+    makeCloud(-5, 14, -18, 1.0),
+    makeCloud(8, 13, -16, 1.3),
+    makeCloud(18, 12.5, -14, 0.9),
+  ];
+  clouds.forEach(c => scene.add(c));
+
+  // === TUNNELS / VOMITORIOS (entrées sombres dans la tribune) ===
+  function makeTunnel(angle){
+    const tg = new THREE.Group();
+    const x = Math.cos(angle) * 9.8;
+    const z = Math.sin(angle) * 6.5;
+    // Arche sombre
+    const arch = new THREE.Mesh(
+      new THREE.BoxGeometry(1.2, 1.5, .3),
+      mat('#1a0a08', {roughness:.9})
+    );
+    arch.castShadow=true;
+    arch.position.set(x, .75, z);
+    arch.lookAt(0, .75, 0);
+    return arch;
+  }
+  // 4 tunnels (un par côté cardinal)
+  scene.add(makeTunnel(Math.PI/2));        // front
+  scene.add(makeTunnel(-Math.PI/2));       // back
+  scene.add(makeTunnel(Math.PI));          // left
+  scene.add(makeTunnel(0));                // right
 
   // === BIRD flying à travers le ciel ===
   function makeBird(){

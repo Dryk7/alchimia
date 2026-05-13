@@ -1917,6 +1917,87 @@ header{
   display:block; width:100%; height:100%;
 }
 
+/* ================ PROGRESSION VISUELLE v7 (tiers 0-9) ================
+   Le stade s'enrichit au fur et à mesure que le joueur progresse. */
+
+/* Tier 0 (très tôt) : terrain vague — ciel sale, gazon jauni, rien d'autre */
+#runner-stadium[data-tier="0"] #rs-sky-bg{ fill:#a8b8b0; }
+#runner-stadium[data-tier="0"] #rs-celestial{ fill:#d8b888; opacity:.7; }
+#runner-stadium[data-tier="0"] #rs-celestial + circle,
+#runner-stadium[data-tier="0"] #rs-celestial + circle + circle{ opacity:0; }
+#runner-stadium[data-tier="0"] #rs-clouds,
+#runner-stadium[data-tier="0"] #rs-blimp,
+#runner-stadium[data-tier="0"] #rs-roof,
+#runner-stadium[data-tier="0"] #rs-lights,
+#runner-stadium[data-tier="0"] #rs-scoreboard,
+#runner-stadium[data-tier="0"] #rs-banners{ display:none; }
+/* Gazon jauni */
+#runner-stadium[data-tier="0"] rect[fill="url(#rs-grass-grad)"]{ fill:#c8a868; }
+/* Foreground : pas de buissons / banc, juste herbes pourries */
+#runner-stadium[data-tier="0"] #rs-foreground ellipse,
+#runner-stadium[data-tier="0"] #rs-foreground rect[width="20"],
+#runner-stadium[data-tier="0"] #rs-foreground rect[fill="#5a4028"],
+#runner-stadium[data-tier="0"] #rs-foreground rect[fill="#3a2818"]{ display:none; }
+/* Pas de fleurs */
+#runner-stadium[data-tier="0"] #rs-foreground rect[fill="#ff8a48"],
+#runner-stadium[data-tier="0"] #rs-foreground rect[fill="#ff5a30"],
+#runner-stadium[data-tier="0"] #rs-foreground rect[fill="#c8a8f0"],
+#runner-stadium[data-tier="0"] #rs-foreground rect[fill="#fff"]{ display:none; }
+/* Lanes pointillées : que la piste de base */
+#runner-stadium[data-tier="0"] #rs-track-ring ~ ellipse{ display:none; }
+/* Ligne d'arrivée et drapeau */
+#runner-stadium[data-tier="0"] rect[fill="#1a1010"][height="11"],
+#runner-stadium[data-tier="0"] rect[fill="#3a2818"][height="28"]{ display:none; }
+
+/* Tier 1 : 1 marche tribune, ciel encore terne, pas de sponsors */
+#runner-stadium[data-tier="1"] #rs-clouds,
+#runner-stadium[data-tier="1"] #rs-blimp,
+#runner-stadium[data-tier="1"] #rs-roof,
+#runner-stadium[data-tier="1"] #rs-lights,
+#runner-stadium[data-tier="1"] #rs-scoreboard,
+#runner-stadium[data-tier="1"] #rs-banners{ display:none; }
+#runner-stadium[data-tier="1"] #rs-sky-bg{ fill:#9bbac2; }
+#runner-stadium[data-tier="1"] rect[fill="url(#rs-grass-grad)"]{ fill:#a0b870; }
+
+/* Tier 2 : tribunes 2 marches + ciel un peu mieux + 1 sponsor */
+#runner-stadium[data-tier="2"] #rs-blimp,
+#runner-stadium[data-tier="2"] #rs-roof,
+#runner-stadium[data-tier="2"] #rs-lights,
+#runner-stadium[data-tier="2"] #rs-scoreboard{ display:none; }
+#runner-stadium[data-tier="2"] #rs-banners > *:not(:first-child):not(:nth-child(2)):not(:nth-child(3)):not(:nth-child(4)){ display:none; }
+#runner-stadium[data-tier="2"] #rs-sky-bg{ fill:#a5c5d0; }
+/* Cache 2 des 3 sponsors */
+#runner-stadium[data-tier="2"] #rs-banners > *:nth-child(n+5){ display:none; }
+
+/* Tier 3 : tribunes 3 marches + scoreboard simple en bois + 2 sponsors */
+#runner-stadium[data-tier="3"] #rs-blimp,
+#runner-stadium[data-tier="3"] #rs-roof,
+#runner-stadium[data-tier="3"] #rs-lights{ display:none; }
+#runner-stadium[data-tier="3"] #rs-banners > *:nth-child(n+9){ display:none; }
+/* Scoreboard : le rendre marron pas LED */
+#runner-stadium[data-tier="3"] #rs-scoreboard rect:first-child{ fill:#6e5a48; }
+#runner-stadium[data-tier="3"] #rs-scoreboard rect:nth-child(2){ fill:#5a4838; }
+
+/* Tier 4 : tribunes 4 marches + 1 projecteur + premiers nuages */
+#runner-stadium[data-tier="4"] #rs-blimp,
+#runner-stadium[data-tier="4"] #rs-roof{ display:none; }
+/* Tier 4 : cache le projecteur droit */
+#runner-stadium[data-tier="4"] #rs-lights > *:nth-child(n+8){ display:none; }
+/* Cache certains nuages */
+#runner-stadium[data-tier="4"] #rs-clouds > *:nth-child(n+4){ display:none; }
+
+/* Tier 5+ : tout débloqué (tribunes pleines, toit, sponsors complets, 2 projecteurs, dirigeable, etc.) */
+/* (Aucun override nécessaire — par défaut tout s'affiche) */
+
+/* Tier 7+ : ciel encore plus profond */
+#runner-stadium[data-tier="7"] #rs-sky-bg,
+#runner-stadium[data-tier="8"] #rs-sky-bg,
+#runner-stadium[data-tier="9"] #rs-sky-bg{ fill:url(#rs-sky-grad); }
+
+/* Tier 8+ : ciel mauve cosmique + étoiles */
+#runner-stadium[data-tier="9"] #rs-sky-bg{ fill:#1a1640; }
+#runner-stadium[data-tier="9"] #rs-celestial{ fill:#fff; }
+
 /* ================ ANIMATIONS STADIUM v7 ================ */
 /* 1. NUAGES glissent lentement de gauche à droite */
 #rs-clouds ellipse{
@@ -12928,50 +13009,74 @@ function applyRunnerSkin(){
 function buildCrowd(){
   const g = document.getElementById('rs-crowd');
   if(!g) return;
+  const tier = (typeof stadiumTier === 'function') ? stadiumTier() : 5;
   const laps = STATE.lapsRun || 0;
   const saison = (STATE.saison || 1) - 1;
-  const fillLevel = Math.min(1, laps / 50 + saison * 0.3);
   const tones = ['#3e8db8','#d04030','#5a9040','#9080c0','#ffd070','#fff','#f08a48'];
   let html = '';
-  // === STRUCTURE DES TRIBUNES portrait v7 ===
-  // viewBox 320×500. Piste centrée y=310. Tribunes entre y=180 et y=240 (au-dessus piste).
-  // BLEACHERS GAUCHE (x=0..58)
-  html += `<g class="rs-bleachers">`;
-  html += `<rect x="0" y="180" width="58" height="60" fill="#9b7f50"/>`;
-  html += `<rect x="0" y="180" width="58" height="3" fill="#7c6440"/>`;
-  html += `<rect x="0" y="190" width="58" height="9" fill="#b89a6e"/>`;
-  html += `<rect x="0" y="201" width="58" height="9" fill="#c8aa7e"/>`;
-  html += `<rect x="0" y="212" width="58" height="9" fill="#d8ba8e"/>`;
-  html += `<rect x="0" y="223" width="58" height="9" fill="#e8ca9e"/>`;
-  html += `<rect x="0" y="234" width="58" height="6" fill="#f0d4ae"/>`;
-  for(let mx=5; mx<58; mx+=9){
-    html += `<rect x="${mx}" y="185" width="1" height="55" fill="#8a6d44" opacity=".4"/>`;
+  // Tier 0 : TERRAIN VAGUE — pas de tribunes du tout, juste des barrières en bois pourri
+  if(tier === 0){
+    // Barrières basses délabrées
+    html += `<rect x="0" y="234" width="58" height="6" fill="#8a6d44" opacity=".5"/>`;
+    html += `<rect x="262" y="234" width="58" height="6" fill="#8a6d44" opacity=".5"/>`;
+    // Quelques piquets
+    for(let mx=8; mx<55; mx+=10) html += `<rect x="${mx}" y="226" width="1.5" height="12" fill="#5a4028"/>`;
+    for(let mx=268; mx<315; mx+=10) html += `<rect x="${mx}" y="226" width="1.5" height="12" fill="#5a4028"/>`;
+    g.innerHTML = html;
+    return;
   }
-  html += `<rect x="28" y="180" width="6" height="60" fill="#8a6d44" opacity=".25"/>`;
+  // Tier 1+ : tribunes croissantes — nombre de marches dépend du tier
+  const stepCount = Math.min(5, tier);                  // 1=1, 2=2, ..., 5=5
+  const rowsAvailable = stepCount;
+  // Densité spectateurs (fillLevel) — combine tier + lapsRun
+  const fillLevel = Math.min(1, (tier - 1) * 0.18 + laps / 100 + saison * 0.2);
+  // Couleur dégradation : tier 1-2 = marron pâle ravalé, tier 5+ = bois propre
+  const wallColor = tier <= 2 ? '#9b7f50' : tier <= 4 ? '#a88c5a' : '#b89a6e';
+  const stepColors = ['#b89a6e','#c8aa7e','#d8ba8e','#e8ca9e','#f0d4ae'];
+  const stepY = [190, 201, 212, 223, 234];
+  const stepH = [9, 9, 9, 9, 6];
+  // BLEACHERS GAUCHE
+  html += `<g class="rs-bleachers">`;
+  // Mur de fond (visible si tier>=1)
+  html += `<rect x="0" y="${stepY[5-stepCount]}" width="58" height="${240 - stepY[5-stepCount]}" fill="${wallColor}"/>`;
+  html += `<rect x="0" y="${stepY[5-stepCount]}" width="58" height="3" fill="#7c6440" opacity=".7"/>`;
+  // Dessine N marches du bas vers le haut
+  for(let i=0; i<stepCount; i++){
+    const idx = 4 - i; // commence par la dernière marche (y=234)
+    if(idx < 0) break;
+    html += `<rect x="0" y="${stepY[idx]}" width="58" height="${stepH[idx]}" fill="${stepColors[idx]}"/>`;
+  }
+  // Séparateurs verticaux (uniquement à partir du tier 2)
+  if(tier >= 2){
+    for(let mx=5; mx<58; mx+=9){
+      html += `<rect x="${mx}" y="${stepY[5-stepCount]+5}" width="1" height="${240 - stepY[5-stepCount] - 10}" fill="#8a6d44" opacity=".4"/>`;
+    }
+    html += `<rect x="28" y="${stepY[5-stepCount]}" width="6" height="${240 - stepY[5-stepCount]}" fill="#8a6d44" opacity=".25"/>`;
+  }
   html += `</g>`;
-  // BLEACHERS DROITE (x=262..320)
+  // BLEACHERS DROITE
   html += `<g class="rs-bleachers">`;
-  html += `<rect x="262" y="180" width="58" height="60" fill="#9b7f50"/>`;
-  html += `<rect x="262" y="180" width="58" height="3" fill="#7c6440"/>`;
-  html += `<rect x="262" y="190" width="58" height="9" fill="#b89a6e"/>`;
-  html += `<rect x="262" y="201" width="58" height="9" fill="#c8aa7e"/>`;
-  html += `<rect x="262" y="212" width="58" height="9" fill="#d8ba8e"/>`;
-  html += `<rect x="262" y="223" width="58" height="9" fill="#e8ca9e"/>`;
-  html += `<rect x="262" y="234" width="58" height="6" fill="#f0d4ae"/>`;
-  for(let mx=267; mx<320; mx+=9){
-    html += `<rect x="${mx}" y="185" width="1" height="55" fill="#8a6d44" opacity=".4"/>`;
+  html += `<rect x="262" y="${stepY[5-stepCount]}" width="58" height="${240 - stepY[5-stepCount]}" fill="${wallColor}"/>`;
+  html += `<rect x="262" y="${stepY[5-stepCount]}" width="58" height="3" fill="#7c6440" opacity=".7"/>`;
+  for(let i=0; i<stepCount; i++){
+    const idx = 4 - i;
+    if(idx < 0) break;
+    html += `<rect x="262" y="${stepY[idx]}" width="58" height="${stepH[idx]}" fill="${stepColors[idx]}"/>`;
   }
-  html += `<rect x="290" y="180" width="6" height="60" fill="#8a6d44" opacity=".25"/>`;
+  if(tier >= 2){
+    for(let mx=267; mx<320; mx+=9){
+      html += `<rect x="${mx}" y="${stepY[5-stepCount]+5}" width="1" height="${240 - stepY[5-stepCount] - 10}" fill="#8a6d44" opacity=".4"/>`;
+    }
+    html += `<rect x="290" y="${stepY[5-stepCount]}" width="6" height="${240 - stepY[5-stepCount]}" fill="#8a6d44" opacity=".25"/>`;
+  }
   html += `</g>`;
 
-  // === SPECTATEURS 5 rangées (compactes, tribunes plus courtes maintenant) ===
-  const rows = [
-    { y: 190, spacing: 7.5, headSize: 1.6, body: 2.3 },
-    { y: 201, spacing: 7.5, headSize: 1.8, body: 2.6 },
-    { y: 212, spacing: 7.5, headSize: 2,   body: 3 },
-    { y: 223, spacing: 7.5, headSize: 2.2, body: 3.3 },
-    { y: 234, spacing: 7.5, headSize: 2.4, body: 3.6 },
-  ];
+  // SPECTATEURS — seulement sur les marches existantes
+  const rows = [];
+  for(let i=0; i<stepCount; i++){
+    const idx = 4 - i;
+    rows.unshift({ y: stepY[idx], spacing: 7.5, headSize: 1.6 + idx * 0.2, body: 2.3 + idx * 0.3 });
+  }
   const placePerson = (x, y, headSize, bodySize, color, hatColor) => {
     let s = '';
     s += `<rect x="${x - headSize/2}" y="${y - bodySize - headSize}" width="${headSize}" height="${headSize}" fill="#f0c890"/>`;
@@ -13027,14 +13132,41 @@ window.addEventListener('load', ()=>setTimeout(_initForegroundAnims, 100));
 function updateTrackSurface(){
   const ring = document.getElementById('rs-track-ring');
   if(!ring) return;
+  const tier = stadiumTier();
+  // De terre nue → terre cuite → tartan → olympique → ultra
+  const colors = ['#7e6444','#8a6a48','#a67a48','#c8884e','#d88030','#c84030','#e02818','#e8281c','#c020c8','#b020c8'];
+  ring.setAttribute('fill', colors[Math.min(tier, colors.length-1)]);
+  // Bordure aussi
+  const stroke = ['#5a4828','#5a4828','#7c5a30','#a07840','#a07840','#a87040','#c83020','#e02818','#9018a8','#9018a8'];
+  ring.setAttribute('stroke', stroke[Math.min(tier, stroke.length-1)]);
+}
+
+/* ================ TIER VISUEL DU STADE (0-9) ================
+   Le stade évolue de "terrain vague" (0) à "stade olympique cosmique" (9).
+   Plus le joueur progresse, plus le décor s'étoffe. */
+function stadiumTier(){
   const laps = STATE.lapsRun || 0;
   const saison = STATE.saison || 1;
-  let color = '#c8884e';            // terre battue (début)
-  if(laps >= 10) color = '#d88030'; // terre cuite
-  if(laps >= 50) color = '#c84030'; // tartan rouge clair
-  if(saison >= 2) color = '#e02818'; // tartan olympique
-  if(saison >= 5) color = '#b020c8'; // tartan saison ultra
-  ring.setAttribute('fill', color);
+  if(saison === 1){
+    if(laps < 2)  return 0;  // terrain vague
+    if(laps < 5)  return 1;  // 1 marche tribune, 1 sponsor
+    if(laps < 15) return 2;  // 2 marches + drapeau
+    if(laps < 30) return 3;  // 3 marches + scoreboard simple
+    if(laps < 60) return 4;  // 4 marches + 1 projecteur + nuages
+    return 5;                // tout débloqué
+  }
+  if(saison === 2) return 6;
+  if(saison === 3) return 7;
+  if(saison < 6) return 8;
+  return 9;                  // niveau ultime (stade cosmique)
+}
+function applyStadiumTier(){
+  const stadium = document.getElementById('runner-stadium');
+  if(!stadium) return;
+  const t = stadiumTier();
+  if(stadium.dataset.tier !== String(t)){
+    stadium.dataset.tier = t;
+  }
 }
 
 /* Stades unlockables par saison — change le visuel complet du décor */
@@ -13235,8 +13367,10 @@ function updateRunner(){
   if(stadium.dataset.prog !== progKey){
     if(typeof buildCrowd === 'function') buildCrowd();
     if(typeof updateTrackSurface === 'function') updateTrackSurface();
+    if(typeof applyStadiumTier === 'function') applyStadiumTier();
     stadium.dataset.prog = progKey;
   }
+  if(typeof applyStadiumTier === 'function') applyStadiumTier();
   // Accessoires coureur : checkent niveau ET saison (recalcul à chaque palier)
   const accKey = (STATE.alchLevel||1) + '_' + (STATE.saison||1);
   if(stadium.dataset.acc !== accKey){

@@ -1571,7 +1571,9 @@ body.frenzy-on #grid-frame{
 }
 
 /* ================ SIDE TOGGLES (onglets cozy) ================ */
+/* LEGACY MERGE-ERA — Codex et Quêtes désactivés en v2 TAP. */
 .side-toggle{
+  display:none !important;
   position:fixed; top:50%; transform:translateY(-50%);
   z-index:6;
   background:linear-gradient(180deg, #fff8e4, #f4e2b4);
@@ -3381,11 +3383,12 @@ body.frenzy-on #grid-frame{
 /* Bandeau "prochain achat" — la boucle dopamine du marché.
    Position : ancré bas, juste au-dessus des distributeurs */
 #shop-hint{
+  /* LEGACY MERGE-ERA — désactivé en v2 TAP. On force display:none même avec .show */
+  display:none !important;
   position:fixed; bottom:130px; left:50%;
   transform:translateX(-50%);
   z-index:5;
   max-width:94vw;
-  display:none;
   align-items:center; gap:8px;
   padding:6px 16px;
   background:linear-gradient(180deg, #fff8e4, #f4e2b4);
@@ -3829,19 +3832,19 @@ body.shop-epic-flash::after{
     </div>
     <div></div>
     <div class="stats">
-      <div class="stat" id="stat-essence" title="Énergie — coût des invocations, regen automatique">
+      <div class="stat" id="stat-stars" title="Étoiles — monnaie permanente gagnée par ascension. Sert à acheter les boosts définitifs.">
         <svg class="icon" viewBox="0 0 16 16" shape-rendering="crispEdges">
-          <rect x="7" y="2" width="2" height="2" fill="#e8c878"/>
-          <rect x="6" y="4" width="4" height="1" fill="#e8a050"/>
-          <rect x="5" y="5" width="6" height="3" fill="#e8a050"/>
-          <rect x="4" y="6" width="8" height="2" fill="#c84a2a"/>
-          <rect x="5" y="8" width="6" height="2" fill="#c84a2a"/>
-          <rect x="6" y="10" width="4" height="2" fill="#8a2a2a"/>
-          <rect x="7" y="12" width="2" height="1" fill="#8a2a2a"/>
+          <rect x="7" y="1" width="2" height="2" fill="#ffd070"/>
+          <rect x="7" y="3" width="2" height="3" fill="#ffd070"/>
+          <rect x="1" y="6" width="14" height="2" fill="#ffd070"/>
+          <rect x="3" y="8" width="10" height="2" fill="#e8a050"/>
+          <rect x="4" y="10" width="2" height="3" fill="#e8a050"/>
+          <rect x="10" y="10" width="2" height="3" fill="#e8a050"/>
+          <rect x="6" y="10" width="4" height="2" fill="#e8a050"/>
         </svg>
         <span class="stat-stack">
-          <span class="stat-lbl">Énergie</span>
-          <span class="stat-val" id="essence-val">0</span>
+          <span class="stat-lbl">Étoiles</span>
+          <span class="stat-val" id="stars-val">0</span>
         </span>
       </div>
       <div class="stat" id="stat-gold" title="Médailles — récompense des quêtes et fusions">
@@ -4194,46 +4197,25 @@ body.shop-epic-flash::after{
       </svg>
     </div>
     <div class="menu-list">
-      <button class="menu-item" data-target="grimoire-modal">
+      <button class="menu-item" data-action="profile">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
-          <rect x="4" y="3" width="16" height="18" rx="1"/>
-          <path d="M12 3 v18"/>
-          <path d="M7 9 h3 M14 9 h3 M7 13 h3 M14 13 h3 M7 17 h3 M14 17 h3"/>
+          <circle cx="12" cy="8" r="3.5"/>
+          <path d="M5 20 q0 -6 7 -6 q7 0 7 6"/>
         </svg>
-        <div class="mi-meta"><div class="mi-title">Le Grimoire</div><div class="mi-sub">comprendre les voies, les économies, les rituels</div></div>
+        <div class="mi-meta"><div class="mi-title">Le Coureur</div><div class="mi-sub">profil, niveau, stats détaillés</div></div>
       </button>
-      <button class="menu-item" data-action="shop" id="menu-shop">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
-          <path d="M5 8 H19 L17.5 19 H6.5 z"/>
-          <path d="M9 8 V5 a3 3 0 0 1 6 0 V8"/>
-          <circle cx="9.5" cy="13" r=".8" fill="currentColor"/>
-          <circle cx="14.5" cy="13" r=".8" fill="currentColor"/>
-        </svg>
-        <div class="mi-meta"><div class="mi-title">Le Marché</div><div class="mi-sub">dépenser médailles : spawns, sceaux, boosts</div></div>
-        <span class="mi-shop-badge" id="menu-shop-badge"></span>
-      </button>
-      <button class="menu-item" data-action="oeuvre" id="menu-oeuvre">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
-          <circle cx="12" cy="9" r="3.2"/>
-          <circle cx="9" cy="14" r="3.2"/>
-          <circle cx="15" cy="14" r="3.2"/>
-        </svg>
-        <div class="mi-meta"><div class="mi-title">Grand Œuvre</div><div class="mi-sub">composer les catalyseurs cross-voies</div></div>
-        <span class="mi-badge" id="menu-oeuvre-badge"></span>
-      </button>
-      <button class="menu-item" data-action="sanctum" id="menu-sanctum">
+      <button class="menu-item" data-action="saison">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
           <polygon points="12,3 14,9 20,9.5 15,13.5 17,20 12,16 7,20 9,13.5 4,9.5 10,9"/>
         </svg>
-        <div class="mi-meta"><div class="mi-title">Vestiaire</div><div class="mi-sub">graver les étoiles dans la pierre</div></div>
-        <span class="mi-badge" id="menu-sanctum-badge"></span>
+        <div class="mi-meta"><div class="mi-title">Ascension</div><div class="mi-sub">passer une saison, gagner des étoiles permanentes</div></div>
       </button>
-      <button class="menu-item" data-action="transmute" id="menu-transmute">
+      <button class="menu-item" data-action="daily">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
-          <circle cx="12" cy="12" r="9"/>
-          <path d="M12 4 L12 20 M4 12 L20 12 M6 6 L18 18 M6 18 L18 6"/>
+          <rect x="3" y="5" width="18" height="16" rx="1.5"/>
+          <path d="M3 9 H21 M8 3 V7 M16 3 V7"/>
         </svg>
-        <div class="mi-meta"><div class="mi-title">Ascension</div><div class="mi-sub">le rite des étoiles</div></div>
+        <div class="mi-meta"><div class="mi-title">Récompense quotidienne</div><div class="mi-sub">calendrier 7 jours · cadeau final ★</div></div>
       </button>
       <button class="menu-item" data-action="stats">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
@@ -5423,33 +5405,10 @@ function loreFor(chain, tier){ return LORE[chain + "_" + tier]; }
 const sumMerged = s => s.totals.merged.reduce((a,b)=>a+b,0);
 const sumProduced = s => s.totals.produced.reduce((a,b)=>a+b,0);
 
-/* 14 hauts faits — alignés avec les voies Hydra/Énergie/Souffle. */
+/* 16 hauts faits — alignés sur la course, le tap, et la prestige. */
 const ACHIEVEMENTS = [
   // === Entrée dans la course ===
-  { id:"first_merge",  name:"Première Fusion",   desc:"Ton premier ravitaillement combiné.",   icon:"fuse",    reward:5,  check:s => sumMerged(s)>=1 },
-
-  // === Trois éveils — palier I sur chaque voie ===
-  { id:"plant_t1",     name:"Bouteille",         desc:"Remplir ta première bouteille pour le coureur.",  icon:"sulfur",  reward:10,  check:s => s.totals.maxTier[0]>=1 },
-  { id:"stone_t1",     name:"Barre",             desc:"Préparer ta première barre énergétique.",         icon:"salt",    reward:10,  check:s => s.totals.maxTier[1]>=1 },
-  { id:"ess_t1",       name:"Foulard",           desc:"Nouer ton premier foulard de course.",            icon:"mercury", reward:10,  check:s => s.totals.maxTier[2]>=1 },
-
-  // === Trois maturités — palier III ===
-  { id:"plant_t3",     name:"Élixir Glacé",      desc:"Distiller un élixir glacé pour la finale.",       icon:"sulfur",  reward:40,  check:s => s.totals.maxTier[0]>=3 },
-  { id:"stone_t3",     name:"Miel Brut",         desc:"Récolter du miel brut, carburant lent.",          icon:"salt",    reward:40,  check:s => s.totals.maxTier[1]>=3 },
-  { id:"ess_t3",       name:"Filtre",            desc:"Installer un filtre pour respirer pur.",          icon:"mercury", reward:40,  check:s => s.totals.maxTier[2]>=3 },
-
-  // === Trois sommets — palier V (Eau Bénie / Carburant / Vent Pur) ===
-  { id:"plant_t5",     name:"Eau Bénie",         desc:"L'eau des coachs et des marathoniens.",           icon:"sulfur",  reward:250, check:s => s.totals.maxTier[0]>=5 },
-  { id:"stone_t5",     name:"Carburant",         desc:"Mix protéiné du champion.",                       icon:"salt",    reward:250, check:s => s.totals.maxTier[1]>=5 },
-  { id:"ess_t5",       name:"Vent Pur",          desc:"Respirer l'air des matins de printemps.",         icon:"mercury", reward:250, check:s => s.totals.maxTier[2]>=5 },
-
-  // === Records globaux ===
-  { id:"prod_500",     name:"Manufacture",       desc:"Produire 500 ravitaillements au total.",          icon:"horn",    reward:80,  check:s => sumProduced(s)>=500 },
-  { id:"merge_500",    name:"Maître Mixeur",     desc:"500 fusions au total.",                           icon:"fuse",    reward:150, check:s => sumMerged(s)>=500 },
   { id:"gold_5000",    name:"Trésor",            desc:"Posséder 5 000 médailles.",                       icon:"crown",   reward:300, check:s => s.gold>=5000 },
-
-  // === Ultime ===
-  { id:"triple_t7",    name:"Triple Sommet",     desc:"Eau de Vie, Nectar et Souffle Divin atteints.",   icon:"trinity", reward:5000, check:s => s.totals.maxTier.every(t=>t>=7) },
 
   // === TAP-ERA — Hauts faits actuels (course / tap / niveau) ===
   { id:"tap_100",      name:"Tape Tape Tape",    desc:"100 taps cumulés.",                               icon:"fuse",    reward:50,    check:s => (s.totalTaps||0)>=100 },
@@ -8880,7 +8839,8 @@ function vibrate(pattern){
 /* ================ RENDER ================ */
 const $grid = document.getElementById("grid");
 const $gens = document.getElementById("generators");
-const $essence = document.getElementById("essence-val");
+const $essence = document.getElementById("essence-val"); // legacy, peut être null
+const $stars = document.getElementById("stars-val");
 const $gold = document.getElementById("gold-val");
 
 function buildGrid(){
@@ -9284,7 +9244,8 @@ function fmtNumber(n){
   return ""+n;
 }
 function renderStats(){
-  $essence.textContent = Math.floor(STATE.essence) + "/" + STATE.essenceMax;
+  if($essence) $essence.textContent = Math.floor(STATE.essence) + "/" + STATE.essenceMax;
+  if($stars) $stars.textContent = fmtNumber(STATE.stars || 0);
   $gold.textContent = fmtNumber(STATE.gold);
   // Indication du gold/s à côté quand il y en a
   const ips = STATE._idlePerSec || 0;
@@ -12285,10 +12246,9 @@ function boot(){
       closeModal('menu-modal');
       setTimeout(()=>{
         if(target) openModal(target);
-        else if(action === 'oeuvre') openOeuvre();
-        else if(action === 'sanctum') openVestiaire();
-        else if(action === 'transmute') openTransmute();
-        else if(action === 'shop'){ renderShop(); openModal('shop-modal'); }
+        else if(action === 'profile' && typeof openRunnerProfile === 'function') openRunnerProfile();
+        else if(action === 'saison' && typeof openSaisonModal === 'function') openSaisonModal();
+        else if(action === 'daily' && typeof openDailyModal === 'function') openDailyModal();
         else if(action === 'stats'){ renderStatsBody(); openModal('stats-modal'); }
       }, 200);
     });

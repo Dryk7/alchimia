@@ -9509,6 +9509,8 @@ const STATE = {
   codexUnlocks: {}, // key "0_3" → timestamp première découverte (persiste à travers prestiges)
   selectedCodex: null,
 };
+// Expose STATE à window pour que le module 3D puisse lire lapProgress, lapsRun, etc.
+window.STATE = STATE;
 
 /* ================ QUETES ================ */
 const QUEST_TEMPLATES = [

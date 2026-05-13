@@ -184,9 +184,13 @@ header{
 .stat .stat-stack{display:flex; flex-direction:column; line-height:1; align-items:flex-start; gap:1px}
 .stat .stat-lbl{
   font-family:"Nunito", sans-serif; font-weight:700;
-  font-size:7px; letter-spacing:.10em;
+  font-size:7px; letter-spacing:.06em;
   color:var(--ember); opacity:.9;
   text-transform:uppercase;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:clip;
+  max-width:42px;
 }
 .stat .stat-val{
   font-family:"Nunito", sans-serif; font-weight:900;
@@ -2348,6 +2352,23 @@ header{
   text-shadow:0 1px 2px rgba(160,40,0,.4);
 }
 
+/* Pulse + bounce sur les stat values qui changent */
+.val-pulse{
+  animation:valPulse .35s cubic-bezier(.2,.9,.2,1.4);
+}
+@keyframes valPulse{
+  0%   { transform:scale(1); color:var(--ink); }
+  50%  { transform:scale(1.18); color:#3a8c3a; }
+  100% { transform:scale(1); color:var(--ink); }
+}
+
+/* Stade pressed feedback */
+#runner-stadium.pressed{
+  transform:scale(.99);
+  filter:brightness(1.05);
+  transition:transform .08s, filter .08s;
+}
+
 /* +N médailles popup au tap */
 .tap-pop{
   position:fixed; pointer-events:none; z-index:60;
@@ -2799,8 +2820,10 @@ header{
 
 /* Barres en bas du stade : progression du tour + stamina */
 .rs-bars{
+  /* Caché v7 : le scoreboard SVG + position du coureur suffisent */
+  display:none;
   position:absolute; bottom:8px; left:12px; right:12px;
-  display:flex; flex-direction:column; gap:5px;
+  flex-direction:column; gap:5px;
   pointer-events:none;
   z-index:4;
 }
@@ -5784,7 +5807,7 @@ body.shop-epic-flash::after{
           <rect x="6" y="10" width="4" height="2" fill="#e8a050"/>
         </svg>
         <span class="stat-stack">
-          <span class="stat-lbl">Étoiles</span>
+          <span class="stat-lbl">★</span>
           <span class="stat-val" id="stars-val">0</span>
         </span>
       </div>
@@ -5801,14 +5824,14 @@ body.shop-epic-flash::after{
           <rect x="9" y="8" width="1" height="3" fill="#5a4528"/>
         </svg>
         <span class="stat-stack">
-          <span class="stat-lbl">Médailles</span>
+          <span class="stat-lbl">Méd</span>
           <span class="stat-val" id="gold-val">0</span>
         </span>
       </div>
       <div class="stat stat-gems" id="stat-gems" role="button" title="Gemmes — monnaie premium. Cliquer pour ouvrir la boutique.">
         <span class="stat-gem-ico">💎</span>
         <span class="stat-stack">
-          <span class="stat-lbl">Gemmes</span>
+          <span class="stat-lbl">💎</span>
           <span class="stat-val" id="gems-val">0</span>
         </span>
       </div>
@@ -11406,7 +11429,13 @@ function renderStats(){
   if($stars) $stars.textContent = fmtNumber(STATE.stars || 0);
   const $gems = document.getElementById('gems-val');
   if($gems) $gems.textContent = fmtNumber(STATE.gems || 0);
-  $gold.textContent = fmtNumber(STATE.gold);
+  // Pulse gold quand le valeur change
+  const newGoldTxt = fmtNumber(STATE.gold);
+  if($gold && $gold.textContent !== newGoldTxt){
+    $gold.textContent = newGoldTxt;
+    $gold.classList.remove('val-pulse'); void $gold.offsetWidth;
+    $gold.classList.add('val-pulse');
+  }
   // Indication du gold/s à côté quand il y en a
   const ips = STATE._idlePerSec || 0;
   // Master quest widget en suit le rythme aussi
@@ -12695,20 +12724,24 @@ function tapBoost(e){
   const isCrit = Math.random() < critChance;
   const gain = Math.floor(isCrit ? perTap * 5 : perTap);
   STATE.gold += gain;
-  // Pop visuel sur le bouton
-  const btn = document.getElementById('boost-btn');
-  if(btn){
-    btn.classList.remove('pressed'); void btn.offsetWidth;
-    btn.classList.add('pressed');
-    setTimeout(()=>btn.classList.remove('pressed'), 140);
-    const rect = btn.getBoundingClientRect();
+  // Pop visuel "+X" à l'endroit du tap (sur le stade)
+  const evX = (typeof e === 'object' && e?.clientX) ? e.clientX : null;
+  const evY = (typeof e === 'object' && e?.clientY) ? e.clientY : null;
+  if(evX != null && evY != null){
     const pop = document.createElement('div');
     pop.className = 'tap-pop' + (isCrit ? ' crit' : '');
-    pop.textContent = (isCrit ? '+' : '+') + gain + (isCrit ? ' ✦' : '');
-    pop.style.left = (rect.left + rect.width/2 + (Math.random()-.5)*40) + 'px';
-    pop.style.top = (rect.top + rect.height*0.30) + 'px';
+    pop.textContent = '+' + fmtBigNumber(gain) + (isCrit ? ' ✦' : '');
+    pop.style.left = (evX + (Math.random()-.5)*20) + 'px';
+    pop.style.top = evY + 'px';
     document.body.appendChild(pop);
     setTimeout(()=>pop.remove(), 950);
+  }
+  // Effet pressed sur le stade (visuel feedback)
+  const stadium = document.getElementById('runner-stadium');
+  if(stadium){
+    stadium.classList.remove('pressed'); void stadium.offsetWidth;
+    stadium.classList.add('pressed');
+    setTimeout(()=>stadium.classList.remove('pressed'), 100);
   }
   // SFX léger
   if(typeof A !== 'undefined' && A.ctx){

@@ -17297,11 +17297,15 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     });
   }
 
+  // Detection mobile pour adapter la qualité
+  const IS_MOBILE = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  const IS_LOW_END = IS_MOBILE && (navigator.hardwareConcurrency || 4) < 6;
+
   // Setup renderer
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:false });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !IS_LOW_END, alpha:false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, IS_LOW_END ? 1.5 : 2));
+  renderer.shadowMap.enabled = !IS_LOW_END;
+  renderer.shadowMap.type = IS_LOW_END ? THREE.BasicShadowMap : THREE.PCFSoftShadowMap;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
@@ -18248,16 +18252,19 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     return npc;
   });
 
-  // === POST-PROCESSING : bloom + FXAA (style life-sim signature) ===
+  // === POST-PROCESSING : bloom + FXAA (skip si low-end pour la perf) ===
   const composer = new EffectComposer(renderer);
   const renderPass = new RenderPass(scene, camera);
   composer.addPass(renderPass);
-  // Bloom doux : fait briller le podium or, l'aura, les lampes
-  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.42, 0.7, 0.85);
-  composer.addPass(bloom);
-  // FXAA pour anti-aliasing supplémentaire
-  const fxaa = new ShaderPass(FXAAShader);
-  composer.addPass(fxaa);
+  let bloom = null, fxaa = null;
+  if(!IS_LOW_END){
+    // Bloom doux : fait briller le podium or, l'aura, les lampes
+    bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.42, 0.7, 0.85);
+    composer.addPass(bloom);
+    // FXAA pour anti-aliasing supplémentaire
+    fxaa = new ShaderPass(FXAAShader);
+    composer.addPass(fxaa);
+  }
   composer.addPass(new OutputPass());
 
   // === Resize handler ===
@@ -18274,10 +18281,12 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     camera.top = orthoH;
     camera.bottom = -orthoH;
     camera.updateProjectionMatrix();
-    // FXAA resolution
-    const pr = renderer.getPixelRatio();
-    fxaa.material.uniforms['resolution'].value.x = 1 / (w * pr);
-    fxaa.material.uniforms['resolution'].value.y = 1 / (h * pr);
+    // FXAA resolution (si actif)
+    if(fxaa){
+      const pr = renderer.getPixelRatio();
+      fxaa.material.uniforms['resolution'].value.x = 1 / (w * pr);
+      fxaa.material.uniforms['resolution'].value.y = 1 / (h * pr);
+    }
   }
   window.addEventListener('resize', resize);
   setTimeout(resize, 50);

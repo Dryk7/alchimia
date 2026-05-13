@@ -293,6 +293,122 @@ header{
 .runner-profile-btn svg{ width:60%; height:60%; }
 .runner-profile-btn:active{ transform:translateY(2px); box-shadow:0 1px 2px rgba(217,104,40,.30); }
 
+/* === BOUTON ASCENSION === */
+.saison-btn{
+  display:block; width:100%;
+  padding:10px;
+  background:linear-gradient(180deg, #ffd070, #f0a050);
+  border:3px solid #fff;
+  border-radius:14px;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:14px; letter-spacing:.06em;
+  color:#5a2810;
+  cursor:pointer;
+  box-shadow:0 4px 14px rgba(240,160,80,.45), 0 0 0 3px rgba(255,208,112,.30);
+  animation:saisonPulse 1.4s ease-in-out infinite;
+  text-transform:uppercase;
+}
+.saison-btn:active{ transform:translateY(2px); }
+@keyframes saisonPulse{
+  0%,100%{ box-shadow:0 4px 14px rgba(240,160,80,.45), 0 0 0 3px rgba(255,208,112,.30); }
+  50%   { box-shadow:0 6px 22px rgba(240,160,80,.65), 0 0 0 6px rgba(255,208,112,.45); }
+}
+
+/* === SAISON MODAL === */
+.saison-body{ overflow-y:auto; max-height:60vh; padding:4px 2px; }
+.saison-hero{
+  text-align:center;
+  padding:14px 12px;
+  background:linear-gradient(180deg, #fff3d0, #ffd896);
+  border:3px solid var(--ember);
+  border-radius:16px;
+  margin-bottom:12px;
+}
+.saison-banner{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:11px; letter-spacing:.20em;
+  color:var(--ember); text-transform:uppercase;
+}
+.saison-laps{
+  font-family:"Nunito", sans-serif; font-weight:800;
+  font-size:13px; color:var(--ink-2); margin-top:2px;
+}
+.saison-stars{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:22px; color:#d99830; margin:6px 0 10px;
+}
+.saison-ascend-btn{
+  background:linear-gradient(180deg, #f08a48, #d96828);
+  color:#fff;
+  border:3px solid #fff;
+  border-radius:22px;
+  padding:10px 22px;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:15px; letter-spacing:.04em;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(217,104,40,.40);
+}
+.saison-ascend-btn:active{ transform:translateY(2px); }
+.saison-warn{
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:10px; color:var(--blood);
+  margin-top:6px;
+}
+.saison-locked{
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:13px; color:var(--ink-2);
+  padding:6px 8px;
+}
+.saison-section{
+  background:linear-gradient(180deg, #fffaee, #fff3d8);
+  border:1.5px solid rgba(160,122,68,.30);
+  border-radius:12px;
+  padding:10px 12px;
+}
+.saison-section h3{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:11px; letter-spacing:.14em;
+  color:var(--ember); margin:0 0 8px;
+  text-transform:uppercase;
+}
+.perk-list{ display:flex; flex-direction:column; gap:6px; }
+.perk-row{
+  display:grid; grid-template-columns:1fr auto; gap:10px;
+  padding:8px 10px;
+  background:#fff;
+  border:1.5px solid rgba(160,122,68,.25);
+  border-radius:10px;
+  cursor:default;
+  transition:transform .12s, border-color .15s;
+}
+.perk-row.affordable{
+  border-color:#d99830;
+  background:linear-gradient(180deg, #fff8e4, #f4e2b4);
+  cursor:pointer;
+  box-shadow:0 2px 4px rgba(217,152,48,.25);
+}
+.perk-row.affordable:active{ transform:scale(.98); }
+.perk-row.maxed{ opacity:.65; filter:grayscale(.4); }
+.perk-name{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:13px; color:var(--ink);
+}
+.perk-desc{
+  font-family:"Nunito", sans-serif; font-weight:600;
+  font-size:10.5px; color:var(--ink-2);
+  margin-top:1px;
+}
+.perk-meta{ text-align:right; }
+.perk-lvl{
+  font-family:"Nunito", sans-serif; font-weight:800;
+  font-size:10px; color:var(--ink-2); letter-spacing:.06em;
+}
+.perk-cost{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:13px; color:#d99830;
+  margin-top:2px;
+}
+
 /* === PROFILE MODAL === */
 .profile-body{ overflow-y:auto; max-height:60vh; padding:4px 2px; }
 .profile-hero{
@@ -3838,6 +3954,11 @@ body.shop-epic-flash::after{
         <span class="boost-sub">Donne au coureur</span>
       </button>
 
+      <!-- Bouton ASCENSION (visible quand atteint 100 tours) -->
+      <button id="saison-btn" class="saison-btn" style="display:none">
+        ✦ ASCENSION DISPO · <span id="saison-btn-stars">+0 ★</span>
+      </button>
+
       <!-- Combo counter (visible quand chaîne active) -->
       <div id="combo-display" class="combo-display">
         <span class="combo-x" id="combo-x">×1</span>
@@ -4585,6 +4706,16 @@ body.shop-epic-flash::after{
 </div>
 
 <!-- ASCENSION CINEMATIC : médaille du tour bouclé -->
+<!-- ASCENSION / SAISON -->
+<div id="saison-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-close" id="saison-close" aria-label="Fermer">×</div>
+    <h2>ASCENSION</h2>
+    <div class="divider"></div>
+    <div class="saison-body" id="saison-body"></div>
+  </div>
+</div>
+
 <!-- PROFIL DU COUREUR -->
 <div id="profile-modal" class="modal">
   <div class="modal-card">
@@ -4948,6 +5079,9 @@ function alchGoldMul(){
 }
 function gainXp(amount){
   if(!amount) return;
+  // Saison perk : +5% XP par niveau perkXpMul
+  if(typeof saisonXpMul === 'function') amount = Math.floor(amount * saisonXpMul());
+  if(amount < 1) amount = 1;
   STATE.alchXp = (STATE.alchXp||0) + amount;
   const oldLvl = STATE.alchLevel || 1;
   let newLvl = oldLvl;
@@ -9499,9 +9633,9 @@ function tapBoost(e){
   const comboMul = _comboCount >= 25 ? 5 : _comboCount >= 12 ? 3 : _comboCount >= 6 ? 2 : _comboCount >= 3 ? 1.5 : 1;
   // Bump stamina = boost de vitesse temporaire
   if(typeof bumpStamina === 'function') bumpStamina(0.14 + _comboCount * 0.005);
-  // Médailles par tap : base 1 + niveau upgrade
-  const perTap = (1 + (STATE.upgradeTapValue||0)) * comboMul;
-  const critChance = 0.05 + (STATE.upgradeCritChance||0) * 0.02;
+  // Médailles par tap : base 1 + niveau upgrade × saison goldMul
+  const perTap = (1 + (STATE.upgradeTapValue||0)) * comboMul * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
+  const critChance = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
   const isCrit = Math.random() < critChance;
   const gain = Math.floor(isCrit ? perTap * 5 : perTap);
   STATE.gold += gain;
@@ -9624,6 +9758,143 @@ function buyUpgrade(id){
   if(typeof renderStats === 'function') renderStats();
   updateTapStrip();
 }
+/* ================ SAISON / PRESTIGE — la couche infinie ================ */
+const SAISON_UNLOCK_LAPS = 100;
+const STARS_PER_10_LAPS = 1;
+function canAscend(){
+  return (STATE.lapsRun || 0) >= SAISON_UNLOCK_LAPS;
+}
+function pendingStars(){
+  return Math.floor((STATE.lapsRun || 0) / 10) * STARS_PER_10_LAPS;
+}
+/* Confirme & exécute l'ascension — reset progression contre étoiles permanentes */
+function doSaisonAscend(){
+  if(!canAscend()){
+    if(typeof sfxDeny === 'function') sfxDeny();
+    return;
+  }
+  const earnedStars = pendingStars();
+  STATE.stars = (STATE.stars || 0) + earnedStars;
+  STATE.saison = (STATE.saison || 1) + 1;
+  // Reset progression de saison : médailles, upgrades, tours
+  STATE.gold = 0;
+  STATE.lapsRun = 0;
+  STATE.lapProgress = 0;
+  STATE.upgradeTapValue = 0;
+  STATE.upgradeCritChance = 0;
+  STATE.upgradeLapBonus = 0;
+  STATE.upgradeAutoTap = 0;
+  STATE.runnerStamina = STAMINA_MAX;
+  // Garde : alchXp, alchLevel, skins, totalTaps, achievements, stars achetées
+  if(typeof showRunnerBubble === 'function'){
+    showRunnerBubble(`✦ SAISON ${STATE.saison} ! +${earnedStars} ★`);
+  }
+  // Flash écran + cheer
+  const stadium = document.getElementById('runner-stadium');
+  if(stadium){
+    stadium.classList.remove('lap-complete'); void stadium.offsetWidth;
+    stadium.classList.add('lap-complete');
+    setTimeout(()=>stadium.classList.remove('lap-complete'), 1400);
+  }
+  if(A?.ctx){
+    blip(220, .3, "triangle", .26, .65);
+    setTimeout(()=>blip(440, .3, "sine", .26, .7), 120);
+    setTimeout(()=>blip(880, .3, "triangle", .26, .7), 280);
+    setTimeout(()=>blip(1760, .4, "sine", .26, .75), 460);
+  }
+  vibrate([50, 80, 50, 80, 50, 80, 200]);
+  // Fermer la modal d'ascension
+  document.getElementById('saison-modal')?.classList.remove('show');
+  if(typeof renderStats === 'function') renderStats();
+  if(typeof updateRunnerHUD === 'function') updateRunnerHUD();
+  if(typeof updateTapStrip === 'function') updateTapStrip();
+}
+/* Boosts permanents achetables avec des étoiles */
+const STAR_PERKS = {
+  goldMul: { name:'Médailles +5%', base:1, factor:1.4, max:50, state:'perkGoldMul', desc:'+5% médailles permanentes' },
+  critBase: { name:'Crit +0.5%', base:2, factor:1.5, max:30, state:'perkCritBase', desc:'+0.5% chance critique permanente' },
+  xpMul: { name:'XP +5%', base:1, factor:1.3, max:50, state:'perkXpMul', desc:'+5% XP gain permanent' },
+  autoBase: { name:'Auto +0.2/s', base:3, factor:1.6, max:20, state:'perkAutoBase', desc:'+0.2 auto-tap base par seconde' },
+};
+function starPerkLevel(id){ return STATE[STAR_PERKS[id].state] || 0; }
+function starPerkCost(id){
+  const p = STAR_PERKS[id];
+  return Math.floor(p.base * Math.pow(p.factor, starPerkLevel(id)));
+}
+function buyStarPerk(id){
+  const p = STAR_PERKS[id];
+  if(!p) return;
+  const lvl = starPerkLevel(id);
+  if(lvl >= p.max){ if(typeof sfxDeny === 'function') sfxDeny(); return; }
+  const cost = starPerkCost(id);
+  if((STATE.stars || 0) < cost){ if(typeof sfxDeny === 'function') sfxDeny(); return; }
+  STATE.stars -= cost;
+  STATE[p.state] = lvl + 1;
+  if(A?.ctx){
+    blip(880, .12, "triangle", .22, .55);
+    setTimeout(()=>blip(1320, .15, "sine", .22, .6), 80);
+  }
+  vibrate([15, 30, 15]);
+  if(typeof renderSaisonModal === 'function') renderSaisonModal();
+  if(typeof renderStats === 'function') renderStats();
+}
+/* Modal d'ascension : montre étoiles à gagner + permanents shop */
+function openSaisonModal(){
+  const body = document.getElementById('saison-body');
+  if(!body) return;
+  renderSaisonModal();
+  document.getElementById('saison-modal')?.classList.add('show');
+}
+function renderSaisonModal(){
+  const body = document.getElementById('saison-body');
+  if(!body) return;
+  const lapsRun = STATE.lapsRun || 0;
+  const stars = STATE.stars || 0;
+  const pending = pendingStars();
+  const canAsc = canAscend();
+  const perks = Object.entries(STAR_PERKS).map(([id, p])=>{
+    const lvl = starPerkLevel(id);
+    const cost = starPerkCost(id);
+    const maxed = lvl >= p.max;
+    const affordable = !maxed && stars >= cost;
+    return `<div class="perk-row ${affordable?'affordable':''} ${maxed?'maxed':''}" data-perk="${id}">
+      <div class="perk-info">
+        <div class="perk-name">${p.name}</div>
+        <div class="perk-desc">${p.desc}</div>
+      </div>
+      <div class="perk-meta">
+        <div class="perk-lvl">${maxed ? 'MAX' : 'NIV ' + lvl + '/' + p.max}</div>
+        <div class="perk-cost">${maxed ? '—' : cost + ' ★'}</div>
+      </div>
+    </div>`;
+  }).join('');
+  body.innerHTML = `
+    <div class="saison-hero">
+      <div class="saison-banner">SAISON ${STATE.saison || 1}</div>
+      <div class="saison-laps">${lapsRun} tours bouclés</div>
+      <div class="saison-stars">★ ${stars} étoiles</div>
+      ${canAsc
+        ? `<button id="saison-ascend-btn" class="saison-ascend-btn">ASCENSION → +${pending} ★</button>
+           <div class="saison-warn">⚠️ Reset médailles + upgrades de tour</div>`
+        : `<div class="saison-locked">Atteint <b>${SAISON_UNLOCK_LAPS} tours</b> pour ascender (${SAISON_UNLOCK_LAPS - lapsRun} à faire)</div>`
+      }
+    </div>
+    <div class="saison-section">
+      <h3>BOOSTS PERMANENTS</h3>
+      <div class="perk-list">${perks}</div>
+    </div>
+  `;
+  document.getElementById('saison-ascend-btn')?.addEventListener('click', doSaisonAscend);
+  body.querySelectorAll('.perk-row.affordable').forEach(row=>{
+    row.addEventListener('click', ()=>buyStarPerk(row.dataset.perk));
+  });
+}
+/* Multiplicateurs permanents dérivés des étoiles */
+function saisonGoldMul(){ return 1 + (STATE.perkGoldMul||0) * 0.05; }
+function saisonCritBonus(){ return (STATE.perkCritBase||0) * 0.005; }
+function saisonXpMul(){ return 1 + (STATE.perkXpMul||0) * 0.05; }
+function saisonAutoBase(){ return (STATE.perkAutoBase||0) * 0.2; }
+
 /* Calcule les stats du coureur dérivées du niveau + upgrades */
 function getRunnerStats(){
   const lvl = alchLevel();
@@ -9720,6 +9991,19 @@ function updateRunnerHUD(){
   if(titleEl) titleEl.textContent = title;
   if(fillEl) fillEl.style.width = p.pct.toFixed(1) + '%';
   if(txtEl) txtEl.textContent = p.inLvl + ' / ' + p.need + ' XP';
+  // Bouton ASCENSION : visible quand canAscend(), affiche les étoiles à gagner
+  const saisonBtn = document.getElementById('saison-btn');
+  if(saisonBtn){
+    const can = typeof canAscend === 'function' && canAscend();
+    saisonBtn.style.display = can ? '' : 'none';
+    if(can){
+      const starsEl = document.getElementById('saison-btn-stars');
+      if(starsEl){
+        const pending = (typeof pendingStars === 'function') ? pendingStars() : 0;
+        starsEl.textContent = '+' + pending + ' ★';
+      }
+    }
+  }
 }
 
 const UPG_ID_SUFFIX = { tapValue:'tap', critChance:'crit', lapBonus:'lap', autoTap:'auto' };
@@ -9752,14 +10036,13 @@ function updateUpgradesUI(){
    (passif, comme un employé qui tape pour toi) */
 let _autoTapAccumulator = 0;
 function tickAutoTap(dt){
-  const lvl = STATE.upgradeAutoTap || 0;
-  if(lvl <= 0) return;
-  _autoTapAccumulator += dt * lvl;
+  const rate = (STATE.upgradeAutoTap || 0) + (typeof saisonAutoBase==='function'?saisonAutoBase():0);
+  if(rate <= 0) return;
+  _autoTapAccumulator += dt * rate;
   while(_autoTapAccumulator >= 1){
     _autoTapAccumulator -= 1;
-    // Tap silencieux : médailles + XP sans SFX/vibration
-    const perTap = (1 + (STATE.upgradeTapValue||0));
-    const critChance = 0.05 + (STATE.upgradeCritChance||0) * 0.01;
+    const perTap = (1 + (STATE.upgradeTapValue||0)) * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
+    const critChance = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
     const isCrit = Math.random() < critChance;
     const gain = Math.floor(isCrit ? perTap * 5 : perTap);
     STATE.gold += gain;
@@ -11455,6 +11738,10 @@ function save(){
       totalTaps:STATE.totalTaps ?? 0,
       saison:STATE.saison ?? 1,
       saisonBonus:STATE.saisonBonus ?? 0,
+      perkGoldMul:STATE.perkGoldMul ?? 0,
+      perkCritBase:STATE.perkCritBase ?? 0,
+      perkXpMul:STATE.perkXpMul ?? 0,
+      perkAutoBase:STATE.perkAutoBase ?? 0,
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
   }catch(e){}
@@ -11496,6 +11783,10 @@ function load(){
     STATE.totalTaps = s.totalTaps ?? 0;
     STATE.saison = s.saison ?? 1;
     STATE.saisonBonus = s.saisonBonus ?? 0;
+    STATE.perkGoldMul = s.perkGoldMul ?? 0;
+    STATE.perkCritBase = s.perkCritBase ?? 0;
+    STATE.perkXpMul = s.perkXpMul ?? 0;
+    STATE.perkAutoBase = s.perkAutoBase ?? 0;
     // Migration : si on a maxTier mais pas de codexUnlocks → backfill
     for(let c=0;c<3;c++){
       for(let t=0; t<=STATE.totals.maxTier[c]; t++){
@@ -11685,6 +11976,12 @@ function boot(){
   bindModalClose('credits-modal','credits-close');
   bindModalClose('shop-modal','shop-close');
   bindModalClose('profile-modal','profile-close');
+  bindModalClose('saison-modal','saison-close');
+  // Bouton ASCENSION → ouvre le modal Saison
+  document.getElementById('saison-btn')?.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    if(typeof openSaisonModal === 'function') openSaisonModal();
+  });
   // Bandeau "prochain achat" → ouvre directement le Marché
   document.getElementById('shop-hint')?.addEventListener('click', (e)=>{
     e.stopPropagation();

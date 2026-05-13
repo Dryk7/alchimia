@@ -13,6 +13,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Caveat:wght@500;700&family=VT323&display=swap" rel="stylesheet">
+<!-- THREE.js (rendu 3D du stade, autorise par l'utilisateur, meme CDN que le life-sim) -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
 <style>
 /* =========================================================
    ALCHIMIA v2 — DA Maximum
@@ -5872,14 +5881,17 @@ body.shop-epic-flash::after{
   <div id="drawer-overlay"></div>
 
   <main id="play">
-    <!-- Le Stade PORTRAIT v6 : plein écran, layout vertical riche -->
+    <!-- Le Stade : version 3D THREE.js (canvas) + fallback SVG masque -->
     <div id="runner-stadium">
       <!-- Combo counter overlay (visible quand chaîne active) -->
       <div id="combo-display" class="combo-display">
         <span class="combo-x" id="combo-x">×1</span>
         <span class="combo-fire" id="combo-fire"></span>
       </div>
-      <svg id="runner-svg" viewBox="55 105 210 223" preserveAspectRatio="xMidYMid meet">
+      <!-- CANVAS 3D : rendu THREE.js style life-sim -->
+      <canvas id="runner-3d" style="position:absolute;inset:0;width:100%;height:100%;display:block;border-radius:22px;"></canvas>
+      <!-- SVG (masqué quand 3D actif, gardé pour fallback runner positioning via getPointAtLength) -->
+      <svg id="runner-svg" style="display:none" viewBox="55 105 210 223" preserveAspectRatio="xMidYMid meet">
         <defs>
           <path id="rs-path" d="M 80,216 A 80,50 0 1 0 240,216 A 80,50 0 1 0 80,216 Z" fill="none"/>
           <!-- ═══ PALETTE EATVENTURE : fond pastel + objets vibrants ═══ -->
@@ -17249,6 +17261,342 @@ if('serviceWorker' in navigator){
     navigator.serviceWorker.register('sw.js').catch(()=>{});
   });
 }
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     STADE 3D — Rendu THREE.js style "life-sim 3D light"
+     - Camera ortho top-down avec petit tilt
+     - Stade = ring orange, piste = ring rouge, gazon = disque vert
+     - Persos = rounded box (corps) + sphere (tête)
+     - Lighting : ambient + directional + soft shadow plane
+     - Anime via STATE.lapProgress + _npcInstances
+     ═══════════════════════════════════════════════════════════════════════ -->
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+(function init3D(){
+  const canvas = document.getElementById('runner-3d');
+  if(!canvas) return;
+
+  // Helper : rounded box
+  function rb(w, h, d, r=0.05){
+    return new RoundedBoxGeometry(w, h, d, 2, Math.min(r, w/2-.001, h/2-.001, d/2-.001));
+  }
+  function mat(color, opts={}){
+    return new THREE.MeshStandardMaterial({
+      color, roughness: opts.roughness ?? .85, metalness: opts.metalness ?? .02
+    });
+  }
+
+  // Setup renderer
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:false });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color('#e0e4e0');
+
+  // Camera ortho avec angle 3/4 top-down (style life-sim Eatventure)
+  const camera = new THREE.OrthographicCamera(-11, 11, 12, -12, .1, 200);
+  camera.position.set(0, 22, 18);
+  camera.lookAt(0, 0.5, 0);
+
+  // Lights
+  const ambient = new THREE.AmbientLight(0xffffff, 0.65);
+  scene.add(ambient);
+  const dir = new THREE.DirectionalLight(0xffffff, 0.95);
+  dir.position.set(8, 22, 12);
+  dir.castShadow = true;
+  dir.shadow.mapSize.set(1024, 1024);
+  dir.shadow.camera.left = -20; dir.shadow.camera.right = 20;
+  dir.shadow.camera.top = 20; dir.shadow.camera.bottom = -20;
+  dir.shadow.camera.near = .5; dir.shadow.camera.far = 60;
+  dir.shadow.bias = -0.0005;
+  scene.add(dir);
+  // Hemisphere pour douceur
+  const hemi = new THREE.HemisphereLight(0xfff5e0, 0x88a868, 0.4);
+  scene.add(hemi);
+
+  // === SOL (gris-sage doux comme la réf Eatventure) ===
+  const ground = new THREE.Mesh(
+    new THREE.PlaneGeometry(60, 60),
+    mat('#e0e4e0', {roughness:.95})
+  );
+  ground.rotation.x = -Math.PI/2;
+  ground.position.y = 0;
+  ground.receiveShadow = true;
+  scene.add(ground);
+
+  // Tapis verts sur les côtés (style life-sim)
+  const carpetMat = mat('#a8c878', {roughness:.92});
+  const leftCarpet = new THREE.Mesh(new THREE.PlaneGeometry(5, 30), carpetMat);
+  leftCarpet.rotation.x = -Math.PI/2; leftCarpet.position.set(-12, .02, 0);
+  leftCarpet.receiveShadow = true; scene.add(leftCarpet);
+  const rightCarpet = leftCarpet.clone(); rightCarpet.position.x = 12; scene.add(rightCarpet);
+
+  // === STADE : ring orange (tribunes) en rounded torus ===
+  // RingGeometry rendu épais via ExtrudeGeometry ou TorusGeometry
+  const tribuneShape = new THREE.Shape();
+  tribuneShape.absellipse(0, 0, 12, 8, 0, Math.PI*2, false, 0);
+  const tribuneHole = new THREE.Path();
+  tribuneHole.absellipse(0, 0, 8, 5, 0, Math.PI*2, false, 0);
+  tribuneShape.holes.push(tribuneHole);
+  const tribuneGeo = new THREE.ExtrudeGeometry(tribuneShape, {
+    depth: 1.4, bevelEnabled: true, bevelSize:.15, bevelThickness:.15, bevelSegments:3, curveSegments:48
+  });
+  const tribune = new THREE.Mesh(tribuneGeo, mat('#d88040', {roughness:.78}));
+  tribune.rotation.x = -Math.PI/2;
+  tribune.position.y = 0.7;
+  tribune.castShadow = true; tribune.receiveShadow = true;
+  scene.add(tribune);
+
+  // Highlight top edge (light cream rim)
+  const rimGeo = new THREE.RingGeometry(11.85, 12.05, 64, 1, 0, Math.PI*2);
+  // RingGeometry est 2D, rendu plat sur le top
+  const rim = new THREE.Mesh(rimGeo, mat('#f0c080', {roughness:.6}));
+  rim.rotation.x = -Math.PI/2; rim.position.y = 1.42; scene.add(rim);
+
+  // === PISTE ROUGE TARTAN ===
+  const trackShape = new THREE.Shape();
+  trackShape.absellipse(0, 0, 8, 5, 0, Math.PI*2, false, 0);
+  const trackHole = new THREE.Path();
+  trackHole.absellipse(0, 0, 5.5, 3, 0, Math.PI*2, false, 0);
+  trackShape.holes.push(trackHole);
+  const trackGeo = new THREE.ExtrudeGeometry(trackShape, {
+    depth:.2, bevelEnabled:false, curveSegments:48
+  });
+  const track = new THREE.Mesh(trackGeo, mat('#e85040', {roughness:.7}));
+  track.rotation.x = -Math.PI/2;
+  track.position.y = .1;
+  track.receiveShadow = true;
+  scene.add(track);
+
+  // Couloirs blancs (rings minces)
+  const laneMat = mat('#ffffff', {roughness:.4});
+  [7, 6.3].forEach(r => {
+    const lane = new THREE.Mesh(new THREE.RingGeometry(r-.04, r+.04, 64, 1, 0, Math.PI*2), laneMat);
+    lane.rotation.x = -Math.PI/2;
+    lane.position.y = .22;
+    scene.add(lane);
+  });
+
+  // === GAZON CENTRAL ===
+  const grass = new THREE.Mesh(
+    new THREE.CircleGeometry(5.4, 48).scale(1, 1.05, 1),
+    mat('#9cc870', {roughness:.95})
+  );
+  // CircleGeometry on XY plane → rotate to XZ
+  // Then squash for ellipse via scale
+  const grassGeo = new THREE.ShapeGeometry((()=>{
+    const s = new THREE.Shape();
+    s.absellipse(0, 0, 5.4, 3, 0, Math.PI*2, false, 0);
+    return s;
+  })(), 48);
+  const grass2 = new THREE.Mesh(grassGeo, mat('#9cc870', {roughness:.95}));
+  grass2.rotation.x = -Math.PI/2;
+  grass2.position.y = .12;
+  grass2.receiveShadow = true;
+  scene.add(grass2);
+
+  // === PODIUM 1-2-3 ===
+  function addPodium(){
+    const g1 = rb(.8, 1.2, .8, .12);
+    const m1 = new THREE.Mesh(g1, mat('#ffd060', {roughness:.6, metalness:.3}));
+    m1.position.set(0, .6, 0); m1.castShadow=true; scene.add(m1);
+    const g2 = rb(.7, .7, .7, .1);
+    const m2 = new THREE.Mesh(g2, mat('#d8d8e0', {roughness:.6}));
+    m2.position.set(-.9, .35, 0); m2.castShadow=true; scene.add(m2);
+    const g3 = rb(.65, .45, .65, .08);
+    const m3 = new THREE.Mesh(g3, mat('#c87a48', {roughness:.6}));
+    m3.position.set(.9, .22, 0); m3.castShadow=true; scene.add(m3);
+  }
+  addPodium();
+
+  // === AUVENT JAUNE-BLANC (deux mâts + bandeau) ===
+  function addAwning(){
+    const poleMat = mat('#9a7a48', {roughness:.7});
+    const poleL = new THREE.Mesh(rb(.18, 6, .18, .04), poleMat);
+    poleL.position.set(-9, 3, 0); poleL.castShadow=true; scene.add(poleL);
+    const poleR = new THREE.Mesh(rb(.18, 6, .18, .04), poleMat);
+    poleR.position.set(9, 3, 0); poleR.castShadow=true; scene.add(poleR);
+    // Cordon horizontal (rounded box mince) entre les 2 mâts
+    const cordGeo = rb(18.5, .15, .15, .04);
+    const cord = new THREE.Mesh(cordGeo, mat('#9a7a48', {roughness:.6}));
+    cord.position.set(0, 5.8, 0); scene.add(cord);
+    // Drapeaux triangulaires pointant vers le BAS (style guirlande)
+    for(let i = 0; i < 8; i++){
+      const x = -8 + i * 2.3;
+      const tri = new THREE.Mesh(
+        new THREE.ConeGeometry(.45, 1.0, 3),
+        mat(i % 2 === 0 ? '#ffd060' : '#ffffff', {roughness:.4})
+      );
+      tri.position.set(x, 5.2, 0);
+      // Pointe vers le bas : rotation X = PI (180°)
+      tri.rotation.x = Math.PI;
+      tri.castShadow=true;
+      scene.add(tri);
+    }
+  }
+  addAwning();
+
+  // === RUNNER : groupe avec head + body + legs ===
+  function makeRunner(jerseyColor='#e85040', hairColor='#7a5838', skinColor='#f0d4b0'){
+    const g = new THREE.Group();
+    // Ombre sous les pieds (decal noir)
+    const shadow = new THREE.Mesh(
+      new THREE.CircleGeometry(.4, 16),
+      new THREE.MeshBasicMaterial({color:'#000', transparent:true, opacity:.25})
+    );
+    shadow.rotation.x = -Math.PI/2;
+    shadow.position.y = .15;
+    g.add(shadow);
+    // Jambes (capsules)
+    const legMat = mat(skinColor, {roughness:.85});
+    const legL = new THREE.Mesh(rb(.18, .55, .18, .07), legMat);
+    legL.position.set(-.12, .42, 0); legL.castShadow=true; g.add(legL);
+    const legR = new THREE.Mesh(rb(.18, .55, .18, .07), legMat);
+    legR.position.set(.12, .42, 0); legR.castShadow=true; g.add(legR);
+    // Chaussures
+    const shoeMat = mat(jerseyColor, {roughness:.5});
+    const shoeL = new THREE.Mesh(rb(.24, .15, .35, .07), shoeMat);
+    shoeL.position.set(-.12, .12, .05); g.add(shoeL);
+    const shoeR = new THREE.Mesh(rb(.24, .15, .35, .07), shoeMat);
+    shoeR.position.set(.12, .12, .05); g.add(shoeR);
+    // Short blanc
+    const short = new THREE.Mesh(rb(.5, .25, .35, .1), mat('#ffffff', {roughness:.85}));
+    short.position.set(0, .82, 0); short.castShadow=true; g.add(short);
+    // Corps maillot
+    const body = new THREE.Mesh(rb(.6, .55, .4, .15), mat(jerseyColor, {roughness:.7}));
+    body.position.set(0, 1.18, 0); body.castShadow=true; g.add(body);
+    // Bras
+    const armMat = mat(skinColor, {roughness:.85});
+    const armL = new THREE.Mesh(rb(.14, .45, .14, .06), armMat);
+    armL.position.set(-.36, 1.18, 0); armL.castShadow=true; g.add(armL);
+    const armR = new THREE.Mesh(rb(.14, .45, .14, .06), armMat);
+    armR.position.set(.36, 1.18, 0); armR.castShadow=true; g.add(armR);
+    // Tête (sphere)
+    const head = new THREE.Mesh(
+      new THREE.SphereGeometry(.32, 24, 18),
+      mat(skinColor, {roughness:.85})
+    );
+    head.position.set(0, 1.85, 0); head.castShadow=true; g.add(head);
+    // Cheveux (demi-sphere)
+    const hair = new THREE.Mesh(
+      new THREE.SphereGeometry(.33, 24, 18, 0, Math.PI*2, 0, Math.PI/2),
+      mat(hairColor, {roughness:.95})
+    );
+    hair.position.set(0, 1.85, 0); g.add(hair);
+    // Yeux (petits cubes noirs)
+    const eyeMat = new THREE.MeshBasicMaterial({color:'#1a1010'});
+    const eyeL = new THREE.Mesh(new THREE.SphereGeometry(.04, 8, 6), eyeMat);
+    eyeL.position.set(-.1, 1.9, .29); g.add(eyeL);
+    const eyeR = new THREE.Mesh(new THREE.SphereGeometry(.04, 8, 6), eyeMat);
+    eyeR.position.set(.1, 1.9, .29); g.add(eyeR);
+    // Pommettes roses (decals)
+    const cheekMat = new THREE.MeshBasicMaterial({color:'#ff8a90', transparent:true, opacity:.45});
+    const cheekL = new THREE.Mesh(new THREE.CircleGeometry(.07, 12), cheekMat);
+    cheekL.position.set(-.18, 1.82, .27); g.add(cheekL);
+    const cheekR = new THREE.Mesh(new THREE.CircleGeometry(.07, 12), cheekMat);
+    cheekR.position.set(.18, 1.82, .27); g.add(cheekR);
+    return g;
+  }
+
+  // RUNNER PRINCIPAL (joueur) — héros plus gros
+  const player = makeRunner('#e85040', '#7a5838', '#f0d4b0');
+  player.scale.set(2.5, 2.5, 2.5);
+  scene.add(player);
+  // Aura du héros (cercle blanc sous lui)
+  const heroAura = new THREE.Mesh(
+    new THREE.CircleGeometry(.7, 24),
+    new THREE.MeshBasicMaterial({color:'#fff', transparent:true, opacity:.35})
+  );
+  heroAura.rotation.x = -Math.PI/2;
+  heroAura.position.y = .18;
+  scene.add(heroAura);
+
+  // NPCs : 5 coureurs de couleurs/types variés
+  const npcConfigs = [
+    { jersey:'#4a9fd9', hair:'#3a2818', skin:'#a8804a', progressOffset:0.18, speed:.65 },  // sprinter
+    { jersey:'#7ec46a', hair:'#8a6848', skin:'#f0d4b0', progressOffset:0.35, speed:.55 },  // woman
+    { jersey:'#ffd060', hair:'#c0c0c0', skin:'#e0c098', progressOffset:0.52, speed:.45 },  // senior
+    { jersey:'#d8a8b8', hair:'#dcd0c0', skin:'#e0c098', progressOffset:0.7, speed:.40 },   // grandma
+    { jersey:'#c89af0', hair:'#d8a060', skin:'#f0d4b0', progressOffset:0.88, speed:.55 },  // child
+  ];
+  const npcs = npcConfigs.map(c => {
+    const npc = makeRunner(c.jersey, c.hair, c.skin);
+    npc.scale.set(1.8, 1.8, 1.8);
+    npc.userData.progress = c.progressOffset;
+    npc.userData.speed = c.speed;
+    scene.add(npc);
+    return npc;
+  });
+
+  // === Resize handler ===
+  function resize(){
+    const stadium = canvas.parentElement;
+    const w = stadium.clientWidth;
+    const h = stadium.clientHeight;
+    renderer.setSize(w, h, false);
+    const aspect = w / h;
+    const orthoH = 12;
+    camera.left = -orthoH * aspect;
+    camera.right = orthoH * aspect;
+    camera.top = orthoH;
+    camera.bottom = -orthoH;
+    camera.updateProjectionMatrix();
+  }
+  window.addEventListener('resize', resize);
+  setTimeout(resize, 50);
+  setTimeout(resize, 500);
+
+  // === Animation loop ===
+  // Piste : ellipse rx=7, ry=4.2 (sur le sol)
+  const trackRx = 7, trackRz = 4.2;
+  function updateRunnerPosition(elem, progress){
+    const t = ((progress % 1) + 1) % 1;
+    const angle = t * Math.PI * 2 - Math.PI/2; // commence au sommet
+    const x = Math.cos(angle) * trackRx;
+    const z = Math.sin(angle) * trackRz;
+    elem.position.x = x;
+    elem.position.z = z;
+    // Orientation : face la direction de course
+    const dx = -Math.sin(angle) * trackRx;
+    const dz = Math.cos(angle) * trackRz;
+    elem.rotation.y = Math.atan2(dx, dz);
+  }
+
+  let lastT = performance.now();
+  function tick(now){
+    const dt = Math.min((now - lastT) / 1000, 0.1);
+    lastT = now;
+    // PLAYER : lit STATE.lapProgress (existe dans le jeu)
+    const p = (window.STATE && window.STATE.lapProgress) || 0;
+    updateRunnerPosition(player, p);
+    // Bobbing subtile
+    player.position.y = Math.sin(now * 0.012) * 0.04;
+    // Aura suit le joueur (au sol)
+    heroAura.position.x = player.position.x;
+    heroAura.position.z = player.position.z;
+    heroAura.material.opacity = .25 + Math.sin(now * .003) * .12;
+    // NPCs : chacun avance à sa vitesse propre
+    npcs.forEach((npc, i) => {
+      npc.userData.progress += dt * 0.04 * npc.userData.speed;
+      if(npc.userData.progress > 1) npc.userData.progress -= 1;
+      updateRunnerPosition(npc, npc.userData.progress);
+      // Bobbing désynchronisé
+      npc.position.y = Math.sin(now * 0.012 + i * 1.3) * 0.035;
+    });
+    renderer.render(scene, camera);
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  // Expose pour debug
+  window.STADIUM_3D = { scene, camera, renderer, player, npcs, heroAura };
+})();
 </script>
 
 </body>

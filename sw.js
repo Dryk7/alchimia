@@ -1,5 +1,5 @@
-// Service Worker — Alchimia
-const CACHE = 'alchimia-v2';
+// Service Worker — FOULÉE (anciennement Alchimia)
+const CACHE = 'foulee-v3';
 const ASSETS = [
   './',
   './index.html',

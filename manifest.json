@@ -1,12 +1,12 @@
 {
-  "name": "Alchimia — Le Cabinet des Trois Voies",
-  "short_name": "Alchimia",
-  "description": "Idle merge gothique-alchimique. Plante, Pierre, Essence — fusionne, transmute, élève.",
+  "name": "FOULÉE — Le petit stade dans ta poche",
+  "short_name": "Foulée",
+  "description": "Idle merge cozy. Nourris ton coureur, boucle des tours, ascende.",
   "start_url": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0a0709",
-  "theme_color": "#0a0709",
+  "background_color": "#f7ecd2",
+  "theme_color": "#e07848",
   "lang": "fr",
   "icons": [
     {

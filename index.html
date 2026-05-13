@@ -504,6 +504,63 @@ header{
   margin-top:12px;
 }
 
+/* === STADIUM PICKER === */
+.stadium-body{ overflow-y:auto; max-height:65vh; padding:4px 2px; }
+.stadium-cell{
+  display:grid; grid-template-columns:80px 1fr auto;
+  gap:12px; align-items:center;
+  padding:10px 12px;
+  background:#fff;
+  border:2px solid rgba(160,122,68,.25);
+  border-radius:12px;
+  margin-bottom:8px;
+  cursor:pointer;
+  transition:transform .12s, border-color .15s;
+}
+.stadium-cell.unlocked{ cursor:pointer; }
+.stadium-cell.unlocked:active{ transform:scale(.98); }
+.stadium-cell.locked{ opacity:.55; cursor:not-allowed; }
+.stadium-cell.selected{
+  border-color:#3a8c3a;
+  background:linear-gradient(180deg, #fff, #e2f4e2);
+  box-shadow:0 0 0 2px rgba(58,140,58,.25);
+}
+.stadium-mini{
+  position:relative;
+  width:80px; height:46px;
+  border-radius:8px;
+  overflow:hidden;
+  border:2px solid #fff;
+  box-shadow:0 2px 4px rgba(80,55,30,.15);
+}
+.stadium-mini-sun{
+  position:absolute; top:4px; right:8px;
+  width:10px; height:10px;
+  border-radius:50%;
+  box-shadow:0 0 8px currentColor;
+}
+.stadium-mini-grass{
+  position:absolute; bottom:0; left:0; right:0;
+  height:22px;
+  display:flex; align-items:center; justify-content:center;
+}
+.stadium-mini-track{
+  width:60px; height:14px;
+  border-radius:50%;
+  border:1.5px solid rgba(255,255,255,.6);
+}
+.stadium-name{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:14px; color:var(--ink);
+}
+.stadium-req{
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:10.5px; color:var(--ink-2);
+  text-align:right;
+}
+.stadium-cell.selected .stadium-req{ color:#3a8c3a; font-weight:900; }
+.stadium-cell.unlocked:not(.selected) .stadium-req{ color:#2c5a8a; font-weight:800; }
+
 /* === QUÊTES QUOTIDIENNES === */
 .quests-daily-body{ overflow-y:auto; max-height:65vh; padding:4px 2px; }
 .quests-hero{
@@ -5254,6 +5311,13 @@ body.shop-epic-flash::after{
         </svg>
         <div class="mi-meta"><div class="mi-title">👕 Vestiaire</div><div class="mi-sub">skins coureur · cosmétiques</div></div>
       </button>
+      <button class="menu-item" data-action="stadium">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <ellipse cx="12" cy="13" rx="9" ry="4"/>
+          <path d="M3 13 V16 q9 4 18 0 V13"/>
+        </svg>
+        <div class="mi-meta"><div class="mi-title">🏟️ Stades</div><div class="mi-sub">5 stades à débloquer par saison</div></div>
+      </button>
       <button class="menu-item" data-action="quests-daily">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
           <path d="M5 4 H19 V20 H5 z"/>
@@ -5654,6 +5718,16 @@ body.shop-epic-flash::after{
     <h2>ASCENSION</h2>
     <div class="divider"></div>
     <div class="saison-body" id="saison-body"></div>
+  </div>
+</div>
+
+<!-- STADIUM PICKER -->
+<div id="stadium-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-close" id="stadium-close" aria-label="Fermer">×</div>
+    <h2>🏟️ STADES</h2>
+    <div class="divider"></div>
+    <div class="stadium-body" id="stadium-body"></div>
   </div>
 </div>
 
@@ -12592,20 +12666,80 @@ function updateTrackSurface(){
   ring.setAttribute('fill', color);
 }
 
-/* Ciel : jour ensoleillé fixe (plus de cycle dynamique qui rendait le stade "cosmique").
-   Le stade est un beau stade municipal en plein jour, point. */
+/* Stades unlockables par saison — change le visuel complet du décor */
+const STADIUMS = [
+  { id:'municipal', name:'Stade Municipal',   sky:'#bedeed', celestial:'#ffd86a', celX:265, celY:28, celR:14, grass:'#9ec858', track:'#c8884e', minSaison:1 },
+  { id:'olympic',   name:'Stade Olympique',   sky:'#7ec8ee', celestial:'#fff3b0', celX:230, celY:24, celR:16, grass:'#7eb858', track:'#e02818', minSaison:2 },
+  { id:'coliseum',  name:'Coliseum',          sky:'#ffb070', celestial:'#ff6020', celX:280, celY:35, celR:18, grass:'#a09040', track:'#d8a040', minSaison:3 },
+  { id:'sunset',    name:'Stade du Couchant', sky:'#ff8060', celestial:'#ffd070', celX:50,  celY:40, celR:20, grass:'#90a060', track:'#b04030', minSaison:5 },
+  { id:'cosmic',    name:'Stade Cosmique',    sky:'#1a1640', celestial:'#fff',    celX:265, celY:28, celR:10, grass:'#3c4a78', track:'#5040b0', minSaison:8 },
+];
+function currentStadium(){
+  const saison = STATE.saison || 1;
+  const selId = STATE.selectedStadiumId;
+  // Si le joueur a sélectionné un stade et qu'il est unlocké → l'utiliser
+  if(selId){
+    const s = STADIUMS.find(x => x.id === selId);
+    if(s && saison >= s.minSaison) return s;
+  }
+  // Sinon retour au plus haut débloqué
+  return [...STADIUMS].reverse().find(s => saison >= s.minSaison) || STADIUMS[0];
+}
+function setStadium(id){
+  const s = STADIUMS.find(x => x.id === id);
+  if(!s) return;
+  if((STATE.saison || 1) < s.minSaison){ if(typeof sfxDeny === 'function') sfxDeny(); return; }
+  STATE.selectedStadiumId = id;
+  updateSky();
+  if(typeof showRunnerBubble === 'function') showRunnerBubble('🏟️ ' + s.name);
+  if(typeof renderStadiumPicker === 'function') renderStadiumPicker();
+}
 function updateSky(){
   const sky = document.getElementById('rs-sky-bg');
   const cel = document.getElementById('rs-celestial');
   if(!sky) return;
-  // Bleu ciel doux, soleil chaud en haut à droite
-  sky.setAttribute('fill', '#bedeed');
+  const st = currentStadium();
+  sky.setAttribute('fill', st.sky);
   if(cel){
-    cel.setAttribute('cx', 265);
-    cel.setAttribute('cy', 28);
-    cel.setAttribute('r', 14);
-    cel.setAttribute('fill', '#ffd86a');
+    cel.setAttribute('cx', st.celX);
+    cel.setAttribute('cy', st.celY);
+    cel.setAttribute('r', st.celR);
+    cel.setAttribute('fill', st.celestial);
   }
+  // Le gazon central + ring track changent aussi
+  const grassPath = document.querySelector('#runner-svg ellipse[fill="url(#rs-mowed)"]');
+  if(grassPath) grassPath.setAttribute('fill', st.grass);
+  const ring = document.getElementById('rs-track-ring');
+  if(ring && !STATE.lapsRun) ring.setAttribute('fill', st.track); // override de l'auto-update
+}
+function openStadiumPicker(){
+  if(typeof renderStadiumPicker === 'function') renderStadiumPicker();
+  document.getElementById('stadium-modal')?.classList.add('show');
+}
+function renderStadiumPicker(){
+  const body = document.getElementById('stadium-body');
+  if(!body) return;
+  const saison = STATE.saison || 1;
+  const sel = STATE.selectedStadiumId || currentStadium().id;
+  body.innerHTML = STADIUMS.map(s => {
+    const unlocked = saison >= s.minSaison;
+    const selected = sel === s.id;
+    return `<div class="stadium-cell ${unlocked ? 'unlocked' : 'locked'} ${selected ? 'selected' : ''}" data-stadium="${s.id}">
+      <div class="stadium-mini" style="background:${s.sky}">
+        <div class="stadium-mini-sun" style="background:${s.celestial}"></div>
+        <div class="stadium-mini-grass" style="background:${s.grass}">
+          <div class="stadium-mini-track" style="background:${s.track}"></div>
+        </div>
+      </div>
+      <div class="stadium-name">${s.name}</div>
+      <div class="stadium-req">${unlocked ? (selected ? '✓ ACTIF' : 'CLIQUER POUR ACTIVER') : '🔒 Saison ' + s.minSaison}</div>
+    </div>`;
+  }).join('');
+  body.querySelectorAll('.stadium-cell').forEach(cell => {
+    cell.addEventListener('click', ()=>{
+      if(cell.classList.contains('unlocked')) setStadium(cell.dataset.stadium);
+    });
+  });
 }
 
 /* Accessoires de coureur — progression visuelle par niveau & saison.
@@ -14180,6 +14314,7 @@ function save(){
       skillTailwindUntil:STATE.skillTailwindUntil ?? 0,
       skillBreathUntil:STATE.skillBreathUntil ?? 0,
       dailyQuests:STATE.dailyQuests || null,
+      selectedStadiumId:STATE.selectedStadiumId || null,
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
   }catch(e){}
@@ -14242,6 +14377,7 @@ function load(){
     STATE.skillTailwindUntil = s.skillTailwindUntil ?? 0;
     STATE.skillBreathUntil = s.skillBreathUntil ?? 0;
     STATE.dailyQuests = s.dailyQuests || null;
+    STATE.selectedStadiumId = s.selectedStadiumId || null;
     // Migration : si on a maxTier mais pas de codexUnlocks → backfill
     for(let c=0;c<3;c++){
       for(let t=0; t<=STATE.totals.maxTier[c]; t++){
@@ -14454,6 +14590,7 @@ function boot(){
   bindModalClose('wardrobe-modal','wardrobe-close');
   bindModalClose('records-modal','records-close');
   bindModalClose('quests-daily-modal','quests-daily-close');
+  bindModalClose('stadium-modal','stadium-close');
   document.getElementById('starter-close')?.addEventListener('click', ()=>{
     document.getElementById('starter-modal')?.classList.remove('show');
     STATE.starterPackDeclined = true; // ne plus re-spam
@@ -14562,6 +14699,7 @@ function boot(){
         else if(action === 'wardrobe' && typeof openWardrobe === 'function') openWardrobe();
         else if(action === 'records' && typeof openRecords === 'function') openRecords();
         else if(action === 'quests-daily' && typeof openQuestsModal === 'function') openQuestsModal();
+        else if(action === 'stadium' && typeof openStadiumPicker === 'function') openStadiumPicker();
         else if(action === 'stats'){ renderStatsBody(); openModal('stats-modal'); }
       }, 200);
     });

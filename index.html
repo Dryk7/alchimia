@@ -18380,7 +18380,7 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     heroAuraOuter.material.opacity = .35 + Math.sin(now * .005 + 1.5) * .2;
     heroAuraGroup.scale.setScalar(1 + Math.sin(now * .004) * .08);
     heroAuraGroup.rotation.y = now * .0006;
-    // NPCs : chacun avance à sa vitesse propre + anim course
+    // NPCs : chacun avance à sa vitesse propre + anim course + cheer quand player passe à côté
     npcs.forEach((npc, i) => {
       const oldP = npc.userData.progress;
       npc.userData.progress += dt * 0.06 * npc.userData.speed;
@@ -18388,6 +18388,23 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       const npcVel = Math.abs(npc.userData.progress - oldP);
       updateRunnerPosition(npc, npc.userData.progress);
       animateRunner(npc, npc.userData.speed * .8 + .03, now + i * 200);
+      // Détecte si player proche → cheer (bras en l'air)
+      const dx = npc.position.x - player.position.x;
+      const dz = npc.position.z - player.position.z;
+      const dist = Math.sqrt(dx*dx + dz*dz);
+      if(dist < 2 && playerSmoothVel > 0.001){
+        npc.userData.cheerT = (npc.userData.cheerT || 0) + dt;
+        // Override des bras pour les lever
+        const parts = npc.userData.parts;
+        if(parts){
+          const cheerAmount = Math.min(1, npc.userData.cheerT * 2);
+          const wave = Math.sin(now * .015) * .3;
+          parts.armLPivot.rotation.x = -2.4 * cheerAmount + wave;
+          parts.armRPivot.rotation.x = -2.4 * cheerAmount - wave;
+        }
+      } else {
+        npc.userData.cheerT = Math.max(0, (npc.userData.cheerT || 0) - dt * 2);
+      }
     });
     // FOULE OLA : vague synchronisée qui tourne autour du stade
     crowd.userData.spectators.forEach((s, i) => {

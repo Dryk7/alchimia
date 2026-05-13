@@ -649,6 +649,44 @@ header{
   margin-top:12px;
 }
 
+/* Tier badge sur carte coureur (équipe modal) */
+.rc-emoji{ position:relative; }
+.rc-tier-badge{
+  position:absolute; top:-6px; right:-6px;
+  font-size:14px;
+  filter:drop-shadow(0 1px 2px rgba(0,0,0,.3));
+}
+.runner-card.tier-5 .rc-emoji::after{
+  content:''; position:absolute; inset:-4px;
+  background:radial-gradient(circle, #ffd070 0%, transparent 60%);
+  opacity:.4; pointer-events:none;
+  animation:trAuraPulse 1.8s ease-in-out infinite;
+  border-radius:50%;
+}
+
+/* === ÉVOLUTION VISUELLE COUREURS D'ÉQUIPE === */
+#rs-team-runners > g{
+  transform-origin:center;
+  transform-box:fill-box;
+}
+#rs-team-runners > g.tr-evolved{
+  animation:teamRunnerEvolve .8s ease-out;
+}
+@keyframes teamRunnerEvolve{
+  0%   { transform:scale(1); filter:brightness(1); }
+  30%  { transform:scale(1.4); filter:brightness(1.8) drop-shadow(0 0 8px #ffd070); }
+  100% { transform:scale(1); filter:brightness(1); }
+}
+.tr-aura{
+  transform-origin:center;
+  transform-box:fill-box;
+  animation:trAuraPulse 1.8s ease-in-out infinite;
+}
+@keyframes trAuraPulse{
+  0%,100% { opacity:.25; transform:scale(1); }
+  50%     { opacity:.5; transform:scale(1.2); }
+}
+
 /* === COFFRES + REVEAL === */
 .chests-body{ overflow-y:auto; max-height:65vh; padding:4px 2px; position:relative; }
 #chest-stage{
@@ -13145,9 +13183,12 @@ function renderRunnerCard(r){
   const milestoneMul = runnerMilestoneMul(r.id);
   const hasMgr = runnerHasManager(r.id);
   const cycleReady = cyclePct >= 100;
-  return `<div class="runner-card ${lvl > 0 ? 'hired' : 'unhired'} ${cycleReady ? 'ready' : ''} ${hasMgr ? 'has-mgr' : ''}"
+  const visualTier = (typeof teamRunnerVisualTier === 'function') ? teamRunnerVisualTier(lvl) : 0;
+  const tierBadges = ['','🎽','🥉','🥇','👑','⭐'];
+  const tierBadge = tierBadges[visualTier] || '';
+  return `<div class="runner-card ${lvl > 0 ? 'hired' : 'unhired'} ${cycleReady ? 'ready' : ''} ${hasMgr ? 'has-mgr' : ''} tier-${visualTier}"
        data-runner="${r.id}" style="--rc-color:${r.color}">
-    <div class="rc-emoji">${r.emoji}</div>
+    <div class="rc-emoji">${r.emoji}${tierBadge ? `<span class="rc-tier-badge">${tierBadge}</span>` : ''}</div>
     <div class="rc-body">
       <div class="rc-head">
         <span class="rc-name">${r.name}</span>
@@ -13210,6 +13251,26 @@ function updateRunnerCard(r){
   card.classList.toggle('unhired', lvl === 0);
   card.classList.toggle('ready', cycleReady && !hasMgr);
   card.classList.toggle('has-mgr', hasMgr);
+  // Tier visuel
+  const visualTier = (typeof teamRunnerVisualTier === 'function') ? teamRunnerVisualTier(lvl) : 0;
+  for(let i=0; i<=5; i++) card.classList.toggle('tier-' + i, visualTier === i);
+  // Update tier badge
+  const emojiEl = card.querySelector('.rc-emoji');
+  if(emojiEl){
+    const tierBadges = ['','🎽','🥉','🥇','👑','⭐'];
+    const tierBadge = tierBadges[visualTier] || '';
+    let badge = emojiEl.querySelector('.rc-tier-badge');
+    if(tierBadge){
+      if(!badge){
+        badge = document.createElement('span');
+        badge.className = 'rc-tier-badge';
+        emojiEl.appendChild(badge);
+      }
+      if(badge.textContent !== tierBadge) badge.textContent = tierBadge;
+    } else if(badge){
+      badge.remove();
+    }
+  }
   const $lvl = card.querySelector('[data-rc-lvl]');
   const $batch = card.querySelector('[data-rc-batch]');
   const $cycle = card.querySelector('[data-rc-cycle]');
@@ -14154,40 +14215,96 @@ function placeRunnerOnTrack(progress){
 }
 
 /* ÉQUIPE COUREURS : chaque coureur recruté apparaît sur la piste à sa propre position */
-const _teamRunnerStateLocal = {}; // progrès local pour anim fluide même si cycle 0
+const _teamRunnerStateLocal = {};
+/* Tier visuel par niveau du coureur (0=basique, 5=légende) */
+function teamRunnerVisualTier(lvl){
+  if(lvl < 10) return 0;     // basique
+  if(lvl < 25) return 1;     // dossard
+  if(lvl < 50) return 2;     // médaille bronze
+  if(lvl < 100) return 3;    // médaille or
+  if(lvl < 250) return 4;    // couronne
+  return 5;                  // aura légende
+}
+function _teamRunnerSprite(r, lvl){
+  const c = r.color;
+  const tier = teamRunnerVisualTier(lvl);
+  let extras = '';
+  // Tier 1+ : dossard rouge avec numéro
+  if(tier >= 1){
+    extras += `<rect x="-1.4" y=".3" width="2.8" height="2.2" fill="#fff"/>
+               <text x="0" y="1.9" text-anchor="middle" font-size="2" font-family="Nunito" font-weight="900" fill="#c83020">${(lvl % 100).toString().padStart(2,'0')}</text>`;
+  }
+  // Tier 2+ : médaille bronze (au cou)
+  if(tier === 2){
+    extras += `<rect x="-0.7" y="-2.2" width="1.4" height=".6" fill="#c84030"/>
+               <rect x="-1.1" y="-1.6" width="2.2" height="1.4" fill="#c8804a"/>`;
+  }
+  // Tier 3+ : médaille or
+  if(tier === 3){
+    extras += `<rect x="-0.7" y="-2.2" width="1.4" height=".6" fill="#c84030"/>
+               <rect x="-1.1" y="-1.6" width="2.2" height="1.4" fill="#ffd070"/>
+               <rect x="-0.7" y="-1.2" width="1.4" height=".6" fill="#ffe898"/>`;
+  }
+  // Tier 4+ : couronne de laurier sur la tête
+  if(tier >= 4){
+    // garde médaille or
+    extras += `<rect x="-0.7" y="-2.2" width="1.4" height=".6" fill="#c84030"/>
+               <rect x="-1.1" y="-1.6" width="2.2" height="1.4" fill="#ffd070"/>
+               <rect x="-0.7" y="-1.2" width="1.4" height=".6" fill="#ffe898"/>
+               <rect x="-3.5" y="-6" width="7" height=".7" fill="#5a9040"/>
+               <rect x="-3.5" y="-6.7" width=".7" height=".7" fill="#ffd070"/>
+               <rect x="2.8" y="-6.7" width=".7" height=".7" fill="#ffd070"/>`;
+  }
+  // Tier 5 : aura dorée pulsante derrière
+  let aura = '';
+  if(tier === 5){
+    aura = `<circle cx="0" cy="-1.5" r="6" fill="#ffd070" opacity=".25" filter="blur(1.5px)" class="tr-aura"/>`;
+  }
+  return `
+    <g transform="scale(1.4)">
+      ${aura}
+      <ellipse cx="0" cy="6.5" rx="3.5" ry="1" fill="#000" opacity=".35"/>
+      <rect x="-2.5" y="-7" width="5" height="2" fill="#4a2818"/>
+      <rect x="-2.5" y="-5.5" width="5" height="3.5" fill="#f0c890"/>
+      <rect x="-3" y="-1.5" width="6" height="4" fill="${c}"/>
+      <rect x="-3" y="-1.5" width="6" height=".7" fill="#fff" opacity=".6"/>
+      ${tier === 0 ? '<rect x="-1" y=".5" width="2" height="1.6" fill="#fff"/>' : ''}
+      <rect class="rs-arm1" x="-4" y="-0.5" width="1.5" height="3" fill="#f0c890"/>
+      <rect class="rs-arm2" x="2.5" y="-0.5" width="1.5" height="3" fill="#f0c890"/>
+      <rect x="-2.5" y="2.5" width="5" height="2.5" fill="#fff"/>
+      <rect class="rs-leg1" x="-2" y="5" width="1.6" height="3" fill="#f0c890"/>
+      <rect class="rs-leg2" x=".5" y="5" width="1.6" height="3" fill="#f0c890"/>
+      <rect class="rs-shoe1" x="-2.2" y="7.5" width="2" height="1.2" fill="#1f3548"/>
+      <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#1f3548"/>
+      ${extras}
+    </g>
+  `;
+}
 function ensureTeamRunnersSVG(){
   const g = document.getElementById('rs-team-runners');
   if(!g) return;
-  // Pour chaque TEAM_RUNNERS hired, on crée un <g> avec sprite simple si pas déjà là
   for(let i = 0; i < TEAM_RUNNERS.length; i++){
     const r = TEAM_RUNNERS[i];
     const lvl = (typeof runnerLevel === 'function') ? runnerLevel(r.id) : 0;
+    const tier = teamRunnerVisualTier(lvl);
     const existing = g.querySelector(`[data-tr="${r.id}"]`);
-    if(lvl > 0 && !existing){
-      // Crée un mini-sprite coureur coloré à la couleur du runner
-      const elem = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-      elem.setAttribute('data-tr', r.id);
-      const c = r.color;
-      // Petit sprite minimaliste (plus petit que le main)
-      elem.innerHTML = `
-        <g transform="scale(1.4)">
-          <ellipse cx="0" cy="6.5" rx="3.5" ry="1" fill="#000" opacity=".35"/>
-          <rect x="-2.5" y="-7" width="5" height="2" fill="#4a2818"/>
-          <rect x="-2.5" y="-5.5" width="5" height="3.5" fill="#f0c890"/>
-          <rect x="-3" y="-1.5" width="6" height="4" fill="${c}"/>
-          <rect x="-3" y="-1.5" width="6" height=".7" fill="#fff" opacity=".6"/>
-          <rect x="-1" y=".5" width="2" height="1.6" fill="#fff"/>
-          <rect class="rs-arm1" x="-4" y="-0.5" width="1.5" height="3" fill="#f0c890"/>
-          <rect class="rs-arm2" x="2.5" y="-0.5" width="1.5" height="3" fill="#f0c890"/>
-          <rect x="-2.5" y="2.5" width="5" height="2.5" fill="#fff"/>
-          <rect class="rs-leg1" x="-2" y="5" width="1.6" height="3" fill="#f0c890"/>
-          <rect class="rs-leg2" x=".5" y="5" width="1.6" height="3" fill="#f0c890"/>
-          <rect class="rs-shoe1" x="-2.2" y="7.5" width="2" height="1.2" fill="#1f3548"/>
-          <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#1f3548"/>
-        </g>
-      `;
-      g.appendChild(elem);
-    } else if(lvl === 0 && existing){
+    if(lvl > 0){
+      if(!existing){
+        const elem = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        elem.setAttribute('data-tr', r.id);
+        elem.setAttribute('data-tier', tier);
+        elem.innerHTML = _teamRunnerSprite(r, lvl);
+        g.appendChild(elem);
+      } else if(parseInt(existing.dataset.tier) !== tier){
+        // Tier visuel changé → rebuild
+        existing.dataset.tier = tier;
+        existing.innerHTML = _teamRunnerSprite(r, lvl);
+        // Petit pop d'évolution
+        existing.classList.remove('tr-evolved');
+        void existing.offsetWidth;
+        existing.classList.add('tr-evolved');
+      }
+    } else if(existing){
       existing.remove();
     }
   }

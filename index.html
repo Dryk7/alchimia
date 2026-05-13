@@ -17303,12 +17303,30 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color('#e0e4e0');
+  // Background gradient subtil via Canvas texture (style "horizon ciel doux")
+  function makeBackgroundTexture(){
+    const c = document.createElement('canvas');
+    c.width = 8; c.height = 256;
+    const ctx = c.getContext('2d');
+    const grad = ctx.createLinearGradient(0, 0, 0, 256);
+    grad.addColorStop(0,   '#c8d8e8');  // ciel doux haut
+    grad.addColorStop(0.45,'#d8e0e0');
+    grad.addColorStop(0.55,'#e0e4e0');  // horizon
+    grad.addColorStop(1,   '#e8ece8');  // sol gris-sage
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 8, 256);
+    return new THREE.CanvasTexture(c);
+  }
+  scene.background = makeBackgroundTexture();
+  // Brouillard léger pour profondeur des arbres lointains
+  scene.fog = new THREE.Fog('#d8dde0', 28, 50);
 
   // Camera ortho avec angle 3/4 top-down (style life-sim Eatventure)
   const camera = new THREE.OrthographicCamera(-11, 11, 12, -12, .1, 200);
-  camera.position.set(0, 22, 18);
-  camera.lookAt(0, 0.5, 0);
+  const camBasePos = new THREE.Vector3(0, 22, 18);
+  const camTarget = new THREE.Vector3(0, 0.5, 0);
+  camera.position.copy(camBasePos);
+  camera.lookAt(camTarget);
 
   // Lights
   const ambient = new THREE.AmbientLight(0xffffff, 0.65);
@@ -18021,13 +18039,146 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       const bob = Math.sin(phase) * .15 + .15;
       s.position.y = 1.45 + bob;
     });
+    // CAMERA IDLE BREATHING
+    const breathX = Math.sin(now * .0003) * .25;
+    const breathY = Math.sin(now * .00037) * .12;
+    const breathZ = Math.cos(now * .0004) * .2;
+    camera.position.set(camBasePos.x + breathX, camBasePos.y + breathY, camBasePos.z + breathZ);
+    camera.lookAt(camTarget);
+
+    // === SPARKLES podium : étoiles tournent et pulsent ===
+    {
+      const positions = sparkles.geometry.attributes.position.array;
+      for(let i = 0; i < sparkleN; i++){
+        const ph = sparkleData[i*4+3] + now * .002;
+        const orbit = ph;
+        const baseX = sparkleData[i*4];
+        const baseZ = sparkleData[i*4+2];
+        const r = Math.sqrt(baseX*baseX + baseZ*baseZ);
+        positions[i*3]   = Math.cos(orbit) * r;
+        positions[i*3+1] = sparkleData[i*4+1] + Math.sin(ph * 1.7) * .25;
+        positions[i*3+2] = Math.sin(orbit) * r;
+      }
+      sparkles.geometry.attributes.position.needsUpdate = true;
+      sparkles.material.opacity = .7 + Math.sin(now * .003) * .25;
+    }
+
+    // === DUST : emit 2-3 par frame derrière le player + update ===
+    if(playerVel > .0002){
+      // Emit en fonction de la vitesse
+      const emitCount = Math.min(3, Math.floor(playerVel * 200));
+      for(let i = 0; i < emitCount; i++) emitDust();
+    }
+    {
+      const positions = dust.geometry.attributes.position.array;
+      for(let i = 0; i < dustN; i++){
+        const d = dustData[i];
+        d.life += dt;
+        if(d.life >= d.maxLife){
+          positions[i*3+1] = -100; // hide
+          continue;
+        }
+        d.x += d.vx * dt;
+        d.z += d.vz * dt;
+        d.y += dt * .2; // rises slightly
+        positions[i*3] = d.x;
+        positions[i*3+1] = d.y;
+        positions[i*3+2] = d.z;
+      }
+      dust.geometry.attributes.position.needsUpdate = true;
+    }
+
     composer.render();
     requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);
 
+  // === PARTICULES SPARKLE autour du podium or (étoiles dorées) ===
+  const sparkleGeom = new THREE.BufferGeometry();
+  const sparkleN = 24;
+  const sparklePos = new Float32Array(sparkleN * 3);
+  const sparkleData = new Float32Array(sparkleN * 4); // baseX, baseY, baseZ, phase
+  for(let i = 0; i < sparkleN; i++){
+    const a = (i / sparkleN) * Math.PI * 2;
+    const r = .9 + Math.random() * .3;
+    sparkleData[i*4] = Math.cos(a) * r;
+    sparkleData[i*4+1] = 1.2 + Math.random() * .8;
+    sparkleData[i*4+2] = Math.sin(a) * r;
+    sparkleData[i*4+3] = Math.random() * Math.PI * 2;
+    sparklePos[i*3] = sparkleData[i*4];
+    sparklePos[i*3+1] = sparkleData[i*4+1];
+    sparklePos[i*3+2] = sparkleData[i*4+2];
+  }
+  sparkleGeom.setAttribute('position', new THREE.BufferAttribute(sparklePos, 3));
+  const sparkleMat = new THREE.PointsMaterial({
+    color:'#ffe88a', size:.14, sizeAttenuation:true, transparent:true, opacity:.95,
+    map: (()=>{
+      // Texture étoile (sprite)
+      const c = document.createElement('canvas');
+      c.width = c.height = 32;
+      const ctx = c.getContext('2d');
+      const grad = ctx.createRadialGradient(16,16,0, 16,16,16);
+      grad.addColorStop(0, 'rgba(255,255,200,1)');
+      grad.addColorStop(.4, 'rgba(255,220,100,.6)');
+      grad.addColorStop(1, 'rgba(255,200,50,0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 32, 32);
+      return new THREE.CanvasTexture(c);
+    })(),
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+  });
+  const sparkles = new THREE.Points(sparkleGeom, sparkleMat);
+  scene.add(sparkles);
+
+  // === PARTICULES DUST derrière le joueur (traînée de poussière) ===
+  const dustN = 30;
+  const dustGeom = new THREE.BufferGeometry();
+  const dustPos = new Float32Array(dustN * 3);
+  const dustData = []; // {x, y, z, vx, vz, life, maxLife}
+  for(let i = 0; i < dustN; i++){
+    dustData.push({ x:0, y:0, z:0, vx:0, vz:0, life:0, maxLife:1 });
+    dustPos[i*3] = 0;
+    dustPos[i*3+1] = -10; // off-screen au départ
+    dustPos[i*3+2] = 0;
+  }
+  dustGeom.setAttribute('position', new THREE.BufferAttribute(dustPos, 3));
+  const dustMat = new THREE.PointsMaterial({
+    color:'#ddd0c0', size:.2, sizeAttenuation:true, transparent:true, opacity:.5,
+    map: (()=>{
+      const c = document.createElement('canvas');
+      c.width = c.height = 32;
+      const ctx = c.getContext('2d');
+      const grad = ctx.createRadialGradient(16,16,0, 16,16,16);
+      grad.addColorStop(0, 'rgba(255,255,255,.8)');
+      grad.addColorStop(.5, 'rgba(220,210,200,.3)');
+      grad.addColorStop(1, 'rgba(220,210,200,0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 32, 32);
+      return new THREE.CanvasTexture(c);
+    })(),
+    depthWrite: false
+  });
+  const dust = new THREE.Points(dustGeom, dustMat);
+  scene.add(dust);
+
+  // Emit dust à la position du player
+  let dustIdx = 0;
+  function emitDust(){
+    if(!player) return;
+    const d = dustData[dustIdx];
+    d.x = player.position.x + (Math.random() - .5) * .3;
+    d.y = .1 + Math.random() * .15;
+    d.z = player.position.z + (Math.random() - .5) * .3;
+    d.vx = (Math.random() - .5) * .8;
+    d.vz = (Math.random() - .5) * .8;
+    d.life = 0;
+    d.maxLife = .8 + Math.random() * .4;
+    dustIdx = (dustIdx + 1) % dustN;
+  }
+
   // Expose pour debug
-  window.STADIUM_3D = { scene, camera, renderer, player, npcs, heroAura };
+  window.STADIUM_3D = { scene, camera, renderer, player, npcs, heroAura, sparkles, dust };
 })();
 </script>
 

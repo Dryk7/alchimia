@@ -6076,38 +6076,38 @@ body.shop-epic-flash::after{
             <rect x="-22" y="4" width="11" height="1.6" fill="#fff" opacity=".55"/>
           </g>
           <g class="rs-body" transform="scale(7)" filter="url(#rs-shadow-tight)">
-            <!-- COUREUR MIGNON style Eatventure : formes rondes, grosse tête, sans outline -->
-            <!-- Ombre douce au sol -->
-            <ellipse cx="0" cy="10.5" rx="5.5" ry="1.2" fill="#000" opacity=".22"/>
-            <!-- Jambes (capsules arrondies) -->
+            <!-- COUREUR HÉROS : version MIGNONNE asymétrique (regarde à droite par défaut) -->
+            <ellipse cx="0" cy="10.5" rx="6" ry="1.3" fill="#000" opacity=".22"/>
+            <!-- Jambes : avant à droite, arrière à gauche -->
             <rect class="rs-leg1" x="-2.6" y="4" width="2.2" height="6" rx="1.1" fill="#f0d4b0"/>
-            <rect class="rs-leg2" x=".4" y="4" width="2.2" height="6" rx="1.1" fill="#f0d4b0"/>
-            <!-- Chaussures (rondes assorties au maillot) -->
+            <rect class="rs-leg2" x=".6" y="4" width="2.2" height="6" rx="1.1" fill="#f0d4b0"/>
+            <!-- Chaussures (avant un peu plus en avant) -->
             <ellipse class="rs-shoe1" cx="-1.5" cy="10.2" rx="1.7" ry="1.1" fill="#e85040"/>
-            <ellipse class="rs-shoe2" cx="1.5" cy="10.2" rx="1.7" ry="1.1" fill="#e85040"/>
-            <!-- Short blanc (rect rounded) -->
+            <ellipse class="rs-shoe2" cx="1.8" cy="10.2" rx="1.8" ry="1.1" fill="#e85040"/>
             <rect x="-3" y="1.5" width="6" height="3.5" rx="1.3" fill="#fff"/>
-            <!-- Corps maillot rouge VIBRANT (rect bien rounded) -->
             <rect data-skin="jersey" x="-3.5" y="-3.5" width="7" height="6" rx="2" fill="#e85040"/>
-            <!-- Bande accent jaune sur maillot -->
             <rect data-skin="accent" x="-3.5" y="-3.5" width="7" height="1.3" rx="1.3" fill="#ffd060"/>
-            <!-- Dossard rond -->
             <circle cx="0" cy="-.5" r="1.2" fill="#fff"/>
-            <!-- Bras (capsules rondes) -->
-            <rect class="rs-arm1" x="-5" y="-2.5" width="1.8" height="4.5" rx=".9" fill="#f0d4b0"/>
-            <rect class="rs-arm2" x="3.2" y="-2.5" width="1.8" height="4.5" rx=".9" fill="#f0d4b0"/>
-            <!-- TÊTE RONDE (la signature Eatventure) -->
-            <ellipse cx="0" cy="-7" rx="3.8" ry="3.8" fill="#f0d4b0"/>
-            <!-- Cheveux (forme ronde arrondie sur le dessus de la tête) -->
-            <path data-skin="hair" d="M -3.5,-9 Q -3.5,-11 0,-10.8 Q 3.5,-11 3.5,-9 Q 3.5,-7.5 2,-7 L -2,-7 Q -3.5,-7.5 -3.5,-9 Z" fill="#7a5838"/>
-            <!-- 2 yeux noirs ronds (style mignon Eatventure) -->
-            <circle cx="-1.3" cy="-6.8" r=".55" fill="#1a1010"/>
-            <circle cx="1.3" cy="-6.8" r=".55" fill="#1a1010"/>
-            <!-- 2 petites pommettes roses mignonnes -->
-            <ellipse cx="-2.1" cy="-5.5" rx=".7" ry=".5" fill="#ff8a90" opacity=".55"/>
-            <ellipse cx="2.1" cy="-5.5" rx=".7" ry=".5" fill="#ff8a90" opacity=".55"/>
-            <!-- Petite bouche souriante -->
-            <path d="M -.8,-5 Q 0,-4.4 .8,-5" stroke="#3a2818" stroke-width=".25" fill="none" stroke-linecap="round"/>
+            <!-- Bras : avant à droite (course), arrière à gauche -->
+            <rect class="rs-arm1" x="-5" y="-2" width="1.8" height="4.5" rx=".9" fill="#f0d4b0"/>
+            <rect class="rs-arm2" x="3.4" y="-3" width="1.8" height="4.5" rx=".9" fill="#f0d4b0"/>
+            <!-- TÊTE ronde décalée légèrement à droite (regarde vers où il court) -->
+            <ellipse cx=".3" cy="-7" rx="3.8" ry="3.8" fill="#f0d4b0"/>
+            <!-- Cheveux avec mèche penchée vers la droite -->
+            <path data-skin="hair" d="M -3.5,-9 Q -3.5,-11 0,-10.8 Q 3.5,-11 3.7,-9 Q 3.7,-7.5 2.2,-7 L -2,-7 Q -3.5,-7.5 -3.5,-9 Z" fill="#7a5838"/>
+            <path d="M 1.5,-10.5 Q 3,-9 4,-7.5 Q 3.5,-7.8 2,-8.5 Z" fill="#7a5838"/>
+            <!-- Yeux DÉCALÉS À DROITE (sens du regard !) -->
+            <circle cx="-.4" cy="-6.8" r=".55" fill="#1a1010"/>
+            <circle cx="1.8" cy="-6.8" r=".55" fill="#1a1010"/>
+            <!-- Reflet blanc dans l'œil de devant -->
+            <circle cx="1.95" cy="-6.95" r=".18" fill="#fff"/>
+            <!-- Pommettes asymétriques -->
+            <ellipse cx="-1.5" cy="-5.5" rx=".6" ry=".4" fill="#ff8a90" opacity=".5"/>
+            <ellipse cx="2.5" cy="-5.5" rx=".75" ry=".5" fill="#ff8a90" opacity=".65"/>
+            <!-- Bouche souriante décalée droite -->
+            <path d="M -.2,-5 Q .5,-4.4 1.2,-5" stroke="#3a2818" stroke-width=".25" fill="none" stroke-linecap="round"/>
+            <!-- Petit nez (donne le sens du regard) -->
+            <ellipse cx="2.3" cy="-6.2" rx=".3" ry=".4" fill="#dcb898" opacity=".7"/>
           </g>
           <circle class="rs-sweat" cx="4" cy="-18" r="1" fill="#7ec8e8" opacity="0"/>
         </g>
@@ -14883,10 +14883,16 @@ function placeRunnerOnTrack(progress){
   const total = path.getTotalLength();
   const p = ((progress % 1) + 1) % 1;
   const pt = path.getPointAtLength(p * total);
-  // EATVENTURE STYLE : runner reste DEBOUT (pas de rotation tangente)
-  // Perspective : plus gros quand devant (y haut), petit au fond
-  const depthScale = 0.85 + (pt.y - 180) / 100 * 0.35; // 0.85 fond → 1.2 devant
-  runner.setAttribute('transform', `translate(${pt.x.toFixed(2)} ${pt.y.toFixed(2)}) scale(${depthScale.toFixed(2)})`);
+  // Tangente : direction de la course
+  const dl = total * 0.001;
+  const pt2 = path.getPointAtLength((p * total + dl) % total);
+  const dx = pt2.x - pt.x;
+  // Flip horizontal : -1 si on va vers la gauche, sinon 1
+  const flipX = dx < -0.01 ? -1 : 1;
+  // Perspective profondeur
+  const depthScale = 0.85 + (pt.y - 180) / 100 * 0.35;
+  // scaleX inclut le flip pour orienter le perso vers la direction de course
+  runner.setAttribute('transform', `translate(${pt.x.toFixed(2)} ${pt.y.toFixed(2)}) scale(${(flipX * depthScale).toFixed(2)} ${depthScale.toFixed(2)})`);
 }
 
 /* ÉQUIPE COUREURS : chaque coureur recruté apparaît sur la piste à sa propre position */
@@ -14902,52 +14908,60 @@ function teamRunnerVisualTier(lvl){
 }
 /* NPCs DIVERSIFIÉS : 8 types — jeune, vieux, femme, enfant, chien, sprinter, etc.
    Tous PLUS LENTS que le héros (le user reste le protagoniste). */
-// ═══ HELPER : sprite MIGNON Eatventure (formes rondes, no outlines) ═══
-// Params : c=jersey color, hair=hair color, skin=skin tone, shoe=shoe color, extras=optional extra svg
+// ═══ HELPER : sprite MIGNON Eatventure (formes rondes, no outlines, ASYMÉTRIQUE = regarde à droite par défaut) ═══
 function _cuteSprite(opts){
   const {c, hair='#7a5838', skin='#f0d4b0', shoe='#3a2818', shortColor='#fff', hairShape='normal', extras=''} = opts;
-  // hairShape: 'normal'=top arc, 'long'=long sides, 'gray'=lighter, 'bald'=none, 'cap'=hat, 'bun'=top knot
   let hairSvg = '';
   if(hairShape === 'normal'){
-    hairSvg = `<path d="M -3.5,-9 Q -3.5,-11 0,-10.8 Q 3.5,-11 3.5,-9 Q 3.5,-7.5 2,-7 L -2,-7 Q -3.5,-7.5 -3.5,-9 Z" fill="${hair}"/>`;
+    // Cheveux avec mèche penchée vers la droite (sens de la course)
+    hairSvg = `<path d="M -3.5,-9 Q -3.5,-11 0,-10.8 Q 3.5,-11 3.7,-9 Q 3.7,-7.5 2.2,-7 L -2,-7 Q -3.5,-7.5 -3.5,-9 Z" fill="${hair}"/>
+               <path d="M 1.5,-10.5 Q 3,-9 4,-7.5 Q 3.5,-7.8 2,-8.5 Z" fill="${hair}"/>`;
   } else if(hairShape === 'long'){
     hairSvg = `<path d="M -3.8,-9 Q -3.8,-11 0,-10.8 Q 3.8,-11 3.8,-9 L 3.8,-4 Q 3.5,-3.5 3,-3.7 L 3,-7 L -3,-7 L -3,-3.7 Q -3.5,-3.5 -3.8,-4 Z" fill="${hair}"/>`;
   } else if(hairShape === 'bun'){
-    hairSvg = `<circle cx="0" cy="-10.5" r="1.5" fill="${hair}"/>
+    hairSvg = `<circle cx=".5" cy="-10.5" r="1.5" fill="${hair}"/>
                <path d="M -3.5,-9 Q -3.5,-10.5 0,-10.3 Q 3.5,-10.5 3.5,-9 Q 3.5,-7.5 2,-7 L -2,-7 Q -3.5,-7.5 -3.5,-9 Z" fill="${hair}"/>`;
   } else if(hairShape === 'cap'){
-    hairSvg = `<path d="M -3.8,-8 Q -3.8,-10.5 0,-10.5 Q 3.8,-10.5 3.8,-8 L 4,-7.5 L -4,-7.5 Z" fill="${hair}"/>`;
+    // Casquette avec visière penchée vers la droite (sens de course)
+    hairSvg = `<path d="M -3.8,-8 Q -3.8,-10.5 0,-10.5 Q 3.8,-10.5 3.8,-8 L 4,-7.5 L -4,-7.5 Z" fill="${hair}"/>
+               <path d="M 2.5,-7.8 L 5,-7.5 L 4.5,-7 L 2.5,-7 Z" fill="${hair}"/>`;
   } else if(hairShape === 'bald'){
     hairSvg = '';
   }
   return `<g>
     <!-- ombre douce -->
     <ellipse cx="0" cy="10.5" rx="4.5" ry="1" fill="#000" opacity=".22"/>
-    <!-- jambes capsules -->
+    <!-- jambe arrière (un peu décalée pour "marcher") -->
     <rect class="rs-leg1" x="-2.4" y="4" width="2" height="6" rx="1" fill="${skin}"/>
-    <rect class="rs-leg2" x=".4" y="4" width="2" height="6" rx="1" fill="${skin}"/>
+    <!-- jambe avant (légèrement plus en avant à droite) -->
+    <rect class="rs-leg2" x=".6" y="4" width="2" height="6" rx="1" fill="${skin}"/>
     <!-- chaussures rondes -->
     <ellipse class="rs-shoe1" cx="-1.4" cy="10.2" rx="1.5" ry="1" fill="${shoe}"/>
-    <ellipse class="rs-shoe2" cx="1.4" cy="10.2" rx="1.5" ry="1" fill="${shoe}"/>
+    <ellipse class="rs-shoe2" cx="1.6" cy="10.2" rx="1.6" ry="1" fill="${shoe}"/>
     <!-- short -->
     <rect x="-2.8" y="1.5" width="5.6" height="3.2" rx="1.2" fill="${shortColor}"/>
     <!-- corps maillot -->
     <rect x="-3.2" y="-3.5" width="6.4" height="6" rx="1.8" fill="${c}"/>
-    <!-- bras capsules -->
-    <rect class="rs-arm1" x="-4.6" y="-2.5" width="1.6" height="4.5" rx=".8" fill="${skin}"/>
-    <rect class="rs-arm2" x="3" y="-2.5" width="1.6" height="4.5" rx=".8" fill="${skin}"/>
-    <!-- tête ronde -->
-    <ellipse cx="0" cy="-7" rx="3.5" ry="3.5" fill="${skin}"/>
+    <!-- bras arrière (en l'air derrière) -->
+    <rect class="rs-arm1" x="-4.8" y="-2" width="1.6" height="4.5" rx=".8" fill="${skin}"/>
+    <!-- bras avant (un peu plus en avant à droite = sens de la course) -->
+    <rect class="rs-arm2" x="3.2" y="-3" width="1.6" height="4.5" rx=".8" fill="${skin}"/>
+    <!-- tête ronde (légèrement décalée à droite pour "regarder devant") -->
+    <ellipse cx=".3" cy="-7" rx="3.5" ry="3.5" fill="${skin}"/>
     <!-- cheveux -->
     ${hairSvg}
-    <!-- yeux ronds noirs -->
-    <circle cx="-1.2" cy="-6.8" r=".5" fill="#1a1010"/>
-    <circle cx="1.2" cy="-6.8" r=".5" fill="#1a1010"/>
-    <!-- pommettes roses -->
-    <ellipse cx="-2" cy="-5.5" rx=".6" ry=".4" fill="#ff8a90" opacity=".5"/>
-    <ellipse cx="2" cy="-5.5" rx=".6" ry=".4" fill="#ff8a90" opacity=".5"/>
-    <!-- petite bouche souriante -->
-    <path d="M -.7,-5.2 Q 0,-4.6 .7,-5.2" stroke="#3a2818" stroke-width=".22" fill="none" stroke-linecap="round"/>
+    <!-- yeux RONDS NOIRS — décalés à droite (sens du regard !) -->
+    <circle cx="-.5" cy="-6.8" r=".5" fill="#1a1010"/>
+    <circle cx="1.7" cy="-6.8" r=".5" fill="#1a1010"/>
+    <!-- petit reflet blanc dans l'œil de devant (mignonnerie) -->
+    <circle cx="1.85" cy="-6.95" r=".15" fill="#fff"/>
+    <!-- pommettes roses asymétriques (plus visibles côté regard) -->
+    <ellipse cx="-1.5" cy="-5.5" rx=".55" ry=".4" fill="#ff8a90" opacity=".45"/>
+    <ellipse cx="2.5" cy="-5.5" rx=".7" ry=".45" fill="#ff8a90" opacity=".6"/>
+    <!-- petite bouche souriante (légèrement décalée à droite) -->
+    <path d="M -.3,-5.2 Q .4,-4.6 1.1,-5.2" stroke="#3a2818" stroke-width=".22" fill="none" stroke-linecap="round"/>
+    <!-- petit nez (subtile bosse à droite, donne le sens du regard) -->
+    <ellipse cx="2.2" cy="-6.2" rx=".3" ry=".4" fill="#dcb898" opacity=".7"/>
     ${extras}
   </g>`;
 }
@@ -15083,9 +15097,13 @@ function placeTeamRunnersOnTrack(){
     const elem = document.querySelector(`#rs-team-runners [data-npc="${i}"]`);
     if(!elem) return;
     const pt = path.getPointAtLength(npc.progress * total);
-    // EATVENTURE STYLE : NPCs restent DEBOUT (pas de rotation tangente)
+    // Tangente : direction de la course
+    const dl = total * 0.001;
+    const pt2 = path.getPointAtLength((npc.progress * total + dl) % total);
+    const dx = pt2.x - pt.x;
+    const flipX = dx < -0.01 ? -1 : 1;
     const depthScale = 0.7 + (pt.y - 180) / 100 * 0.35;
-    elem.setAttribute('transform', `translate(${pt.x.toFixed(2)} ${pt.y.toFixed(2)}) scale(${depthScale.toFixed(2)})`);
+    elem.setAttribute('transform', `translate(${pt.x.toFixed(2)} ${pt.y.toFixed(2)}) scale(${(flipX * depthScale).toFixed(2)} ${depthScale.toFixed(2)})`);
   });
 }
 function updateRunner(){

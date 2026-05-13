@@ -18088,14 +18088,57 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     shortColor:'#fff', hairStyle:'normal', scale:2.5
   });
   scene.add(player);
-  // Aura du héros (cercle doré pulsant)
-  const heroAura = new THREE.Mesh(
-    new THREE.CircleGeometry(.8, 24),
-    new THREE.MeshBasicMaterial({color:'#ffe88a', transparent:true, opacity:.4})
+  // Aura du héros (2 cercles dorés pulsants superposés)
+  const heroAuraGroup = new THREE.Group();
+  const heroAuraOuter = new THREE.Mesh(
+    new THREE.RingGeometry(.85, 1.1, 32),
+    new THREE.MeshBasicMaterial({color:'#ffe88a', transparent:true, opacity:.45, blending:THREE.AdditiveBlending})
   );
-  heroAura.rotation.x = -Math.PI/2;
-  heroAura.position.y = .06;
-  scene.add(heroAura);
+  heroAuraOuter.rotation.x = -Math.PI/2;
+  heroAuraGroup.add(heroAuraOuter);
+  const heroAuraInner = new THREE.Mesh(
+    new THREE.CircleGeometry(.85, 32),
+    new THREE.MeshBasicMaterial({color:'#fff8c0', transparent:true, opacity:.25, blending:THREE.AdditiveBlending})
+  );
+  heroAuraInner.rotation.x = -Math.PI/2;
+  heroAuraGroup.add(heroAuraInner);
+  heroAuraGroup.position.y = .07;
+  scene.add(heroAuraGroup);
+  // Alias pour le ancien code
+  const heroAura = heroAuraInner;
+
+  // === TAP RIPPLES : effet visuel à chaque tap ===
+  const ripples = [];
+  function makeRipple(){
+    const r = new THREE.Mesh(
+      new THREE.RingGeometry(.2, .25, 32),
+      new THREE.MeshBasicMaterial({color:'#fff', transparent:true, opacity:1, blending:THREE.AdditiveBlending, side:THREE.DoubleSide})
+    );
+    r.rotation.x = -Math.PI/2;
+    r.userData.life = 0;
+    r.userData.maxLife = .9;
+    r.visible = false;
+    scene.add(r);
+    return r;
+  }
+  for(let i = 0; i < 5; i++) ripples.push(makeRipple());
+  let rippleIdx = 0;
+  function emitRipple(x, z){
+    const r = ripples[rippleIdx];
+    r.position.set(x, .06, z);
+    r.userData.life = 0;
+    r.scale.setScalar(.3);
+    r.material.opacity = .8;
+    r.visible = true;
+    rippleIdx = (rippleIdx + 1) % ripples.length;
+  }
+  // Hook le tap : à chaque clic sur le stadium, ripple à la position du joueur
+  const stadiumEl = document.getElementById('runner-stadium');
+  if(stadiumEl){
+    stadiumEl.addEventListener('click', () => {
+      emitRipple(player.position.x, player.position.z);
+    });
+  }
 
   // NPCs : 6 coureurs variés avec accessoires/styles distincts
   const npcConfigs = [
@@ -18208,12 +18251,14 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     updateRunnerPosition(player, p);
     // Anim course basée sur la vitesse de progression
     animateRunner(player, playerVel * 10 + .05, now);
-    // Aura suit le joueur et pulse
-    heroAura.position.x = player.position.x;
-    heroAura.position.z = player.position.z;
-    heroAura.position.y = .06;
-    heroAura.material.opacity = .35 + Math.sin(now * .003) * .15;
-    heroAura.scale.setScalar(1 + Math.sin(now * .004) * .1);
+    // Aura suit le joueur et pulse (2 cercles superposés)
+    heroAuraGroup.position.x = player.position.x;
+    heroAuraGroup.position.z = player.position.z;
+    heroAuraGroup.position.y = .07;
+    heroAuraInner.material.opacity = .25 + Math.sin(now * .003) * .15;
+    heroAuraOuter.material.opacity = .35 + Math.sin(now * .005 + 1.5) * .2;
+    heroAuraGroup.scale.setScalar(1 + Math.sin(now * .004) * .08);
+    heroAuraGroup.rotation.y = now * .0006;
     // NPCs : chacun avance à sa vitesse propre + anim course
     npcs.forEach((npc, i) => {
       const oldP = npc.userData.progress;
@@ -18346,6 +18391,19 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       tick._sbT = now;
       if(scoreboard.userData.updateScreen) scoreboard.userData.updateScreen();
     }
+
+    // === TAP RIPPLES : expand + fade ===
+    ripples.forEach(r => {
+      if(!r.visible) return;
+      r.userData.life += dt;
+      if(r.userData.life >= r.userData.maxLife){
+        r.visible = false;
+        return;
+      }
+      const t = r.userData.life / r.userData.maxLife;
+      r.scale.setScalar(.3 + t * 3);
+      r.material.opacity = (1 - t) * .8;
+    });
 
     // === DAY CYCLE SUBTIL : intensité directional light pulse léger (matin → midi → soir) ===
     {

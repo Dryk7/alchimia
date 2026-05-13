@@ -17524,6 +17524,29 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
   const scoreboard = makeScoreboard();
   scene.add(scoreboard);
 
+  // === BANDEROLE PUBLICITAIRE FLOTTANTE (zeppelin-style derrière le scoreboard) ===
+  function makeAdBanner(text, color){
+    const c = document.createElement('canvas');
+    c.width = 768; c.height = 96;
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = color; ctx.fillRect(0, 0, 768, 96);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 56px Nunito, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, 384, 50);
+    const tex = new THREE.CanvasTexture(c);
+    const mesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(4, .5),
+      new THREE.MeshBasicMaterial({map: tex, side: THREE.DoubleSide})
+    );
+    mesh.userData.driftSpeed = .5 + Math.random() * .3;
+    return mesh;
+  }
+  const adBanner = makeAdBanner('🏆 CHAMPIONNATS DU MONDE 🏆', '#c83020');
+  adBanner.position.set(-25, 11, -5);
+  scene.add(adBanner);
+
   // === PISTE ROUGE TARTAN ===
   const trackShape = new THREE.Shape();
   trackShape.absellipse(0, 0, 8, 5, 0, Math.PI*2, false, 0);
@@ -18416,6 +18439,12 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       c.position.x += c.userData.driftSpeed * dt;
       if(c.position.x > 22){ c.position.x = -22; c.position.z = -10 - Math.random() * 10; }
     });
+
+    // === AD BANNER drift ===
+    adBanner.position.x += adBanner.userData.driftSpeed * dt;
+    adBanner.position.y = 11 + Math.sin(now * .0015) * .35;
+    adBanner.rotation.y = Math.sin(now * .0008) * .15;
+    if(adBanner.position.x > 28){ adBanner.position.x = -28; adBanner.position.z = -5 - Math.random() * 6; }
 
     // === BIRDS : flap + flight ===
     [bird1, bird2].forEach(b => {

@@ -211,10 +211,148 @@ header{
   flex:1;
   display:flex; flex-direction:column;
   position:relative; z-index:4;
-  padding:6px 6px 8px;
-  gap:8px;
+  padding:6px 10px 12px;
+  gap:10px;
   min-height:0;
 }
+
+/* ================ TAP-TO-BOOST UI ================ */
+#tap-area{
+  flex:1;
+  display:flex; flex-direction:column;
+  gap:14px;
+  padding:6px 0 4px;
+  min-height:0;
+  justify-content:space-between;
+}
+.tap-strip{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+  padding:0 4px;
+}
+.tap-stat{
+  display:flex; flex-direction:column; align-items:center;
+  background:linear-gradient(180deg, #fff8e4, #f4e2b4);
+  border:1.5px solid rgba(160,122,68,.30);
+  border-radius:12px;
+  padding:6px 4px 7px;
+  box-shadow:0 2px 4px rgba(80,55,30,.10), inset 0 1px 0 rgba(255,255,255,.45);
+}
+.tap-stat-lbl{
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:8.5px; letter-spacing:.10em;
+  color:var(--ember); opacity:.95;
+  text-transform:uppercase;
+  line-height:1;
+}
+.tap-stat-val{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:18px; color:var(--ink);
+  line-height:1.1;
+  margin-top:2px;
+}
+
+.boost-btn{
+  position:relative;
+  width:min(82vw, 320px);
+  align-self:center;
+  aspect-ratio: 1;
+  max-height:55vh;
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 25%, #ffba70, #f08a48 50%, #d96828 100%);
+  border:5px solid #fff;
+  cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:4px;
+  color:#fff;
+  box-shadow:
+    0 12px 30px rgba(217,104,40,.45),
+    0 4px 12px rgba(80,55,30,.30),
+    inset 0 -8px 14px rgba(160,60,20,.45),
+    inset 0 6px 12px rgba(255,255,255,.30);
+  transition:transform .12s cubic-bezier(.2,.9,.2,1.4), filter .12s;
+  overflow:hidden;
+}
+.boost-btn:active, .boost-btn.pressed{
+  transform:scale(.94) translateY(3px);
+  box-shadow:
+    0 4px 12px rgba(217,104,40,.40),
+    inset 0 -4px 8px rgba(160,60,20,.40),
+    inset 0 4px 8px rgba(255,255,255,.20);
+}
+.boost-btn.cooldown{
+  filter:saturate(.55) brightness(.85);
+  cursor:wait;
+}
+.boost-shine{
+  position:absolute; top:8%; left:18%;
+  width:30%; height:18%;
+  background:radial-gradient(ellipse, rgba(255,255,255,.65), rgba(255,255,255,0) 70%);
+  border-radius:50%;
+  pointer-events:none;
+}
+.boost-icon{
+  width:44%; height:44%;
+  filter:drop-shadow(0 2px 4px rgba(160,40,0,.45));
+}
+.boost-icon svg{ width:100%; height:100%; }
+.boost-label{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:32px; letter-spacing:.04em;
+  text-shadow:0 2px 4px rgba(160,40,0,.55), 0 1px 0 rgba(0,0,0,.20);
+  line-height:1;
+}
+.boost-sub{
+  font-family:"Caveat", cursive; font-weight:700;
+  font-size:18px;
+  opacity:.95;
+  text-shadow:0 1px 2px rgba(160,40,0,.4);
+}
+
+/* +N médailles popup au tap */
+.tap-pop{
+  position:fixed; pointer-events:none; z-index:60;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:24px;
+  color:#fff;
+  text-shadow:0 2px 4px rgba(160,40,0,.6), 0 1px 0 #000;
+  animation:tapPop .9s cubic-bezier(.2,.9,.2,1.4) forwards;
+}
+.tap-pop.crit{
+  font-size:32px;
+  color:#ffd070;
+  text-shadow:0 2px 6px rgba(255,128,0,.8), 0 0 12px #fff;
+}
+@keyframes tapPop{
+  0%   { transform:translate(-50%, 0) scale(.5); opacity:0; }
+  20%  { transform:translate(-50%, -10px) scale(1.2); opacity:1; }
+  100% { transform:translate(-50%, -60px) scale(1); opacity:0; }
+}
+
+/* Quick actions row */
+.tap-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+  padding:0 4px;
+}
+.tap-act{
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  padding:8px 4px 9px;
+  background:linear-gradient(180deg, #fff8e4, #f4e2b4);
+  border:2px solid rgba(160,122,68,.40);
+  border-radius:14px;
+  cursor:pointer;
+  font-family:"Nunito", sans-serif; font-weight:800;
+  font-size:9.5px; letter-spacing:.10em;
+  color:var(--ink);
+  text-transform:uppercase;
+  box-shadow:0 2px 4px rgba(80,55,30,.16);
+  transition:transform .12s;
+}
+.tap-act svg{ width:22px; height:22px; color:var(--ember); }
+.tap-act:active{ transform:translateY(2px); box-shadow:0 1px 2px rgba(80,55,30,.16); }
 
 /* ================ LE STADE ================ */
 /* Piste ovale + coureur qui accélère selon la progression. C'est la boucle
@@ -222,10 +360,10 @@ header{
 #runner-stadium{
   position:relative;
   width:100%;
-  /* Aspect ratio fixe pour cohérence : moins haut, toujours visible */
+  /* PIVOT v2 : le stade est désormais le HÉROS — il prend 35-40% écran */
   aspect-ratio: 320 / 140;
-  max-height:30vh;
-  min-height:130px;
+  max-height:38vh;
+  min-height:170px;
   background:linear-gradient(180deg, #b8def0 0%, #cbe5f5 40%, #e8d8a8 100%);
   border:4px solid #a07a44;
   border-radius:22px;
@@ -234,7 +372,7 @@ header{
   box-shadow:
     inset 0 3px 0 rgba(255,255,255,.55),
     inset 0 -3px 6px rgba(160,122,68,.22),
-    0 6px 16px rgba(80,55,30,.20),
+    0 6px 18px rgba(80,55,30,.22),
     0 2px 4px rgba(80,55,30,.10);
 }
 #runner-stadium::before, #runner-stadium::after{ display:none }
@@ -3409,67 +3547,57 @@ body.shop-epic-flash::after{
         <div class="rs-bar-row"><span class="rs-bar-lbl">FORME</span><div class="rs-stamina"><span id="rs-stamina-fill"></span></div></div>
       </div>
     </div>
-    <div id="grid-wrap">
-      <div id="grid-frame">
-        <!-- Coins sportifs : couloirs de course + chevrons + cible -->
-        <svg class="frame-corner tl" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-          <!-- L extérieur ferme -->
-          <path d="M3 3 H20" stroke-width="2"/>
-          <path d="M3 3 V20" stroke-width="2"/>
-          <!-- Couloir 1 (proche) -->
-          <path d="M6 6 H17" stroke-width="1"/>
-          <path d="M6 6 V17" stroke-width="1"/>
-          <!-- Couloir 2 -->
-          <path d="M9 9 H14" stroke-width=".8" opacity=".7"/>
-          <path d="M9 9 V14" stroke-width=".8" opacity=".7"/>
-          <!-- Chevron de vitesse -->
-          <path d="M12 4 L 16 4 L 14 6 Z" fill="currentColor" stroke="none" opacity=".9"/>
-          <path d="M4 12 L 4 16 L 6 14 Z" fill="currentColor" stroke="none" opacity=".9"/>
-          <!-- Cible / cabochon -->
-          <circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/>
-          <circle cx="12" cy="12" r="0.8" fill="#1a1010" stroke="none"/>
-        </svg>
-        <svg class="frame-corner tr" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 3 H20" stroke-width="2"/>
-          <path d="M3 3 V20" stroke-width="2"/>
-          <path d="M6 6 H17" stroke-width="1"/>
-          <path d="M6 6 V17" stroke-width="1"/>
-          <path d="M9 9 H14" stroke-width=".8" opacity=".7"/>
-          <path d="M9 9 V14" stroke-width=".8" opacity=".7"/>
-          <path d="M12 4 L 16 4 L 14 6 Z" fill="currentColor" stroke="none" opacity=".9"/>
-          <path d="M4 12 L 4 16 L 6 14 Z" fill="currentColor" stroke="none" opacity=".9"/>
-          <circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/>
-          <circle cx="12" cy="12" r="0.8" fill="#1a1010" stroke="none"/>
-        </svg>
-        <svg class="frame-corner bl" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 3 H20" stroke-width="2"/>
-          <path d="M3 3 V20" stroke-width="2"/>
-          <path d="M6 6 H17" stroke-width="1"/>
-          <path d="M6 6 V17" stroke-width="1"/>
-          <path d="M9 9 H14" stroke-width=".8" opacity=".7"/>
-          <path d="M9 9 V14" stroke-width=".8" opacity=".7"/>
-          <path d="M12 4 L 16 4 L 14 6 Z" fill="currentColor" stroke="none" opacity=".9"/>
-          <path d="M4 12 L 4 16 L 6 14 Z" fill="currentColor" stroke="none" opacity=".9"/>
-          <circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/>
-          <circle cx="12" cy="12" r="0.8" fill="#1a1010" stroke="none"/>
-        </svg>
-        <svg class="frame-corner br" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 3 H20" stroke-width="2"/>
-          <path d="M3 3 V20" stroke-width="2"/>
-          <path d="M6 6 H17" stroke-width="1"/>
-          <path d="M6 6 V17" stroke-width="1"/>
-          <path d="M9 9 H14" stroke-width=".8" opacity=".7"/>
-          <path d="M9 9 V14" stroke-width=".8" opacity=".7"/>
-          <path d="M12 4 L 16 4 L 14 6 Z" fill="currentColor" stroke="none" opacity=".9"/>
-          <path d="M4 12 L 4 16 L 6 14 Z" fill="currentColor" stroke="none" opacity=".9"/>
-          <circle cx="12" cy="12" r="1.8" fill="currentColor" stroke="none"/>
-          <circle cx="12" cy="12" r="0.8" fill="#1a1010" stroke="none"/>
-        </svg>
-        <div id="grid"></div>
+    <!-- Cabinet de fusion masqué : pivot tap-to-boost (v2) -->
+    <div id="grid-wrap" style="display:none">
+      <div id="grid-frame"><div id="grid"></div></div>
+    </div>
+    <div id="master-quest-widget" style="display:none"></div>
+    <div id="generators" style="display:none"></div>
+
+    <!-- ================ TAP-TO-BOOST UI ================ -->
+    <div id="tap-area">
+      <!-- Stat strip : médailles par tap + cooldown -->
+      <div class="tap-strip">
+        <div class="tap-stat">
+          <span class="tap-stat-lbl">PAR TAP</span>
+          <span class="tap-stat-val" id="tap-per-tap">+1</span>
+        </div>
+        <div class="tap-stat">
+          <span class="tap-stat-lbl">PAR TOUR</span>
+          <span class="tap-stat-val" id="tap-per-lap">+100</span>
+        </div>
+        <div class="tap-stat">
+          <span class="tap-stat-lbl">CRITIQUE</span>
+          <span class="tap-stat-val" id="tap-crit-rate">5%</span>
+        </div>
+      </div>
+
+      <!-- Le BIG BOOST button — l'âme du jeu -->
+      <button id="boost-btn" class="boost-btn" aria-label="Booster le coureur">
+        <span class="boost-shine"></span>
+        <span class="boost-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 L4 14 h7 L9 22 L20 10 h-7 z"/></svg>
+        </span>
+        <span class="boost-label">TAP !</span>
+        <span class="boost-sub">Donne au coureur</span>
+      </button>
+
+      <!-- Quick actions : skins, shop, leaderboard -->
+      <div class="tap-actions">
+        <button class="tap-act" data-action="skins" aria-label="Tenues">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 7 L8 4 L10 5 L14 5 L16 4 L20 7 L18 11 L16 10 V20 H8 V10 L6 11 Z"/></svg>
+          <span>TENUES</span>
+        </button>
+        <button class="tap-act" data-action="shop" aria-label="Boutique">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M5 8 H19 L17.5 19 H6.5 z"/><path d="M9 8 V5 a3 3 0 0 1 6 0 V8" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          <span>BOUTIQUE</span>
+        </button>
+        <button class="tap-act" data-action="leaderboard" aria-label="Classement">
+          <svg viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="13" width="4" height="7"/><rect x="10" y="9" width="4" height="11"/><rect x="16" y="5" width="4" height="15"/></svg>
+          <span>RECORDS</span>
+        </button>
       </div>
     </div>
-    <div id="master-quest-widget"></div>
-    <div id="generators"></div>
   </main>
 
 </div>
@@ -9047,6 +9175,70 @@ function runnerSpeedMultiplier(){
 function bumpStamina(amount){
   STATE.runnerStamina = Math.min(STAMINA_MAX, (STATE.runnerStamina || 1) + amount);
 }
+
+/* ================ TAP-TO-BOOST CORE (v2 pivot) ================ */
+const TAP_COOLDOWN_MS = 200; // anti-spam léger
+let _lastTapAt = 0;
+function tapBoost(e){
+  const now = Date.now();
+  if(now - _lastTapAt < TAP_COOLDOWN_MS) return;
+  _lastTapAt = now;
+  // Bump stamina = boost de vitesse temporaire
+  if(typeof bumpStamina === 'function') bumpStamina(0.18);
+  // Médailles par tap : base 1 + upgrades du shop
+  const perTap = 1 + (STATE.upgradeTapValue||0);
+  const isCrit = Math.random() < (0.05 + (STATE.upgradeCritChance||0));
+  const gain = isCrit ? perTap * 5 : perTap;
+  STATE.gold += gain;
+  // Pop visuel sur le bouton
+  const btn = document.getElementById('boost-btn');
+  if(btn){
+    btn.classList.remove('pressed'); void btn.offsetWidth;
+    btn.classList.add('pressed');
+    setTimeout(()=>btn.classList.remove('pressed'), 140);
+    const rect = btn.getBoundingClientRect();
+    const pop = document.createElement('div');
+    pop.className = 'tap-pop' + (isCrit ? ' crit' : '');
+    pop.textContent = (isCrit ? '+' : '+') + gain + (isCrit ? ' ✦' : '');
+    pop.style.left = (rect.left + rect.width/2 + (Math.random()-.5)*40) + 'px';
+    pop.style.top = (rect.top + rect.height*0.30) + 'px';
+    document.body.appendChild(pop);
+    setTimeout(()=>pop.remove(), 950);
+  }
+  // SFX léger
+  if(typeof A !== 'undefined' && A.ctx){
+    const f = isCrit ? 1320 : 660;
+    blip(f, .08, "triangle", .18, .35);
+    if(isCrit) setTimeout(()=>blip(1760, .12, "sine", .18, .4), 60);
+  }
+  vibrate(isCrit ? [25, 40, 25] : 10);
+  // Particles depuis le bouton vers le coureur
+  if(typeof fuelRunner === 'function' && btn){
+    const rect = btn.getBoundingClientRect();
+    fuelRunner(rect.left + rect.width/2, rect.top + rect.height/2, '#ffd070', isCrit ? 4 : 1);
+  }
+  // Si gain critique : cheer + flash
+  if(isCrit){
+    const body = document.querySelector('.rs-body');
+    if(body){ body.classList.remove('runner-cheer'); void body.offsetWidth; body.classList.add('runner-cheer'); setTimeout(()=>body.classList.remove('runner-cheer'), 720); }
+  }
+  if(typeof renderStats === 'function') renderStats();
+  if(typeof updateTapStrip === 'function') updateTapStrip();
+}
+
+/* Met à jour la bande de stats au-dessus du bouton boost */
+function updateTapStrip(){
+  const perTap = document.getElementById('tap-per-tap');
+  const perLap = document.getElementById('tap-per-lap');
+  const critRate = document.getElementById('tap-crit-rate');
+  if(perTap) perTap.textContent = '+' + (1 + (STATE.upgradeTapValue||0));
+  if(perLap){
+    const totalMaxTier = (STATE.totals?.maxTier||[0,0,0]).reduce((a,b)=>a+b, 0);
+    const lapReward = 100 + (STATE.lapsRun||0) * 50 + totalMaxTier * 20;
+    perLap.textContent = '+' + lapReward;
+  }
+  if(critRate) critRate.textContent = Math.round((5 + (STATE.upgradeCritChance||0)*100)) + '%';
+}
 /* Tick lap + stamina decay — appelé dans la boucle principale chaque frame */
 function tickRunnerLap(dt){
   if(!dt || dt <= 0) return;
@@ -10942,6 +11134,31 @@ function boot(){
     if(typeof renderShop === 'function') renderShop();
     openModal('shop-modal');
   });
+  // === TAP-TO-BOOST : le bouton principal du jeu ===
+  const boostBtn = document.getElementById('boost-btn');
+  if(boostBtn){
+    boostBtn.addEventListener('pointerdown', (e)=>{ e.preventDefault(); tapBoost(e); });
+    // Empêche le double-tap zoom mobile
+    boostBtn.addEventListener('touchend', (e)=>{ e.preventDefault(); }, { passive:false });
+  }
+  // Tap actions row : Tenues / Boutique / Records
+  document.querySelectorAll('.tap-act').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      const a = btn.dataset.action;
+      if(a === 'shop'){ if(typeof renderShop === 'function') renderShop(); openModal('shop-modal'); }
+      else if(a === 'skins'){
+        // Pour l'instant : redirige vers stats (skins là-bas). Future modal skins dédié.
+        if(typeof renderStatsBody === 'function') renderStatsBody();
+        openModal('stats-modal');
+      }
+      else if(a === 'leaderboard'){
+        if(typeof renderStatsBody === 'function') renderStatsBody();
+        openModal('stats-modal');
+      }
+    });
+  });
+  // Init des stats du tap au démarrage
+  if(typeof updateTapStrip === 'function') updateTapStrip();
   bindModalClose('seal-modal','seal-close');
   bindModalClose('codex-page-modal','codex-page-close');
   document.getElementById('codex-page-prev').addEventListener('click', e=>{ e.stopPropagation(); navCodexPage(-1); });
@@ -11157,6 +11374,7 @@ function boot(){
     safe(()=>tickGenerators(now));
     safe(()=>tickRunnerLap(dt));
     safe(updateRunner);
+    safe(updateTapStrip);
     safe(tickDust);
     safe(()=>tickCandles(now));
     safe(tickThemed);

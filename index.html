@@ -649,6 +649,128 @@ header{
   margin-top:12px;
 }
 
+/* === ÉQUIPEMENT (loot RPG) === */
+.drop-toast{
+  position:fixed; top:80px; right:-280px;
+  width:260px;
+  display:flex; align-items:center; gap:10px;
+  padding:10px 12px;
+  background:linear-gradient(180deg, #fffaee, #fff3d8);
+  border:3px solid #9b9b9b;
+  border-radius:14px;
+  box-shadow:0 6px 18px rgba(80,55,30,.30);
+  z-index:200;
+  transition:right .35s cubic-bezier(.2,.9,.2,1.0), opacity .25s;
+  opacity:0;
+  pointer-events:none;
+}
+.drop-toast.show{ right:10px; opacity:1; }
+.drop-toast.drop-uncommon{ border-color:#5aa040; }
+.drop-toast.drop-rare{ border-color:#3e8db8; }
+.drop-toast.drop-epic{ border-color:#9b6cd0; }
+.drop-toast.drop-legendary{
+  border-color:#ffba30;
+  box-shadow:0 6px 24px rgba(255,186,48,.6), 0 0 30px rgba(255,186,48,.4);
+  animation:legendaryGlow 1s ease-in-out infinite alternate;
+}
+@keyframes legendaryGlow{
+  0%   { box-shadow:0 6px 24px rgba(255,186,48,.6); }
+  100% { box-shadow:0 6px 32px rgba(255,186,48,1); }
+}
+.drop-toast.equipped{
+  border-style:solid;
+}
+.dt-ico{
+  width:40px; height:40px;
+  display:flex; align-items:center; justify-content:center;
+  background:#fff; border:2px solid currentColor; border-radius:10px;
+  font-size:24px;
+  flex-shrink:0;
+}
+.dt-name{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:12px; letter-spacing:.04em;
+}
+.dt-bonus{
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:10.5px; color:var(--ink-2);
+  margin-top:2px;
+}
+
+/* Modal équipement */
+.equip-body{ overflow-y:auto; max-height:65vh; padding:4px 2px; }
+.eq-summary{
+  padding:10px 12px;
+  background:linear-gradient(180deg, #fff3d0, #ffd896);
+  border:2px solid var(--ember);
+  border-radius:12px;
+  margin-bottom:12px;
+}
+.eq-summary h3{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:11px; letter-spacing:.14em;
+  color:var(--ember); margin:0 0 6px;
+  text-transform:uppercase;
+}
+.es-list{ display:grid; grid-template-columns:repeat(2, 1fr); gap:4px; }
+.es-row{
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:12px; color:var(--ink);
+}
+.es-row b{ color:#3a8c3a; font-weight:900; }
+.es-empty{
+  font-family:"Nunito", sans-serif; font-weight:600;
+  font-size:11px; color:var(--ink-2); text-align:center;
+  grid-column:1/-1;
+}
+.eq-grid{
+  display:grid; grid-template-columns:repeat(2, 1fr);
+  gap:8px;
+  margin-bottom:14px;
+}
+.eq-slot{
+  padding:10px 8px;
+  background:#fff;
+  border:2px solid rgba(160,122,68,.25);
+  border-radius:12px;
+  text-align:center;
+  transition:transform .12s, border-color .15s;
+}
+.eq-slot.filled{
+  border-color:var(--eq-color);
+  background:linear-gradient(180deg, #fff, color-mix(in srgb, var(--eq-color) 10%, #fff));
+}
+.eq-slot.empty{ opacity:.6; }
+.eq-ico{
+  font-size:32px;
+  line-height:1;
+  margin-bottom:6px;
+}
+.eq-name{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:13px; color:var(--ink);
+}
+.eq-rarity{
+  font-family:"Nunito", sans-serif; font-weight:800;
+  font-size:10.5px;
+  margin-top:2px; letter-spacing:.04em;
+}
+.eq-bonus{
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:10.5px; color:#3a8c3a;
+  margin-top:4px;
+}
+.eq-slot.empty .eq-bonus{ color:var(--ink-2); font-weight:600; }
+.eq-help{
+  text-align:center;
+  font-family:"Nunito", sans-serif; font-weight:600;
+  font-size:10.5px; color:var(--ink-2);
+  padding:8px 12px;
+  background:#fffaee;
+  border:1.5px dashed rgba(160,122,68,.30);
+  border-radius:10px;
+}
+
 /* === STADIUM PICKER === */
 .stadium-body{ overflow-y:auto; max-height:65vh; padding:4px 2px; }
 .stadium-cell{
@@ -5723,6 +5845,12 @@ body.shop-epic-flash::after{
         </svg>
         <div class="mi-meta"><div class="mi-title">💎 Boutique</div><div class="mi-sub">boosts, packs, médailles avec gemmes</div></div>
       </button>
+      <button class="menu-item" data-action="equip">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M8 4 L16 4 L18 8 L14 9 L13 20 L11 20 L10 9 L6 8 z"/>
+        </svg>
+        <div class="mi-meta"><div class="mi-title">🎽 Équipement</div><div class="mi-sub">5 slots · drops à chaque tour</div></div>
+      </button>
       <button class="menu-item" data-action="wardrobe">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
           <path d="M4 7 L12 3 L20 7 L20 19 L4 19 z"/>
@@ -6137,6 +6265,16 @@ body.shop-epic-flash::after{
     <h2>ASCENSION</h2>
     <div class="divider"></div>
     <div class="saison-body" id="saison-body"></div>
+  </div>
+</div>
+
+<!-- ÉQUIPEMENT (loot RPG) -->
+<div id="equip-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-close" id="equip-close" aria-label="Fermer">×</div>
+    <h2>🎽 ÉQUIPEMENT</h2>
+    <div class="divider"></div>
+    <div class="equip-body" id="equip-body"></div>
   </div>
 </div>
 
@@ -6607,8 +6745,12 @@ function alchGoldMul(){
 }
 function gainXp(amount){
   if(!amount) return;
-  // Saison perk : +5% XP par niveau perkXpMul
+  // Saison perk + équipement chrono
   if(typeof saisonXpMul === 'function') amount = Math.floor(amount * saisonXpMul());
+  if(typeof equipBonus === 'function'){
+    const xpMul = 1 + equipBonus('xpMul');
+    amount = Math.floor(amount * xpMul);
+  }
   if(amount < 1) amount = 1;
   STATE.alchXp = (STATE.alchXp||0) + amount;
   const oldLvl = STATE.alchLevel || 1;
@@ -11146,30 +11288,209 @@ const STAMINA_DECAY_PER_SEC = 0.075; // décroit plus vite : 1 → 0 en ~13s san
 const STAMINA_MAX = 2.2;
 const STAMINA_MIN = 0.3;
 const SPEED_CAP = 3.5; // plafond dur — pas de runaway
+/* ================ ÉQUIPEMENT — système de loot RPG ================
+   À chaque tour bouclé, un item DROP avec rareté aléatoire.
+   5 slots : chaussures (vitesse), maillot (médailles), bandeau (crit),
+   montre (XP), brassard (stamina). Si l'item est meilleur que celui équipé,
+   le joueur peut équiper. Sinon, scrap pour médailles. */
+const ITEM_TYPES = [
+  { id:'shoes',     emoji:'👟', name:'Chaussures',     stat:'speed',     baseBonus:0.02, desc:'Vitesse de base' },
+  { id:'jersey',    emoji:'👕', name:'Maillot',        stat:'goldMul',   baseBonus:0.03, desc:'+% médailles' },
+  { id:'headband',  emoji:'🎽', name:'Bandeau',        stat:'critRate',  baseBonus:0.005,desc:'+% crit chance' },
+  { id:'watch',     emoji:'⌚', name:'Chrono',         stat:'xpMul',     baseBonus:0.03, desc:'+% XP' },
+  { id:'wristband', emoji:'💪', name:'Brassard',       stat:'staminaMul',baseBonus:0.04, desc:'+% endurance' },
+];
+const RARITIES = [
+  { id:'common',    name:'Commun',     color:'#9b9b9b', weight:55, mul:1   },
+  { id:'uncommon',  name:'Inhabituel', color:'#5aa040', weight:25, mul:2   },
+  { id:'rare',      name:'Rare',       color:'#3e8db8', weight:13, mul:4   },
+  { id:'epic',      name:'Épique',     color:'#9b6cd0', weight:6,  mul:8   },
+  { id:'legendary', name:'Légendaire', color:'#ffba30', weight:1,  mul:16  },
+];
+function _rollRarity(){
+  const totalW = RARITIES.reduce((a,r)=>a+r.weight, 0);
+  let roll = Math.random() * totalW;
+  for(const r of RARITIES){
+    roll -= r.weight;
+    if(roll < 0) return r;
+  }
+  return RARITIES[0];
+}
+function _rollItemLevel(){
+  const laps = STATE.lapsRun || 0;
+  const saison = STATE.saison || 1;
+  // Niveau dépend des laps bouclés + saison
+  return 1 + Math.floor(laps / 5) + (saison - 1) * 10;
+}
+function rollItem(){
+  const type = ITEM_TYPES[Math.floor(Math.random() * ITEM_TYPES.length)];
+  const rarity = _rollRarity();
+  const level = _rollItemLevel();
+  return {
+    typeId: type.id,
+    rarityId: rarity.id,
+    level,
+    bonus: +(type.baseBonus * rarity.mul * level).toFixed(4),
+  };
+}
+function itemDef(typeId){ return ITEM_TYPES.find(t => t.id === typeId); }
+function rarityDef(id){ return RARITIES.find(r => r.id === id); }
+function itemValue(item){
+  // Score numérique pour comparer si l'item est meilleur que l'équipé
+  return item.bonus;
+}
+function itemScrapMed(item){
+  const r = rarityDef(item.rarityId);
+  return Math.floor(20 * (r?.mul || 1) * item.level);
+}
+function equipItem(item){
+  if(!STATE.equipment) STATE.equipment = {};
+  STATE.equipment[item.typeId] = item;
+  if(typeof renderEquipment === 'function') renderEquipment();
+}
+function scrapItem(item){
+  const med = itemScrapMed(item);
+  STATE.gold = (STATE.gold || 0) + med;
+  if(typeof showRunnerBubble === 'function') showRunnerBubble('+' + fmtBigNumber(med) + ' méd');
+  if(A?.ctx) blip(660, .08, "triangle", .22, .45);
+}
+/* Bonus total équipement pour une stat donnée */
+function equipBonus(stat){
+  if(!STATE.equipment) return 0;
+  let sum = 0;
+  for(const slot in STATE.equipment){
+    const item = STATE.equipment[slot];
+    const t = itemDef(item.typeId);
+    if(t && t.stat === stat) sum += item.bonus;
+  }
+  return sum;
+}
+/* === Popup new-item : auto-équipe si meilleur, sinon scrap === */
+function _spawnDrop(item){
+  // Auto-équipe SI pas d'item dans le slot, OU SI nouveau meilleur
+  if(!STATE.equipment) STATE.equipment = {};
+  const current = STATE.equipment[item.typeId];
+  if(!current || itemValue(item) > itemValue(current)){
+    // Old item est scrapped automatiquement
+    if(current){
+      const med = itemScrapMed(current);
+      STATE.gold = (STATE.gold || 0) + med;
+    }
+    STATE.equipment[item.typeId] = item;
+    _showDropToast(item, 'equipped');
+  } else {
+    // Inférieur : scrap auto pour médailles
+    const med = itemScrapMed(item);
+    STATE.gold = (STATE.gold || 0) + med;
+    _showDropToast(item, 'scrapped', med);
+  }
+  if(typeof renderEquipment === 'function') renderEquipment();
+}
+function _showDropToast(item, action, scrapMed){
+  const type = itemDef(item.typeId);
+  const rar = rarityDef(item.rarityId);
+  const toast = document.createElement('div');
+  toast.className = 'drop-toast drop-' + item.rarityId + (action === 'equipped' ? ' equipped' : '');
+  if(action === 'equipped'){
+    toast.innerHTML = `
+      <div class="dt-ico">${type.emoji}</div>
+      <div class="dt-body">
+        <div class="dt-name" style="color:${rar.color}">${rar.name} ${type.name} NIV ${item.level}</div>
+        <div class="dt-bonus">+${(item.bonus*100).toFixed(1)}% ${type.desc} · ÉQUIPÉ</div>
+      </div>`;
+  } else {
+    toast.innerHTML = `
+      <div class="dt-ico" style="opacity:.6">${type.emoji}</div>
+      <div class="dt-body">
+        <div class="dt-name" style="color:${rar.color};opacity:.7">${rar.name} ${type.name} NIV ${item.level}</div>
+        <div class="dt-bonus">Scrap → +${fmtBigNumber(scrapMed)} méd</div>
+      </div>`;
+  }
+  document.body.appendChild(toast);
+  setTimeout(()=>toast.classList.add('show'), 30);
+  setTimeout(()=>toast.classList.remove('show'), 2500);
+  setTimeout(()=>toast.remove(), 3000);
+  if(action === 'equipped' && A?.ctx){
+    blip(660, .12, "triangle", .26, .55);
+    setTimeout(()=>blip(990, .15, "sine", .26, .6), 80);
+    if(item.rarityId === 'epic' || item.rarityId === 'legendary'){
+      setTimeout(()=>blip(1320, .2, "triangle", .26, .7), 200);
+    }
+  }
+}
+function maybeDropItem(){
+  const item = rollItem();
+  _spawnDrop(item);
+}
+function openEquip(){
+  if(typeof renderEquipment === 'function') renderEquipment();
+  document.getElementById('equip-modal')?.classList.add('show');
+}
+function renderEquipment(){
+  const body = document.getElementById('equip-body');
+  if(!body) return;
+  if(!STATE.equipment) STATE.equipment = {};
+  // Sommaire bonus total
+  const summary = [
+    ['speed', '⚡ Vitesse'],
+    ['goldMul', '💰 Médailles'],
+    ['critRate', '✦ Crit'],
+    ['xpMul', '⏱️ XP'],
+    ['staminaMul', '💪 Stamina'],
+  ];
+  const sumHTML = summary.map(([stat, lbl]) => {
+    const bonus = equipBonus(stat);
+    if(bonus <= 0) return '';
+    return `<div class="es-row">${lbl} <b>+${(bonus*100).toFixed(1)}%</b></div>`;
+  }).join('');
+  // Grid 5 slots
+  const slots = ITEM_TYPES.map(type => {
+    const item = STATE.equipment[type.id];
+    if(!item){
+      return `<div class="eq-slot empty" data-slot="${type.id}">
+        <div class="eq-ico">${type.emoji}</div>
+        <div class="eq-name">${type.name}</div>
+        <div class="eq-rarity" style="color:#999">— vide —</div>
+        <div class="eq-bonus">Drop au prochain tour</div>
+      </div>`;
+    }
+    const rar = rarityDef(item.rarityId);
+    return `<div class="eq-slot filled rar-${item.rarityId}" data-slot="${type.id}" style="--eq-color:${rar.color}">
+      <div class="eq-ico">${type.emoji}</div>
+      <div class="eq-name">${type.name}</div>
+      <div class="eq-rarity" style="color:${rar.color}">${rar.name} · NIV ${item.level}</div>
+      <div class="eq-bonus">+${(item.bonus*100).toFixed(1)}% ${type.desc}</div>
+    </div>`;
+  }).join('');
+  body.innerHTML = `
+    <div class="eq-summary">
+      <h3>BONUS ACTIFS</h3>
+      <div class="es-list">${sumHTML || '<div class="es-empty">Aucun équipement — joue pour drop ton premier item !</div>'}</div>
+    </div>
+    <div class="eq-grid">${slots}</div>
+    <div class="eq-help">🎁 Chaque tour bouclé fait drop 1 item. Si meilleur, il s'équipe auto. Sinon, scrap en médailles.</div>
+  `;
+}
+
 /* v7 PIVOT GAMEFEEL : au début le coureur n'avance PAS du tout.
    Chaque tap pousse manuellement. La vitesse auto se construit progressivement
    grâce aux upgrades AUTO, aux managers d'équipe, et aux ascensions.
    → l'automatisation devient un "wow moment" tangible. */
 function runnerBaseSpeed(){
   let base = 0; // ← le COUREUR ne bouge PAS au départ
-  // AUTO upgrade : chaque niveau ajoute 0.15 (atteint 1.0 à niv 7)
   base += (STATE.upgradeAutoTap || 0) * 0.15;
-  // TAP +1 upgrade : 0.04 par niveau (atteint 1.0 à niv 25)
   base += (STATE.upgradeTapValue || 0) * 0.04;
-  // TOUR +50 upgrade : 0.06 par niveau (gros impact)
   base += (STATE.upgradeLapBonus || 0) * 0.06;
-  // Managers d'équipe : 0.25 par manager hired
   if(STATE.team){
     for(const id in STATE.team){
       if(STATE.team[id]?.mgr) base += 0.25;
     }
   }
-  // Ascensions : 0.5 par saison passée
   base += ((STATE.saison || 1) - 1) * 0.5;
-  // Saison perks AUTO base
   if(typeof saisonAutoBase === 'function') base += saisonAutoBase() * 0.1;
-  // Légère contribution du niveau coureur
   base += Math.floor((STATE.alchLevel || 1) / 10) * 0.1;
+  // ÉQUIPEMENT : bonus vitesse des chaussures
+  if(typeof equipBonus === 'function') base += equipBonus('speed') * 3; // chaussures pèsent beaucoup
   return base;
 }
 function runnerSpeedMultiplier(){
@@ -11206,15 +11527,17 @@ function tapBoost(e){
   const comboMul = _comboCount >= 25 ? 5 : _comboCount >= 12 ? 3 : _comboCount >= 6 ? 2 : _comboCount >= 3 ? 1.5 : 1;
   // Bump stamina = boost de vitesse temporaire
   if(typeof bumpStamina === 'function') bumpStamina(0.14 + _comboCount * 0.005);
-  // Médailles par tap : tous les multipliers s'empilent (combo + tap + shop + event + skill + saison)
+  // Médailles par tap : multipliers + équipement maillot
   const tapMul = (typeof getTapMul === 'function') ? getTapMul() : 1;
   const shopMul = (typeof getShopBoostMul === 'function') ? getShopBoostMul() : 1;
   const eTapMul = (typeof eventTapMul === 'function') ? eventTapMul() : 1;
   const eGoldMul = (typeof eventGoldMul === 'function') ? eventGoldMul() : 1;
   const skillTap = (typeof skillSprintTapMul === 'function') ? skillSprintTapMul() : 1;
-  const perTap = (1 + (STATE.upgradeTapValue||0)) * comboMul * tapMul * shopMul * eTapMul * eGoldMul * skillTap * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
-  // Crit chance plafonné à 60% pour éviter le OP late game
-  const rawCrit = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
+  const equipMul = (typeof equipBonus === 'function') ? (1 + equipBonus('goldMul')) : 1;
+  const perTap = (1 + (STATE.upgradeTapValue||0)) * comboMul * tapMul * shopMul * eTapMul * eGoldMul * skillTap * equipMul * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
+  // Crit chance plafonné à 60% + bonus bandeau équipé
+  const equipCrit = (typeof equipBonus === 'function') ? equipBonus('critRate') : 0;
+  const rawCrit = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + equipCrit + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
   const critChance = Math.min(0.60, rawCrit);
   const isCrit = Math.random() < critChance;
   const gain = Math.floor(isCrit ? perTap * 5 : perTap);
@@ -12126,7 +12449,8 @@ function runnerBatchValue(r){
   const eTeamMul = (typeof eventTeamMul === 'function') ? eventTeamMul() : 1;
   const eGoldMul = (typeof eventGoldMul === 'function') ? eventGoldMul() : 1;
   const skillTeam = (typeof skillBreathTeamMul === 'function') ? skillBreathTeamMul() : 1;
-  return Math.floor(baseBatch * pistardMul * saisonMul * shopMul * eTeamMul * eGoldMul * skillTeam);
+  const equipMul = (typeof equipBonus === 'function') ? (1 + equipBonus('goldMul')) : 1;
+  return Math.floor(baseBatch * pistardMul * saisonMul * shopMul * eTeamMul * eGoldMul * skillTeam * equipMul);
 }
 /* Production théorique méd/sec (info uniquement) */
 function runnerProductionPerSec(r){
@@ -12808,6 +13132,8 @@ function completeLap(){
   if(typeof checkAchievements === 'function') checkAchievements();
   if(typeof updateRecords === 'function') updateRecords();
   if(typeof progressQuest === 'function') progressQuest('laps', 1);
+  // 🎁 DROP D'ITEM ! Chaque lap = 1 drop (auto-équipe si meilleur, sinon scrap)
+  if(typeof maybeDropItem === 'function') maybeDropItem();
 }
 
 /* Maillot du coureur — évolue selon le nombre d'ascensions */
@@ -14849,6 +15175,7 @@ function save(){
       skillBreathUntil:STATE.skillBreathUntil ?? 0,
       dailyQuests:STATE.dailyQuests || null,
       selectedStadiumId:STATE.selectedStadiumId || null,
+      equipment:STATE.equipment || {},
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
   }catch(e){}
@@ -14912,6 +15239,7 @@ function load(){
     STATE.skillBreathUntil = s.skillBreathUntil ?? 0;
     STATE.dailyQuests = s.dailyQuests || null;
     STATE.selectedStadiumId = s.selectedStadiumId || null;
+    STATE.equipment = s.equipment || {};
     // Migration : si on a maxTier mais pas de codexUnlocks → backfill
     for(let c=0;c<3;c++){
       for(let t=0; t<=STATE.totals.maxTier[c]; t++){
@@ -15125,6 +15453,7 @@ function boot(){
   bindModalClose('records-modal','records-close');
   bindModalClose('quests-daily-modal','quests-daily-close');
   bindModalClose('stadium-modal','stadium-close');
+  bindModalClose('equip-modal','equip-close');
   document.getElementById('starter-close')?.addEventListener('click', ()=>{
     document.getElementById('starter-modal')?.classList.remove('show');
     STATE.starterPackDeclined = true; // ne plus re-spam
@@ -15258,6 +15587,7 @@ function boot(){
         else if(action === 'daily' && typeof openDailyModal === 'function') openDailyModal();
         else if(action === 'shop-premium' && typeof openShopModal === 'function') openShopModal();
         else if(action === 'wardrobe' && typeof openWardrobe === 'function') openWardrobe();
+        else if(action === 'equip' && typeof openEquip === 'function') openEquip();
         else if(action === 'records' && typeof openRecords === 'function') openRecords();
         else if(action === 'quests-daily' && typeof openQuestsModal === 'function') openQuestsModal();
         else if(action === 'stadium' && typeof openStadiumPicker === 'function') openStadiumPicker();

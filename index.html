@@ -520,6 +520,14 @@ body.frenzy-on .rs-speedlines{ animation-duration:0.10s }
 .cell.flash{
   animation:cellFlash .35s ease-out;
 }
+.cell.cell-arrive{
+  animation:cellArrive .48s cubic-bezier(.2,.9,.2,1.4);
+}
+@keyframes cellArrive{
+  0%   { transform:scale(.85); box-shadow:0 0 0 transparent; }
+  40%  { transform:scale(1.10); box-shadow:0 0 12px rgba(255,232,168,.65); }
+  100% { transform:scale(1); box-shadow:0 1px 1px rgba(80,55,30,.10); }
+}
 /* Cellule spectrale (cible) — pulse blanc-or */
 .cell.spectral-target{
   border-color:#fff;
@@ -3316,7 +3324,7 @@ body.shop-epic-flash::after{
             <rect x="-18" y="0" width="8" height="1.4" fill="#fff" opacity=".55"/>
             <rect x="-20" y="4" width="9" height="1.4" fill="#fff" opacity=".45"/>
           </g>
-          <g class="rs-body" transform="scale(1.55)">
+          <g class="rs-body" transform="scale(2.0)">
             <g shape-rendering="crispEdges">
               <!-- ombre au sol -->
               <ellipse cx="0" cy="10" rx="6" ry="1.5" fill="#000" opacity=".4"/>
@@ -6182,27 +6190,26 @@ const SPRITE_DEFS = [
      <rect x="21" y="13" width="1" height="2" fill="#1f3548"/>
      <rect x="10" y="22" width="1" height="2" fill="#1f3548"/>
      <rect x="21" y="22" width="1" height="2" fill="#1f3548"/>`,
-    // T2 — Bidon Iso avec bec verseur sport (couleur vive, poignée)
-    `<!-- bouchon pull-up -->
-     <rect x="15" y="2" width="2" height="4" fill="#3a3a3a"/>
-     <rect x="13" y="6" width="6" height="2" fill="#1a1a1a"/>
-     <rect x="13" y="6" width="6" height="1" fill="#3a3a3a"/>
-     <!-- poignée latérale -->
-     <rect x="22" y="11" width="3" height="2" fill="#1f3548"/>
-     <rect x="22" y="11" width="3" height="6" fill="none" stroke="#1f3548" stroke-width="1.5"/>
-     <rect x="22" y="17" width="3" height="2" fill="#1f3548"/>
-     <!-- corps bidon vif -->
-     <rect x="10" y="8" width="12" height="20" fill="#1f3548"/>
-     <rect x="11" y="9" width="10" height="18" fill="#e85a30"/>
-     <rect x="11" y="9" width="2" height="18" fill="#ff8a50"/>
-     <!-- bande sportive -->
-     <rect x="10" y="14" width="12" height="2" fill="#fff"/>
-     <rect x="10" y="16" width="12" height="2" fill="#ffd070"/>
-     <rect x="10" y="18" width="12" height="2" fill="#fff"/>
-     <!-- logo H -->
-     <rect x="14" y="20" width="1.5" height="5" fill="#1f3548"/>
-     <rect x="16.5" y="20" width="1.5" height="5" fill="#1f3548"/>
-     <rect x="15" y="22" width="2" height="1" fill="#1f3548"/>`,
+    // T2 — Bidon Iso : bouteille de sport avec bec et goutte d'eau visible
+    `<!-- bec verseur incliné -->
+     <polygon points="14,4 18,5 20,8 14,8" fill="#1a1a1a"/>
+     <rect x="14" y="8" width="6" height="2" fill="#3a3a3a"/>
+     <!-- col -->
+     <rect x="13" y="10" width="6" height="2" fill="#5a5a5a"/>
+     <!-- corps bidon — forme sport bombée -->
+     <rect x="10" y="12" width="12" height="14" fill="#1a1010"/>
+     <rect x="11" y="13" width="10" height="12" fill="#7ec8e8"/>
+     <!-- reflet vertical à gauche -->
+     <rect x="11" y="13" width="2" height="12" fill="#d8e8f8"/>
+     <!-- étiquette ronde -->
+     <circle cx="16" cy="19" r="4" fill="#fff"/>
+     <circle cx="16" cy="19" r="3" fill="#e85a30"/>
+     <!-- goutte d'eau au centre de l'étiquette -->
+     <polygon points="16,17 14.5,19.5 17.5,19.5" fill="#fff"/>
+     <!-- ombre du bas -->
+     <rect x="11" y="24" width="10" height="1" fill="#3a7898"/>
+     <!-- fond -->
+     <rect x="10" y="26" width="12" height="2" fill="#1a1010"/>`,
     // T3 — Élixir Glacé (chalice + flocon)
     `<rect x="11" y="6" width="10" height="2" fill="#fff"/>
      <rect x="11" y="6" width="10" height="1" fill="#a8d8f0"/>
@@ -6389,23 +6396,35 @@ const SPRITE_DEFS = [
      <rect x="9" y="16" width="1" height="1" fill="#c8a8f0"/>
      <rect x="15" y="16" width="2" height="1" fill="#c8a8f0"/>
      <rect x="22" y="16" width="1" height="1" fill="#c8a8f0"/>`,
-    // T1 — Foulard
-    `<polygon points="8,8 24,8 22,14 10,14" fill="#3a2858"/>
-     <polygon points="9,9 23,9 21,13 11,13" fill="#c8a8f0"/>
-     <polygon points="10,14 22,14 20,20 12,20" fill="#9080c0"/>
-     <polygon points="11,14 21,14 19,19 13,19" fill="#c8a8f0"/>
-     <polygon points="12,20 20,20 18,26 14,26" fill="#3a2858"/>
-     <polygon points="13,20 19,20 17,25 15,25" fill="#9080c0"/>
-     <rect x="13" y="11" width="6" height="1" fill="#fff"/>
-     <rect x="13" y="16" width="6" height="1" fill="#fff" opacity=".5"/>`,
-    // T2 — Masque
-    `<rect x="3" y="14" width="3" height="2" fill="#9080c0"/>
-     <rect x="26" y="14" width="3" height="2" fill="#9080c0"/>
-     <path d="M 7 12 Q 16 9 25 12 L 25 20 Q 16 22 7 20 Z" fill="#3a2858"/>
-     <path d="M 8 13 Q 16 10 24 13 L 24 19 Q 16 21 8 19 Z" fill="#c8a8f0"/>
-     <rect x="9" y="14" width="14" height="1" fill="#fff"/>
-     <rect x="9" y="17" width="14" height="1" fill="#fff" opacity=".5"/>
-     <rect x="9" y="15" width="14" height="2" fill="#9080c0" opacity=".4"/>`,
+    // T1 — Foulard (bandana plié, motif tribal)
+    `<!-- corps foulard triangulaire vers le bas -->
+     <polygon points="6,9 26,9 16,25" fill="#1a1010"/>
+     <polygon points="7,10 25,10 16,23" fill="#c8a8f0"/>
+     <!-- nœud central en haut -->
+     <rect x="13" y="6" width="6" height="4" fill="#9080c0"/>
+     <rect x="13" y="6" width="6" height="1" fill="#fff"/>
+     <rect x="13" y="9" width="6" height="1" fill="#1a1010"/>
+     <!-- motif décoratif : 3 losanges -->
+     <polygon points="11,14 12,12.5 13,14 12,15.5" fill="#9080c0"/>
+     <polygon points="16,15 17,13.5 18,15 17,16.5" fill="#9080c0"/>
+     <polygon points="21,14 22,12.5 23,14 22,15.5" fill="#9080c0"/>
+     <!-- coutures -->
+     <rect x="13" y="18" width="6" height=".6" fill="#9080c0" opacity=".6"/>`,
+    // T2 — Masque respiratoire de sport (forme arrondie, plis, élastiques)
+    `<!-- élastiques latéraux -->
+     <path d="M 5 14 Q 1 16 5 18" fill="none" stroke="#1a1010" stroke-width="1.4"/>
+     <path d="M 27 14 Q 31 16 27 18" fill="none" stroke="#1a1010" stroke-width="1.4"/>
+     <!-- corps du masque arrondi -->
+     <path d="M 6 13 Q 16 11 26 13 L 25 21 Q 16 23 7 21 Z" fill="#1a1010"/>
+     <path d="M 7 14 Q 16 12 25 14 L 24 20 Q 16 22 8 20 Z" fill="#c8a8f0"/>
+     <!-- plis verticaux -->
+     <rect x="11" y="13" width=".7" height="9" fill="#9080c0" opacity=".5"/>
+     <rect x="15.5" y="13" width=".7" height="9" fill="#9080c0" opacity=".5"/>
+     <rect x="20" y="13" width=".7" height="9" fill="#9080c0" opacity=".5"/>
+     <!-- valve respiratoire centrale -->
+     <circle cx="16" cy="17" r="3" fill="#fff"/>
+     <circle cx="16" cy="17" r="2" fill="#9080c0"/>
+     <rect x="15" y="16" width="2" height="2" fill="#3a2858"/>`,
     // T3 — Filtre cartouche
     `<rect x="11" y="4" width="10" height="2" fill="#3a3a3a"/>
      <rect x="12" y="6" width="8" height="3" fill="#5a5258"/>
@@ -7397,7 +7416,21 @@ function shopSpawn(chain, tier){
   renderTile(x,y);
   sfxSpawn(chain);
   vibrate(14);
-  particles(window.innerWidth/2, window.innerHeight - 100, CHAINS[chain].color, 14);
+  // Swoosh depuis le distributeur correspondant vers la cellule
+  const gen = document.querySelector(`.gen[data-chain="${chain}"]`);
+  const cell = cellAt(x, y);
+  if(gen && cell){
+    const r = gen.getBoundingClientRect();
+    const cr = cell.getBoundingClientRect();
+    const sx = r.left + r.width/2, sy = r.top + 14;
+    const tx = cr.left + cr.width/2, ty = cr.top + cr.height/2;
+    for(let i=0; i<10; i++){
+      setTimeout(()=>particles(sx + (Math.random()-.5)*6, sy + (Math.random()-.5)*4, CHAINS[chain].color, 1, tx, ty), i*30);
+    }
+    setTimeout(()=>{ cell.classList.add('cell-arrive'); setTimeout(()=>cell.classList.remove('cell-arrive'), 480); }, 320);
+  } else {
+    particles(window.innerWidth/2, window.innerHeight - 100, CHAINS[chain].color, 14);
+  }
   return true;
 }
 
@@ -8901,9 +8934,27 @@ function fireGenerator(idx, el){
   if(typeof checkAchievements === 'function') checkAchievements();
   if(typeof checkMasterQuest === 'function') checkMasterQuest();
   if(typeof tutorialOnSpawn === 'function') tutorialOnSpawn(g.chain);
-  // burst from distributeur
+  // Burst depuis le distributeur + swoosh vers la cellule cible
   const r = el.getBoundingClientRect();
-  particles(r.left + r.width/2, r.top + 14, CHAINS[g.chain].color, 14);
+  const srcX = r.left + r.width/2, srcY = r.top + 14;
+  particles(srcX, srcY, CHAINS[g.chain].color, 8);
+  // SWOOSH : trajectoire visible du distributeur vers la nouvelle tuile
+  const cell = cellAt(x, y);
+  if(cell){
+    const cr = cell.getBoundingClientRect();
+    const tx = cr.left + cr.width/2, ty = cr.top + cr.height/2;
+    // 10 particules attirées vers la cellule, vagues décalées
+    for(let i=0; i<10; i++){
+      setTimeout(()=>{
+        particles(srcX + (Math.random()-.5)*6, srcY + (Math.random()-.5)*4, CHAINS[g.chain].color, 1, tx, ty);
+      }, i*30);
+    }
+    // Flash bref de la cellule à l'arrivée
+    setTimeout(()=>{
+      cell.classList.add('cell-arrive');
+      setTimeout(()=>cell.classList.remove('cell-arrive'), 480);
+    }, 320);
+  }
   if(isLucky){
     // FX dédié au lucky spawn
     const cell = cellAt(x, y);

@@ -5855,8 +5855,8 @@ body.shop-epic-flash::after{
       </div>
       <svg id="runner-svg" viewBox="0 0 320 340" preserveAspectRatio="xMidYMid meet">
         <defs>
-          <!-- Trajectoire ovale aplatie (perspective 50m) -->
-          <path id="rs-path" d="M 35,225 A 125,30 0 0 1 285,225 A 125,30 0 0 1 35,225 Z" fill="none"/>
+          <!-- Trajectoire STADIUM-SHAPE (vue TV 3/4) : front-straight large + back-straight petit -->
+          <path id="rs-path" d="M 40,250 L 280,250 A 32,55 0 0 1 240,140 L 80,140 A 32,55 0 0 1 40,250 Z" fill="none"/>
           <!-- Gradient ciel (plus vertical) -->
           <linearGradient id="rs-sky-grad" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%"   stop-color="#5ab0e0"/>
@@ -5902,137 +5902,184 @@ body.shop-epic-flash::after{
           <text x="0" y="1.2" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="3.5" fill="#fff">F</text>
         </g>
 
-        <!-- TOIT principal du stade -->
-        <g id="rs-roof">
-          <polygon points="0,108 52,98 52,118 0,124" fill="#5a4a3a"/>
-          <polygon points="0,104 52,94 52,98 0,108" fill="#6e5a48"/>
-          <rect x="6"  y="114" width="1.5" height="10" fill="#3a2818"/>
-          <rect x="24" y="112" width="1.5" height="10" fill="#3a2818"/>
-          <rect x="42" y="110" width="1.5" height="10" fill="#3a2818"/>
-          <polygon points="268,98 320,108 320,124 268,118" fill="#5a4a3a"/>
-          <polygon points="268,94 320,104 320,108 268,98" fill="#6e5a48"/>
-          <rect x="278" y="112" width="1.5" height="10" fill="#3a2818"/>
-          <rect x="296" y="114" width="1.5" height="10" fill="#3a2818"/>
-          <rect x="312" y="116" width="1.5" height="10" fill="#3a2818"/>
+        <!-- ============ VUE TV BROADCAST 3/4 (caméra élevée + angle 30°) ============ -->
+
+        <!-- TRIBUNE ARRIÈRE (loin, plus petite) -->
+        <g id="rs-back-stand">
+          <!-- Mur de fond -->
+          <rect x="40" y="65" width="240" height="68" fill="#9b7f50"/>
+          <rect x="40" y="65" width="240" height="3" fill="#7c6440"/>
+          <!-- Toiture courbée (perspective lointaine) -->
+          <path d="M 40,65 Q 160,55 280,65 L 280,68 Q 160,58 40,68 Z" fill="#5a4a3a"/>
+          <!-- Étages dégradés -->
+          <rect x="40" y="80" width="240" height="6" fill="#a88c5a"/>
+          <rect x="40" y="92" width="240" height="6" fill="#b89a6e"/>
+          <rect x="40" y="104" width="240" height="6" fill="#c8aa7e"/>
+          <rect x="40" y="116" width="240" height="6" fill="#d8ba8e"/>
+          <rect x="40" y="128" width="240" height="5" fill="#e8ca9e"/>
+          <!-- Séparateurs colonnes -->
+          <line x1="80" y1="68" x2="80" y2="133" stroke="#8a6d44" stroke-width="1" opacity=".4"/>
+          <line x1="120" y1="68" x2="120" y2="133" stroke="#8a6d44" stroke-width="1" opacity=".4"/>
+          <line x1="160" y1="68" x2="160" y2="133" stroke="#8a6d44" stroke-width="1" opacity=".4"/>
+          <line x1="200" y1="68" x2="200" y2="133" stroke="#8a6d44" stroke-width="1" opacity=".4"/>
+          <line x1="240" y1="68" x2="240" y2="133" stroke="#8a6d44" stroke-width="1" opacity=".4"/>
         </g>
 
-        <!-- PROJECTEURS -->
-        <g id="rs-lights">
-          <rect x="22" y="125" width="1.5" height="40" fill="#3a2818"/>
-          <rect x="16" y="118" width="13" height="3" fill="#1a1010"/>
-          <rect x="17" y="116" width="11" height="2" fill="#3a2818"/>
-          <rect x="18" y="119" width="2" height="1.5" fill="#fff3b0"/>
-          <rect x="21" y="119" width="2" height="1.5" fill="#fff3b0"/>
-          <rect x="24" y="119" width="2" height="1.5" fill="#fff3b0"/>
-          <ellipse class="rs-light-glow" cx="22.5" cy="118" rx="16" ry="7" fill="url(#rs-spot-glow)"/>
-          <rect x="297" y="125" width="1.5" height="40" fill="#3a2818"/>
-          <rect x="291" y="118" width="13" height="3" fill="#1a1010"/>
-          <rect x="292" y="116" width="11" height="2" fill="#3a2818"/>
-          <rect x="293" y="119" width="2" height="1.5" fill="#fff3b0"/>
-          <rect x="296" y="119" width="2" height="1.5" fill="#fff3b0"/>
-          <rect x="299" y="119" width="2" height="1.5" fill="#fff3b0"/>
-          <ellipse class="rs-light-glow" cx="297.5" cy="118" rx="16" ry="7" fill="url(#rs-spot-glow)"/>
-        </g>
-
-        <!-- SCOREBOARD LED -->
-        <g id="rs-scoreboard" transform="translate(110 60)">
-          <rect x="0" y="0" width="100" height="30" rx="4" fill="#1a1010"/>
-          <rect x="1.5" y="1.5" width="97" height="27" rx="3" fill="#2a1818"/>
-          <rect x="18" y="30" width="3" height="20" fill="#3a2818"/>
-          <rect x="79" y="30" width="3" height="20" fill="#3a2818"/>
+        <!-- SCOREBOARD LED en haut au-dessus de la tribune arrière -->
+        <g id="rs-scoreboard" transform="translate(110 12)">
+          <rect x="0" y="0" width="100" height="32" rx="4" fill="#1a1010"/>
+          <rect x="1.5" y="1.5" width="97" height="29" rx="3" fill="#2a1818"/>
+          <rect x="18" y="32" width="3" height="22" fill="#3a2818"/>
+          <rect x="79" y="32" width="3" height="22" fill="#3a2818"/>
           <text x="50" y="11" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="8" fill="#ff8030" letter-spacing="1.4">FOULÉE</text>
-          <text x="8" y="23" font-family="Nunito" font-weight="800" font-size="7.5" fill="#ffd070">TOURS</text>
-          <text id="rs-sb-laps" x="48" y="23" font-family="Nunito" font-weight="900" font-size="9" fill="#fff">0</text>
-          <text x="68" y="23" font-family="Nunito" font-weight="800" font-size="7.5" fill="#ffd070">★</text>
-          <text id="rs-sb-stars" x="93" y="23" text-anchor="end" font-family="Nunito" font-weight="900" font-size="9" fill="#fff">0</text>
+          <text x="8" y="24" font-family="Nunito" font-weight="800" font-size="7.5" fill="#ffd070">TOURS</text>
+          <text id="rs-sb-laps" x="48" y="24" font-family="Nunito" font-weight="900" font-size="9" fill="#fff">0</text>
+          <text x="68" y="24" font-family="Nunito" font-weight="800" font-size="7.5" fill="#ffd070">★</text>
+          <text id="rs-sb-stars" x="93" y="24" text-anchor="end" font-family="Nunito" font-weight="900" font-size="9" fill="#fff">0</text>
         </g>
 
-        <!-- TRIBUNES (zone arrière-plan) -->
+        <!-- PROJECTEURS aux coins haut (plus petits, plus loin) -->
+        <g id="rs-lights">
+          <rect x="22" y="45" width="1.2" height="25" fill="#3a2818"/>
+          <rect x="17" y="42" width="11" height="3" fill="#1a1010"/>
+          <rect x="18" y="43" width="2" height="1.5" fill="#fff3b0"/>
+          <rect x="21" y="43" width="2" height="1.5" fill="#fff3b0"/>
+          <rect x="24" y="43" width="2" height="1.5" fill="#fff3b0"/>
+          <ellipse class="rs-light-glow" cx="22.5" cy="44" rx="14" ry="6" fill="url(#rs-spot-glow)"/>
+          <rect x="297" y="45" width="1.2" height="25" fill="#3a2818"/>
+          <rect x="292" y="42" width="11" height="3" fill="#1a1010"/>
+          <rect x="293" y="43" width="2" height="1.5" fill="#fff3b0"/>
+          <rect x="296" y="43" width="2" height="1.5" fill="#fff3b0"/>
+          <rect x="299" y="43" width="2" height="1.5" fill="#fff3b0"/>
+          <ellipse class="rs-light-glow" cx="297.5" cy="44" rx="14" ry="6" fill="url(#rs-spot-glow)"/>
+        </g>
+
+        <!-- TRIBUNES = spectateurs sur le back-stand (dessinés par buildCrowd dans rs-crowd) -->
         <g id="rs-crowd"></g>
 
-        <!-- SOL vert pré -->
-        <rect x="0" y="178" width="320" height="162" fill="url(#rs-grass-grad)"/>
-        <rect x="0" y="178" width="320" height="3" fill="#88c060"/>
-
-        <!-- BANNIÈRES SPONSORS -->
+        <!-- BANNIÈRES SPONSORS au pied de la tribune arrière -->
         <g id="rs-banners">
-          <rect x="2" y="170" width="60" height="8" fill="#e85a30"/>
-          <rect x="2" y="170" width="60" height="2" fill="#ffd070"/>
-          <text x="32" y="176" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="5.5" fill="#fff" letter-spacing=".4">VITA-RUN</text>
-          <rect x="116" y="170" width="88" height="8" fill="#4a9fd9"/>
-          <rect x="116" y="170" width="88" height="2" fill="#a8dcf0"/>
-          <text x="160" y="176" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="5.5" fill="#fff" letter-spacing=".4">SPRINTER COLA</text>
-          <rect x="258" y="170" width="60" height="8" fill="#7ec46a"/>
-          <rect x="258" y="170" width="60" height="2" fill="#d7ecb6"/>
-          <text x="288" y="176" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="5.5" fill="#fff" letter-spacing=".4">CHAMPION'S</text>
+          <rect x="40" y="133" width="80" height="7" fill="#e85a30"/>
+          <rect x="40" y="133" width="80" height="1.5" fill="#ffd070"/>
+          <text x="80" y="138" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="5" fill="#fff">VITA-RUN</text>
+          <rect x="120" y="133" width="80" height="7" fill="#4a9fd9"/>
+          <rect x="120" y="133" width="80" height="1.5" fill="#a8dcf0"/>
+          <text x="160" y="138" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="5" fill="#fff">SPRINTER COLA</text>
+          <rect x="200" y="133" width="80" height="7" fill="#7ec46a"/>
+          <rect x="200" y="133" width="80" height="1.5" fill="#d7ecb6"/>
+          <text x="240" y="138" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="5" fill="#fff">CHAMPION'S</text>
         </g>
 
-        <!-- PISTE en PERSPECTIVE (vue 50m de haut) — ovale plus aplati -->
-        <ellipse id="rs-track-ring" cx="160" cy="225" rx="138" ry="34" fill="#c8884e" stroke="#a07840" stroke-width="2.5"/>
-        <!-- Ombre projetée sous la piste (effet 3D) -->
-        <ellipse cx="160" cy="262" rx="138" ry="6" fill="#000" opacity=".15"/>
-        <!-- Lanes blancs -->
-        <ellipse cx="160" cy="225" rx="126" ry="28" fill="none" stroke="#fff" stroke-width=".9" opacity=".7"/>
-        <ellipse cx="160" cy="225" rx="113" ry="20" fill="none" stroke="#fff" stroke-width=".9" opacity=".7"/>
-        <!-- Gazon central -->
-        <ellipse cx="160" cy="225" rx="100" ry="14" fill="url(#rs-mowed)" stroke="#558838" stroke-width="1.8"/>
-        <!-- Couloir extérieur pointillé -->
-        <ellipse cx="160" cy="225" rx="135" ry="32" fill="none" stroke="#fff" stroke-width="1.1" stroke-dasharray="7 5" opacity=".55"/>
+        <!-- SOL : champ + bordure  -->
+        <rect x="0" y="140" width="320" height="200" fill="url(#rs-grass-grad)"/>
+        <rect x="0" y="140" width="320" height="3" fill="#88c060"/>
 
-        <!-- Ligne d'arrivée checkered -->
+        <!-- STADE / TRACK : forme STADIUM (rectangle aux extrémités arrondies) en perspective -->
+        <!-- Front straight bigger (closer), back straight smaller (further) -->
+        <path id="rs-track-shape" d="M 40,250 L 280,250 A 32,55 0 0 1 240,140 L 80,140 A 32,55 0 0 1 40,250 Z"
+              fill="#c8884e" stroke="#a07840" stroke-width="2.5"/>
+
+        <!-- GAZON INTÉRIEUR (le terrain au milieu) -->
+        <path d="M 60,235 L 260,235 A 22,42 0 0 1 230,155 L 90,155 A 22,42 0 0 1 60,235 Z"
+              fill="url(#rs-mowed)" stroke="#558838" stroke-width="1.5"/>
+
+        <!-- COULOIRS — lignes blanches sur la piste -->
+        <path d="M 50,242 L 270,242 A 27,48 0 0 1 234,148 L 86,148 A 27,48 0 0 1 50,242 Z"
+              fill="none" stroke="#fff" stroke-width=".8" opacity=".7"/>
+        <path d="M 70,237 L 250,237 A 24,46 0 0 1 222,152 L 98,152 A 24,46 0 0 1 70,237 Z"
+              fill="none" stroke="#fff" stroke-width=".8" opacity=".5"/>
+
+        <!-- Ombres projetées sous la piste (effet 3D) -->
+        <ellipse cx="160" cy="265" rx="135" ry="5" fill="#000" opacity=".15"/>
+
+        <!-- LIGNE D'ARRIVÉE checkered (centre, front straight) -->
         <g shape-rendering="crispEdges">
-          <rect x="157.5" y="184" width="5" height="3" fill="#fff"/>
-          <rect x="157.5" y="187" width="5" height="3" fill="#1a1010"/>
-          <rect x="157.5" y="190" width="5" height="3" fill="#fff"/>
-          <rect x="157.5" y="262" width="5" height="3" fill="#fff"/>
-          <rect x="157.5" y="265" width="5" height="3" fill="#1a1010"/>
-          <rect x="157.5" y="268" width="5" height="3" fill="#fff"/>
+          <rect x="157.5" y="248" width="5" height="3" fill="#fff"/>
+          <rect x="157.5" y="250.5" width="5" height="3" fill="#1a1010"/>
+          <rect x="157.5" y="253" width="5" height="3" fill="#fff"/>
         </g>
 
-        <!-- Drapeau à damiers -->
+        <!-- DRAPEAU à damiers -->
         <g shape-rendering="crispEdges">
-          <rect x="159" y="160" width="1.5" height="22" fill="#3a2818"/>
-          <rect x="160" y="160" width="12" height="9" fill="#1a1010"/>
-          <rect x="161" y="161" width="2.5" height="2.5" fill="#fff"/>
-          <rect x="166" y="161" width="2.5" height="2.5" fill="#fff"/>
-          <rect x="163.5" y="163.5" width="2.5" height="2.5" fill="#fff"/>
-          <rect x="168.5" y="163.5" width="2.5" height="2.5" fill="#fff"/>
-          <rect x="161" y="166" width="2.5" height="2.5" fill="#fff"/>
-          <rect x="166" y="166" width="2.5" height="2.5" fill="#fff"/>
+          <rect x="158" y="232" width="1" height="18" fill="#3a2818"/>
+          <rect x="159" y="232" width="12" height="9" fill="#1a1010"/>
+          <rect x="160" y="233" width="2.5" height="2.5" fill="#fff"/>
+          <rect x="165" y="233" width="2.5" height="2.5" fill="#fff"/>
+          <rect x="162.5" y="235.5" width="2.5" height="2.5" fill="#fff"/>
+          <rect x="167.5" y="235.5" width="2.5" height="2.5" fill="#fff"/>
+          <rect x="160" y="238" width="2.5" height="2.5" fill="#fff"/>
+          <rect x="165" y="238" width="2.5" height="2.5" fill="#fff"/>
         </g>
 
-        <!-- Détails fleurs + herbe (autour de la piste) -->
+        <!-- Logo central sur le gazon -->
         <g shape-rendering="crispEdges">
-          <rect x="115" y="215" width="2" height="3" fill="#558838" opacity=".8"/>
-          <rect x="195" y="232" width="2" height="3" fill="#558838" opacity=".8"/>
-          <rect x="138" y="238" width="2" height="3" fill="#558838" opacity=".8"/>
-          <rect x="125" y="220" width="2.5" height="2.5" fill="#ff8a48"/>
-          <rect x="200" y="232" width="2.5" height="2.5" fill="#fff"/>
-          <rect x="180" y="220" width="2.5" height="2.5" fill="#fff"/>
-          <!-- Logo central FOULÉE sur le gazon -->
-          <ellipse cx="160" cy="225" rx="24" ry="5" fill="#fff" opacity=".18"/>
-          <text x="160" y="228" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="8" fill="#fff" opacity=".5" letter-spacing=".5">FOULÉE</text>
+          <ellipse cx="160" cy="195" rx="22" ry="5" fill="#fff" opacity=".18"/>
+          <text x="160" y="198" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="7" fill="#fff" opacity=".5" letter-spacing=".5">FOULÉE</text>
         </g>
 
-        <!-- AVANT-PLAN compact (gazon + qq herbes) -->
-        <g id="rs-foreground" shape-rendering="crispEdges">
-          <rect x="0" y="285" width="320" height="55" fill="#7eaa4a"/>
-          <rect x="0" y="285" width="320" height="3" fill="#88c060" opacity=".6"/>
-          <rect x="20" y="300" width="2.5" height="6" fill="#5a8038"/>
-          <rect x="60" y="305" width="2.5" height="6" fill="#5a8038"/>
-          <rect x="100" y="302" width="2.5" height="6" fill="#5a8038"/>
-          <rect x="140" y="308" width="2.5" height="6" fill="#5a8038"/>
-          <rect x="185" y="304" width="2.5" height="6" fill="#5a8038"/>
-          <rect x="220" y="310" width="2.5" height="6" fill="#5a8038"/>
-          <rect x="260" y="304" width="2.5" height="6" fill="#5a8038"/>
-          <rect x="295" y="308" width="2.5" height="6" fill="#5a8038"/>
-          <rect x="42" y="316" width="2.5" height="2.5" fill="#ff8a48"/>
-          <rect x="170" y="320" width="2.5" height="2.5" fill="#ff5a30"/>
-          <rect x="250" y="318" width="2.5" height="2.5" fill="#c8a8f0"/>
-          <ellipse cx="35" cy="328" rx="18" ry="8" fill="#5a8038"/>
-          <ellipse cx="35" cy="328" rx="18" ry="8" fill="#7eaa4a" opacity=".4"/>
-          <ellipse cx="285" cy="330" rx="20" ry="9" fill="#5a8038"/>
-          <ellipse cx="285" cy="330" rx="20" ry="9" fill="#7eaa4a" opacity=".4"/>
+        <!-- AVANT-PLAN : tribune avant (rangée de têtes vue de dos, plus grosse car proche) -->
+        <g id="rs-foreground">
+          <!-- Bandeau bois foncé en bas (palissade/rebord) -->
+          <rect x="0" y="280" width="320" height="60" fill="#7c5a44"/>
+          <rect x="0" y="280" width="320" height="3" fill="#5a4028"/>
+          <!-- Plinthe haute (rebord de tribune) -->
+          <rect x="0" y="280" width="320" height="6" fill="#a88c5a"/>
+          <!-- Rangée de spectateurs vus de dos (têtes seulement) -->
+          <g shape-rendering="crispEdges">
+            <!-- 12 têtes/épaules -->
+            <g transform="translate(20 295)">
+              <rect x="-6" y="-2" width="12" height="6" fill="#3e8db8"/>
+              <ellipse cx="0" cy="-7" rx="5" ry="5" fill="#f0c890"/>
+              <rect x="-4" y="-10" width="8" height="3" fill="#4a2818"/>
+            </g>
+            <g transform="translate(50 296)">
+              <rect x="-6" y="-2" width="12" height="6" fill="#d04030"/>
+              <ellipse cx="0" cy="-7" rx="5" ry="5" fill="#e8c8a8"/>
+              <rect x="-4" y="-10" width="8" height="3" fill="#c0c0c0"/>
+            </g>
+            <g transform="translate(80 294)">
+              <rect x="-6" y="-2" width="12" height="6" fill="#5a9040"/>
+              <ellipse cx="0" cy="-7" rx="5" ry="5" fill="#f0c890"/>
+              <rect x="-4" y="-10" width="8" height="3" fill="#5a4028"/>
+            </g>
+            <g transform="translate(115 295)">
+              <rect x="-6" y="-2" width="12" height="6" fill="#9080c0"/>
+              <ellipse cx="0" cy="-7" rx="5" ry="5" fill="#f0c890"/>
+              <rect x="-4" y="-10" width="8" height="3" fill="#4a2818"/>
+            </g>
+            <g transform="translate(150 296)">
+              <rect x="-6" y="-2" width="12" height="6" fill="#ffd070"/>
+              <ellipse cx="0" cy="-7" rx="5" ry="5" fill="#e8c8a8"/>
+              <rect x="-4" y="-10" width="8" height="3" fill="#dba070"/>
+            </g>
+            <g transform="translate(180 294)">
+              <rect x="-6" y="-2" width="12" height="6" fill="#ee5a9a"/>
+              <ellipse cx="0" cy="-7" rx="5" ry="5" fill="#f0c890"/>
+              <rect x="-6" y="-10" width="12" height="4" fill="#4a2818"/>
+              <rect x="-6" y="-7" width="2" height="3" fill="#4a2818"/>
+              <rect x="4" y="-7" width="2" height="3" fill="#4a2818"/>
+            </g>
+            <g transform="translate(215 295)">
+              <rect x="-6" y="-2" width="12" height="6" fill="#4a9fd9"/>
+              <ellipse cx="0" cy="-7" rx="5" ry="5" fill="#f0c890"/>
+              <rect x="-4" y="-10" width="8" height="3" fill="#4a2818"/>
+            </g>
+            <g transform="translate(245 296)">
+              <rect x="-6" y="-2" width="12" height="6" fill="#7ec46a"/>
+              <ellipse cx="0" cy="-7" rx="5" ry="5" fill="#e8c8a8"/>
+              <rect x="-4" y="-10" width="8" height="3" fill="#c0c0c0"/>
+            </g>
+            <g transform="translate(275 294)">
+              <rect x="-6" y="-2" width="12" height="6" fill="#c89af0"/>
+              <ellipse cx="0" cy="-7" rx="5" ry="5" fill="#f0c890"/>
+              <rect x="-4" y="-10" width="8" height="3" fill="#4a2818"/>
+            </g>
+            <g transform="translate(305 295)">
+              <rect x="-6" y="-2" width="12" height="6" fill="#f08a48"/>
+              <ellipse cx="0" cy="-7" rx="5" ry="5" fill="#f0c890"/>
+              <rect x="-4" y="-10" width="8" height="3" fill="#4a2818"/>
+            </g>
+          </g>
         </g>
         <!-- ÉQUIPE DE COUREURS (s'affichent quand recrutés) -->
         <g id="rs-team-runners"></g>
@@ -14580,109 +14627,39 @@ function buildCrowd(){
   const g = document.getElementById('rs-crowd');
   if(!g) return;
   const tier = (typeof stadiumTier === 'function') ? stadiumTier() : 5;
+  if(tier === 0){ g.innerHTML = ''; return; }
   const laps = STATE.lapsRun || 0;
   const saison = (STATE.saison || 1) - 1;
-  const tones = ['#3e8db8','#d04030','#5a9040','#9080c0','#ffd070','#fff','#f08a48'];
-  let html = '';
-  // Tier 0 : TERRAIN VAGUE
-  if(tier === 0){
-    html += `<rect x="0" y="172" width="58" height="6" fill="#8a6d44" opacity=".5"/>`;
-    html += `<rect x="262" y="172" width="58" height="6" fill="#8a6d44" opacity=".5"/>`;
-    for(let mx=8; mx<55; mx+=10) html += `<rect x="${mx}" y="166" width="1.5" height="10" fill="#5a4028"/>`;
-    for(let mx=268; mx<315; mx+=10) html += `<rect x="${mx}" y="166" width="1.5" height="10" fill="#5a4028"/>`;
-    g.innerHTML = html;
-    return;
-  }
-  // Tier 1+ : tribunes croissantes — nombre de marches dépend du tier
-  const stepCount = Math.min(5, tier);                  // 1=1, 2=2, ..., 5=5
-  const rowsAvailable = stepCount;
-  // Densité spectateurs (fillLevel) — combine tier + lapsRun
+  const tones = ['#3e8db8','#d04030','#5a9040','#9080c0','#ffd070','#fff','#f08a48','#ee5a9a','#7ec46a'];
   const fillLevel = Math.min(1, (tier - 1) * 0.18 + laps / 100 + saison * 0.2);
-  // Couleur dégradation : tier 1-2 = marron pâle ravalé, tier 5+ = bois propre
-  const wallColor = tier <= 2 ? '#9b7f50' : tier <= 4 ? '#a88c5a' : '#b89a6e';
-  const stepColors = ['#b89a6e','#c8aa7e','#d8ba8e','#e8ca9e','#f0d4ae'];
-  const stepY = [128, 138, 148, 158, 168];
-  const stepH = [8, 8, 8, 8, 8];
-  // BLEACHERS GAUCHE
-  html += `<g class="rs-bleachers">`;
-  // Mur de fond (visible si tier>=1)
-  html += `<rect x="0" y="${stepY[5-stepCount]}" width="58" height="${178 - stepY[5-stepCount]}" fill="${wallColor}"/>`;
-  html += `<rect x="0" y="${stepY[5-stepCount]}" width="58" height="3" fill="#7c6440" opacity=".7"/>`;
-  // Dessine N marches du bas vers le haut
-  for(let i=0; i<stepCount; i++){
-    const idx = 4 - i; // commence par la dernière marche (y=234)
-    if(idx < 0) break;
-    html += `<rect x="0" y="${stepY[idx]}" width="58" height="${stepH[idx]}" fill="${stepColors[idx]}"/>`;
-  }
-  // Séparateurs verticaux (uniquement à partir du tier 2)
-  if(tier >= 2){
-    for(let mx=5; mx<58; mx+=9){
-      html += `<rect x="${mx}" y="${stepY[5-stepCount]+5}" width="1" height="${178 - stepY[5-stepCount] - 8}" fill="#8a6d44" opacity=".4"/>`;
-    }
-    html += `<rect x="28" y="${stepY[5-stepCount]}" width="6" height="${178 - stepY[5-stepCount]}" fill="#8a6d44" opacity=".25"/>`;
-  }
-  html += `</g>`;
-  // BLEACHERS DROITE
-  html += `<g class="rs-bleachers">`;
-  html += `<rect x="262" y="${stepY[5-stepCount]}" width="58" height="${178 - stepY[5-stepCount]}" fill="${wallColor}"/>`;
-  html += `<rect x="262" y="${stepY[5-stepCount]}" width="58" height="3" fill="#7c6440" opacity=".7"/>`;
-  for(let i=0; i<stepCount; i++){
-    const idx = 4 - i;
-    if(idx < 0) break;
-    html += `<rect x="262" y="${stepY[idx]}" width="58" height="${stepH[idx]}" fill="${stepColors[idx]}"/>`;
-  }
-  if(tier >= 2){
-    for(let mx=267; mx<320; mx+=9){
-      html += `<rect x="${mx}" y="${stepY[5-stepCount]+5}" width="1" height="${178 - stepY[5-stepCount] - 8}" fill="#8a6d44" opacity=".4"/>`;
-    }
-    html += `<rect x="290" y="${stepY[5-stepCount]}" width="6" height="${178 - stepY[5-stepCount]}" fill="#8a6d44" opacity=".25"/>`;
-  }
-  html += `</g>`;
-
-  // SPECTATEURS
-  const rows = [];
-  for(let i=0; i<stepCount; i++){
-    const idx = 4 - i;
-    rows.unshift({ y: stepY[idx], spacing: 7.5, headSize: 1.3 + idx * 0.18, body: 2 + idx * 0.25 });
-  }
-  const placePerson = (x, y, headSize, bodySize, color, hatColor) => {
-    let s = '';
-    s += `<rect x="${x - headSize/2}" y="${y - bodySize - headSize}" width="${headSize}" height="${headSize}" fill="#f0c890"/>`;
-    if(hatColor){
-      s += `<rect x="${x - headSize/2 - .3}" y="${y - bodySize - headSize - .5}" width="${headSize + .6}" height=".8" fill="${hatColor}"/>`;
-    }
-    s += `<rect x="${x - bodySize/2}" y="${y - bodySize}" width="${bodySize}" height="${bodySize}" fill="${color}"/>`;
-    s += `<rect x="${x - bodySize/2}" y="${y - .8}" width="${bodySize}" height=".8" fill="rgba(0,0,0,.15)"/>`;
-    return s;
-  };
-  rows.forEach((row, rowIdx) => {
-    const perRow = 7;
-    for(let i=0; i<perRow; i++){
-      const x = 5 + i * row.spacing;
-      const rand = ((i * 31 + rowIdx * 17) % 100) / 100;
+  let html = '';
+  // SPECTATEURS sur la tribune arrière (y=72-128) — vue TV broadcast
+  const rows = [
+    { y: 80,  spacing: 5.5, size: 1.5 },
+    { y: 92,  spacing: 5.5, size: 1.6 },
+    { y: 104, spacing: 5.5, size: 1.7 },
+    { y: 116, spacing: 5.5, size: 1.8 },
+    { y: 128, spacing: 5.5, size: 1.9 },
+  ];
+  rows.forEach((row, ri) => {
+    for(let x = 44; x < 280; x += row.spacing){
+      const rand = ((Math.floor(x)*13 + ri*17) % 100) / 100;
       if(rand > fillLevel) continue;
-      const c = tones[(i * 3 + rowIdx) % tones.length];
-      const hatC = (i % 4 === 0) ? tones[(i + 2) % tones.length] : null;
-      html += placePerson(x, row.y, row.headSize, row.body, c, hatC);
-    }
-    for(let i=0; i<perRow; i++){
-      const x = 267 + i * row.spacing;
-      const rand = ((i * 23 + rowIdx * 11) % 100) / 100;
-      if(rand > fillLevel) continue;
-      const c = tones[(i * 5 + rowIdx + 1) % tones.length];
-      const hatC = (i % 3 === 0) ? tones[(i + 1) % tones.length] : null;
-      html += placePerson(x, row.y, row.headSize, row.body, c, hatC);
+      const c = tones[Math.floor(rand * tones.length) % tones.length];
+      // Tête (peau)
+      html += `<rect x="${(x - row.size).toFixed(1)}" y="${(row.y - row.size*2.4).toFixed(1)}" width="${(row.size*2).toFixed(1)}" height="${(row.size*1.6).toFixed(1)}" fill="#f0c890"/>`;
+      // Corps (maillot coloré)
+      html += `<rect x="${(x - row.size).toFixed(1)}" y="${(row.y - row.size*0.6).toFixed(1)}" width="${(row.size*2).toFixed(1)}" height="${(row.size*1.4).toFixed(1)}" fill="${c}"/>`;
     }
   });
-  // Drapeaux suspendus (sous toit) à partir de saison 2
+  // Drapeaux sur le toit de la tribune arrière (saison 2+)
   if(saison >= 1){
-    html += `<rect x="20" y="124" width="1" height="10" fill="#3a2818"/>`;
-    html += `<rect x="20" y="124" width="8" height="5" fill="${tones[0]}"/>`;
-    html += `<rect x="294" y="124" width="1" height="10" fill="#3a2818"/>`;
-    html += `<rect x="286" y="124" width="8" height="5" fill="${tones[2]}"/>`;
+    html += `<rect x="50" y="56" width="1" height="10" fill="#3a2818"/>`;
+    html += `<rect x="50" y="56" width="9" height="5" fill="${tones[0]}"/>`;
+    html += `<rect x="270" y="56" width="1" height="10" fill="#3a2818"/>`;
+    html += `<rect x="261" y="56" width="9" height="5" fill="${tones[2]}"/>`;
   }
   g.innerHTML = html;
-  // Random delays sur chaque spectateur pour wave en cascade
   g.querySelectorAll('rect[fill="#f0c890"]').forEach((el, i) => {
     el.style.setProperty('--crowd-delay', (i * 0.06).toFixed(2) + 's');
   });

@@ -5886,7 +5886,7 @@ body.shop-epic-flash::after{
       </div>
       <svg id="runner-svg" viewBox="0 0 320 340" preserveAspectRatio="xMidYMid meet">
         <defs>
-          <path id="rs-path" d="M 30,210 A 130,80 0 1 0 290,210 A 130,80 0 1 0 30,210 Z" fill="none"/>
+          <path id="rs-path" d="M 80,216 A 80,50 0 1 0 240,216 A 80,50 0 1 0 80,216 Z" fill="none"/>
           <!-- ═══ PALETTE PREMIUM MOBILE : pastel mute, soft, élégant ═══ -->
           <!-- CIEL : gris doux quasi blanc (pas de bleu pétant) -->
           <linearGradient id="rs-sky-grad" x1="0" y1="0" x2="0" y2="1">
@@ -5991,86 +5991,97 @@ body.shop-epic-flash::after{
         <rect x="0" y="180" width="320" height="2" fill="#a8c480" opacity=".3"/>
         <rect x="0" y="320" width="320" height="3" fill="#a8c480" opacity=".4"/>
 
-        <!-- OMBRE PROJETÉE TRÈS DOUCE du stade (façon SoftShadow mobile premium) -->
-        <ellipse cx="160" cy="306" rx="160" ry="16" fill="#000" opacity=".10"/>
-        <ellipse cx="160" cy="302" rx="155" ry="10" fill="#000" opacity=".08"/>
+        <!-- OMBRE PROJETÉE douce du stade (réduite à 70%) -->
+        <ellipse cx="160" cy="278" rx="115" ry="12" fill="#000" opacity=".10"/>
+        <ellipse cx="160" cy="276" rx="110" ry="8" fill="#000" opacity=".08"/>
 
         <!-- STADE 3D : FACE CÔTÉ (bas, plus sombre) -->
-        <ellipse cx="160" cy="216" rx="150" ry="100" fill="#b8a878"/>
+        <ellipse cx="160" cy="216" rx="108" ry="72" fill="#b8a878"/>
         <!-- STADE 3D : FACE DESSUS (haut, plus clair) -->
-        <ellipse cx="160" cy="208" rx="150" ry="100" fill="url(#rs-tribune-grad)"/>
+        <ellipse cx="160" cy="210" rx="108" ry="72" fill="url(#rs-tribune-grad)"/>
 
-        <!-- SECTIONS GRADINS subtiles (juste 2 anneaux concentriques très discrets) -->
+        <!-- SECTIONS GRADINS subtiles -->
         <g fill="none" stroke="#a89868" stroke-width=".5" opacity=".4">
-          <ellipse cx="160" cy="208" rx="138" ry="88"/>
-          <ellipse cx="160" cy="210" rx="124" ry="76"/>
+          <ellipse cx="160" cy="210" rx="100" ry="64"/>
+          <ellipse cx="160" cy="211" rx="90" ry="55"/>
         </g>
 
         <!-- SPECTATEURS : têtes rondes vues du dessus (généré par buildCrowd) -->
         <g id="rs-crowd"></g>
 
-        <!-- BORDURE INTÉRIEURE TRIBUNE (juste un cercle plus sombre, pas d'outline) -->
-        <ellipse cx="160" cy="218" rx="116" ry="72" fill="#a89868"/>
-        <ellipse cx="160" cy="216" rx="114" ry="70" fill="#c8b890"/>
+        <!-- BORDURE INTÉRIEURE TRIBUNE -->
+        <ellipse cx="160" cy="216" rx="84" ry="52" fill="#a89868"/>
+        <ellipse cx="160" cy="214" rx="82" ry="50" fill="#c8b890"/>
 
         <!-- PISTE rouge brique mute -->
-        <ellipse cx="160" cy="220" rx="110" ry="68" fill="url(#rs-track-grad)"/>
-        <!-- Très subtil highlight haut -->
-        <ellipse cx="160" cy="200" rx="106" ry="30" fill="url(#rs-track-shine)" opacity=".5"/>
+        <ellipse cx="160" cy="216" rx="78" ry="48" fill="url(#rs-track-grad)"/>
+        <!-- Subtil highlight haut -->
+        <ellipse cx="160" cy="200" rx="75" ry="22" fill="url(#rs-track-shine)" opacity=".5"/>
 
         <!-- 2 COULOIRS BLANCS minimalistes -->
-        <g fill="none" stroke="#fff" stroke-width="1" opacity=".7">
-          <ellipse cx="160" cy="220" rx="102" ry="60"/>
-          <ellipse cx="160" cy="220" rx="92" ry="50"/>
+        <g fill="none" stroke="#fff" stroke-width=".8" opacity=".7">
+          <ellipse cx="160" cy="216" rx="72" ry="42"/>
+          <ellipse cx="160" cy="216" rx="65" ry="35"/>
         </g>
 
-        <!-- GAZON CENTRAL : vert sauge doux sans outline -->
-        <ellipse cx="160" cy="221" rx="84" ry="42" fill="#98b870"/>
-        <ellipse cx="160" cy="220" rx="84" ry="42" fill="#a8c880"/>
-        <!-- Très subtile bande tonte (1 seule pour respirer) -->
-        <ellipse cx="160" cy="216" rx="80" ry="20" fill="#b0d088" opacity=".5"/>
+        <!-- GAZON CENTRAL -->
+        <ellipse cx="160" cy="217" rx="59" ry="29" fill="#98b870"/>
+        <ellipse cx="160" cy="216" rx="59" ry="29" fill="#a8c880"/>
+        <ellipse cx="160" cy="212" rx="56" ry="14" fill="#b0d088" opacity=".5"/>
 
-        <!-- ═══ TERRAIN ATHLÉ : minimaliste, peu d'éléments, soft ═══ -->
+        <!-- ═══ TERRAIN ATHLÉ : éléments adaptés au nouveau scale ═══ -->
         <!-- Zone saut sable doux -->
-        <rect x="186" y="208" width="18" height="6" rx="1" fill="#e8d8a8" filter="url(#rs-shadow-tight)"/>
+        <rect x="183" y="208" width="13" height="4" rx=".8" fill="#e8d8a8" filter="url(#rs-shadow-tight)"/>
 
-        <!-- Podium soft (3 marches arrondies, pas d'outline) -->
+        <!-- Podium soft (3 marches arrondies) -->
         <g filter="url(#rs-shadow-tight)">
-          <rect x="144" y="221" width="9" height="5" rx="1" fill="#d4d4dc"/>
-          <rect x="154" y="216" width="9" height="10" rx="1" fill="#ffd070"/>
-          <rect x="164" y="223" width="9" height="3" rx="1" fill="#d49060"/>
+          <rect x="148" y="218" width="7" height="4" rx="1" fill="#d4d4dc"/>
+          <rect x="156" y="214" width="7" height="8" rx="1" fill="#ffd070"/>
+          <rect x="164" y="219" width="7" height="3" rx="1" fill="#d49060"/>
         </g>
 
-        <!-- Ligne d'arrivée : checkered fine et discrète -->
+        <!-- Ligne d'arrivée : checkered fine -->
         <g shape-rendering="crispEdges">
-          <rect x="154" y="290" width="3" height="2.5" fill="#fff"/>
-          <rect x="157" y="290" width="3" height="2.5" fill="#3a3a3a"/>
-          <rect x="160" y="290" width="3" height="2.5" fill="#fff"/>
-          <rect x="163" y="290" width="3" height="2.5" fill="#3a3a3a"/>
-          <rect x="154" y="292.5" width="3" height="2.5" fill="#3a3a3a"/>
-          <rect x="157" y="292.5" width="3" height="2.5" fill="#fff"/>
-          <rect x="160" y="292.5" width="3" height="2.5" fill="#3a3a3a"/>
-          <rect x="163" y="292.5" width="3" height="2.5" fill="#fff"/>
+          <rect x="155" y="261" width="2.5" height="2" fill="#fff"/>
+          <rect x="157.5" y="261" width="2.5" height="2" fill="#3a3a3a"/>
+          <rect x="160" y="261" width="2.5" height="2" fill="#fff"/>
+          <rect x="162.5" y="261" width="2.5" height="2" fill="#3a3a3a"/>
+          <rect x="155" y="263" width="2.5" height="2" fill="#3a3a3a"/>
+          <rect x="157.5" y="263" width="2.5" height="2" fill="#fff"/>
+          <rect x="160" y="263" width="2.5" height="2" fill="#3a3a3a"/>
+          <rect x="162.5" y="263" width="2.5" height="2" fill="#fff"/>
         </g>
 
-        <!-- 4 ARBRES décoratifs aux coins (silhouettes simples soft mobile) -->
+        <!-- ARBRES décoratifs framant la scène (2 paires, sides) -->
         <g id="rs-trees" filter="url(#rs-shadow)">
-          <!-- Coin haut-gauche -->
-          <ellipse cx="22" cy="138" rx="14" ry="16" fill="#88a868"/>
-          <ellipse cx="22" cy="134" rx="12" ry="13" fill="#98b878"/>
-          <rect x="20" y="148" width="3" height="6" fill="#7a5838"/>
-          <!-- Coin haut-droite -->
-          <ellipse cx="298" cy="138" rx="14" ry="16" fill="#88a868"/>
-          <ellipse cx="298" cy="134" rx="12" ry="13" fill="#98b878"/>
-          <rect x="296" y="148" width="3" height="6" fill="#7a5838"/>
-          <!-- Coin bas-gauche -->
-          <ellipse cx="22" cy="282" rx="14" ry="16" fill="#88a868"/>
-          <ellipse cx="22" cy="278" rx="12" ry="13" fill="#98b878"/>
-          <rect x="20" y="292" width="3" height="6" fill="#7a5838"/>
-          <!-- Coin bas-droite -->
-          <ellipse cx="298" cy="282" rx="14" ry="16" fill="#88a868"/>
-          <ellipse cx="298" cy="278" rx="12" ry="13" fill="#98b878"/>
-          <rect x="296" y="292" width="3" height="6" fill="#7a5838"/>
+          <!-- Gauche : 2 arbres groupés -->
+          <ellipse cx="32" cy="172" rx="16" ry="18" fill="#88a868"/>
+          <ellipse cx="32" cy="168" rx="14" ry="15" fill="#98b878"/>
+          <rect x="30" y="184" width="3" height="8" fill="#7a5838"/>
+          <ellipse cx="48" cy="200" rx="11" ry="13" fill="#88a868"/>
+          <ellipse cx="48" cy="197" rx="9" ry="10" fill="#98b878"/>
+          <rect x="46" y="210" width="3" height="6" fill="#7a5838"/>
+          <!-- Droite : 2 arbres groupés -->
+          <ellipse cx="288" cy="172" rx="16" ry="18" fill="#88a868"/>
+          <ellipse cx="288" cy="168" rx="14" ry="15" fill="#98b878"/>
+          <rect x="286" y="184" width="3" height="8" fill="#7a5838"/>
+          <ellipse cx="272" cy="200" rx="11" ry="13" fill="#88a868"/>
+          <ellipse cx="272" cy="197" rx="9" ry="10" fill="#98b878"/>
+          <rect x="270" y="210" width="3" height="6" fill="#7a5838"/>
+        </g>
+
+        <!-- Petits buissons d'avant-plan (touche détail) -->
+        <g filter="url(#rs-shadow-tight)">
+          <ellipse cx="55" cy="298" rx="9" ry="6" fill="#98b878"/>
+          <ellipse cx="60" cy="295" rx="6" ry="4" fill="#a8c888"/>
+          <ellipse cx="265" cy="298" rx="9" ry="6" fill="#98b878"/>
+          <ellipse cx="260" cy="295" rx="6" ry="4" fill="#a8c888"/>
+        </g>
+        <!-- Petit caisson en bois (style référence) -->
+        <g filter="url(#rs-shadow-tight)">
+          <rect x="115" y="305" width="14" height="16" fill="#a87850"/>
+          <rect x="115" y="305" width="14" height="3" fill="#b88860"/>
+          <rect x="121" y="310" width="2" height="11" fill="#7a5838" opacity=".4"/>
         </g>
 
         <!-- PAS de scoreboard, pas de drapeaux, pas de fleurs : sobriété mobile premium -->
@@ -14639,12 +14650,11 @@ function buildCrowd(){
   const fillLevel = Math.min(1, (tier - 1) * 0.18 + laps / 100 + saison * 0.2);
   let html = '';
   const cx = 160, cy = 210;
-  // En vue dessus, on voit surtout des TÊTES rondes (vue top-down)
-  // 3 rangées, têtes plus grosses pour lisibilité
+  // 3 rangées concentriques de têtes top-down (adapté nouveau scale stade)
   const ringConfigs = [
-    { rx: 142, ry: 90, count: 32, headR: 2.0 },
-    { rx: 130, ry: 80, count: 28, headR: 2.3 },
-    { rx: 118, ry: 70, count: 24, headR: 2.6 },
+    { rx: 100, ry: 64, count: 26, headR: 1.8 },
+    { rx: 92, ry: 58, count: 22, headR: 2.0 },
+    { rx: 84, ry: 52, count: 18, headR: 2.2 },
   ];
   ringConfigs.forEach((ring, ri) => {
     for(let i = 0; i < ring.count; i++){

@@ -17539,14 +17539,46 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
   track.receiveShadow = true;
   scene.add(track);
 
-  // Couloirs blancs (rings minces)
+  // 4 couloirs blancs (rings minces)
   const laneMat = mat('#ffffff', {roughness:.4});
-  [7, 6.3].forEach(r => {
+  [7.4, 6.9, 6.4, 5.9].forEach(r => {
     const lane = new THREE.Mesh(new THREE.RingGeometry(r-.04, r+.04, 64, 1, 0, Math.PI*2), laneMat);
     lane.rotation.x = -Math.PI/2;
     lane.position.y = .22;
     scene.add(lane);
   });
+  // Ligne de départ peinte (segment radial blanc épais en bas)
+  const startLine = new THREE.Mesh(
+    new THREE.PlaneGeometry(.3, 2.4),
+    new THREE.MeshStandardMaterial({color:'#fff', roughness:.4})
+  );
+  startLine.rotation.x = -Math.PI/2;
+  startLine.position.set(0, .26, -4.5);
+  scene.add(startLine);
+  // Numéros des couloirs peints sur la piste
+  function makeLaneNumber(num, x, z){
+    const c = document.createElement('canvas');
+    c.width = c.height = 64;
+    const ctx = c.getContext('2d');
+    ctx.clearRect(0, 0, 64, 64);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 48px Nunito, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(num, 32, 36);
+    const tex = new THREE.CanvasTexture(c);
+    const mesh = new THREE.Mesh(
+      new THREE.PlaneGeometry(.5, .5),
+      new THREE.MeshBasicMaterial({map: tex, transparent: true})
+    );
+    mesh.rotation.x = -Math.PI/2;
+    mesh.position.set(x, .27, z);
+    return mesh;
+  }
+  scene.add(makeLaneNumber('1', .9, -4.5));
+  scene.add(makeLaneNumber('2', 1.5, -4.5));
+  scene.add(makeLaneNumber('3', 2.1, -4.5));
+  scene.add(makeLaneNumber('4', 2.7, -4.5));
 
   // === GAZON CENTRAL ===
   const grass = new THREE.Mesh(
@@ -18131,6 +18163,11 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     const dx = -Math.sin(angle) * trackRx;
     const dz = Math.cos(angle) * trackRz;
     elem.rotation.y = Math.atan2(dx, dz);
+    // LEAN dans le virage : rotation Z proportionnelle à la courbure
+    // Calcul de la dérivée seconde (rapide approximation : sin du double angle)
+    const curvature = Math.cos(angle * 2); // -1 à 1 selon position
+    // Lean vers l'intérieur (centre du stade)
+    elem.rotation.z = curvature * .12;
   }
 
   // ═══ ANIM COURSE : oscillation des jambes/bras en fonction de la vitesse ═══

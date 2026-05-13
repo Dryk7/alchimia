@@ -5879,7 +5879,7 @@ body.shop-epic-flash::after{
         <span class="combo-x" id="combo-x">×1</span>
         <span class="combo-fire" id="combo-fire"></span>
       </div>
-      <svg id="runner-svg" viewBox="0 0 320 340" preserveAspectRatio="xMidYMid meet">
+      <svg id="runner-svg" viewBox="55 105 210 223" preserveAspectRatio="xMidYMid meet">
         <defs>
           <path id="rs-path" d="M 80,216 A 80,50 0 1 0 240,216 A 80,50 0 1 0 80,216 Z" fill="none"/>
           <!-- ═══ PALETTE EATVENTURE : fond pastel + objets vibrants ═══ -->
@@ -6075,7 +6075,7 @@ body.shop-epic-flash::after{
             <rect x="-20" y="0" width="10" height="1.6" fill="#fff" opacity=".65"/>
             <rect x="-22" y="4" width="11" height="1.6" fill="#fff" opacity=".55"/>
           </g>
-          <g class="rs-body" transform="scale(5.5)" filter="url(#rs-shadow-tight)">
+          <g class="rs-body" transform="scale(8)" filter="url(#rs-shadow-tight)">
             <g shape-rendering="crispEdges">
               <!-- ombre au sol -->
               <ellipse cx="0" cy="10.5" rx="6.5" ry="1.4" fill="#000" opacity=".22"/>
@@ -14881,12 +14881,10 @@ function placeRunnerOnTrack(progress){
   const total = path.getTotalLength();
   const p = ((progress % 1) + 1) % 1;
   const pt = path.getPointAtLength(p * total);
-  const dl = total * 0.001;
-  const pt2 = path.getPointAtLength((p * total + dl) % total);
-  const angle = Math.atan2(pt2.y - pt.y, pt2.x - pt.x) * 180 / Math.PI;
-  // Perspective : runner plus gros quand devant (y=295), petit au fond (y=145)
-  const depthScale = 0.65 + (pt.y - 140) / 160 * 0.6; // 0.65 au fond → 1.25 devant
-  runner.setAttribute('transform', `translate(${pt.x.toFixed(2)} ${pt.y.toFixed(2)}) rotate(${angle.toFixed(1)}) scale(${depthScale.toFixed(2)})`);
+  // EATVENTURE STYLE : runner reste DEBOUT (pas de rotation tangente)
+  // Perspective : plus gros quand devant (y haut), petit au fond
+  const depthScale = 0.85 + (pt.y - 180) / 100 * 0.35; // 0.85 fond → 1.2 devant
+  runner.setAttribute('transform', `translate(${pt.x.toFixed(2)} ${pt.y.toFixed(2)}) scale(${depthScale.toFixed(2)})`);
 }
 
 /* ÉQUIPE COUREURS : chaque coureur recruté apparaît sur la piste à sa propre position */
@@ -14904,7 +14902,7 @@ function teamRunnerVisualTier(lvl){
    Tous PLUS LENTS que le héros (le user reste le protagoniste). */
 const NPC_TYPES = [
   // Jogger classique homme
-  { id:'jogger', speed:0.7, sprite: c => `<g transform="scale(2)">
+  { id:'jogger', speed:0.7, sprite: c => `<g transform="scale(3.5)">
       <ellipse cx="0" cy="6.5" rx="3.5" ry="1" fill="#000" opacity=".35"/>
       <rect x="-2.5" y="-7" width="5" height="2" fill="#4a2818"/>
       <rect x="-2.5" y="-5.5" width="5" height="3.5" fill="#f0c890"/>
@@ -14918,7 +14916,7 @@ const NPC_TYPES = [
       <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#1f3548"/>
     </g>` },
   // Femme runner (cheveux longs)
-  { id:'woman', speed:0.65, sprite: c => `<g transform="scale(2)">
+  { id:'woman', speed:0.65, sprite: c => `<g transform="scale(3.5)">
       <ellipse cx="0" cy="6.5" rx="3.5" ry="1" fill="#000" opacity=".35"/>
       <rect x="-3" y="-7" width="6" height="2" fill="#4a2818"/>
       <rect x="-3" y="-5" width="1" height="3" fill="#4a2818"/>
@@ -14934,7 +14932,7 @@ const NPC_TYPES = [
       <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#ee5a9a"/>
     </g>` },
   // Senior (cheveux gris, plus lent)
-  { id:'senior', speed:0.45, sprite: c => `<g transform="scale(1.9)">
+  { id:'senior', speed:0.45, sprite: c => `<g transform="scale(3.2)">
       <ellipse cx="0" cy="6.5" rx="3.5" ry="1" fill="#000" opacity=".35"/>
       <rect x="-2.5" y="-7" width="5" height="2" fill="#c0c0c0"/>
       <rect x="-2.5" y="-5.5" width="5" height="3.5" fill="#e8c8a8"/>
@@ -14948,7 +14946,7 @@ const NPC_TYPES = [
       <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#5a4028"/>
     </g>` },
   // Enfant (plus petit, sautillant)
-  { id:'child', speed:0.55, sprite: c => `<g transform="scale(1.5)">
+  { id:'child', speed:0.55, sprite: c => `<g transform="scale(2.8)">
       <ellipse cx="0" cy="6.5" rx="3" ry="0.8" fill="#000" opacity=".35"/>
       <rect x="-2" y="-7" width="4" height="2" fill="#dd9966"/>
       <rect x="-2" y="-5.5" width="4" height="3.5" fill="#f0c890"/>
@@ -14962,7 +14960,7 @@ const NPC_TYPES = [
       <rect class="rs-shoe2" x="0" y="6.5" width="1.6" height="1" fill="#c84030"/>
     </g>` },
   // Promeneur avec chien
-  { id:'dog-walker', speed:0.35, sprite: c => `<g transform="scale(2)">
+  { id:'dog-walker', speed:0.35, sprite: c => `<g transform="scale(3.5)">
       <ellipse cx="0" cy="6.5" rx="3.5" ry="1" fill="#000" opacity=".35"/>
       <rect x="-2.5" y="-7" width="5" height="2" fill="#5a4028"/>
       <rect x="-2.5" y="-5.5" width="5" height="3.5" fill="#f0c890"/>
@@ -14982,7 +14980,7 @@ const NPC_TYPES = [
       <rect x="8.5" y="8" width="0.6" height="1.2" fill="#5a4028"/>
     </g>` },
   // Sprinter style serious
-  { id:'sprinter', speed:0.8, sprite: c => `<g transform="scale(2)">
+  { id:'sprinter', speed:0.8, sprite: c => `<g transform="scale(3.5)">
       <ellipse cx="0" cy="6.5" rx="3.5" ry="1" fill="#000" opacity=".35"/>
       <rect x="-2.5" y="-7" width="5" height="2" fill="#1a1010"/>
       <rect x="-2.5" y="-5.5" width="5" height="3.5" fill="#a8804a"/>
@@ -14998,7 +14996,7 @@ const NPC_TYPES = [
       <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#ffd070"/>
     </g>` },
   // Promeneur tranquille (très lent)
-  { id:'walker', speed:0.3, sprite: c => `<g transform="scale(2)">
+  { id:'walker', speed:0.3, sprite: c => `<g transform="scale(3.5)">
       <ellipse cx="0" cy="6.5" rx="3.5" ry="1" fill="#000" opacity=".35"/>
       <rect x="-2.5" y="-7" width="5" height="2" fill="#8a6d44"/>
       <rect x="-2.5" y="-5.5" width="5" height="3.5" fill="#f0c890"/>
@@ -15012,7 +15010,7 @@ const NPC_TYPES = [
       <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#1a1010"/>
     </g>` },
   // Femme âgée
-  { id:'grandma', speed:0.4, sprite: c => `<g transform="scale(1.9)">
+  { id:'grandma', speed:0.4, sprite: c => `<g transform="scale(3.2)">
       <ellipse cx="0" cy="6.5" rx="3.5" ry="1" fill="#000" opacity=".35"/>
       <rect x="-3" y="-7" width="6" height="2" fill="#dcd0c0"/>
       <rect x="-3" y="-5" width="1" height="2" fill="#dcd0c0"/>
@@ -15130,12 +15128,9 @@ function placeTeamRunnersOnTrack(){
     const elem = document.querySelector(`#rs-team-runners [data-npc="${i}"]`);
     if(!elem) return;
     const pt = path.getPointAtLength(npc.progress * total);
-    const dl = total * 0.001;
-    const pt2 = path.getPointAtLength((npc.progress * total + dl) % total);
-    const angle = Math.atan2(pt2.y - pt.y, pt2.x - pt.x) * 180 / Math.PI;
-    // Perspective : scale par Y position
-    const depthScale = 0.55 + (pt.y - 140) / 160 * 0.5;
-    elem.setAttribute('transform', `translate(${pt.x.toFixed(2)} ${pt.y.toFixed(2)}) rotate(${angle.toFixed(1)}) scale(${depthScale.toFixed(2)})`);
+    // EATVENTURE STYLE : NPCs restent DEBOUT (pas de rotation tangente)
+    const depthScale = 0.7 + (pt.y - 180) / 100 * 0.35;
+    elem.setAttribute('transform', `translate(${pt.x.toFixed(2)} ${pt.y.toFixed(2)}) scale(${depthScale.toFixed(2)})`);
   });
 }
 function updateRunner(){

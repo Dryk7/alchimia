@@ -504,6 +504,74 @@ header{
   margin-top:12px;
 }
 
+/* === STARTER PACK MODAL === */
+.starter-card{ position:relative; text-align:center; padding-top:32px; }
+.starter-ribbon{
+  position:absolute; top:8px; left:50%; transform:translateX(-50%);
+  background:linear-gradient(180deg, #ff6020, #c83020);
+  color:#fff;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:10px; letter-spacing:.10em;
+  padding:4px 14px;
+  border-radius:12px;
+  white-space:nowrap;
+  animation:ribbonPulse 1.5s ease-in-out infinite;
+}
+@keyframes ribbonPulse{
+  0%,100% { transform:translateX(-50%) scale(1); }
+  50%     { transform:translateX(-50%) scale(1.05); }
+}
+.starter-hero{
+  padding:8px;
+  background:linear-gradient(180deg, #fff3d0, #ffd896);
+  border-radius:14px;
+  margin:14px 0;
+}
+.starter-emoji{ font-size:48px; }
+.starter-title{
+  font-family:"Caveat", sans-serif;
+  font-size:18px; color:var(--ember);
+  font-weight:700;
+}
+.starter-list{
+  text-align:left;
+  background:#fffaee;
+  border-radius:12px;
+  padding:14px 18px;
+  margin-bottom:14px;
+  border:1.5px dashed rgba(160,122,68,.3);
+}
+.starter-item{
+  padding:5px 0;
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:13px; color:var(--ink);
+}
+.starter-item b{ color:var(--ember); font-weight:900; }
+.starter-claim-btn{
+  width:100%;
+  padding:14px;
+  background:linear-gradient(180deg, #7ec46a, #4e9438);
+  color:#fff;
+  border:none;
+  border-radius:22px;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:17px; letter-spacing:.06em;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(78,148,56,.4);
+  text-transform:uppercase;
+  animation:starterPulse 1.8s ease-in-out infinite;
+}
+@keyframes starterPulse{
+  0%,100% { box-shadow:0 4px 12px rgba(78,148,56,.4); }
+  50%     { box-shadow:0 4px 24px rgba(78,148,56,.7); }
+}
+.starter-claim-btn:active{ transform:scale(.97); }
+.starter-foot{
+  margin-top:10px;
+  font-family:"Nunito", sans-serif; font-weight:600;
+  font-size:10.5px; color:var(--ink-2);
+}
+
 /* === STAT GEMMES (header) === */
 .stat-gems{
   cursor:pointer;
@@ -5505,6 +5573,27 @@ body.shop-epic-flash::after{
     <h2>ASCENSION</h2>
     <div class="divider"></div>
     <div class="saison-body" id="saison-body"></div>
+  </div>
+</div>
+
+<!-- STARTER PACK (one-time offer pour nouveaux joueurs) -->
+<div id="starter-modal" class="modal">
+  <div class="modal-card starter-card">
+    <div class="modal-close" id="starter-close" aria-label="Fermer">×</div>
+    <div class="starter-ribbon">⏰ OFFRE DE BIENVENUE</div>
+    <h2>STARTER PACK</h2>
+    <div class="starter-hero">
+      <div class="starter-emoji">🎁</div>
+      <div class="starter-title">Réservé aux nouveaux joueurs</div>
+    </div>
+    <div class="starter-list">
+      <div class="starter-item">✅ <b>50 000 médailles</b> instant</div>
+      <div class="starter-item">✅ <b>30 💎 gemmes</b></div>
+      <div class="starter-item">✅ <b>×2 méd pendant 24h</b> automatique</div>
+      <div class="starter-item">✅ <b>Manager Sprinter offert</b></div>
+    </div>
+    <button id="starter-claim" class="starter-claim-btn">RÉCUPÉRER (GRATUIT)</button>
+    <div class="starter-foot">Cette offre disparaît à la première ascension.</div>
   </div>
 </div>
 
@@ -10539,6 +10628,8 @@ function tapBoost(e){
   STATE.totalTaps = (STATE.totalTaps || 0) + 1;
   // Check achievements throttled every 25 taps pour pas spammer
   if(STATE.totalTaps % 25 === 0 && typeof checkAchievements === 'function') checkAchievements();
+  // Starter pack offert au joueur après son 10e tap
+  if(STATE.totalTaps === 10 && typeof maybeShowStarterPack === 'function') maybeShowStarterPack();
   if(typeof renderStats === 'function') renderStats();
   if(typeof updateTapStrip === 'function') updateTapStrip();
   if(typeof updateRunnerHUD === 'function') updateRunnerHUD();
@@ -10980,6 +11071,41 @@ function openShopModal(){
   if(typeof renderShopUI === 'function') renderShopUI();
   document.getElementById('shop-premium-modal')?.classList.add('show');
 }
+/* STARTER PACK : offert une seule fois, avant la 1re ascension */
+function shouldShowStarterPack(){
+  if(STATE.starterPackClaimed) return false;
+  if(STATE.starterPackDeclined) return false;
+  if((STATE.saison || 1) > 1) return false; // déjà ascendu = trop tard
+  if((STATE.totalTaps || 0) < 10) return false; // attendre que le joueur ait commencé
+  return true;
+}
+function maybeShowStarterPack(){
+  if(!shouldShowStarterPack()) return;
+  if(document.querySelectorAll('.modal.show').length > 0) return; // pas par-dessus un autre modal
+  document.getElementById('starter-modal')?.classList.add('show');
+}
+function claimStarterPack(){
+  if(STATE.starterPackClaimed) return;
+  STATE.starterPackClaimed = true;
+  STATE.gold = (STATE.gold || 0) + 50000;
+  if(typeof addGems === 'function') addGems(30);
+  STATE.shopBoostX2Until = Math.max(Date.now(), STATE.shopBoostX2Until || 0) + 24*3600*1000;
+  _ensureTeamShape();
+  // Manager Sprinter offert (recruter si pas déjà)
+  if(STATE.team.sprinter.level === 0) STATE.team.sprinter.level = 1;
+  STATE.team.sprinter.mgr = true;
+  if(A?.ctx){
+    blip(440, .2, "triangle", .26, .65);
+    setTimeout(()=>blip(660, .2, "triangle", .26, .7), 100);
+    setTimeout(()=>blip(880, .25, "sine", .26, .75), 220);
+    setTimeout(()=>blip(1320, .3, "triangle", .26, .8), 380);
+  }
+  vibrate([30, 50, 30, 50, 80]);
+  document.getElementById('starter-modal')?.classList.remove('show');
+  if(typeof showRunnerBubble === 'function') showRunnerBubble('🎁 STARTER PACK !');
+  if(typeof renderStats === 'function') renderStats();
+  if(typeof renderTeam === 'function') renderTeam();
+}
 function renderShopUI(){
   const body = document.getElementById('shop-premium-body');
   if(!body) return;
@@ -11394,11 +11520,11 @@ function updateRunnerCard(r){
 const DAILY_REWARDS = [
   { day:1, type:'gold',  amount:50,   label:'50 méd' },
   { day:2, type:'gold',  amount:150,  label:'150 méd' },
-  { day:3, type:'gold',  amount:400,  label:'400 méd' },
+  { day:3, type:'gems',  amount:3,    label:'3 💎' },
   { day:4, type:'gold',  amount:1000, label:'1000 méd' },
   { day:5, type:'gold',  amount:2500, label:'2.5k méd' },
-  { day:6, type:'gold',  amount:6000, label:'6k méd' },
-  { day:7, type:'mixed', amount:0,    label:'15k méd + 5 ★' },
+  { day:6, type:'gems',  amount:10,   label:'10 💎' },
+  { day:7, type:'mega',  amount:0,    label:'15k méd + 5 ★ + 25 💎' },
 ];
 function _dayStamp(ts){
   const d = new Date(ts);
@@ -11435,13 +11561,17 @@ function claimDailyReward(){
   const rwd = DAILY_REWARDS[idx];
   if(rwd.type === 'gold'){
     STATE.gold = (STATE.gold || 0) + rwd.amount;
-    if(typeof floatNumber === 'function') floatNumber('+' + rwd.amount + ' méd');
-  } else if(rwd.type === 'mixed'){
+    if(typeof showRunnerBubble === 'function') showRunnerBubble('+' + rwd.amount + ' méd');
+  } else if(rwd.type === 'gems'){
+    if(typeof addGems === 'function') addGems(rwd.amount);
+    if(typeof showRunnerBubble === 'function') showRunnerBubble('+' + rwd.amount + ' 💎');
+  } else if(rwd.type === 'mega'){
     STATE.gold = (STATE.gold || 0) + 15000;
     STATE.stars = (STATE.stars || 0) + 5;
+    if(typeof addGems === 'function') addGems(25);
     STATE.dailyCycles = (STATE.dailyCycles || 0) + 1;
     if(typeof showRunnerBubble === 'function'){
-      showRunnerBubble('🎁 +15k méd + 5 ★ !');
+      showRunnerBubble('🎁 +15k méd + 5 ★ + 25 💎 !');
     }
   }
   STATE.dailyLast = Date.now();
@@ -13468,6 +13598,8 @@ function save(){
       gems:STATE.gems ?? 0,
       shopBoostX2Until:STATE.shopBoostX2Until ?? 0,
       lastAdAt:STATE.lastAdAt ?? 0,
+      starterPackClaimed:STATE.starterPackClaimed ?? false,
+      starterPackDeclined:STATE.starterPackDeclined ?? false,
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
   }catch(e){}
@@ -13520,6 +13652,8 @@ function load(){
     STATE.gems = s.gems ?? 0;
     STATE.shopBoostX2Until = s.shopBoostX2Until ?? 0;
     STATE.lastAdAt = s.lastAdAt ?? 0;
+    STATE.starterPackClaimed = s.starterPackClaimed ?? false;
+    STATE.starterPackDeclined = s.starterPackDeclined ?? false;
     // Migration : si on a maxTier mais pas de codexUnlocks → backfill
     for(let c=0;c<3;c++){
       for(let t=0; t<=STATE.totals.maxTier[c]; t++){
@@ -13741,6 +13875,13 @@ function boot(){
     if(A?.ctx) blip(880, .15, "triangle", .22, .55);
   });
   bindModalClose('shop-premium-modal','shop-premium-close');
+  document.getElementById('starter-close')?.addEventListener('click', ()=>{
+    document.getElementById('starter-modal')?.classList.remove('show');
+    STATE.starterPackDeclined = true; // ne plus re-spam
+  });
+  document.getElementById('starter-claim')?.addEventListener('click', ()=>{
+    if(typeof claimStarterPack === 'function') claimStarterPack();
+  });
   // Stat gemmes du header → ouvre le shop
   document.getElementById('stat-gems')?.addEventListener('click', ()=>{
     if(typeof openShopModal === 'function') openShopModal();

@@ -11059,7 +11059,7 @@ function saisonAutoBase(){ return (STATE.perkAutoBase||0) * 0.2; }
 /* ================ QUÊTES QUOTIDIENNES (3 par jour) ================
    3 objectifs rotatifs qui se réinitialisent chaque jour.
    Récompenses : médailles + gemmes + xp. Tracking auto. */
-const QUEST_TEMPLATES = [
+const DAILY_QUEST_TEMPLATES = [
   { id:'tap_100',     desc:'Donner 100 taps au stade',           target:100,    type:'taps',    reward:{gold:500} },
   { id:'tap_500',     desc:'Donner 500 taps au stade',           target:500,    type:'taps',    reward:{gold:2500, gems:2} },
   { id:'lap_3',       desc:'Boucler 3 tours',                    target:3,      type:'laps',    reward:{gold:1000} },
@@ -11081,7 +11081,7 @@ function _ensureDailyQuests(){
   const today = _todayKey();
   if(!STATE.dailyQuests || STATE.dailyQuests.day !== today){
     // Nouvelles quêtes : 3 templates random
-    const shuffled = [...QUEST_TEMPLATES].sort(()=>Math.random() - 0.5);
+    const shuffled = [...DAILY_QUEST_TEMPLATES].sort(()=>Math.random() - 0.5);
     STATE.dailyQuests = {
       day: today,
       quests: shuffled.slice(0, 3).map(q => ({
@@ -11092,7 +11092,7 @@ function _ensureDailyQuests(){
     };
   }
 }
-function _questDef(id){ return QUEST_TEMPLATES.find(q => q.id === id); }
+function _questDef(id){ return DAILY_QUEST_TEMPLATES.find(q => q.id === id); }
 function progressQuest(type, amount){
   _ensureDailyQuests();
   let changed = false;

@@ -81,20 +81,12 @@ body{
   touch-action:none;
 }
 
-/* ================ FOND : matin doux, soleil chaud, ciel pastel ================ */
+/* ================ FOND : crème uniforme épuré ================ */
 #stage{
   position:fixed; inset:0;
   background:
-    radial-gradient(ellipse 60% 40% at 50% -10%, rgba(255,224,160,.55), transparent 70%),
-    radial-gradient(ellipse 100% 80% at 50% 50%, rgba(255,255,255,.20), transparent 75%),
-    linear-gradient(180deg,
-      #f8e2b8 0%,
-      #f4d49a 35%,
-      #4a5a78 60%,
-      #6a7090 75%,
-      #f0c878 70%,
-      #e8b878 90%,
-      #dca85a 100%);
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,232,168,.35), transparent 65%),
+    #f4e0b8;
   display:flex; flex-direction:column;
   transition:filter 1.2s ease;
 }
@@ -230,15 +222,16 @@ header{
 #runner-stadium{
   position:relative;
   width:100%;
-  height:24vh; max-height:200px; min-height:140px;
-  background:linear-gradient(180deg, #cbe5f5 0%, #f4d8a8 100%);
-  border:3px solid #a07a44;
-  border-radius:18px;
+  height:30vh; max-height:260px; min-height:180px;
+  background:linear-gradient(180deg, #b8def0 0%, #cbe5f5 40%, #e8d8a8 100%);
+  border:4px solid #a07a44;
+  border-radius:24px;
   overflow:hidden;
   box-shadow:
-    inset 0 2px 0 rgba(255,255,255,.50),
-    inset 0 -2px 4px rgba(160,122,68,.18),
-    0 4px 12px rgba(80,55,30,.18);
+    inset 0 3px 0 rgba(255,255,255,.55),
+    inset 0 -3px 6px rgba(160,122,68,.22),
+    0 8px 20px rgba(80,55,30,.22),
+    0 2px 4px rgba(80,55,30,.10);
 }
 #runner-stadium::before, #runner-stadium::after{ display:none }
 #runner-svg{
@@ -8939,19 +8932,21 @@ function flashStat(id){
 /* Speed multiplier composé : base × stamina.
    STAMINA décroit en continu — le joueur DOIT nourrir le coureur pour la garder haute.
    Sans stamina, le tour traîne. Avec stamina max, il déchire. */
-const LAP_BASE_DURATION = 75; // secondes pour boucler à vitesse ×1.0 stamina=1
-const STAMINA_DECAY_PER_SEC = 0.055;
-const STAMINA_MAX = 3.0;
+const LAP_BASE_DURATION = 140; // secondes pour boucler à vitesse ×1.0 stamina=1 — DUR
+const STAMINA_DECAY_PER_SEC = 0.075; // décroit plus vite : 1 → 0 en ~13s sans nourrir
+const STAMINA_MAX = 2.2;
 const STAMINA_MIN = 0.3;
+const SPEED_CAP = 3.5; // plafond dur — pas de runaway
 function runnerBaseSpeed(){
   const totalMaxTier = (STATE.totals?.maxTier||[0,0,0]).reduce((a,b)=>a+b, 0);
   const ascensions = STATE.ascensions || STATE.transmutations || 0;
-  return 1 + totalMaxTier * 0.12 + ascensions * 0.4;
+  // Courbe sub-linéaire pour éviter l'explosion : sqrt scaling
+  return 1 + Math.sqrt(totalMaxTier) * 0.18 + ascensions * 0.25;
 }
 function runnerSpeedMultiplier(){
   const base = runnerBaseSpeed();
   const stam = Math.max(STAMINA_MIN, Math.min(STAMINA_MAX, STATE.runnerStamina || 1));
-  return base * (0.45 + 0.55 * stam);
+  return Math.min(SPEED_CAP, base * (0.55 + 0.45 * stam));
 }
 function bumpStamina(amount){
   STATE.runnerStamina = Math.min(STAMINA_MAX, (STATE.runnerStamina || 1) + amount);
@@ -9761,7 +9756,7 @@ function doMerge(fx, fy, tx, ty){
   if(typeof fuelRunner === 'function') fuelRunner(bx, by, ch.color, newTier);
   if(typeof maybeRunnerBubble === 'function') maybeRunnerBubble();
   // Le merge nourrit la stamina du coureur — proportionnel au tier
-  if(typeof bumpStamina === 'function') bumpStamina(0.18 + newTier * 0.07);
+  if(typeof bumpStamina === 'function') bumpStamina(0.10 + newTier * 0.05);
 
   setTimeout(()=>{
     setTile(fx, fy, null);

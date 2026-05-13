@@ -6075,37 +6075,39 @@ body.shop-epic-flash::after{
             <rect x="-20" y="0" width="10" height="1.6" fill="#fff" opacity=".65"/>
             <rect x="-22" y="4" width="11" height="1.6" fill="#fff" opacity=".55"/>
           </g>
-          <g class="rs-body" transform="scale(8)" filter="url(#rs-shadow-tight)">
-            <g shape-rendering="crispEdges">
-              <!-- ombre au sol -->
-              <ellipse cx="0" cy="10.5" rx="6.5" ry="1.4" fill="#000" opacity=".22"/>
-              <!-- cheveux (no outline, juste forme) -->
-              <rect data-skin="hair" x="-4" y="-12" width="7" height="3" fill="#7a5838"/>
-              <!-- tête -->
-              <rect x="-4" y="-10" width="7" height="6" fill="#f0d4b0"/>
-              <rect x="-4" y="-10" width="7" height="1" fill="#dcb898"/>
-              <!-- œil discret -->
-              <rect x="0.5" y="-7.5" width="1.5" height="1.5" fill="#3a3030"/>
-              <!-- joue rose mignonne -->
-              <rect x="1.5" y="-5.5" width="1.5" height="1" fill="#ff8a90" opacity=".55"/>
-              <!-- maillot rouge VIBRANT (sans outline) -->
-              <rect data-skin="jersey" x="-5" y="-4" width="9" height="6" fill="#e85040"/>
-              <rect data-skin="accent" x="-5" y="-4" width="9" height="1.5" fill="#ffd060"/>
-              <!-- dossard -->
-              <rect x="-1.5" y="-2" width="3" height="3" fill="#fff"/>
-              <!-- bras (sans outline) -->
-              <rect class="rs-arm1" x="-7" y="-3" width="2" height="4" fill="#f0d4b0"/>
-              <rect class="rs-arm2" x="4" y="-3" width="2" height="4" fill="#f0d4b0"/>
-              <!-- short blanc -->
-              <rect x="-4" y="2" width="7" height="4" fill="#fff"/>
-              <rect x="-4" y="2" width="7" height="1.2" fill="#9aa8b8"/>
-              <!-- jambes -->
-              <rect class="rs-leg1" x="-3" y="6" width="2.5" height="5" fill="#f0d4b0"/>
-              <rect class="rs-leg2" x="1" y="6" width="2.5" height="5" fill="#f0d4b0"/>
-              <!-- chaussures rouge assorti -->
-              <rect class="rs-shoe1" x="-3.5" y="10" width="3" height="1.8" fill="#e85040"/>
-              <rect class="rs-shoe2" x="0.5" y="10" width="3" height="1.8" fill="#e85040"/>
-            </g>
+          <g class="rs-body" transform="scale(7)" filter="url(#rs-shadow-tight)">
+            <!-- COUREUR MIGNON style Eatventure : formes rondes, grosse tête, sans outline -->
+            <!-- Ombre douce au sol -->
+            <ellipse cx="0" cy="10.5" rx="5.5" ry="1.2" fill="#000" opacity=".22"/>
+            <!-- Jambes (capsules arrondies) -->
+            <rect class="rs-leg1" x="-2.6" y="4" width="2.2" height="6" rx="1.1" fill="#f0d4b0"/>
+            <rect class="rs-leg2" x=".4" y="4" width="2.2" height="6" rx="1.1" fill="#f0d4b0"/>
+            <!-- Chaussures (rondes assorties au maillot) -->
+            <ellipse class="rs-shoe1" cx="-1.5" cy="10.2" rx="1.7" ry="1.1" fill="#e85040"/>
+            <ellipse class="rs-shoe2" cx="1.5" cy="10.2" rx="1.7" ry="1.1" fill="#e85040"/>
+            <!-- Short blanc (rect rounded) -->
+            <rect x="-3" y="1.5" width="6" height="3.5" rx="1.3" fill="#fff"/>
+            <!-- Corps maillot rouge VIBRANT (rect bien rounded) -->
+            <rect data-skin="jersey" x="-3.5" y="-3.5" width="7" height="6" rx="2" fill="#e85040"/>
+            <!-- Bande accent jaune sur maillot -->
+            <rect data-skin="accent" x="-3.5" y="-3.5" width="7" height="1.3" rx="1.3" fill="#ffd060"/>
+            <!-- Dossard rond -->
+            <circle cx="0" cy="-.5" r="1.2" fill="#fff"/>
+            <!-- Bras (capsules rondes) -->
+            <rect class="rs-arm1" x="-5" y="-2.5" width="1.8" height="4.5" rx=".9" fill="#f0d4b0"/>
+            <rect class="rs-arm2" x="3.2" y="-2.5" width="1.8" height="4.5" rx=".9" fill="#f0d4b0"/>
+            <!-- TÊTE RONDE (la signature Eatventure) -->
+            <ellipse cx="0" cy="-7" rx="3.8" ry="3.8" fill="#f0d4b0"/>
+            <!-- Cheveux (forme ronde arrondie sur le dessus de la tête) -->
+            <path data-skin="hair" d="M -3.5,-9 Q -3.5,-11 0,-10.8 Q 3.5,-11 3.5,-9 Q 3.5,-7.5 2,-7 L -2,-7 Q -3.5,-7.5 -3.5,-9 Z" fill="#7a5838"/>
+            <!-- 2 yeux noirs ronds (style mignon Eatventure) -->
+            <circle cx="-1.3" cy="-6.8" r=".55" fill="#1a1010"/>
+            <circle cx="1.3" cy="-6.8" r=".55" fill="#1a1010"/>
+            <!-- 2 petites pommettes roses mignonnes -->
+            <ellipse cx="-2.1" cy="-5.5" rx=".7" ry=".5" fill="#ff8a90" opacity=".55"/>
+            <ellipse cx="2.1" cy="-5.5" rx=".7" ry=".5" fill="#ff8a90" opacity=".55"/>
+            <!-- Petite bouche souriante -->
+            <path d="M -.8,-5 Q 0,-4.4 .8,-5" stroke="#3a2818" stroke-width=".25" fill="none" stroke-linecap="round"/>
           </g>
           <circle class="rs-sweat" cx="4" cy="-18" r="1" fill="#7ec8e8" opacity="0"/>
         </g>
@@ -14900,131 +14902,84 @@ function teamRunnerVisualTier(lvl){
 }
 /* NPCs DIVERSIFIÉS : 8 types — jeune, vieux, femme, enfant, chien, sprinter, etc.
    Tous PLUS LENTS que le héros (le user reste le protagoniste). */
+// ═══ HELPER : sprite MIGNON Eatventure (formes rondes, no outlines) ═══
+// Params : c=jersey color, hair=hair color, skin=skin tone, shoe=shoe color, extras=optional extra svg
+function _cuteSprite(opts){
+  const {c, hair='#7a5838', skin='#f0d4b0', shoe='#3a2818', shortColor='#fff', hairShape='normal', extras=''} = opts;
+  // hairShape: 'normal'=top arc, 'long'=long sides, 'gray'=lighter, 'bald'=none, 'cap'=hat, 'bun'=top knot
+  let hairSvg = '';
+  if(hairShape === 'normal'){
+    hairSvg = `<path d="M -3.5,-9 Q -3.5,-11 0,-10.8 Q 3.5,-11 3.5,-9 Q 3.5,-7.5 2,-7 L -2,-7 Q -3.5,-7.5 -3.5,-9 Z" fill="${hair}"/>`;
+  } else if(hairShape === 'long'){
+    hairSvg = `<path d="M -3.8,-9 Q -3.8,-11 0,-10.8 Q 3.8,-11 3.8,-9 L 3.8,-4 Q 3.5,-3.5 3,-3.7 L 3,-7 L -3,-7 L -3,-3.7 Q -3.5,-3.5 -3.8,-4 Z" fill="${hair}"/>`;
+  } else if(hairShape === 'bun'){
+    hairSvg = `<circle cx="0" cy="-10.5" r="1.5" fill="${hair}"/>
+               <path d="M -3.5,-9 Q -3.5,-10.5 0,-10.3 Q 3.5,-10.5 3.5,-9 Q 3.5,-7.5 2,-7 L -2,-7 Q -3.5,-7.5 -3.5,-9 Z" fill="${hair}"/>`;
+  } else if(hairShape === 'cap'){
+    hairSvg = `<path d="M -3.8,-8 Q -3.8,-10.5 0,-10.5 Q 3.8,-10.5 3.8,-8 L 4,-7.5 L -4,-7.5 Z" fill="${hair}"/>`;
+  } else if(hairShape === 'bald'){
+    hairSvg = '';
+  }
+  return `<g>
+    <!-- ombre douce -->
+    <ellipse cx="0" cy="10.5" rx="4.5" ry="1" fill="#000" opacity=".22"/>
+    <!-- jambes capsules -->
+    <rect class="rs-leg1" x="-2.4" y="4" width="2" height="6" rx="1" fill="${skin}"/>
+    <rect class="rs-leg2" x=".4" y="4" width="2" height="6" rx="1" fill="${skin}"/>
+    <!-- chaussures rondes -->
+    <ellipse class="rs-shoe1" cx="-1.4" cy="10.2" rx="1.5" ry="1" fill="${shoe}"/>
+    <ellipse class="rs-shoe2" cx="1.4" cy="10.2" rx="1.5" ry="1" fill="${shoe}"/>
+    <!-- short -->
+    <rect x="-2.8" y="1.5" width="5.6" height="3.2" rx="1.2" fill="${shortColor}"/>
+    <!-- corps maillot -->
+    <rect x="-3.2" y="-3.5" width="6.4" height="6" rx="1.8" fill="${c}"/>
+    <!-- bras capsules -->
+    <rect class="rs-arm1" x="-4.6" y="-2.5" width="1.6" height="4.5" rx=".8" fill="${skin}"/>
+    <rect class="rs-arm2" x="3" y="-2.5" width="1.6" height="4.5" rx=".8" fill="${skin}"/>
+    <!-- tête ronde -->
+    <ellipse cx="0" cy="-7" rx="3.5" ry="3.5" fill="${skin}"/>
+    <!-- cheveux -->
+    ${hairSvg}
+    <!-- yeux ronds noirs -->
+    <circle cx="-1.2" cy="-6.8" r=".5" fill="#1a1010"/>
+    <circle cx="1.2" cy="-6.8" r=".5" fill="#1a1010"/>
+    <!-- pommettes roses -->
+    <ellipse cx="-2" cy="-5.5" rx=".6" ry=".4" fill="#ff8a90" opacity=".5"/>
+    <ellipse cx="2" cy="-5.5" rx=".6" ry=".4" fill="#ff8a90" opacity=".5"/>
+    <!-- petite bouche souriante -->
+    <path d="M -.7,-5.2 Q 0,-4.6 .7,-5.2" stroke="#3a2818" stroke-width=".22" fill="none" stroke-linecap="round"/>
+    ${extras}
+  </g>`;
+}
+
 const NPC_TYPES = [
   // Jogger classique homme
-  { id:'jogger', speed:0.7, sprite: c => `<g transform="scale(3.5)">
-      <ellipse cx="0" cy="6.5" rx="3.5" ry="1" fill="#000" opacity=".35"/>
-      <rect x="-2.5" y="-7" width="5" height="2" fill="#4a2818"/>
-      <rect x="-2.5" y="-5.5" width="5" height="3.5" fill="#f0c890"/>
-      <rect x="-3" y="-1.5" width="6" height="4" fill="${c}"/>
-      <rect class="rs-arm1" x="-4" y="-0.5" width="1.5" height="3" fill="#f0c890"/>
-      <rect class="rs-arm2" x="2.5" y="-0.5" width="1.5" height="3" fill="#f0c890"/>
-      <rect x="-2.5" y="2.5" width="5" height="2.5" fill="#fff"/>
-      <rect class="rs-leg1" x="-2" y="5" width="1.6" height="3" fill="#f0c890"/>
-      <rect class="rs-leg2" x=".5" y="5" width="1.6" height="3" fill="#f0c890"/>
-      <rect class="rs-shoe1" x="-2.2" y="7.5" width="2" height="1.2" fill="#1f3548"/>
-      <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#1f3548"/>
-    </g>` },
+  { id:'jogger', speed:0.7, sprite: c => `<g transform="scale(3.5)">${_cuteSprite({c, hair:'#7a5838', skin:'#f0d4b0', shoe:'#7a8090', shortColor:'#fff', hairShape:'normal'})}</g>` },
   // Femme runner (cheveux longs)
-  { id:'woman', speed:0.65, sprite: c => `<g transform="scale(3.5)">
-      <ellipse cx="0" cy="6.5" rx="3.5" ry="1" fill="#000" opacity=".35"/>
-      <rect x="-3" y="-7" width="6" height="2" fill="#4a2818"/>
-      <rect x="-3" y="-5" width="1" height="3" fill="#4a2818"/>
-      <rect x="2" y="-5" width="1" height="3" fill="#4a2818"/>
-      <rect x="-2.5" y="-5.5" width="5" height="3.5" fill="#f0c890"/>
-      <rect x="-3" y="-1.5" width="6" height="4" fill="${c}"/>
-      <rect class="rs-arm1" x="-4" y="-0.5" width="1.5" height="3" fill="#f0c890"/>
-      <rect class="rs-arm2" x="2.5" y="-0.5" width="1.5" height="3" fill="#f0c890"/>
-      <rect x="-2.5" y="2.5" width="5" height="2.5" fill="#c84030"/>
-      <rect class="rs-leg1" x="-2" y="5" width="1.6" height="3" fill="#f0c890"/>
-      <rect class="rs-leg2" x=".5" y="5" width="1.6" height="3" fill="#f0c890"/>
-      <rect class="rs-shoe1" x="-2.2" y="7.5" width="2" height="1.2" fill="#ee5a9a"/>
-      <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#ee5a9a"/>
-    </g>` },
-  // Senior (cheveux gris, plus lent)
-  { id:'senior', speed:0.45, sprite: c => `<g transform="scale(3.2)">
-      <ellipse cx="0" cy="6.5" rx="3.5" ry="1" fill="#000" opacity=".35"/>
-      <rect x="-2.5" y="-7" width="5" height="2" fill="#c0c0c0"/>
-      <rect x="-2.5" y="-5.5" width="5" height="3.5" fill="#e8c8a8"/>
-      <rect x="-3" y="-1.5" width="6" height="4" fill="${c}"/>
-      <rect class="rs-arm1" x="-4" y="-0.5" width="1.5" height="3" fill="#e8c8a8"/>
-      <rect class="rs-arm2" x="2.5" y="-0.5" width="1.5" height="3" fill="#e8c8a8"/>
-      <rect x="-2.5" y="2.5" width="5" height="2.5" fill="#999"/>
-      <rect class="rs-leg1" x="-2" y="5" width="1.6" height="3" fill="#e8c8a8"/>
-      <rect class="rs-leg2" x=".5" y="5" width="1.6" height="3" fill="#e8c8a8"/>
-      <rect class="rs-shoe1" x="-2.2" y="7.5" width="2" height="1.2" fill="#5a4028"/>
-      <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#5a4028"/>
-    </g>` },
-  // Enfant (plus petit, sautillant)
-  { id:'child', speed:0.55, sprite: c => `<g transform="scale(2.8)">
-      <ellipse cx="0" cy="6.5" rx="3" ry="0.8" fill="#000" opacity=".35"/>
-      <rect x="-2" y="-7" width="4" height="2" fill="#dd9966"/>
-      <rect x="-2" y="-5.5" width="4" height="3.5" fill="#f0c890"/>
-      <rect x="-2.5" y="-1.5" width="5" height="3.5" fill="${c}"/>
-      <rect class="rs-arm1" x="-3.5" y="-0.5" width="1.5" height="2.5" fill="#f0c890"/>
-      <rect class="rs-arm2" x="2" y="-0.5" width="1.5" height="2.5" fill="#f0c890"/>
-      <rect x="-2" y="2" width="4" height="2" fill="#3e8db8"/>
-      <rect class="rs-leg1" x="-1.5" y="4" width="1.4" height="2.5" fill="#f0c890"/>
-      <rect class="rs-leg2" x=".1" y="4" width="1.4" height="2.5" fill="#f0c890"/>
-      <rect class="rs-shoe1" x="-1.6" y="6.5" width="1.6" height="1" fill="#c84030"/>
-      <rect class="rs-shoe2" x="0" y="6.5" width="1.6" height="1" fill="#c84030"/>
-    </g>` },
+  { id:'woman', speed:0.65, sprite: c => `<g transform="scale(3.5)">${_cuteSprite({c, hair:'#8a6848', skin:'#f0d4b0', shoe:'#d8a8b8', shortColor:'#c87860', hairShape:'long'})}</g>` },
+  // Senior (cheveux gris)
+  { id:'senior', speed:0.45, sprite: c => `<g transform="scale(3.2)">${_cuteSprite({c, hair:'#c0c0c0', skin:'#e0c098', shoe:'#5a4028', shortColor:'#9aa8b8', hairShape:'normal'})}</g>` },
+  // Enfant (plus petit)
+  { id:'child', speed:0.55, sprite: c => `<g transform="scale(2.8)">${_cuteSprite({c, hair:'#d8a060', skin:'#f0d4b0', shoe:'#c87860', shortColor:'#3e8db8', hairShape:'normal'})}</g>` },
   // Promeneur avec chien
-  { id:'dog-walker', speed:0.35, sprite: c => `<g transform="scale(3.5)">
-      <ellipse cx="0" cy="6.5" rx="3.5" ry="1" fill="#000" opacity=".35"/>
-      <rect x="-2.5" y="-7" width="5" height="2" fill="#5a4028"/>
-      <rect x="-2.5" y="-5.5" width="5" height="3.5" fill="#f0c890"/>
-      <rect x="-3" y="-1.5" width="6" height="4" fill="${c}"/>
-      <rect class="rs-arm1" x="-4" y="-0.5" width="1.5" height="3" fill="#f0c890"/>
-      <rect class="rs-arm2" x="2.5" y="-0.5" width="1.5" height="3" fill="#f0c890"/>
-      <rect x="-2.5" y="2.5" width="5" height="2.5" fill="#666"/>
-      <rect class="rs-leg1" x="-2" y="5" width="1.6" height="3" fill="#f0c890"/>
-      <rect class="rs-leg2" x=".5" y="5" width="1.6" height="3" fill="#f0c890"/>
-      <rect class="rs-shoe1" x="-2.2" y="7.5" width="2" height="1.2" fill="#3a2818"/>
-      <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#3a2818"/>
-      <!-- Laisse + chien à côté -->
-      <line x1="3.5" y1="2" x2="6.5" y2="6.5" stroke="#5a4028" stroke-width=".4"/>
-      <rect x="6" y="6" width="3.5" height="2" fill="#8a6d44"/>
-      <rect x="9" y="5.5" width="0.8" height="0.8" fill="#5a4028"/>
-      <rect x="6" y="8" width="0.6" height="1.2" fill="#5a4028"/>
-      <rect x="8.5" y="8" width="0.6" height="1.2" fill="#5a4028"/>
-    </g>` },
-  // Sprinter style serious
-  { id:'sprinter', speed:0.8, sprite: c => `<g transform="scale(3.5)">
-      <ellipse cx="0" cy="6.5" rx="3.5" ry="1" fill="#000" opacity=".35"/>
-      <rect x="-2.5" y="-7" width="5" height="2" fill="#1a1010"/>
-      <rect x="-2.5" y="-5.5" width="5" height="3.5" fill="#a8804a"/>
-      <rect x="-2" y="-7" width="4" height="0.5" fill="#3e8db8"/>
-      <rect x="-3" y="-1.5" width="6" height="4" fill="${c}"/>
-      <rect x="-3" y="-1.5" width="6" height="0.5" fill="#ffd070"/>
-      <rect class="rs-arm1" x="-4" y="-0.5" width="1.5" height="3" fill="#a8804a"/>
-      <rect class="rs-arm2" x="2.5" y="-0.5" width="1.5" height="3" fill="#a8804a"/>
-      <rect x="-2.5" y="2.5" width="5" height="2.5" fill="#1a1010"/>
-      <rect class="rs-leg1" x="-2" y="5" width="1.6" height="3" fill="#a8804a"/>
-      <rect class="rs-leg2" x=".5" y="5" width="1.6" height="3" fill="#a8804a"/>
-      <rect class="rs-shoe1" x="-2.2" y="7.5" width="2" height="1.2" fill="#ffd070"/>
-      <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#ffd070"/>
-    </g>` },
-  // Promeneur tranquille (très lent)
-  { id:'walker', speed:0.3, sprite: c => `<g transform="scale(3.5)">
-      <ellipse cx="0" cy="6.5" rx="3.5" ry="1" fill="#000" opacity=".35"/>
-      <rect x="-2.5" y="-7" width="5" height="2" fill="#8a6d44"/>
-      <rect x="-2.5" y="-5.5" width="5" height="3.5" fill="#f0c890"/>
-      <rect x="-3" y="-1.5" width="6" height="4.5" fill="${c}"/>
-      <rect class="rs-arm1" x="-4" y="-0.5" width="1.5" height="3" fill="#f0c890"/>
-      <rect class="rs-arm2" x="2.5" y="-0.5" width="1.5" height="3" fill="#f0c890"/>
-      <rect x="-2.5" y="3" width="5" height="2.5" fill="#4a3828"/>
-      <rect class="rs-leg1" x="-2" y="5.5" width="1.6" height="2.5" fill="#4a3828"/>
-      <rect class="rs-leg2" x=".5" y="5.5" width="1.6" height="2.5" fill="#4a3828"/>
-      <rect class="rs-shoe1" x="-2.2" y="7.5" width="2" height="1.2" fill="#1a1010"/>
-      <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#1a1010"/>
-    </g>` },
-  // Femme âgée
-  { id:'grandma', speed:0.4, sprite: c => `<g transform="scale(3.2)">
-      <ellipse cx="0" cy="6.5" rx="3.5" ry="1" fill="#000" opacity=".35"/>
-      <rect x="-3" y="-7" width="6" height="2" fill="#dcd0c0"/>
-      <rect x="-3" y="-5" width="1" height="2" fill="#dcd0c0"/>
-      <rect x="2" y="-5" width="1" height="2" fill="#dcd0c0"/>
-      <rect x="-2.5" y="-5.5" width="5" height="3.5" fill="#e8c8a8"/>
-      <rect x="-3" y="-1.5" width="6" height="4" fill="${c}"/>
-      <rect class="rs-arm1" x="-4" y="-0.5" width="1.5" height="3" fill="#e8c8a8"/>
-      <rect class="rs-arm2" x="2.5" y="-0.5" width="1.5" height="3" fill="#e8c8a8"/>
-      <rect x="-2.5" y="2.5" width="5" height="2.5" fill="#9080c0"/>
-      <rect class="rs-leg1" x="-2" y="5" width="1.6" height="3" fill="#e8c8a8"/>
-      <rect class="rs-leg2" x=".5" y="5" width="1.6" height="3" fill="#e8c8a8"/>
-      <rect class="rs-shoe1" x="-2.2" y="7.5" width="2" height="1.2" fill="#5a4028"/>
-      <rect class="rs-shoe2" x=".3" y="7.5" width="2" height="1.2" fill="#5a4028"/>
-    </g>` },
+  { id:'dog-walker', speed:0.35, sprite: c => `<g transform="scale(3.5)">${_cuteSprite({c, hair:'#5a4028', skin:'#f0d4b0', shoe:'#3a2818', shortColor:'#aa9890', hairShape:'normal', extras:`
+      <!-- Laisse + chien mignon à côté -->
+      <line x1="4" y1="2" x2="7.5" y2="7" stroke="#7a5838" stroke-width=".3"/>
+      <ellipse cx="8" cy="7.5" rx="1.2" ry=".7" fill="#000" opacity=".2"/>
+      <ellipse cx="8" cy="7" rx="2" ry="1.3" fill="#a87850"/>
+      <circle cx="9.2" cy="6.5" r="1" fill="#a87850"/>
+      <circle cx="9.5" cy="6.3" r=".2" fill="#1a1010"/>
+      <ellipse cx="9.8" cy="6.7" rx=".25" ry=".4" fill="#1a1010"/>
+      <ellipse cx="9.2" cy="5.7" rx=".4" ry=".5" fill="#7a5838"/>
+      <rect x="6.5" y="7.8" width=".5" height="1" rx=".2" fill="#a87850"/>
+      <rect x="9.2" y="7.8" width=".5" height="1" rx=".2" fill="#a87850"/>
+    `})}</g>` },
+  // Sprinter avec casquette
+  { id:'sprinter', speed:0.8, sprite: c => `<g transform="scale(3.5)">${_cuteSprite({c, hair:'#3a2818', skin:'#a8804a', shoe:'#ffd060', shortColor:'#1a1010', hairShape:'cap'})}</g>` },
+  // Promeneur tranquille
+  { id:'walker', speed:0.3, sprite: c => `<g transform="scale(3.5)">${_cuteSprite({c, hair:'#8a6d44', skin:'#f0d4b0', shoe:'#1a1010', shortColor:'#4a3828', hairShape:'normal'})}</g>` },
+  // Femme âgée (chignon)
+  { id:'grandma', speed:0.4, sprite: c => `<g transform="scale(3.2)">${_cuteSprite({c, hair:'#dcd0c0', skin:'#e0c098', shoe:'#5a4028', shortColor:'#b8a8c0', hairShape:'bun'})}</g>` },
 ];
 const NPC_COLORS_ALL = ['#3e8db8','#5a9040','#9080c0','#ffd070','#f55a5a','#c89af0','#e85a30','#7ec46a','#ee5a9a','#4a9fd9'];
 const NPC_COUNT = 5;

@@ -17474,26 +17474,38 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     const border = new THREE.Mesh(rb(4.05, 1.45, .28, .12), mat('#d4a060', {roughness:.4, metalness:.6}));
     border.position.z = -.005;
     sg.add(border);
-    // Écran LED (face avant)
-    const screenTexture = (() => {
-      const c = document.createElement('canvas');
-      c.width = 512; c.height = 180;
-      const ctx = c.getContext('2d');
+    // Écran LED dynamique (mis à jour selon STATE)
+    const screenCanvas = document.createElement('canvas');
+    screenCanvas.width = 512; screenCanvas.height = 180;
+    const screenTexture = new THREE.CanvasTexture(screenCanvas);
+    function updateScreen(){
+      const ctx = screenCanvas.getContext('2d');
       ctx.fillStyle = '#1a0a0a'; ctx.fillRect(0, 0, 512, 180);
-      // FOULÉE en orange LED style
+      // FOULÉE
       ctx.fillStyle = '#ff8030';
-      ctx.font = 'bold 64px Nunito, sans-serif';
+      ctx.font = 'bold 56px Nunito, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('FOULÉE', 256, 80);
-      // TOURS · ★
+      ctx.fillText('FOULÉE', 256, 60);
+      // Tours et étoiles
+      const laps = (window.STATE && window.STATE.lapsRun) || 0;
+      const stars = (window.STATE && window.STATE.totalStars) || 0;
       ctx.fillStyle = '#ffd070';
-      ctx.font = 'bold 36px Nunito, sans-serif';
+      ctx.font = 'bold 32px Nunito, sans-serif';
       ctx.textAlign = 'left';
-      ctx.fillText('TOURS', 32, 140);
-      ctx.textAlign = 'right';
-      ctx.fillText('★', 480, 140);
-      return new THREE.CanvasTexture(c);
-    })();
+      ctx.fillText('TOURS', 24, 140);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 44px Nunito, sans-serif';
+      ctx.fillText(String(laps), 180, 145);
+      ctx.fillStyle = '#ffd070';
+      ctx.font = 'bold 32px Nunito, sans-serif';
+      ctx.fillText('★', 320, 140);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 44px Nunito, sans-serif';
+      ctx.fillText(String(stars), 360, 145);
+      screenTexture.needsUpdate = true;
+    }
+    updateScreen();
+    sg.userData.updateScreen = updateScreen;
     const screen = new THREE.Mesh(
       new THREE.PlaneGeometry(3.8, 1.2),
       new THREE.MeshBasicMaterial({map: screenTexture})
@@ -17936,7 +17948,7 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
   ];
   crates.forEach(c => scene.add(c));
 
-  // === 4 PROJECTEURS aux coins du stade ===
+  // === 4 PROJECTEURS aux coins du stade avec light beam volumétrique ===
   function makeProjector(x, z){
     const pg = new THREE.Group();
     // Mât (rounded box mince et haut)
@@ -17947,17 +17959,24 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     const platform = new THREE.Mesh(rb(.8, .15, .5, .04), mat('#2a2a2a', {roughness:.5, metalness:.3}));
     platform.position.y = 8;
     pg.add(platform);
-    // Lampe (cône avec lumière chaude)
-    const lampGeo = new THREE.BoxGeometry(.85, .35, .55);
-    const lamp = new THREE.Mesh(lampGeo, mat('#2a2a2a', {roughness:.3, metalness:.5}));
+    // Lampe (rounded box)
+    const lamp = new THREE.Mesh(rb(.85, .35, .55, .05), mat('#2a2a2a', {roughness:.3, metalness:.5}));
     lamp.position.y = 8.3;
-    // Face avant lumineuse
     pg.add(lamp);
-    const glassGeo = new THREE.PlaneGeometry(.75, .25);
-    const glass = new THREE.Mesh(glassGeo, new THREE.MeshBasicMaterial({color:'#fff8d4'}));
+    // Face avant lumineuse (glass)
+    const glass = new THREE.Mesh(new THREE.PlaneGeometry(.75, .25), new THREE.MeshBasicMaterial({color:'#fff8d4'}));
     glass.position.set(0, 8.3, .29);
-    // Oriente la lampe vers le centre du stade
     pg.add(glass);
+    // BEAM volumétrique : cône transparent qui descend vers la piste
+    const beamGeo = new THREE.ConeGeometry(2.2, 7, 16, 1, true);
+    const beamMat = new THREE.MeshBasicMaterial({
+      color:'#fff8c0', transparent:true, opacity:.08, side:THREE.DoubleSide, depthWrite:false,
+      blending: THREE.AdditiveBlending
+    });
+    const beam = new THREE.Mesh(beamGeo, beamMat);
+    beam.position.set(0, 4.5, .8);
+    beam.rotation.x = Math.PI;
+    pg.add(beam);
     // Position et orientation vers centre
     pg.position.set(x, 0, z);
     pg.lookAt(0, 4, 0);
@@ -18264,6 +18283,24 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     roofFlags.forEach((rf, i) => {
       rf.userData.flag.rotation.y = Math.sin(now * .003 + i * 1.2) * .35;
     });
+
+    // === SCOREBOARD LIVE : update toutes les 0.5s ===
+    if(!tick._sbT || now - tick._sbT > 500){
+      tick._sbT = now;
+      if(scoreboard.userData.updateScreen) scoreboard.userData.updateScreen();
+    }
+
+    // === DAY CYCLE SUBTIL : intensité directional light pulse léger (matin → midi → soir) ===
+    {
+      const cycleT = (now / 60000) % 1; // 1 cycle complet en 60s
+      const sunHeight = Math.sin(cycleT * Math.PI * 2);
+      dir.intensity = 0.85 + sunHeight * 0.15;
+      // Couleur chaude (or) au "soir", froide (blanc) au midi
+      const warmth = Math.max(0, -sunHeight);
+      dir.color.setRGB(1, 1 - warmth * 0.15, 1 - warmth * 0.25);
+      // Hemisphere intensity réajuste aussi
+      hemi.intensity = 0.35 + sunHeight * 0.1;
+    }
 
     composer.render();
     requestAnimationFrame(tick);

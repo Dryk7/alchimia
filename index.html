@@ -504,6 +504,89 @@ header{
   margin-top:12px;
 }
 
+/* === QUÊTES QUOTIDIENNES === */
+.quests-daily-body{ overflow-y:auto; max-height:65vh; padding:4px 2px; }
+.quests-hero{
+  text-align:center;
+  padding:12px;
+  background:linear-gradient(180deg, #fff3d0, #ffd896);
+  border-radius:12px;
+  margin-bottom:12px;
+  border:2px solid var(--ember);
+}
+.quests-title{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:13px; letter-spacing:.10em;
+  color:var(--ember); text-transform:uppercase;
+}
+.quests-reset{
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:11px; color:var(--ink-2);
+  margin-top:4px;
+}
+.quest-list{ display:flex; flex-direction:column; gap:8px; }
+.quest-row{
+  display:grid; grid-template-columns:1fr auto;
+  gap:10px; align-items:center;
+  padding:10px 12px;
+  background:#fff;
+  border:2px solid rgba(160,122,68,.25);
+  border-radius:12px;
+}
+.quest-row.done{
+  background:linear-gradient(180deg, #fff, #e2f4e2);
+  border-color:#3a8c3a;
+  animation:questReadyPulse 1.5s ease-in-out infinite;
+}
+@keyframes questReadyPulse{
+  0%,100% { box-shadow:0 0 0 0 rgba(58,140,58,.4); }
+  50%     { box-shadow:0 0 0 6px rgba(58,140,58,0); }
+}
+.quest-row.claimed{ opacity:.55; }
+.quest-desc{
+  font-family:"Nunito", sans-serif; font-weight:800;
+  font-size:13px; color:var(--ink);
+}
+.quest-bar{
+  height:5px;
+  background:rgba(160,122,68,.18);
+  border-radius:3px;
+  margin-top:6px;
+  overflow:hidden;
+}
+.quest-bar > span{
+  display:block; height:100%;
+  background:linear-gradient(90deg, var(--ember), #ffd070);
+  transition:width .3s;
+}
+.quest-progress{
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:10.5px; color:var(--ink-2);
+  margin-top:3px;
+  font-variant-numeric:tabular-nums;
+}
+.quest-claim{
+  padding:8px 12px;
+  background:#f3ead4; color:var(--ink);
+  border:none; border-radius:10px;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:10.5px; letter-spacing:.04em;
+  cursor:pointer; white-space:nowrap;
+  transition:transform .12s;
+}
+.quest-claim:active{ transform:scale(.96); }
+.quest-claim:disabled{ cursor:default; opacity:.7; }
+.quest-row.done .quest-claim{
+  background:linear-gradient(180deg, #7ec46a, #4e9438);
+  color:#fff;
+  font-size:11px;
+  box-shadow:0 2px 6px rgba(78,148,56,.4);
+}
+.quest-row.claimed .quest-claim{
+  background:#7ec46a; color:#fff;
+  font-size:14px;
+}
+
 /* === RECORDS / PARTAGE === */
 .records-body{ padding:4px 2px; }
 .records-hero{
@@ -5171,6 +5254,13 @@ body.shop-epic-flash::after{
         </svg>
         <div class="mi-meta"><div class="mi-title">👕 Vestiaire</div><div class="mi-sub">skins coureur · cosmétiques</div></div>
       </button>
+      <button class="menu-item" data-action="quests-daily">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M5 4 H19 V20 H5 z"/>
+          <path d="M8 8 H16 M8 12 H16 M8 16 H13"/>
+        </svg>
+        <div class="mi-meta"><div class="mi-title">📋 Objectifs du jour</div><div class="mi-sub">3 quêtes quotidiennes · récompenses</div></div>
+      </button>
       <button class="menu-item" data-action="records">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
           <path d="M7 4 L17 4 L17 9 a5 5 0 0 1 -10 0 z"/>
@@ -5564,6 +5654,16 @@ body.shop-epic-flash::after{
     <h2>ASCENSION</h2>
     <div class="divider"></div>
     <div class="saison-body" id="saison-body"></div>
+  </div>
+</div>
+
+<!-- QUÊTES QUOTIDIENNES -->
+<div id="quests-daily-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-close" id="quests-daily-close" aria-label="Fermer">×</div>
+    <h2>📋 OBJECTIFS DU JOUR</h2>
+    <div class="divider"></div>
+    <div class="quests-daily-body" id="quests-daily-body"></div>
   </div>
 </div>
 
@@ -6028,6 +6128,8 @@ function gainXp(amount){
     const newTitle = alchTitle();
     showLevelUp(newLvl, oldTitle !== newTitle ? newTitle : null);
     if(typeof checkAchievements === 'function') checkAchievements();
+    // Quête : level
+    if(typeof progressQuest === 'function') progressQuest('level', newLvl);
   }
   renderAlchLevel();
 }
@@ -10642,6 +10744,9 @@ function tapBoost(e){
   if(STATE.totalTaps % 25 === 0 && typeof checkAchievements === 'function') checkAchievements();
   // Starter pack offert au joueur après son 10e tap
   if(STATE.totalTaps === 10 && typeof maybeShowStarterPack === 'function') maybeShowStarterPack();
+  // Quêtes : tap counter
+  if(typeof progressQuest === 'function') progressQuest('taps', 1);
+  if(_comboCount >= 10 && typeof progressQuest === 'function') progressQuest('combo', 1);
   if(typeof renderStats === 'function') renderStats();
   if(typeof updateTapStrip === 'function') updateTapStrip();
   if(typeof updateRunnerHUD === 'function') updateRunnerHUD();
@@ -10877,6 +10982,131 @@ function saisonCritBonus(){ return (STATE.perkCritBase||0) * 0.005; }
 function saisonXpMul(){ return 1 + (STATE.perkXpMul||0) * 0.05; }
 function saisonAutoBase(){ return (STATE.perkAutoBase||0) * 0.2; }
 
+/* ================ QUÊTES QUOTIDIENNES (3 par jour) ================
+   3 objectifs rotatifs qui se réinitialisent chaque jour.
+   Récompenses : médailles + gemmes + xp. Tracking auto. */
+const QUEST_TEMPLATES = [
+  { id:'tap_100',     desc:'Donner 100 taps au stade',           target:100,    type:'taps',    reward:{gold:500} },
+  { id:'tap_500',     desc:'Donner 500 taps au stade',           target:500,    type:'taps',    reward:{gold:2500, gems:2} },
+  { id:'lap_3',       desc:'Boucler 3 tours',                    target:3,      type:'laps',    reward:{gold:1000} },
+  { id:'lap_10',      desc:'Boucler 10 tours',                   target:10,     type:'laps',    reward:{gold:5000, gems:3} },
+  { id:'collect_10',  desc:'Collecter 10 batches manuellement',  target:10,     type:'collects',reward:{gold:1500} },
+  { id:'collect_30',  desc:'Collecter 30 batches manuellement',  target:30,     type:'collects',reward:{gold:6000, gems:3} },
+  { id:'golden_3',    desc:'Tapper 3 médailles dorées',          target:3,      type:'goldens', reward:{gold:3000, gems:5} },
+  { id:'spend_10k',   desc:'Dépenser 10k méd en upgrades',       target:10000,  type:'spent',   reward:{gold:8000} },
+  { id:'recruit_2',   desc:'Recruter 2 coureurs différents',     target:2,      type:'recruits',reward:{gold:2000, gems:2} },
+  { id:'lvl_5',       desc:'Atteindre niveau coureur 5',         target:5,      type:'level',   reward:{gold:1500} },
+  { id:'lvl_10',      desc:'Atteindre niveau coureur 10',        target:10,     type:'level',   reward:{gems:5} },
+  { id:'combo_10',    desc:'Faire un combo ×3 au tap',           target:10,     type:'combo',   reward:{gold:2000} },
+];
+function _todayKey(){
+  const d = new Date();
+  return d.getFullYear()*10000 + (d.getMonth()+1)*100 + d.getDate();
+}
+function _ensureDailyQuests(){
+  const today = _todayKey();
+  if(!STATE.dailyQuests || STATE.dailyQuests.day !== today){
+    // Nouvelles quêtes : 3 templates random
+    const shuffled = [...QUEST_TEMPLATES].sort(()=>Math.random() - 0.5);
+    STATE.dailyQuests = {
+      day: today,
+      quests: shuffled.slice(0, 3).map(q => ({
+        id: q.id,
+        progress: 0,
+        claimed: false
+      }))
+    };
+  }
+}
+function _questDef(id){ return QUEST_TEMPLATES.find(q => q.id === id); }
+function progressQuest(type, amount){
+  _ensureDailyQuests();
+  let changed = false;
+  for(const q of STATE.dailyQuests.quests){
+    const def = _questDef(q.id);
+    if(!def) continue;
+    if(def.type !== type) continue;
+    if(q.claimed || q.progress >= def.target) continue;
+    if(type === 'level'){
+      // Pour level : on prend la valeur courante, pas un cumul
+      q.progress = Math.min(def.target, amount);
+    } else {
+      q.progress = Math.min(def.target, q.progress + amount);
+    }
+    changed = true;
+  }
+  if(changed && typeof renderQuests === 'function') renderQuests();
+}
+function claimQuest(id){
+  _ensureDailyQuests();
+  const q = STATE.dailyQuests.quests.find(x => x.id === id);
+  if(!q || q.claimed) return;
+  const def = _questDef(id);
+  if(!def || q.progress < def.target) return;
+  q.claimed = true;
+  if(def.reward.gold) STATE.gold = (STATE.gold || 0) + def.reward.gold;
+  if(def.reward.gems && typeof addGems === 'function') addGems(def.reward.gems);
+  if(def.reward.xp && typeof gainXp === 'function') gainXp(def.reward.xp);
+  if(A?.ctx){
+    blip(660, .15, "triangle", .26, .65);
+    setTimeout(()=>blip(990, .18, "sine", .26, .7), 90);
+  }
+  vibrate([20, 40, 20]);
+  if(typeof showRunnerBubble === 'function'){
+    const parts = [];
+    if(def.reward.gold) parts.push('+' + fmtBigNumber(def.reward.gold) + ' méd');
+    if(def.reward.gems) parts.push('+' + def.reward.gems + ' 💎');
+    showRunnerBubble('✓ ' + parts.join(' · '));
+  }
+  if(typeof renderQuests === 'function') renderQuests();
+  if(typeof renderStats === 'function') renderStats();
+}
+function openQuestsModal(){
+  if(typeof renderQuests === 'function') renderQuests();
+  document.getElementById('quests-daily-modal')?.classList.add('show');
+}
+function renderQuests(){
+  const body = document.getElementById('quests-daily-body');
+  if(!body) return;
+  _ensureDailyQuests();
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0,0,0,0);
+  const remainMs = tomorrow - new Date();
+  const h = Math.floor(remainMs / 3600000);
+  const m = Math.floor((remainMs % 3600000) / 60000);
+  const list = STATE.dailyQuests.quests.map(q => {
+    const def = _questDef(q.id);
+    if(!def) return '';
+    const done = q.progress >= def.target;
+    const cls = q.claimed ? 'claimed' : done ? 'done' : '';
+    const rewardParts = [];
+    if(def.reward.gold) rewardParts.push(fmtBigNumber(def.reward.gold) + ' méd');
+    if(def.reward.gems) rewardParts.push(def.reward.gems + ' 💎');
+    return `<div class="quest-row ${cls}" data-quest="${q.id}">
+      <div class="quest-info">
+        <div class="quest-desc">${def.desc}</div>
+        <div class="quest-bar"><span style="width:${Math.min(100, q.progress/def.target*100).toFixed(0)}%"></span></div>
+        <div class="quest-progress">${fmtBigNumber(q.progress)} / ${fmtBigNumber(def.target)}</div>
+      </div>
+      <button class="quest-claim" ${!done || q.claimed ? 'disabled' : ''}>${q.claimed ? '✓' : done ? 'RÉCLAMER' : rewardParts.join(' + ')}</button>
+    </div>`;
+  }).join('');
+  body.innerHTML = `
+    <div class="quests-hero">
+      <div class="quests-title">3 OBJECTIFS DU JOUR</div>
+      <div class="quests-reset">Reset dans ${h}h ${m}m</div>
+    </div>
+    <div class="quest-list">${list}</div>
+  `;
+  body.querySelectorAll('.quest-row').forEach(row => {
+    const btn = row.querySelector('.quest-claim');
+    if(btn && !btn.disabled){
+      btn.addEventListener('click', ()=>claimQuest(row.dataset.quest));
+    }
+  });
+}
+
 /* ================ SKILLS ACTIFS (à la Clicker Heroes) ================
    4 boosts manuels avec cooldown. Le joueur les active quand il veut.
    Débloqués progressivement par tours bouclés / saisons. */
@@ -11067,6 +11297,7 @@ function _despawnGolden(){
 }
 function _collectGolden(){
   if(!_goldenActive) return;
+  if(typeof progressQuest === 'function') progressQuest('goldens', 1);
   const type = _goldenActive.type;
   const el = _goldenActive.el;
   if(type === 'gold'){
@@ -11394,8 +11625,20 @@ function buyRunnerLevel(id){
   if((STATE.gold || 0) < cost){ if(typeof sfxDeny === 'function') sfxDeny(); return; }
   STATE.gold -= cost;
   const d = runnerData(id);
+  const wasZero = d.level === 0;
   d.level += 1;
   const newLvl = d.level;
+  // Quêtes : track recruits + spent
+  if(wasZero && typeof progressQuest === 'function'){
+    // Compte combien de coureurs distincts ont level > 0
+    _ensureTeamShape();
+    let recruited = 0;
+    for(const r2 of TEAM_RUNNERS) if(STATE.team[r2.id].level > 0) recruited++;
+    progressQuest('recruits', 0); // reset progress
+    STATE.dailyQuests?.quests?.forEach(q=>{ if(q.id.startsWith('recruit_')) q.progress = recruited; });
+    if(typeof renderQuests === 'function') renderQuests();
+  }
+  if(typeof progressQuest === 'function') progressQuest('spent', cost);
   const milestone = (newLvl % 25 === 0);
   if(A?.ctx){
     if(milestone){
@@ -11449,6 +11692,8 @@ function collectRunnerBatch(id){
     const xp = Math.max(1, Math.floor(batch / 100));
     if(xp > 0) gainXp(xp);
   }
+  // Quête : collects manuels
+  if(typeof progressQuest === 'function') progressQuest('collects', 1);
   if(A?.ctx) blip(880, .08, "triangle", .22, .45);
   vibrate(8);
   // Floating "+N" sur la carte
@@ -12009,6 +12254,7 @@ function completeLap(){
   if(typeof updateRunnerHUD === 'function') updateRunnerHUD();
   if(typeof checkAchievements === 'function') checkAchievements();
   if(typeof updateRecords === 'function') updateRecords();
+  if(typeof progressQuest === 'function') progressQuest('laps', 1);
 }
 
 /* Maillot du coureur — évolue selon le nombre d'ascensions */
@@ -13933,6 +14179,7 @@ function save(){
       skillSprintUntil:STATE.skillSprintUntil ?? 0,
       skillTailwindUntil:STATE.skillTailwindUntil ?? 0,
       skillBreathUntil:STATE.skillBreathUntil ?? 0,
+      dailyQuests:STATE.dailyQuests || null,
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
   }catch(e){}
@@ -13994,6 +14241,7 @@ function load(){
     STATE.skillSprintUntil = s.skillSprintUntil ?? 0;
     STATE.skillTailwindUntil = s.skillTailwindUntil ?? 0;
     STATE.skillBreathUntil = s.skillBreathUntil ?? 0;
+    STATE.dailyQuests = s.dailyQuests || null;
     // Migration : si on a maxTier mais pas de codexUnlocks → backfill
     for(let c=0;c<3;c++){
       for(let t=0; t<=STATE.totals.maxTier[c]; t++){
@@ -14205,6 +14453,7 @@ function boot(){
   bindModalClose('shop-premium-modal','shop-premium-close');
   bindModalClose('wardrobe-modal','wardrobe-close');
   bindModalClose('records-modal','records-close');
+  bindModalClose('quests-daily-modal','quests-daily-close');
   document.getElementById('starter-close')?.addEventListener('click', ()=>{
     document.getElementById('starter-modal')?.classList.remove('show');
     STATE.starterPackDeclined = true; // ne plus re-spam
@@ -14312,6 +14561,7 @@ function boot(){
         else if(action === 'shop-premium' && typeof openShopModal === 'function') openShopModal();
         else if(action === 'wardrobe' && typeof openWardrobe === 'function') openWardrobe();
         else if(action === 'records' && typeof openRecords === 'function') openRecords();
+        else if(action === 'quests-daily' && typeof openQuestsModal === 'function') openQuestsModal();
         else if(action === 'stats'){ renderStatsBody(); openModal('stats-modal'); }
       }, 200);
     });

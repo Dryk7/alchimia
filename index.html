@@ -504,6 +504,69 @@ header{
   margin-top:12px;
 }
 
+/* === OFFLINE REWARDS POPUP === */
+.offline-card{ text-align:center; padding-bottom:20px; }
+.offline-hero{
+  padding:18px 14px;
+  background:linear-gradient(180deg, #fff3d0, #ffd896);
+  border-radius:16px;
+  margin-bottom:14px;
+}
+.offline-emoji{
+  font-size:42px;
+  margin-bottom:6px;
+  animation:offlineRunWiggle 1.5s ease-in-out infinite;
+}
+@keyframes offlineRunWiggle{
+  0%,100% { transform:translateX(0); }
+  50%     { transform:translateX(6px); }
+}
+.offline-hero h2{
+  margin:0 0 6px; font-size:22px; color:var(--ember);
+  letter-spacing:.05em;
+}
+.offline-sub{
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:13px; color:var(--ink-2);
+}
+.offline-stats{
+  background:linear-gradient(180deg, #fffaee, #fff3d8);
+  border:1.5px solid rgba(160,122,68,.30);
+  border-radius:12px;
+  padding:12px 14px;
+  margin-bottom:14px;
+}
+.offline-row{
+  display:flex; justify-content:space-between; align-items:center;
+  padding:6px 0;
+  font-family:"Nunito", sans-serif; font-weight:800;
+}
+.offline-row-lbl{ font-size:13px; color:var(--ink); }
+.offline-row-val{
+  font-size:18px; font-weight:900; color:#3a8c3a;
+  font-variant-numeric:tabular-nums;
+}
+.offline-row-info{
+  font-size:11px; color:var(--ink-2); font-weight:600;
+  text-align:center; padding-top:8px;
+  border-top:1.5px dashed rgba(160,122,68,.25);
+  margin-top:4px;
+}
+.offline-collect-btn{
+  width:100%;
+  padding:14px;
+  background:linear-gradient(180deg, #f08a48, #d96828);
+  color:#fff;
+  border:none;
+  border-radius:22px;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:17px; letter-spacing:.06em;
+  cursor:pointer;
+  box-shadow:0 4px 12px rgba(217,104,40,.40);
+  text-transform:uppercase;
+}
+.offline-collect-btn:active{ transform:scale(.97); }
+
 /* === L'ÉQUIPE (façon Eatventure) === */
 .team-section{
   margin-top:14px;
@@ -995,26 +1058,31 @@ header{
   100% { transform:translate(-50%, -60px) scale(1); opacity:0; }
 }
 
-/* Combo display : visible quand chaîne en cours */
+/* Combo display : énorme, en plein milieu du stade pendant le spam */
 .combo-display{
-  position:absolute; top:42vh; left:50%; transform:translateX(-50%);
-  display:none; align-items:center; gap:6px;
-  pointer-events:none; z-index:5;
+  position:absolute; top:35%; left:50%; transform:translate(-50%, -50%);
+  display:none; align-items:center; gap:8px;
+  pointer-events:none; z-index:6;
   background:linear-gradient(180deg, #ff6020, #c83020);
-  border:3px solid #fff;
-  border-radius:18px;
-  padding:5px 16px;
-  box-shadow:0 4px 12px rgba(217,40,20,.45);
+  border:4px solid #fff;
+  border-radius:22px;
+  padding:8px 22px;
+  box-shadow:0 8px 24px rgba(217,40,20,.55), 0 0 0 4px rgba(255,255,255,.15);
   font-family:"Nunito", sans-serif; font-weight:900;
   color:#fff;
   letter-spacing:.04em;
 }
-.combo-display.show{ display:inline-flex; animation:comboPop .25s cubic-bezier(.2,.9,.2,1.4) }
+.combo-display.show{ display:inline-flex; animation:comboPop .25s cubic-bezier(.2,.9,.2,1.4), comboShake .3s ease-in-out 3 }
 @keyframes comboPop{
-  0%   { transform:translateX(-50%) scale(.6); opacity:0; }
-  100% { transform:translateX(-50%) scale(1); opacity:1; }
+  0%   { transform:translate(-50%, -50%) scale(.6); opacity:0; }
+  100% { transform:translate(-50%, -50%) scale(1); opacity:1; }
 }
-.combo-x{ font-size:22px; text-shadow:0 2px 4px rgba(160,40,0,.5); }
+@keyframes comboShake{
+  0%,100% { transform:translate(-50%, -50%) rotate(0); }
+  25%     { transform:translate(-52%, -50%) rotate(-2deg); }
+  75%     { transform:translate(-48%, -50%) rotate(2deg); }
+}
+.combo-x{ font-size:30px; text-shadow:0 3px 6px rgba(160,40,0,.6); }
 .combo-fire{
   display:inline-block; width:18px; height:18px;
   background:radial-gradient(circle at 50% 70%, #ffd070, #ff6020 60%, transparent 75%);
@@ -4208,6 +4276,11 @@ body.shop-epic-flash::after{
   <main id="play">
     <!-- Le Stade XL : devient la zone de tap principale (v3) -->
     <div id="runner-stadium">
+      <!-- Combo counter overlay (visible quand chaîne active) -->
+      <div id="combo-display" class="combo-display">
+        <span class="combo-x" id="combo-x">×1</span>
+        <span class="combo-fire" id="combo-fire"></span>
+      </div>
       <svg id="runner-svg" viewBox="0 0 320 200" preserveAspectRatio="xMidYMid meet">
         <defs>
           <!-- Trajectoire ovale agrandie pour le viewBox 200 -->
@@ -4498,11 +4571,6 @@ body.shop-epic-flash::after{
         🎁 RÉCOMPENSE QUOTIDIENNE · <span id="daily-btn-day">JOUR 1</span>
       </button>
 
-      <!-- Combo counter (visible quand chaîne active) -->
-      <div id="combo-display" class="combo-display">
-        <span class="combo-x" id="combo-x">×1</span>
-        <span class="combo-fire" id="combo-fire"></span>
-      </div>
 
       <!-- UPGRADES — cœur addictif du jeu (Cookie Clicker style) — 4 colonnes -->
       <div class="tap-upgrades">
@@ -5240,6 +5308,29 @@ body.shop-epic-flash::after{
     <h2>ASCENSION</h2>
     <div class="divider"></div>
     <div class="saison-body" id="saison-body"></div>
+  </div>
+</div>
+
+<!-- OFFLINE REWARD POPUP (au retour du joueur) -->
+<div id="offline-modal" class="modal">
+  <div class="modal-card offline-card">
+    <div class="modal-close" id="offline-close" aria-label="Fermer">×</div>
+    <div class="offline-hero">
+      <div class="offline-emoji">🏃‍♂️💨</div>
+      <h2>BIEN JOUÉ COACH !</h2>
+      <div class="offline-sub" id="offline-duration">—</div>
+    </div>
+    <div class="offline-stats">
+      <div class="offline-row">
+        <span class="offline-row-lbl">Médailles gagnées</span>
+        <span class="offline-row-val" id="offline-gold">+0</span>
+      </div>
+      <div class="offline-row offline-row-info">
+        Ton équipe a tourné à 50% pendant ton absence.<br>
+        Reviens plus souvent = plus de médailles !
+      </div>
+    </div>
+    <button id="offline-collect" class="offline-collect-btn">RÉCUPÉRER</button>
   </div>
 </div>
 
@@ -10460,15 +10551,15 @@ function saisonAutoBase(){ return (STATE.perkAutoBase||0) * 0.2; }
 const TEAM_RUNNERS = [
   { id:'sprinter',    name:'Sprinter',     emoji:'⚡', color:'#ffa45c',
     base:8,            factor:1.10,  baseBatch:5,         cycleTime:1.5,
-    managerCost:1000,  unlockLaps:0,   unlockSaison:1,
+    managerCost:50,    unlockLaps:0,   unlockSaison:1,
     desc:'Cycle court · batch léger. Le starter.' },
   { id:'relayeur',    name:'Relayeur',     emoji:'🤝', color:'#7bc7f6',
     base:80,           factor:1.10,  baseBatch:50,        cycleTime:4,
-    managerCost:25000, unlockLaps:5,   unlockSaison:1,
+    managerCost:3000,  unlockLaps:5,   unlockSaison:1,
     desc:'Cycle moyen · batch décent.' },
   { id:'hurdler',     name:'Hurdler',      emoji:'🏃', color:'#c89af0',
     base:800,          factor:1.10,  baseBatch:500,       cycleTime:8,
-    managerCost:500000,unlockLaps:20,  unlockSaison:1,
+    managerCost:80000, unlockLaps:20,  unlockSaison:1,
     desc:'Cycle lent · batch musclé.' },
   { id:'marathonien', name:'Marathonien',  emoji:'🧘', color:'#7ec46a',
     base:10000,        factor:1.11,  baseBatch:8000,      cycleTime:18,
@@ -12813,19 +12904,18 @@ function fmtDuration(ms){
 }
 
 function showOfflineToast(offlineMs, gold){
-  const ov = document.createElement("div");
-  ov.className = "offline-toast";
-  ov.innerHTML = `
-    <div class="of-banner">PENDANT TON ABSENCE</div>
-    <div class="of-time">${fmtDuration(offlineMs)}</div>
-    <div class="of-text">L'stade a continué de murmurer. La poussière a brillé. L'énergie s'est rechargée.</div>
-    <div class="of-gain">+${gold} <svg viewBox="0 0 16 16" shape-rendering="crispEdges" style="width:11px;height:11px;vertical-align:-2px"><rect x="3" y="5" width="10" height="2" fill="#c9a25a"/><rect x="3" y="7" width="10" height="5" fill="#9a7842"/></svg></div>
-    <div class="of-close">Toucher pour fermer</div>
-  `;
-  document.body.appendChild(ov);
-  ov.addEventListener("click", ()=>{ ov.classList.remove("show"); setTimeout(()=>ov.remove(), 600); });
-  setTimeout(()=>ov.classList.add("show"), 30);
-  if(A.ctx){
+  // v4 : nouveau modal fancy à la place du toast minimal
+  const modal = document.getElementById('offline-modal');
+  if(!modal){
+    // fallback : ancien comportement si modal absent
+    return;
+  }
+  const durEl = document.getElementById('offline-duration');
+  const goldEl = document.getElementById('offline-gold');
+  if(durEl) durEl.textContent = 'Ton coureur a couru ' + fmtDuration(offlineMs);
+  if(goldEl) goldEl.textContent = '+' + (typeof fmtBigNumber === 'function' ? fmtBigNumber(gold) : gold);
+  modal.classList.add('show');
+  if(A?.ctx){
     blip(440, .25, "sine", .18, .6);
     setTimeout(()=>blip(660, .25, "sine", .18, .6), 120);
     setTimeout(()=>blip(880, .35, "triangle", .22, .7), 260);
@@ -12947,18 +13037,42 @@ function load(){
       applyEventModifiers();
     }
 
-    // Calcul du temps offline
+    // Calcul du temps offline + reward
     const now = Date.now();
     const lastSave = s.lastSaveTime || now;
     const offlineMs = Math.max(0, now - lastSave);
-    if(offlineMs > 60*1000){ // au-delà d'1 min on parle d'offline
+    if(offlineMs > 30*1000){ // au-delà de 30s on déclenche un récap
       STATE.lastOfflineMs = offlineMs;
-      // Récupération offline : essence se remplit + petit gain de médailles proportionnel
       STATE.essence = STATE.essenceMax;
-      const cappedHours = Math.min(8, offlineMs / (3600*1000)); // cap 8h
-      const offlineGold = Math.floor(cappedHours * 12 + (cappedHours * (sumProduced(STATE)/100)));
-      STATE.gold += offlineGold;
-      STATE.pendingOfflineToast = { ms: offlineMs, gold: offlineGold };
+      // === OFFLINE REWARDS v4 : team production avec cap 8h et efficacité 50% ===
+      _ensureTeamShape();
+      const cappedSec = Math.min(8*3600, offlineMs / 1000);
+      let offlineGold = 0;
+      // Pour chaque coureur avec manager, ajoute sa production (capped en cycles)
+      for(const r of TEAM_RUNNERS){
+        const d = STATE.team[r.id];
+        if(!d || d.level < 1) continue;
+        const batch = runnerBatchValue(r);
+        if(d.mgr){
+          // Manager actif : auto-collect chaque cycle, plein régime
+          const cycles = Math.floor(cappedSec / r.cycleTime);
+          offlineGold += cycles * batch;
+        } else {
+          // Sans manager : 1 batch max accumulé (le cycle complète une fois)
+          if(cappedSec >= r.cycleTime){
+            offlineGold += batch;
+            d.cycle = 1; // ready à collecter au retour
+          } else {
+            d.cycle = Math.min(1, (d.cycle || 0) + cappedSec / r.cycleTime);
+          }
+        }
+      }
+      // Efficacité offline : 50% du gain normal (incite à revenir)
+      offlineGold = Math.floor(offlineGold * 0.5);
+      if(offlineGold > 0){
+        STATE.gold += offlineGold;
+        STATE.pendingOfflineToast = { ms: offlineMs, gold: offlineGold };
+      }
     }
     STATE.sessionStartMs = now;
     STATE.lastSaveTime = now;
@@ -13122,6 +13236,11 @@ function boot(){
   bindModalClose('profile-modal','profile-close');
   bindModalClose('saison-modal','saison-close');
   bindModalClose('daily-modal','daily-close');
+  bindModalClose('offline-modal','offline-close');
+  document.getElementById('offline-collect')?.addEventListener('click', ()=>{
+    document.getElementById('offline-modal')?.classList.remove('show');
+    if(A?.ctx) blip(880, .15, "triangle", .22, .55);
+  });
   // Bouton ASCENSION → ouvre le modal Saison
   document.getElementById('saison-btn')?.addEventListener('click', (e)=>{
     e.stopPropagation();

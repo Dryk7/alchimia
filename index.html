@@ -4990,8 +4990,8 @@ body.shop-epic-flash::after{
       </div>
       <svg id="runner-svg" viewBox="0 0 320 500" preserveAspectRatio="xMidYMid slice">
         <defs>
-          <!-- Trajectoire ovale plus grosse (portrait) -->
-          <path id="rs-path" d="M 50,400 A 110,38 0 0 1 270,400 A 110,38 0 0 1 50,400 Z" fill="none"/>
+          <!-- Trajectoire ovale CENTRÉE + plus grosse -->
+          <path id="rs-path" d="M 40,310 A 120,56 0 0 1 280,310 A 120,56 0 0 1 40,310 Z" fill="none"/>
           <!-- Gradient ciel (plus vertical) -->
           <linearGradient id="rs-sky-grad" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%"   stop-color="#5ab0e0"/>
@@ -5088,81 +5088,102 @@ body.shop-epic-flash::after{
         <!-- TRIBUNES (zone arrière-plan, dessinées par buildCrowd entre y=180-380) -->
         <g id="rs-crowd"></g>
 
-        <!-- SOL vert pré (occupe toute la moitié basse, sera couvert par piste) -->
-        <rect x="0" y="345" width="320" height="155" fill="url(#rs-grass-grad)"/>
-        <rect x="0" y="345" width="320" height="3" fill="#88c060"/>
+        <!-- SOL vert pré (sous la piste, partie basse de l'écran) -->
+        <rect x="0" y="240" width="320" height="260" fill="url(#rs-grass-grad)"/>
+        <rect x="0" y="240" width="320" height="3" fill="#88c060"/>
 
-        <!-- BANNIÈRES SPONSORS le long du bord du terrain -->
+        <!-- BANNIÈRES SPONSORS bordure du terrain (juste au-dessus de la piste) -->
         <g id="rs-banners">
-          <rect x="2" y="345" width="58" height="9" fill="#e85a30"/>
-          <rect x="2" y="345" width="58" height="2" fill="#ffd070"/>
-          <rect x="2" y="352" width="58" height="2" fill="#a82010"/>
-          <text x="31" y="352" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="6" fill="#fff" letter-spacing=".4">VITA-RUN</text>
-          <rect x="120" y="345" width="80" height="9" fill="#4a9fd9"/>
-          <rect x="120" y="345" width="80" height="2" fill="#a8dcf0"/>
-          <rect x="120" y="352" width="80" height="2" fill="#2a6090"/>
-          <text x="160" y="352" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="6" fill="#fff" letter-spacing=".4">SPRINTER COLA</text>
-          <rect x="260" y="345" width="58" height="9" fill="#7ec46a"/>
-          <rect x="260" y="345" width="58" height="2" fill="#d7ecb6"/>
-          <rect x="260" y="352" width="58" height="2" fill="#4a7a3a"/>
-          <text x="289" y="352" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="6" fill="#fff" letter-spacing=".4">CHAMPION'S</text>
+          <rect x="2" y="240" width="58" height="11" fill="#e85a30"/>
+          <rect x="2" y="240" width="58" height="2" fill="#ffd070"/>
+          <rect x="2" y="249" width="58" height="2" fill="#a82010"/>
+          <text x="31" y="248" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="6.5" fill="#fff" letter-spacing=".4">VITA-RUN</text>
+          <rect x="120" y="240" width="80" height="11" fill="#4a9fd9"/>
+          <rect x="120" y="240" width="80" height="2" fill="#a8dcf0"/>
+          <rect x="120" y="249" width="80" height="2" fill="#2a6090"/>
+          <text x="160" y="248" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="6.5" fill="#fff" letter-spacing=".4">SPRINTER COLA</text>
+          <rect x="260" y="240" width="58" height="11" fill="#7ec46a"/>
+          <rect x="260" y="240" width="58" height="2" fill="#d7ecb6"/>
+          <rect x="260" y="249" width="58" height="2" fill="#4a7a3a"/>
+          <text x="289" y="248" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="6.5" fill="#fff" letter-spacing=".4">CHAMPION'S</text>
         </g>
 
-        <!-- PISTE OVALE (centrée plus bas, plus grosse) -->
-        <ellipse id="rs-track-ring" cx="160" cy="400" rx="125" ry="42" fill="#c8884e" stroke="#a07840" stroke-width="2.5"/>
+        <!-- PISTE OVALE CENTRÉE (cy=310 au cœur de l'écran) -->
+        <ellipse id="rs-track-ring" cx="160" cy="310" rx="135" ry="60" fill="#c8884e" stroke="#a07840" stroke-width="2.5"/>
         <!-- Lanes blancs (3 couloirs concentriques) -->
-        <ellipse cx="160" cy="400" rx="115" ry="34" fill="none" stroke="#fff" stroke-width=".8" opacity=".7"/>
-        <ellipse cx="160" cy="400" rx="103" ry="26" fill="none" stroke="#fff" stroke-width=".8" opacity=".7"/>
-        <!-- Gazon central (ovale plus petit dans le track) -->
-        <ellipse cx="160" cy="400" rx="92" ry="18" fill="url(#rs-mowed)" stroke="#558838" stroke-width="1.8"/>
+        <ellipse cx="160" cy="310" rx="123" ry="50" fill="none" stroke="#fff" stroke-width=".9" opacity=".7"/>
+        <ellipse cx="160" cy="310" rx="110" ry="38" fill="none" stroke="#fff" stroke-width=".9" opacity=".7"/>
+        <!-- Gazon central -->
+        <ellipse cx="160" cy="310" rx="98" ry="28" fill="url(#rs-mowed)" stroke="#558838" stroke-width="1.8"/>
         <!-- Couloir extérieur pointillé -->
-        <ellipse cx="160" cy="400" rx="123" ry="40" fill="none" stroke="#fff" stroke-width="1" stroke-dasharray="6 5" opacity=".55"/>
+        <ellipse cx="160" cy="310" rx="132" ry="57" fill="none" stroke="#fff" stroke-width="1.1" stroke-dasharray="7 5" opacity=".55"/>
 
-        <!-- Ligne d'arrivée checkered (en haut et bas du track) -->
+        <!-- Ligne d'arrivée checkered (haut + bas de la piste) -->
         <g shape-rendering="crispEdges">
-          <rect x="157.5" y="358" width="5" height="3" fill="#fff"/>
-          <rect x="157.5" y="361" width="5" height="3" fill="#1a1010"/>
-          <rect x="157.5" y="364" width="5" height="3" fill="#fff"/>
-          <rect x="157.5" y="438" width="5" height="3" fill="#fff"/>
-          <rect x="157.5" y="441" width="5" height="3" fill="#1a1010"/>
-          <rect x="157.5" y="444" width="5" height="3" fill="#fff"/>
+          <rect x="157.5" y="252" width="5" height="3" fill="#fff"/>
+          <rect x="157.5" y="255" width="5" height="3" fill="#1a1010"/>
+          <rect x="157.5" y="258" width="5" height="3" fill="#fff"/>
+          <rect x="157.5" y="363" width="5" height="3" fill="#fff"/>
+          <rect x="157.5" y="366" width="5" height="3" fill="#1a1010"/>
+          <rect x="157.5" y="369" width="5" height="3" fill="#fff"/>
         </g>
 
-        <!-- Drapeau à damiers (au-dessus de la ligne d'arrivée) -->
+        <!-- Drapeau à damiers (au-dessus de la ligne d'arrivée haute) -->
         <g shape-rendering="crispEdges">
-          <rect x="159" y="332" width="1.5" height="28" fill="#3a2818"/>
-          <rect x="160" y="332" width="14" height="11" fill="#1a1010"/>
-          <rect x="161" y="333" width="3" height="3" fill="#fff"/>
-          <rect x="167" y="333" width="3" height="3" fill="#fff"/>
-          <rect x="164" y="336" width="3" height="3" fill="#fff"/>
-          <rect x="170" y="336" width="3" height="3" fill="#fff"/>
-          <rect x="161" y="339" width="3" height="3" fill="#fff"/>
-          <rect x="167" y="339" width="3" height="3" fill="#fff"/>
+          <rect x="159" y="225" width="1.5" height="28" fill="#3a2818"/>
+          <rect x="160" y="225" width="14" height="11" fill="#1a1010"/>
+          <rect x="161" y="226" width="3" height="3" fill="#fff"/>
+          <rect x="167" y="226" width="3" height="3" fill="#fff"/>
+          <rect x="164" y="229" width="3" height="3" fill="#fff"/>
+          <rect x="170" y="229" width="3" height="3" fill="#fff"/>
+          <rect x="161" y="232" width="3" height="3" fill="#fff"/>
+          <rect x="167" y="232" width="3" height="3" fill="#fff"/>
         </g>
 
-        <!-- Détails fleurs + herbe -->
+        <!-- Détails fleurs + herbe (autour de la piste) -->
         <g shape-rendering="crispEdges">
-          <rect x="125" y="395" width="2" height="4" fill="#558838" opacity=".8"/>
-          <rect x="178" y="405" width="2" height="4" fill="#558838" opacity=".8"/>
-          <rect x="148" y="412" width="2" height="4" fill="#558838" opacity=".8"/>
-          <rect x="195" y="394" width="2" height="4" fill="#558838" opacity=".8"/>
-          <rect x="115" y="393" width="3" height="3" fill="#ff8a48"/>
-          <rect x="200" y="408" width="3" height="3" fill="#fff"/>
-          <rect x="140" y="408" width="3" height="3" fill="#ff8a48"/>
-          <rect x="170" y="418" width="3" height="3" fill="#fff"/>
+          <rect x="115" y="298" width="3" height="4" fill="#558838" opacity=".8"/>
+          <rect x="195" y="318" width="3" height="4" fill="#558838" opacity=".8"/>
+          <rect x="138" y="325" width="3" height="4" fill="#558838" opacity=".8"/>
+          <rect x="178" y="295" width="3" height="4" fill="#558838" opacity=".8"/>
+          <rect x="125" y="305" width="3" height="3" fill="#ff8a48"/>
+          <rect x="200" y="318" width="3" height="3" fill="#fff"/>
+          <rect x="155" y="320" width="3" height="3" fill="#ff8a48"/>
+          <rect x="180" y="305" width="3" height="3" fill="#fff"/>
           <!-- Logo central FOULÉE sur le gazon -->
-          <ellipse cx="160" cy="400" rx="22" ry="5" fill="#fff" opacity=".18"/>
-          <text x="160" y="403" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="7" fill="#fff" opacity=".5">FOULÉE</text>
+          <ellipse cx="160" cy="310" rx="26" ry="7" fill="#fff" opacity=".18"/>
+          <text x="160" y="313" text-anchor="middle" font-family="Nunito" font-weight="900" font-size="9" fill="#fff" opacity=".5" letter-spacing=".5">FOULÉE</text>
         </g>
 
-        <!-- FOREGROUND : herbes hautes / décors devant la piste -->
+        <!-- AVANT-PLAN : décor au-devant du terrain (gazon foreground) -->
         <g id="rs-foreground" shape-rendering="crispEdges">
-          <rect x="40" y="468" width="3" height="6" fill="#5a8038"/>
-          <rect x="78" y="475" width="3" height="6" fill="#5a8038"/>
-          <rect x="135" y="468" width="3" height="6" fill="#5a8038"/>
-          <rect x="200" y="478" width="3" height="6" fill="#5a8038"/>
-          <rect x="245" y="472" width="3" height="6" fill="#5a8038"/>
-          <rect x="288" y="478" width="3" height="6" fill="#5a8038"/>
+          <!-- Bordure foreground gazon plus dense -->
+          <rect x="0" y="395" width="320" height="105" fill="#7eaa4a"/>
+          <rect x="0" y="395" width="320" height="3" fill="#88c060" opacity=".6"/>
+          <!-- Herbes hautes en avant -->
+          <rect x="20" y="420" width="3" height="8" fill="#5a8038"/>
+          <rect x="60" y="430" width="3" height="8" fill="#5a8038"/>
+          <rect x="100" y="425" width="3" height="8" fill="#5a8038"/>
+          <rect x="140" y="435" width="3" height="8" fill="#5a8038"/>
+          <rect x="185" y="425" width="3" height="8" fill="#5a8038"/>
+          <rect x="220" y="438" width="3" height="8" fill="#5a8038"/>
+          <rect x="260" y="428" width="3" height="8" fill="#5a8038"/>
+          <rect x="295" y="435" width="3" height="8" fill="#5a8038"/>
+          <!-- Fleurs colorées -->
+          <rect x="42" y="440" width="3" height="3" fill="#ff8a48"/>
+          <rect x="118" y="445" width="3" height="3" fill="#fff"/>
+          <rect x="170" y="450" width="3" height="3" fill="#ff5a30"/>
+          <rect x="250" y="448" width="3" height="3" fill="#c8a8f0"/>
+          <!-- Buisson 1 -->
+          <ellipse cx="35" cy="475" rx="20" ry="10" fill="#5a8038"/>
+          <ellipse cx="35" cy="475" rx="20" ry="10" fill="#7eaa4a" opacity=".4"/>
+          <!-- Buisson 2 -->
+          <ellipse cx="285" cy="478" rx="22" ry="11" fill="#5a8038"/>
+          <ellipse cx="285" cy="478" rx="22" ry="11" fill="#7eaa4a" opacity=".4"/>
+          <!-- Banc petit -->
+          <rect x="150" y="465" width="20" height="2" fill="#5a4028"/>
+          <rect x="151" y="467" width="2" height="6" fill="#3a2818"/>
+          <rect x="167" y="467" width="2" height="6" fill="#3a2818"/>
         </g>
         <!-- LE COUREUR : sprite agrandi (×1.6), proportions claires, contour noir -->
         <g id="rs-runner">
@@ -12768,50 +12789,44 @@ function buildCrowd(){
   const fillLevel = Math.min(1, laps / 50 + saison * 0.3);
   const tones = ['#3e8db8','#d04030','#5a9040','#9080c0','#ffd070','#fff','#f08a48'];
   let html = '';
-  // === STRUCTURE DES TRIBUNES portrait v6 ===
-  // viewBox 320×500. Tribunes entre y=180 (sous toit) et y=345 (haut piste).
-  // 6 marches descendantes pour plus de richesse.
+  // === STRUCTURE DES TRIBUNES portrait v7 ===
+  // viewBox 320×500. Piste centrée y=310. Tribunes entre y=180 et y=240 (au-dessus piste).
   // BLEACHERS GAUCHE (x=0..58)
   html += `<g class="rs-bleachers">`;
-  html += `<rect x="0" y="180" width="58" height="165" fill="#9b7f50"/>`;
+  html += `<rect x="0" y="180" width="58" height="60" fill="#9b7f50"/>`;
   html += `<rect x="0" y="180" width="58" height="3" fill="#7c6440"/>`;
-  html += `<rect x="0" y="200" width="58" height="11" fill="#b89a6e"/>`;
-  html += `<rect x="0" y="225" width="58" height="11" fill="#c8aa7e"/>`;
-  html += `<rect x="0" y="250" width="58" height="11" fill="#d8ba8e"/>`;
-  html += `<rect x="0" y="275" width="58" height="11" fill="#e8ca9e"/>`;
-  html += `<rect x="0" y="300" width="58" height="12" fill="#f0d4ae"/>`;
-  html += `<rect x="0" y="326" width="58" height="14" fill="#e8c898"/>`;
-  // Séparateurs verticaux (colonnes des gradins)
+  html += `<rect x="0" y="190" width="58" height="9" fill="#b89a6e"/>`;
+  html += `<rect x="0" y="201" width="58" height="9" fill="#c8aa7e"/>`;
+  html += `<rect x="0" y="212" width="58" height="9" fill="#d8ba8e"/>`;
+  html += `<rect x="0" y="223" width="58" height="9" fill="#e8ca9e"/>`;
+  html += `<rect x="0" y="234" width="58" height="6" fill="#f0d4ae"/>`;
   for(let mx=5; mx<58; mx+=9){
-    html += `<rect x="${mx}" y="185" width="1" height="155" fill="#8a6d44" opacity=".4"/>`;
+    html += `<rect x="${mx}" y="185" width="1" height="55" fill="#8a6d44" opacity=".4"/>`;
   }
-  // Escalier d'accès central
-  html += `<rect x="28" y="180" width="6" height="165" fill="#8a6d44" opacity=".25"/>`;
+  html += `<rect x="28" y="180" width="6" height="60" fill="#8a6d44" opacity=".25"/>`;
   html += `</g>`;
   // BLEACHERS DROITE (x=262..320)
   html += `<g class="rs-bleachers">`;
-  html += `<rect x="262" y="180" width="58" height="165" fill="#9b7f50"/>`;
+  html += `<rect x="262" y="180" width="58" height="60" fill="#9b7f50"/>`;
   html += `<rect x="262" y="180" width="58" height="3" fill="#7c6440"/>`;
-  html += `<rect x="262" y="200" width="58" height="11" fill="#b89a6e"/>`;
-  html += `<rect x="262" y="225" width="58" height="11" fill="#c8aa7e"/>`;
-  html += `<rect x="262" y="250" width="58" height="11" fill="#d8ba8e"/>`;
-  html += `<rect x="262" y="275" width="58" height="11" fill="#e8ca9e"/>`;
-  html += `<rect x="262" y="300" width="58" height="12" fill="#f0d4ae"/>`;
-  html += `<rect x="262" y="326" width="58" height="14" fill="#e8c898"/>`;
+  html += `<rect x="262" y="190" width="58" height="9" fill="#b89a6e"/>`;
+  html += `<rect x="262" y="201" width="58" height="9" fill="#c8aa7e"/>`;
+  html += `<rect x="262" y="212" width="58" height="9" fill="#d8ba8e"/>`;
+  html += `<rect x="262" y="223" width="58" height="9" fill="#e8ca9e"/>`;
+  html += `<rect x="262" y="234" width="58" height="6" fill="#f0d4ae"/>`;
   for(let mx=267; mx<320; mx+=9){
-    html += `<rect x="${mx}" y="185" width="1" height="155" fill="#8a6d44" opacity=".4"/>`;
+    html += `<rect x="${mx}" y="185" width="1" height="55" fill="#8a6d44" opacity=".4"/>`;
   }
-  html += `<rect x="290" y="180" width="6" height="165" fill="#8a6d44" opacity=".25"/>`;
+  html += `<rect x="290" y="180" width="6" height="60" fill="#8a6d44" opacity=".25"/>`;
   html += `</g>`;
 
-  // === SPECTATEURS 7 rangées ===
+  // === SPECTATEURS 5 rangées (compactes, tribunes plus courtes maintenant) ===
   const rows = [
-    { y: 200, spacing: 7.5, headSize: 1.8, body: 2.5 },
-    { y: 225, spacing: 7.5, headSize: 2,   body: 3 },
-    { y: 250, spacing: 7.5, headSize: 2.2, body: 3.5 },
-    { y: 275, spacing: 7.5, headSize: 2.4, body: 4 },
-    { y: 300, spacing: 7.5, headSize: 2.6, body: 4.5 },
-    { y: 326, spacing: 7.5, headSize: 2.8, body: 5 },
+    { y: 190, spacing: 7.5, headSize: 1.6, body: 2.3 },
+    { y: 201, spacing: 7.5, headSize: 1.8, body: 2.6 },
+    { y: 212, spacing: 7.5, headSize: 2,   body: 3 },
+    { y: 223, spacing: 7.5, headSize: 2.2, body: 3.3 },
+    { y: 234, spacing: 7.5, headSize: 2.4, body: 3.6 },
   ];
   const placePerson = (x, y, headSize, bodySize, color, hatColor) => {
     let s = '';

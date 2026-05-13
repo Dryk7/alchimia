@@ -11146,14 +11146,35 @@ const STAMINA_DECAY_PER_SEC = 0.075; // décroit plus vite : 1 → 0 en ~13s san
 const STAMINA_MAX = 2.2;
 const STAMINA_MIN = 0.3;
 const SPEED_CAP = 3.5; // plafond dur — pas de runaway
+/* v7 PIVOT GAMEFEEL : au début le coureur n'avance PAS du tout.
+   Chaque tap pousse manuellement. La vitesse auto se construit progressivement
+   grâce aux upgrades AUTO, aux managers d'équipe, et aux ascensions.
+   → l'automatisation devient un "wow moment" tangible. */
 function runnerBaseSpeed(){
-  const totalMaxTier = (STATE.totals?.maxTier||[0,0,0]).reduce((a,b)=>a+b, 0);
-  const ascensions = STATE.ascensions || STATE.transmutations || 0;
-  // Courbe sub-linéaire pour éviter l'explosion : sqrt scaling
-  return 1 + Math.sqrt(totalMaxTier) * 0.18 + ascensions * 0.25;
+  let base = 0; // ← le COUREUR ne bouge PAS au départ
+  // AUTO upgrade : chaque niveau ajoute 0.15 (atteint 1.0 à niv 7)
+  base += (STATE.upgradeAutoTap || 0) * 0.15;
+  // TAP +1 upgrade : 0.04 par niveau (atteint 1.0 à niv 25)
+  base += (STATE.upgradeTapValue || 0) * 0.04;
+  // TOUR +50 upgrade : 0.06 par niveau (gros impact)
+  base += (STATE.upgradeLapBonus || 0) * 0.06;
+  // Managers d'équipe : 0.25 par manager hired
+  if(STATE.team){
+    for(const id in STATE.team){
+      if(STATE.team[id]?.mgr) base += 0.25;
+    }
+  }
+  // Ascensions : 0.5 par saison passée
+  base += ((STATE.saison || 1) - 1) * 0.5;
+  // Saison perks AUTO base
+  if(typeof saisonAutoBase === 'function') base += saisonAutoBase() * 0.1;
+  // Légère contribution du niveau coureur
+  base += Math.floor((STATE.alchLevel || 1) / 10) * 0.1;
+  return base;
 }
 function runnerSpeedMultiplier(){
   const base = runnerBaseSpeed();
+  if(base <= 0) return 0; // le coureur est COMPLÈTEMENT à l'arrêt
   const stam = Math.max(STAMINA_MIN, Math.min(STAMINA_MAX, STATE.runnerStamina || 1));
   return Math.min(SPEED_CAP, base * (0.55 + 0.45 * stam));
 }
@@ -11233,6 +11254,14 @@ function tapBoost(e){
   // XP gain : 1 par tap, +3 si crit
   if(typeof gainXp === 'function') gainXp(isCrit ? 3 : 1);
   STATE.totalTaps = (STATE.totalTaps || 0) + 1;
+  // v7 : CHAQUE TAP POUSSE LE COUREUR — boost manuel de lapProgress
+  // Au début, c'est le SEUL moyen d'avancer. Avec progression, devient bonus.
+  const tapPush = 0.006 + (STATE.upgradeTapValue || 0) * 0.0005; // 0.6% au départ, +0.05% par niv TAP
+  STATE.lapProgress = (STATE.lapProgress || 0) + tapPush * (isCrit ? 2 : 1);
+  if(STATE.lapProgress >= 1){
+    STATE.lapProgress = 0;
+    if(typeof completeLap === 'function') completeLap();
+  }
   // Check achievements throttled every 25 taps pour pas spammer
   if(STATE.totalTaps % 25 === 0 && typeof checkAchievements === 'function') checkAchievements();
   // Starter pack offert au joueur après son 10e tap

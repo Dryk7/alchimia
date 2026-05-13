@@ -504,6 +504,73 @@ header{
   margin-top:12px;
 }
 
+/* === GOLDEN BATCHES (Cookie Clicker style) === */
+.golden-batch{
+  position:absolute;
+  z-index:7;
+  width:48px; height:48px;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  pointer-events:auto;
+  filter:drop-shadow(0 4px 8px rgba(255, 180, 50, .6));
+  animation:goldenSpawn .4s cubic-bezier(.2,.9,.2,1.4), goldenFloat 2.2s ease-in-out infinite;
+}
+@keyframes goldenSpawn{
+  0%   { transform:scale(0) rotate(-180deg); opacity:0; }
+  100% { transform:scale(1) rotate(0); opacity:1; }
+}
+@keyframes goldenFloat{
+  0%,100% { transform:translateY(0) rotate(-5deg); }
+  50%     { transform:translateY(-8px) rotate(5deg); }
+}
+.golden-coin{
+  font-size:36px;
+  text-shadow:0 0 12px rgba(255,208,112,1), 0 0 24px rgba(255,180,50,.6);
+  animation:goldenPulse 1.2s ease-in-out infinite;
+}
+@keyframes goldenPulse{
+  0%,100% { transform:scale(1); }
+  50%     { transform:scale(1.15); }
+}
+.golden-batch::before{
+  content:'';
+  position:absolute; inset:-12px;
+  background:radial-gradient(circle, rgba(255,208,112,.5) 0%, transparent 60%);
+  pointer-events:none;
+  animation:goldenAura 1.5s ease-in-out infinite;
+}
+@keyframes goldenAura{
+  0%,100% { opacity:.5; transform:scale(.9); }
+  50%     { opacity:.9; transform:scale(1.2); }
+}
+.golden-batch.golden-fade{ animation:goldenFade .4s ease-out forwards; }
+@keyframes goldenFade{
+  0%   { transform:scale(1); opacity:1; }
+  100% { transform:scale(.6); opacity:0; }
+}
+.golden-batch.golden-collected{ animation:goldenCollect .5s ease-out forwards; }
+@keyframes goldenCollect{
+  0%   { transform:scale(1); opacity:1; }
+  40%  { transform:scale(1.5); opacity:1; }
+  100% { transform:scale(0); opacity:0; }
+}
+.golden-pop{
+  position:fixed;
+  z-index:100;
+  pointer-events:none;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:22px;
+  text-shadow:0 2px 6px rgba(0,0,0,.4);
+  white-space:nowrap;
+  transform:translateX(-50%);
+  animation:goldenPop 1.5s ease-out forwards;
+}
+@keyframes goldenPop{
+  0%   { transform:translate(-50%, 0) scale(.6); opacity:0; }
+  20%  { transform:translate(-50%, -10px) scale(1.2); opacity:1; }
+  100% { transform:translate(-50%, -80px) scale(.8); opacity:0; }
+}
+
 /* === OFFLINE REWARDS POPUP === */
 .offline-card{ text-align:center; padding-bottom:20px; }
 .offline-hero{
@@ -10256,8 +10323,9 @@ function tapBoost(e){
   const comboMul = _comboCount >= 25 ? 5 : _comboCount >= 12 ? 3 : _comboCount >= 6 ? 2 : _comboCount >= 3 ? 1.5 : 1;
   // Bump stamina = boost de vitesse temporaire
   if(typeof bumpStamina === 'function') bumpStamina(0.14 + _comboCount * 0.005);
-  // Médailles par tap : base 1 + niveau upgrade × saison goldMul
-  const perTap = (1 + (STATE.upgradeTapValue||0)) * comboMul * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
+  // Médailles par tap : base 1 + niveau upgrade × saison goldMul × tap golden mul
+  const tapMul = (typeof getTapMul === 'function') ? getTapMul() : 1;
+  const perTap = (1 + (STATE.upgradeTapValue||0)) * comboMul * tapMul * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
   // Crit chance plafonné à 60% pour éviter le OP late game
   const rawCrit = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
   const critChance = Math.min(0.60, rawCrit);
@@ -10535,6 +10603,122 @@ function saisonGoldMul(){ return 1 + (STATE.perkGoldMul||0) * 0.05; }
 function saisonCritBonus(){ return (STATE.perkCritBase||0) * 0.005; }
 function saisonXpMul(){ return 1 + (STATE.perkXpMul||0) * 0.05; }
 function saisonAutoBase(){ return (STATE.perkAutoBase||0) * 0.2; }
+
+/* ================ GOLDEN BATCHES — Cookie Clicker style ================
+   Toutes les 45-90s une médaille dorée apparaît sur le stade.
+   La tapper donne un gros bonus (15s de production team OU multiplier tap 30s). */
+const GOLDEN_MIN_SPAWN_MS = 45000;  // 45s
+const GOLDEN_MAX_SPAWN_MS = 90000;  // 90s
+const GOLDEN_LIFETIME_MS = 13000;   // 13s avant de disparaître
+let _nextGoldenAt = 0;
+let _goldenActive = null;
+function _scheduleNextGolden(){
+  const delay = GOLDEN_MIN_SPAWN_MS + Math.random() * (GOLDEN_MAX_SPAWN_MS - GOLDEN_MIN_SPAWN_MS);
+  _nextGoldenAt = Date.now() + delay;
+}
+function tickGoldenBatch(){
+  const now = Date.now();
+  if(!_nextGoldenAt) _scheduleNextGolden();
+  // Expiration auto
+  if(_goldenActive && now - _goldenActive.spawnedAt > GOLDEN_LIFETIME_MS){
+    _despawnGolden();
+  }
+  // Spawn quand le timer est dépassé et qu'aucun n'est actif
+  if(!_goldenActive && now >= _nextGoldenAt){
+    _spawnGolden();
+  }
+}
+function _spawnGolden(){
+  const stadium = document.getElementById('runner-stadium');
+  if(!stadium) return;
+  const golden = document.createElement('div');
+  golden.className = 'golden-batch';
+  golden.innerHTML = `<div class="golden-coin">🪙</div>`;
+  // Position aléatoire dans le ciel du stade (top 30-50%, x 10-90%)
+  const x = 10 + Math.random() * 80;
+  const y = 18 + Math.random() * 28;
+  golden.style.left = x + '%';
+  golden.style.top = y + '%';
+  // Type aléatoire : gold burst ou tap multiplier
+  const type = Math.random() < 0.6 ? 'gold' : 'mul';
+  golden.dataset.type = type;
+  stadium.appendChild(golden);
+  _goldenActive = { el: golden, spawnedAt: Date.now(), type };
+  // Click handler
+  golden.addEventListener('pointerdown', (e)=>{
+    e.preventDefault(); e.stopPropagation();
+    _collectGolden();
+  });
+  // SFX d'apparition
+  if(A?.ctx){
+    blip(880, .12, "sine", .18, .5);
+    setTimeout(()=>blip(1320, .15, "triangle", .18, .55), 80);
+  }
+  // Bulle d'alerte du coureur
+  if(typeof showRunnerBubble === 'function'){
+    showRunnerBubble('✨ Médaille dorée !');
+  }
+}
+function _despawnGolden(){
+  if(!_goldenActive) return;
+  _goldenActive.el?.classList.add('golden-fade');
+  const el = _goldenActive.el;
+  setTimeout(()=>el?.remove(), 400);
+  _goldenActive = null;
+  _scheduleNextGolden();
+}
+function _collectGolden(){
+  if(!_goldenActive) return;
+  const type = _goldenActive.type;
+  const el = _goldenActive.el;
+  if(type === 'gold'){
+    // Burst : 30 secondes de team production d'un coup
+    const burst = Math.max(50, Math.floor(teamTotalPerSec() * 30));
+    STATE.gold = (STATE.gold || 0) + burst;
+    _spawnGoldenPop(el, '+' + fmtBigNumber(burst) + ' méd !', '#ffd070');
+  } else {
+    // Multiplier ×10 tap pendant 30 secondes
+    STATE.tapMulUntil = Date.now() + 30000;
+    STATE.tapMul = 10;
+    _spawnGoldenPop(el, '×10 TAP · 30s !', '#ff8030');
+  }
+  if(A?.ctx){
+    blip(660, .15, "triangle", .26, .65);
+    setTimeout(()=>blip(990, .15, "sine", .26, .7), 80);
+    setTimeout(()=>blip(1320, .25, "triangle", .26, .75), 180);
+  }
+  vibrate([30, 50, 30, 50, 30]);
+  // Confetti burst depuis la coin
+  if(el && typeof particles === 'function'){
+    const r = el.getBoundingClientRect();
+    for(let i=0;i<10;i++){
+      setTimeout(()=>{
+        const ang = (i/10) * Math.PI * 2;
+        particles(r.left + r.width/2 + Math.cos(ang)*30, r.top + r.height/2 + Math.sin(ang)*30, '#ffd070', 4);
+      }, i*40);
+    }
+  }
+  el?.classList.add('golden-collected');
+  setTimeout(()=>el?.remove(), 500);
+  _goldenActive = null;
+  _scheduleNextGolden();
+}
+function _spawnGoldenPop(anchorEl, text, color){
+  if(!anchorEl) return;
+  const r = anchorEl.getBoundingClientRect();
+  const pop = document.createElement('div');
+  pop.className = 'golden-pop';
+  pop.textContent = text;
+  pop.style.color = color;
+  pop.style.left = (r.left + r.width/2) + 'px';
+  pop.style.top = r.top + 'px';
+  document.body.appendChild(pop);
+  setTimeout(()=>pop.remove(), 1500);
+}
+function getTapMul(){
+  if(STATE.tapMul && STATE.tapMulUntil && Date.now() < STATE.tapMulUntil) return STATE.tapMul;
+  return 1;
+}
 
 /* ================ L'ÉQUIPE — 6 coureurs façon Eatventure ================
    Chaque coureur produit des médailles/sec indépendamment.
@@ -13535,6 +13719,7 @@ function boot(){
     safe(()=>tickAutoTap(dt));
     safe(()=>tickTeam(dt));
     safe(()=>tickTeamRender(dt));
+    safe(tickGoldenBatch);
     safe(updateRunner);
     safe(updateTapStrip);
     safe(updateRunnerHUD);

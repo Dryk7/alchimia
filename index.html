@@ -12,7 +12,7 @@
 <title>ALCHIMIA — Le Stade des Trois Voies</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&family=UnifrakturMaguntia&family=VT323&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Caveat:wght@500;700&family=VT323&display=swap" rel="stylesheet">
 <style>
 /* =========================================================
    ALCHIMIA v2 — DA Maximum
@@ -23,43 +23,49 @@
    - aucun emoji : tout est SVG inline
    ========================================================= */
 :root{
-  /* Palette stade ensoleillé — fresh, sportif, accessible.
-     Coureur orange, ciel bleu, herbe verte, sable de piste crème. */
-  --ink:#1a2330;          /* bleu nuit doux (ciel d'avant-aube) */
-  --ink-2:#243245;        /* bleu nuit plus clair */
-  --shadow:#0f1620;
-  --panel:#2c3a52;        /* panneau bleu nuit */
-  --panel-2:#3a4a68;
-  --leather:#7a5234;      /* cuir de chaussure de course */
+  /* COZY STORYBOOK — pastels chauds, formes rondes, soleil de matin.
+     Tout est tendre, accessible, comme un livre pour enfant illustré. */
+  --bg-warm:#f7ecd2;       /* crème chaude — fond principal */
+  --bg-warm-2:#ede0bc;     /* crème plus profonde */
+  --bg-deep:#dcc89a;       /* tan boisé doux */
 
-  --parchment:#f4e8c8;    /* sable de piste (crème lumineux) */
-  --parchment-2:#d8c490;
-  --parchment-3:#a89460;
+  --ink:#3d2c20;           /* brun chocolat — texte principal */
+  --ink-2:#5a3f2a;
+  --shadow:#2a1c10;
+
+  --panel:#fff7e2;         /* panneau presque blanc crème */
+  --panel-2:#f4e2b4;
+  --panel-border:#a07a44;
+  --leather:#8a5a30;
+
+  --parchment:#fffaee;
+  --parchment-2:#f4e2b4;
+  --parchment-3:#c8a878;
 
   --gold-dark:#a87830;
-  --gold:#e09940;
-  --gold-light:#f5b958;
+  --gold:#d99830;
+  --gold-light:#f0b550;
   --gold-bright:#ffd070;
-  --gold-glow:rgba(255,208,112,.5);
+  --gold-glow:rgba(255,208,112,.45);
 
-  /* HYDRA = bleu eau */
-  --plant:#3e8db8;        /* (var name kept for compat — c'est la voie HYDRA) */
-  --plant-2:#7ec8e8;
-  --plant-glow:rgba(126,200,232,.7);
+  /* HYDRA = ciel bleu pastel */
+  --plant:#6aa8c8;
+  --plant-2:#9cd0e8;
+  --plant-glow:rgba(156,208,232,.6);
 
-  /* ÉNERGIE = orange/rouge feu */
-  --mineral:#d06030;      /* (var name kept for compat — voie ÉNERGIE) */
-  --mineral-2:#f0a050;
-  --mineral-glow:rgba(240,160,80,.7);
+  /* ÉNERGIE = orange chaud doux */
+  --mineral:#e07848;
+  --mineral-2:#f4a26a;
+  --mineral-glow:rgba(244,162,106,.6);
 
-  /* SOUFFLE = violet pâle/blanc */
-  --essence:#9080c0;      /* (voie SOUFFLE) */
-  --essence-2:#c8a8f0;
-  --essence-glow:rgba(200,168,240,.7);
+  /* SOUFFLE = lavande douce */
+  --essence:#a890c8;
+  --essence-2:#d0b8e8;
+  --essence-glow:rgba(208,184,232,.6);
 
   --ember:#e85a30;
   --flame:#ffb060;
-  --flame-glow:rgba(255,176,96,.7);
+  --flame-glow:rgba(255,176,96,.55);
 
   --blood:#c83434;
 }
@@ -67,41 +73,33 @@
 *{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
 html,body{margin:0; padding:0; width:100%; height:100%; overflow:hidden; overscroll-behavior:none}
 body{
-  background:var(--ink);
-  color:var(--parchment);
-  font-family:"IM Fell English", Georgia, serif;
-  font-size:15px; line-height:1.4;
+  background:var(--bg-warm);
+  color:var(--ink);
+  font-family:"Nunito", system-ui, sans-serif;
+  font-size:15px; line-height:1.4; font-weight:600;
   user-select:none; -webkit-user-select:none;
   touch-action:none;
 }
 
-/* ================ FOND : table en bois sombre + ambiance ================ */
+/* ================ FOND : matin doux, soleil chaud, ciel pastel ================ */
 #stage{
   position:fixed; inset:0;
   background:
-    /* Soleil chaud en haut — comme un matin de course */
-    radial-gradient(ellipse 80% 30% at 50% -5%, rgba(255,208,112,.30), transparent 75%),
-    /* Halo bleu doux sur toute la scène */
-    radial-gradient(ellipse 100% 100% at 50% 30%, rgba(126,200,232,.10), transparent 70%),
-    /* Ciel matinal : haut bleu nuit → bas crème sable */
+    radial-gradient(ellipse 60% 40% at 50% -10%, rgba(255,224,160,.55), transparent 70%),
+    radial-gradient(ellipse 100% 80% at 50% 50%, rgba(255,255,255,.20), transparent 75%),
     linear-gradient(180deg,
-      #1a2330 0%,
-      #2c3a52 35%,
+      #f8e2b8 0%,
+      #f4d49a 35%,
       #4a5a78 60%,
       #6a7090 75%,
-      #b8a878 92%,
-      #a89460 100%);
+      #f0c878 70%,
+      #e8b878 90%,
+      #dca85a 100%);
   display:flex; flex-direction:column;
   transition:filter 1.2s ease;
 }
-/* Sigils alchimiques en filigrane sur le stage (très opaques) */
-#stage::before{
-  content:""; position:absolute; inset:0; pointer-events:none;
-  background:
-    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='800' height='800'><g fill='none' stroke='%23c9a25a' stroke-width='1.2' opacity='.025'><polygon points='160,80 110,180 210,180'/><line x1='160' y1='180' x2='160' y2='240'/><line x1='140' y1='220' x2='180' y2='220'/><circle cx='160' cy='150' r='90'/><circle cx='600' cy='620' r='70'/><line x1='540' y1='620' x2='660' y2='620'/><polygon points='600,560 540,690 660,690'/><circle cx='200' cy='640' r='55'/><circle cx='200' cy='640' r='2.5' fill='%23c9a25a'/><polygon points='620,150 580,230 660,230' transform='rotate(180 620 190)'/><line x1='580' y1='185' x2='660' y2='185'/></g></svg>");
-  background-repeat:no-repeat; background-size:cover; background-position:center;
-  z-index:1;
-}
+/* Plus de sigils alchimiques en filigrane */
+#stage::before{ display:none }
 /* Phases de fond selon palier max global atteint —
    on RÉCHAUFFE et ÉCLAIRE doucement à mesure qu'on progresse,
    plutôt que de plonger le joueur dans une nuit cosmique étouffante */
@@ -118,12 +116,8 @@ body{
 #fx{position:fixed; inset:0; pointer-events:none; z-index:55}
 #cinema{position:fixed; inset:0; pointer-events:none; z-index:90}
 
-/* grain de parchemin global, très subtil */
-#stage::after{
-  content:""; position:absolute; inset:0;
-  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 0.9   0 0 0 0 0.78   0 0 0 0 0.55   0 0 0 0.13 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  opacity:.18; mix-blend-mode:overlay; pointer-events:none;
-}
+/* Plus de grain de parchemin agressif */
+#stage::after{ display:none }
 
 /* ================ HEADER ================ */
 header{
@@ -133,67 +127,53 @@ header{
   grid-template-columns:auto auto 1fr auto;
   gap:6px;
   align-items:center;
-  border-bottom:1px solid var(--gold-dark);
-  background:linear-gradient(180deg, rgba(20,14,18,.96), rgba(20,14,18,.6));
-  box-shadow:0 8px 20px -10px #000;
+  border-bottom:2px solid rgba(160,122,68,.20);
+  background:linear-gradient(180deg, rgba(255,250,238,.95), rgba(255,250,238,.85));
+  backdrop-filter:blur(4px);
+  box-shadow:0 4px 16px -6px rgba(80,55,30,.18);
 }
 #menu-toggle{
   background:transparent; border:none; padding:4px;
   cursor:pointer;
-  color:var(--gold);
+  color:var(--ink-2);
   display:flex; align-items:center; justify-content:center;
 }
-#menu-toggle:hover, #menu-toggle:active{color:var(--gold-bright)}
-#menu-toggle svg{width:22px; height:22px}
+#menu-toggle:hover, #menu-toggle:active{color:var(--ember)}
+#menu-toggle svg{width:24px; height:24px}
 .brand{display:flex; align-items:center; gap:10px; position:relative}
-.brand .fleur{width:24px; height:24px; color:var(--gold-light); flex-shrink:0; filter:drop-shadow(0 0 4px var(--gold-glow))}
+.brand .fleur{width:28px; height:28px; color:var(--ember); flex-shrink:0; filter:drop-shadow(0 1px 2px rgba(80,55,30,.20))}
 .brand-runner{ image-rendering:pixelated }
 .brand-leg1, .brand-shoe1{ animation:legAlt 0.30s steps(2) infinite }
 .brand-leg2, .brand-shoe2{ animation:legAlt 0.30s steps(2) infinite reverse }
-.brand .fleur g{transform-origin:center; animation:rotateOuro 80s linear infinite}
-.brand .name-wrap{position:relative; padding:0 4px}
+.brand .fleur g{transform-origin:center}
+.brand .name-wrap{position:relative; padding:0}
 .brand .name{
-  font-family:"Cinzel", serif; font-weight:900;
-  letter-spacing:.22em; font-size:15px;
-  color:var(--gold-bright);
-  text-shadow:0 0 12px var(--gold-glow), 0 1px 0 #000;
+  font-family:"Nunito", system-ui, sans-serif; font-weight:900;
+  letter-spacing:.04em; font-size:18px;
+  color:var(--ink);
   line-height:1;
 }
 .brand .name small{
-  display:block; font-family:"Cormorant Garamond", serif;
-  font-style:italic; font-weight:500; font-size:9px;
-  letter-spacing:.28em; color:var(--gold); opacity:.7;
-  margin-top:2px;
+  display:block; font-family:"Nunito", system-ui, sans-serif;
+  font-weight:600; font-size:9px;
+  letter-spacing:.18em; color:var(--ember); opacity:.85;
+  margin-top:3px; text-transform:uppercase;
 }
-/* Soulignage typographique du logo : trait + sceaux aux extrémités */
-.brand .name-wrap::before{
-  content:""; position:absolute; left:0; right:0; bottom:-2px; height:1px;
-  background:linear-gradient(90deg, transparent, var(--gold) 15%, var(--gold) 85%, transparent);
-  opacity:.55;
-}
-.brand .name-wrap::after{
-  content:""; position:absolute; left:50%; bottom:-5px;
-  width:4px; height:4px; background:var(--gold-light);
-  transform:translateX(-50%) rotate(45deg);
-  box-shadow:0 0 4px var(--gold-glow);
-}
+.brand .name-wrap::before, .brand .name-wrap::after{ display:none }
 
 .stats{display:flex; gap:8px; justify-content:flex-end; align-items:center}
 .stat{
-  display:flex; align-items:center; gap:5px;
-  padding:5px 10px 5px 8px;
-  background:
-    radial-gradient(ellipse at 50% 0%, rgba(232,200,120,.10), transparent 70%),
-    linear-gradient(180deg, #2a1f1a, #0e0708);
-  border:1px solid var(--gold);
-  border-radius:0;
-  font-family:"VT323", monospace;
-  font-size:18px; line-height:1;
-  color:var(--gold-bright);
-  text-shadow:0 0 6px var(--gold-glow);
-  min-width:70px;
+  display:flex; align-items:center; gap:6px;
+  padding:6px 12px;
+  background:linear-gradient(180deg, #fff8e4, #f4e2b4);
+  border:1.5px solid rgba(160,122,68,.30);
+  border-radius:14px;
+  font-family:"Nunito", system-ui, sans-serif; font-weight:800;
+  font-size:15px; line-height:1;
+  color:var(--ink);
+  min-width:74px;
   position:relative;
-  box-shadow:inset 0 0 8px rgba(0,0,0,.6), 0 0 6px rgba(232,200,120,.08);
+  box-shadow:0 2px 4px rgba(80,55,30,.12), inset 0 1px 0 rgba(255,255,255,.50);
 }
 /* Cartouche : 4 picots aux coins + double trait intérieur */
 .stat::before{
@@ -209,31 +189,29 @@ header{
   box-shadow:0 0 4px var(--gold-glow);
 }
 .stat .icon{width:18px; height:18px; display:inline-block; flex-shrink:0; filter:drop-shadow(0 0 3px currentColor)}
-.stat .stat-stack{display:flex; flex-direction:column; line-height:1; align-items:flex-start; gap:1px}
+.stat .stat-stack{display:flex; flex-direction:column; line-height:1; align-items:flex-start; gap:2px}
 .stat .stat-lbl{
-  font-family:"Cinzel", serif; font-weight:700;
-  font-size:7px; letter-spacing:.2em;
-  color:var(--gold); opacity:.85;
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:8px; letter-spacing:.12em;
+  color:var(--ember); opacity:.9;
   text-transform:uppercase;
 }
 .stat .stat-val{
-  font-family:"VT323", monospace;
-  font-size:17px;
-  color:var(--gold-bright);
-  text-shadow:0 0 6px var(--gold-glow);
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:18px;
+  color:var(--ink);
 }
 .stat .stat-rate{
-  font-family:"VT323", monospace;
-  font-size:11px;
-  color:var(--plant-2);
+  font-family:"Nunito", sans-serif; font-weight:700;
+  font-size:10px;
+  color:var(--plant);
   margin-left:6px;
   white-space:nowrap;
-  text-shadow:0 0 5px var(--plant-glow);
   align-self:center;
 }
 @media (min-width: 600px){
-  .stat .stat-lbl{font-size:8px}
-  .stat .stat-val{font-size:20px}
+  .stat .stat-lbl{font-size:9px}
+  .stat .stat-val{font-size:22px}
 }
 
 /* ================ GAME ================ */
@@ -253,21 +231,16 @@ header{
   position:relative;
   width:100%;
   height:24vh; max-height:200px; min-height:140px;
-  background:linear-gradient(180deg, #1a2330 0%, #2c3a52 100%);
-  border:2px solid var(--gold);
-  border-radius:6px;
+  background:linear-gradient(180deg, #cbe5f5 0%, #f4d8a8 100%);
+  border:3px solid #a07a44;
+  border-radius:18px;
   overflow:hidden;
   box-shadow:
-    inset 0 1px 0 rgba(255,232,168,.22),
-    inset 0 -3px 8px rgba(15,15,25,.55),
-    0 3px 16px rgba(0,0,0,.5);
+    inset 0 2px 0 rgba(255,255,255,.50),
+    inset 0 -2px 4px rgba(160,122,68,.18),
+    0 4px 12px rgba(80,55,30,.18);
 }
-#runner-stadium::before, #runner-stadium::after{
-  content:""; position:absolute; width:7px; height:7px;
-  border:2px solid var(--gold-bright); pointer-events:none; z-index:1;
-}
-#runner-stadium::before{ top:-2px; left:-2px; border-right:none; border-bottom:none }
-#runner-stadium::after{ bottom:-2px; right:-2px; border-left:none; border-top:none }
+#runner-stadium::before, #runner-stadium::after{ display:none }
 #runner-svg{
   display:block; width:100%; height:100%;
 }
@@ -280,28 +253,27 @@ header{
   z-index:5;
 }
 .rs-lap, .rs-niv, .rs-speed{
-  display:flex; flex-direction:row; align-items:center; gap:5px;
-  font-family:"Cinzel", serif;
-  color:var(--gold-bright);
-  text-shadow:0 0 6px rgba(0,0,0,.85), 0 1px 0 #000;
-  padding:2px 8px;
-  background:rgba(15,10,8,.45);
-  border-radius:3px;
-  border:1px solid rgba(255,208,112,.35);
-  backdrop-filter:blur(2px);
-  -webkit-backdrop-filter:blur(2px);
+  display:flex; flex-direction:row; align-items:center; gap:6px;
+  font-family:"Nunito", sans-serif; font-weight:800;
+  color:var(--ink);
+  padding:4px 12px;
+  background:#fff8e4;
+  border-radius:14px;
+  border:1.5px solid rgba(160,122,68,.30);
+  box-shadow:0 2px 4px rgba(80,55,30,.18);
   white-space:nowrap;
 }
 .rs-lap-lbl, .rs-niv-lbl, .rs-speed-lbl{
-  font-size:8px; letter-spacing:.18em; font-weight:700;
-  opacity:.85;
+  font-family:"Nunito", sans-serif;
+  font-size:8.5px; letter-spacing:.10em; font-weight:700;
+  color:var(--ember);
+  text-transform:uppercase;
   line-height:1;
 }
 .rs-lap-num, .rs-niv-num, .rs-speed-num{
-  font-family:"VT323", monospace;
-  font-size:15px; letter-spacing:.02em;
-  color:#fff;
-  text-shadow:0 0 6px var(--gold-bright), 0 1px 0 #000;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:16px;
+  color:var(--ink);
   line-height:1;
 }
 .rs-niv{ /* centre légèrement plus prominent */
@@ -1829,53 +1801,52 @@ body.frenzy-on #grid-frame{
 /* ================ INTRO ================ */
 #intro{
   position:fixed; inset:0; z-index:95;
-  background:radial-gradient(ellipse at 50% 50%, #4a3328 0%, #2a1c12 100%);
+  background:linear-gradient(180deg, #b8def0 0%, #f5d8a0 70%, #f7c87c 100%);
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   text-align:center; padding:24px;
   transition:opacity .9s;
 }
 #intro.gone{opacity:0; pointer-events:none}
 #intro .ouroboros{
-  width:200px; height:150px; color:var(--gold-light);
-  margin-bottom:14px;
-  filter:drop-shadow(0 0 16px var(--gold-glow));
+  width:220px; height:160px; color:var(--ink);
+  margin-bottom:18px;
+  filter:drop-shadow(0 4px 10px rgba(80,55,30,.25));
   animation:ouroIn 1.6s cubic-bezier(.2,.9,.2,1.2);
 }
 #intro .intro-stadium{ image-rendering:pixelated }
 #intro .logo{
-  font-family:"Cinzel", serif; font-weight:900;
-  font-size:36px; letter-spacing:.32em;
-  color:var(--gold-bright);
-  text-shadow:0 0 24px var(--gold-glow), 0 2px 0 #000;
-  margin:0 0 6px;
+  font-family:"Nunito", system-ui, sans-serif; font-weight:900;
+  font-size:42px; letter-spacing:.04em;
+  color:var(--ink);
+  margin:0 0 8px;
   animation:logoIn 1.4s ease-out;
+  text-shadow:0 2px 0 rgba(255,255,255,.6);
 }
 #intro .tagline{
-  font-family:"Cormorant Garamond", serif; font-style:italic;
-  color:var(--gold); font-size:14px;
-  letter-spacing:.16em;
+  font-family:"Caveat", cursive; font-weight:700;
+  color:var(--ember); font-size:20px;
+  letter-spacing:0;
   max-width:340px;
   margin-bottom:36px;
   opacity:0; animation:fadeIn .8s ease-out .8s forwards;
+  line-height:1.25;
 }
 #intro .start{
-  font-family:"Cinzel", serif; font-weight:700;
-  font-size:11px; letter-spacing:.32em;
-  color:#000;
-  background:linear-gradient(180deg, var(--gold-bright), var(--gold));
-  border:1px solid var(--gold-bright);
-  padding:11px 28px;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:14px; letter-spacing:.06em;
+  color:#fff;
+  background:linear-gradient(180deg, #f08a48, #d96828);
+  border:3px solid #fff;
+  padding:14px 32px;
+  border-radius:24px;
   cursor:pointer; text-transform:uppercase;
-  box-shadow:0 0 28px var(--gold-glow);
+  box-shadow:0 6px 16px rgba(217,104,40,.35), 0 2px 0 rgba(255,255,255,.5) inset;
   opacity:0; animation:fadeIn .8s ease-out 1.4s forwards;
   position:relative;
+  transition:transform .15s, box-shadow .15s;
 }
-#intro .start::before, #intro .start::after{
-  content:""; position:absolute; width:8px; height:8px;
-  border:1px solid var(--gold-bright);
-}
-#intro .start::before{top:-3px; left:-3px; border-right:none; border-bottom:none}
-#intro .start::after{bottom:-3px; right:-3px; border-left:none; border-top:none}
+#intro .start:active{ transform:translateY(2px); box-shadow:0 2px 8px rgba(217,104,40,.4); }
+#intro .start::before, #intro .start::after{ display:none }
 #intro .seal-row{
   display:flex; gap:18px; margin-top:30px;
   opacity:0; animation:fadeIn .9s ease-out 1.7s forwards;
@@ -3338,20 +3309,29 @@ body.shop-epic-flash::after{
           <!-- Trajectoire ovale du coureur — pour animateMotion -->
           <path id="rs-path" d="M 50,100 A 110,24 0 0 1 270,100 A 110,24 0 0 1 50,100 Z" fill="none"/>
         </defs>
-        <!-- Ciel : couleur unie qui change via data-time (jour/nuit) -->
-        <rect id="rs-sky-bg" x="0" y="0" width="320" height="140" fill="#16223a"/>
-        <!-- Soleil/lune discret en haut (taille fixe, position selon heure) -->
-        <circle id="rs-celestial" cx="265" cy="22" r="9" fill="#ffd070" opacity=".8"/>
-        <!-- Tribunes : 2 ovales d'arrière-plan + foule de silhouettes (varies par maxTier) -->
+        <!-- Ciel matin doux -->
+        <rect id="rs-sky-bg" x="0" y="0" width="320" height="140" fill="#bedeed"/>
+        <!-- Soleil chaud et rond -->
+        <circle id="rs-celestial" cx="265" cy="28" r="14" fill="#ffd86a"/>
+        <circle cx="265" cy="28" r="20" fill="#fff3b0" opacity=".45"/>
+        <!-- Nuages doux -->
+        <ellipse cx="50" cy="22" rx="18" ry="5" fill="#fff" opacity=".85"/>
+        <ellipse cx="62" cy="18" rx="10" ry="4" fill="#fff" opacity=".85"/>
+        <ellipse cx="170" cy="14" rx="22" ry="5" fill="#fff" opacity=".75"/>
+        <ellipse cx="220" cy="34" rx="14" ry="3.5" fill="#fff" opacity=".7"/>
+        <!-- Sol vert pré pastel -->
+        <rect x="0" y="78" width="320" height="62" fill="#a8d878"/>
+        <rect x="0" y="78" width="320" height="3" fill="#88c060"/>
+        <!-- Tribunes foule -->
         <g id="rs-crowd"></g>
-        <!-- Piste ovale (couleur dépend de maxTier — terre/tartan) -->
-        <ellipse id="rs-track-ring" cx="160" cy="100" rx="118" ry="26" fill="#d88030" stroke="#1a1010" stroke-width="2"/>
-        <!-- Gazon central uni -->
-        <ellipse cx="160" cy="100" rx="88" ry="14" fill="#4a7028" stroke="#1a1010" stroke-width="1.5"/>
-        <!-- Une seule ligne de couloir blanche pointillée -->
-        <ellipse cx="160" cy="100" rx="108" ry="20" fill="none" stroke="#fff" stroke-width=".6" stroke-dasharray="5 6" opacity=".55"/>
-        <!-- Ligne d'arrivée discrète -->
-        <line x1="160" y1="76" x2="160" y2="124" stroke="#fff" stroke-width="1" stroke-dasharray="2 2" opacity=".7"/>
+        <!-- Piste ovale crème -->
+        <ellipse id="rs-track-ring" cx="160" cy="100" rx="118" ry="26" fill="#f0d4a0" stroke="#a07840" stroke-width="2"/>
+        <!-- Gazon central plus vif -->
+        <ellipse cx="160" cy="100" rx="88" ry="14" fill="#7ab858" stroke="#558838" stroke-width="1.5"/>
+        <!-- Couloir blanc pointillé doux -->
+        <ellipse cx="160" cy="100" rx="108" ry="20" fill="none" stroke="#fff" stroke-width="1" stroke-dasharray="6 5" opacity=".8"/>
+        <!-- Ligne d'arrivée -->
+        <line x1="160" y1="76" x2="160" y2="124" stroke="#fff" stroke-width="1.5" stroke-dasharray="3 3" opacity=".9"/>
         <!-- LE COUREUR : sprite agrandi (×1.6), proportions claires, contour noir -->
         <g id="rs-runner">
           <!-- Lignes de vitesse derrière (visibles quand rapide) -->

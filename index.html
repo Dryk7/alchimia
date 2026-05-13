@@ -17274,6 +17274,12 @@ if('serviceWorker' in navigator){
 <script type="module">
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
+import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 
 (function init3D(){
   const canvas = document.getElementById('runner-3d');
@@ -17414,6 +17420,119 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
     m3.position.set(.9, .22, 0); m3.castShadow=true; scene.add(m3);
   }
   addPodium();
+
+  // === DÉTAILS TERRAIN ATHLÉ ===
+  // Haie (white + red band) sur un côté du gazon
+  function makeHurdle(x, z, rotY=0){
+    const hg = new THREE.Group();
+    const bar = new THREE.Mesh(rb(1.2, .08, .04, .02), mat('#ffffff', {roughness:.5}));
+    bar.position.y = .55; bar.castShadow=true; hg.add(bar);
+    const band = new THREE.Mesh(rb(1.2, .04, .045, .015), mat('#e85040', {roughness:.5}));
+    band.position.y = .55; band.castShadow=true; hg.add(band);
+    // 2 poteaux
+    const leg1 = new THREE.Mesh(rb(.06, .55, .04, .02), mat('#ffffff', {roughness:.5}));
+    leg1.position.set(-.55, .28, 0); leg1.castShadow=true; hg.add(leg1);
+    const leg2 = new THREE.Mesh(rb(.06, .55, .04, .02), mat('#ffffff', {roughness:.5}));
+    leg2.position.set(.55, .28, 0); leg2.castShadow=true; hg.add(leg2);
+    // Base
+    const base1 = new THREE.Mesh(rb(.2, .04, .35, .02), mat('#3a3a3a', {roughness:.7}));
+    base1.position.set(-.55, .04, 0); hg.add(base1);
+    const base2 = new THREE.Mesh(rb(.2, .04, .35, .02), mat('#3a3a3a', {roughness:.7}));
+    base2.position.set(.55, .04, 0); hg.add(base2);
+    hg.position.set(x, 0, z);
+    hg.rotation.y = rotY;
+    return hg;
+  }
+  // 3 haies en ligne sur le côté gauche du gazon
+  scene.add(makeHurdle(-3.5, -1.5));
+  scene.add(makeHurdle(-3.5, 0));
+  scene.add(makeHurdle(-3.5, 1.5));
+
+  // Planche de saut en longueur (zone sable beige + planche d'appel blanche)
+  function makeLongJumpPit(){
+    const pit = new THREE.Group();
+    // Sable beige
+    const sand = new THREE.Mesh(rb(1.6, .04, 2.2, .02), mat('#e8d8a8', {roughness:.95}));
+    sand.position.y = .12; sand.receiveShadow=true; pit.add(sand);
+    // Planche d'appel blanche
+    const board = new THREE.Mesh(rb(1.4, .05, .25, .02), mat('#ffffff', {roughness:.6}));
+    board.position.set(0, .14, -1.25); pit.add(board);
+    pit.position.set(3, 0, 0);
+    return pit;
+  }
+  scene.add(makeLongJumpPit());
+
+  // Cercle de lancer de poids (cercle clair + sable au centre)
+  function makeShotPutCircle(){
+    const sg = new THREE.Group();
+    // Anneau béton
+    const ring = new THREE.Mesh(new THREE.RingGeometry(.5, .65, 32), mat('#e0d0b0', {roughness:.8}));
+    ring.rotation.x = -Math.PI/2; ring.position.y = .14; sg.add(ring);
+    // Centre sable
+    const center = new THREE.Mesh(new THREE.CircleGeometry(.48, 24), mat('#d4b078', {roughness:.95}));
+    center.rotation.x = -Math.PI/2; center.position.y = .14; sg.add(center);
+    sg.position.set(-2.5, 0, 1.8);
+    return sg;
+  }
+  scene.add(makeShotPutCircle());
+
+  // Cône orange de signalisation
+  function makeCone(x, z){
+    const cg = new THREE.Group();
+    const cone = new THREE.Mesh(new THREE.ConeGeometry(.18, .55, 12), mat('#e85040', {roughness:.6}));
+    cone.position.y = .39; cone.castShadow=true; cg.add(cone);
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(.22, .22, .04, 16), mat('#e85040', {roughness:.6}));
+    base.position.y = .135; cg.add(base);
+    // Bande blanche
+    const band = new THREE.Mesh(new THREE.ConeGeometry(.13, .15, 12), mat('#ffffff', {roughness:.6}));
+    band.position.y = .42; cg.add(band);
+    cg.position.set(x, 0, z);
+    return cg;
+  }
+  // 2 cônes décoratifs
+  scene.add(makeCone(0, 13));
+  scene.add(makeCone(2.5, 13));
+
+  // Ligne d'arrivée checkered (motif damier au bord de la piste)
+  function makeFinishLine(){
+    const fg = new THREE.Group();
+    // Quad checkered : 8x2 cases blanc/noir
+    for(let i = 0; i < 8; i++){
+      for(let j = 0; j < 2; j++){
+        const isWhite = (i + j) % 2 === 0;
+        const cell = new THREE.Mesh(new THREE.PlaneGeometry(.18, .18),
+          new THREE.MeshStandardMaterial({color: isWhite ? '#fff' : '#1a1a1a', roughness:.6}));
+        cell.rotation.x = -Math.PI/2;
+        cell.position.set(-0.63 + i * .18, .25, 4.7 + j * .18);
+        fg.add(cell);
+      }
+    }
+    return fg;
+  }
+  scene.add(makeFinishLine());
+
+  // Drapeau planté à damier (finish flag)
+  function makeFinishFlag(){
+    const fg = new THREE.Group();
+    // Mât
+    const pole = new THREE.Mesh(rb(.05, 2, .05, .015), mat('#9a8870', {roughness:.7}));
+    pole.position.y = 1; pole.castShadow=true; fg.add(pole);
+    // Damier en haut (plan de 4 quads checkered)
+    const flagGroup = new THREE.Group();
+    for(let i = 0; i < 3; i++){
+      for(let j = 0; j < 2; j++){
+        const isWhite = (i + j) % 2 === 0;
+        const cell = new THREE.Mesh(rb(.18, .18, .02, .005),
+          mat(isWhite ? '#fff' : '#1a1a1a', {roughness:.6}));
+        cell.position.set(.12 + i * .18, 1.6 - j * .18, 0);
+        flagGroup.add(cell);
+      }
+    }
+    fg.add(flagGroup);
+    fg.position.set(.5, 0, 5);
+    return fg;
+  }
+  scene.add(makeFinishFlag());
 
   // === AUVENT JAUNE-BLANC (deux mâts + bandeau) ===
   function addAwning(){
@@ -17797,12 +17916,25 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
     return npc;
   });
 
+  // === POST-PROCESSING : bloom + FXAA (style life-sim signature) ===
+  const composer = new EffectComposer(renderer);
+  const renderPass = new RenderPass(scene, camera);
+  composer.addPass(renderPass);
+  // Bloom doux : fait briller le podium or, l'aura, les lampes
+  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.42, 0.7, 0.85);
+  composer.addPass(bloom);
+  // FXAA pour anti-aliasing supplémentaire
+  const fxaa = new ShaderPass(FXAAShader);
+  composer.addPass(fxaa);
+  composer.addPass(new OutputPass());
+
   // === Resize handler ===
   function resize(){
     const stadium = canvas.parentElement;
     const w = stadium.clientWidth;
     const h = stadium.clientHeight;
     renderer.setSize(w, h, false);
+    composer.setSize(w, h);
     const aspect = w / h;
     const orthoH = 12;
     camera.left = -orthoH * aspect;
@@ -17810,6 +17942,10 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
     camera.top = orthoH;
     camera.bottom = -orthoH;
     camera.updateProjectionMatrix();
+    // FXAA resolution
+    const pr = renderer.getPixelRatio();
+    fxaa.material.uniforms['resolution'].value.x = 1 / (w * pr);
+    fxaa.material.uniforms['resolution'].value.y = 1 / (h * pr);
   }
   window.addEventListener('resize', resize);
   setTimeout(resize, 50);
@@ -17885,7 +18021,7 @@ import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.j
       const bob = Math.sin(phase) * .15 + .15;
       s.position.y = 1.45 + bob;
     });
-    renderer.render(scene, camera);
+    composer.render();
     requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);

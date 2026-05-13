@@ -504,6 +504,121 @@ header{
   margin-top:12px;
 }
 
+/* === STAT GEMMES (header) === */
+.stat-gems{
+  cursor:pointer;
+  position:relative;
+  transition:transform .12s;
+}
+.stat-gems:active{ transform:scale(.95); }
+.stat-gems::after{
+  content:'';
+  position:absolute; inset:0;
+  border-radius:14px;
+  pointer-events:none;
+  box-shadow:0 0 0 0 rgba(123,199,246,.6);
+  animation:gemPulse 2s ease-in-out infinite;
+}
+@keyframes gemPulse{
+  0%,100% { box-shadow:0 0 0 0 rgba(123,199,246,.5); }
+  50%     { box-shadow:0 0 0 6px rgba(123,199,246,0); }
+}
+.stat-gem-ico{ font-size:22px; }
+
+/* === SHOP PREMIUM MODAL === */
+.shop-premium-body{ overflow-y:auto; max-height:65vh; padding:4px 2px; }
+.shop-hero{
+  text-align:center;
+  padding:14px;
+  background:linear-gradient(180deg, #e0eef9, #b8def0);
+  border-radius:14px;
+  margin-bottom:12px;
+  border:2px solid #7bc7f6;
+}
+.shop-gems-big{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:28px; color:#2c5a8a;
+}
+.shop-gems-sub{
+  font-family:"Nunito", sans-serif; font-weight:600;
+  font-size:11px; color:var(--ink-2);
+  margin-top:2px;
+}
+.shop-boost-active{
+  margin-top:8px;
+  padding:6px 12px;
+  background:linear-gradient(180deg, #ffd070, #f0a050);
+  border-radius:12px;
+  color:#5a2810;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:12px;
+}
+.shop-items{ display:flex; flex-direction:column; gap:6px; }
+.shop-item{
+  display:grid; grid-template-columns:42px 1fr auto;
+  gap:10px; align-items:center;
+  padding:9px 10px;
+  background:#fff;
+  border:2px solid rgba(160,122,68,.25);
+  border-radius:12px;
+  cursor:pointer;
+  transition:transform .12s, border-color .15s;
+}
+.shop-item.affordable{
+  border-color:#7bc7f6;
+  background:linear-gradient(180deg, #fff, #eaf4fc);
+  box-shadow:0 2px 8px rgba(74,159,217,.15);
+}
+.shop-item.affordable:active{ transform:scale(.98); }
+.shop-item.locked{ opacity:.55; cursor:not-allowed; }
+.shop-item-ico{
+  width:42px; height:42px;
+  display:flex; align-items:center; justify-content:center;
+  background:#fff3d0;
+  border:2px solid rgba(160,122,68,.3);
+  border-radius:10px;
+  font-size:22px;
+}
+.shop-item-name{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:12.5px; color:var(--ink);
+}
+.shop-item-desc{
+  font-family:"Nunito", sans-serif; font-weight:600;
+  font-size:10.5px; color:var(--ink-2);
+  margin-top:2px;
+}
+.shop-item-cost{
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:14px; color:#2c5a8a;
+  background:linear-gradient(180deg, #e0eef9, #b8def0);
+  padding:6px 12px;
+  border-radius:10px;
+  white-space:nowrap;
+}
+.shop-getmore{
+  margin-top:14px;
+  padding:10px 12px;
+  background:linear-gradient(180deg, #fffaee, #fff3d8);
+  border:1.5px dashed rgba(160,122,68,.30);
+  border-radius:12px;
+  text-align:center;
+}
+.shop-getmore-btn{
+  width:100%; padding:10px;
+  background:linear-gradient(180deg, #7ec46a, #5a9b3e);
+  color:#fff; border:none; border-radius:12px;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:13px; cursor:pointer;
+  box-shadow:0 2px 8px rgba(90,155,62,.4);
+}
+.shop-getmore-btn:active{ transform:scale(.97); }
+.shop-getmore-info{
+  margin-top:6px;
+  font-family:"Nunito", sans-serif; font-weight:600;
+  font-size:10px; color:var(--ink-2);
+}
+
 /* === GOLDEN BATCHES (Cookie Clicker style) === */
 .golden-batch{
   position:absolute;
@@ -4331,6 +4446,13 @@ body.shop-epic-flash::after{
           <span class="stat-val" id="gold-val">0</span>
         </span>
       </div>
+      <div class="stat stat-gems" id="stat-gems" role="button" title="Gemmes — monnaie premium. Cliquer pour ouvrir la boutique.">
+        <span class="stat-gem-ico">💎</span>
+        <span class="stat-stack">
+          <span class="stat-lbl">Gemmes</span>
+          <span class="stat-val" id="gems-val">0</span>
+        </span>
+      </div>
     </div>
   </header>
 
@@ -4796,6 +4918,14 @@ body.shop-epic-flash::after{
           <path d="M3 9 H21 M8 3 V7 M16 3 V7"/>
         </svg>
         <div class="mi-meta"><div class="mi-title">Récompense quotidienne</div><div class="mi-sub">calendrier 7 jours · cadeau final ★</div></div>
+      </button>
+      <button class="menu-item" data-action="shop-premium">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M3 8 L12 3 L21 8 L12 13 z"/>
+          <path d="M3 8 V14 L12 19 L21 14 V8"/>
+          <path d="M12 13 V19"/>
+        </svg>
+        <div class="mi-meta"><div class="mi-title">💎 Boutique</div><div class="mi-sub">boosts, packs, médailles avec gemmes</div></div>
       </button>
       <button class="menu-item" data-action="stats">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
@@ -5375,6 +5505,16 @@ body.shop-epic-flash::after{
     <h2>ASCENSION</h2>
     <div class="divider"></div>
     <div class="saison-body" id="saison-body"></div>
+  </div>
+</div>
+
+<!-- SHOP PREMIUM (gemmes) -->
+<div id="shop-premium-modal" class="modal">
+  <div class="modal-card">
+    <div class="modal-close" id="shop-premium-close" aria-label="Fermer">×</div>
+    <h2>💎 BOUTIQUE</h2>
+    <div class="divider"></div>
+    <div class="shop-premium-body" id="shop-premium-body"></div>
   </div>
 </div>
 
@@ -9849,6 +9989,8 @@ function fmtNumber(n){
 function renderStats(){
   if($essence) $essence.textContent = Math.floor(STATE.essence) + "/" + STATE.essenceMax;
   if($stars) $stars.textContent = fmtNumber(STATE.stars || 0);
+  const $gems = document.getElementById('gems-val');
+  if($gems) $gems.textContent = fmtNumber(STATE.gems || 0);
   $gold.textContent = fmtNumber(STATE.gold);
   // Indication du gold/s à côté quand il y en a
   const ips = STATE._idlePerSec || 0;
@@ -10323,9 +10465,10 @@ function tapBoost(e){
   const comboMul = _comboCount >= 25 ? 5 : _comboCount >= 12 ? 3 : _comboCount >= 6 ? 2 : _comboCount >= 3 ? 1.5 : 1;
   // Bump stamina = boost de vitesse temporaire
   if(typeof bumpStamina === 'function') bumpStamina(0.14 + _comboCount * 0.005);
-  // Médailles par tap : base 1 + niveau upgrade × saison goldMul × tap golden mul
+  // Médailles par tap : base 1 + niveau upgrade × saison × tap golden × shop boost
   const tapMul = (typeof getTapMul === 'function') ? getTapMul() : 1;
-  const perTap = (1 + (STATE.upgradeTapValue||0)) * comboMul * tapMul * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
+  const shopMul = (typeof getShopBoostMul === 'function') ? getShopBoostMul() : 1;
+  const perTap = (1 + (STATE.upgradeTapValue||0)) * comboMul * tapMul * shopMul * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
   // Crit chance plafonné à 60% pour éviter le OP late game
   const rawCrit = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
   const critChance = Math.min(0.60, rawCrit);
@@ -10720,6 +10863,141 @@ function getTapMul(){
   return 1;
 }
 
+/* ================ GEMMES — monnaie premium ================
+   Gagnées via : daily jour 7 (5★), achievements (parfois), saison perks,
+   ou IAP (Play Store). Dépensées dans le shop pour des boosts puissants. */
+function getGems(){ return STATE.gems || 0; }
+function addGems(n){
+  STATE.gems = (STATE.gems || 0) + n;
+  if(typeof renderStats === 'function') renderStats();
+  if(typeof renderShopUI === 'function') renderShopUI();
+}
+function spendGems(n){
+  if((STATE.gems || 0) < n) return false;
+  STATE.gems -= n;
+  if(typeof renderStats === 'function') renderStats();
+  return true;
+}
+/* ================ SHOP PREMIUM ================ */
+const SHOP_ITEMS = [
+  {
+    id: 'boost-x2-24h', name:'×2 MÉDAILLES · 24h', icon:'⚡',
+    price:50, currency:'gems',
+    desc:'Multiplie par 2 toutes tes récoltes pendant 24h.',
+    apply(){
+      STATE.shopBoostX2Until = Math.max(Date.now(), STATE.shopBoostX2Until || 0) + 24*3600*1000;
+    }
+  },
+  {
+    id: 'instant-1h', name:'+1h DE PRODUCTION INSTANTANÉE', icon:'⏩',
+    price:30, currency:'gems',
+    desc:'Récupère immédiatement 1h de production team.',
+    apply(){
+      const gain = Math.floor(teamTotalPerSec() * 3600);
+      STATE.gold = (STATE.gold || 0) + gain;
+      if(typeof showRunnerBubble === 'function') showRunnerBubble('+' + fmtBigNumber(gain) + ' méd !');
+    }
+  },
+  {
+    id: 'auto-managers-saison', name:'TOUS LES MANAGERS · cette saison', icon:'👔',
+    price:200, currency:'gems',
+    desc:'Embauche les 6 managers pour cette saison (reset à l\'ascension).',
+    apply(){
+      _ensureTeamShape();
+      for(const r of TEAM_RUNNERS){
+        if(STATE.team[r.id].level > 0) STATE.team[r.id].mgr = true;
+      }
+    }
+  },
+  {
+    id: 'pack-medailles-small', name:'PACK 10K MÉDAILLES', icon:'🪙',
+    price:10, currency:'gems',
+    desc:'10 000 médailles instant.',
+    apply(){ STATE.gold = (STATE.gold || 0) + 10000; }
+  },
+  {
+    id: 'pack-medailles-big', name:'PACK 1M MÉDAILLES', icon:'💰',
+    price:80, currency:'gems',
+    desc:'1 000 000 de médailles instant.',
+    apply(){ STATE.gold = (STATE.gold || 0) + 1000000; }
+  },
+  {
+    id: 'pack-etoiles', name:'PACK 10 ÉTOILES', icon:'✨',
+    price:500, currency:'gems',
+    desc:'10 étoiles à dépenser dans les perks permanents.',
+    apply(){ STATE.stars = (STATE.stars || 0) + 10; }
+  },
+];
+function getShopBoostMul(){
+  if(STATE.shopBoostX2Until && Date.now() < STATE.shopBoostX2Until) return 2;
+  return 1;
+}
+function buyShopItem(id){
+  const item = SHOP_ITEMS.find(i => i.id === id);
+  if(!item){ if(typeof sfxDeny === 'function') sfxDeny(); return; }
+  if(item.currency === 'gems' && !spendGems(item.price)){
+    if(typeof sfxDeny === 'function') sfxDeny(); return;
+  }
+  item.apply();
+  if(A?.ctx){
+    blip(660, .12, "triangle", .22, .5);
+    setTimeout(()=>blip(990, .15, "sine", .22, .55), 80);
+    setTimeout(()=>blip(1320, .2, "triangle", .22, .6), 180);
+  }
+  vibrate([20, 40, 20]);
+  if(typeof showRunnerBubble === 'function') showRunnerBubble('✓ ' + item.name);
+  if(typeof renderShopUI === 'function') renderShopUI();
+  if(typeof renderStats === 'function') renderStats();
+}
+function openShopModal(){
+  if(typeof renderShopUI === 'function') renderShopUI();
+  document.getElementById('shop-premium-modal')?.classList.add('show');
+}
+function renderShopUI(){
+  const body = document.getElementById('shop-premium-body');
+  if(!body) return;
+  const gems = getGems();
+  const boostActive = STATE.shopBoostX2Until && Date.now() < STATE.shopBoostX2Until;
+  const boostMs = boostActive ? (STATE.shopBoostX2Until - Date.now()) : 0;
+  const items = SHOP_ITEMS.map(item => {
+    const affordable = gems >= item.price;
+    return `<div class="shop-item ${affordable ? 'affordable' : 'locked'}" data-item="${item.id}">
+      <div class="shop-item-ico">${item.icon}</div>
+      <div class="shop-item-info">
+        <div class="shop-item-name">${item.name}</div>
+        <div class="shop-item-desc">${item.desc}</div>
+      </div>
+      <div class="shop-item-cost">${item.price} 💎</div>
+    </div>`;
+  }).join('');
+  body.innerHTML = `
+    <div class="shop-hero">
+      <div class="shop-gems-big">💎 <span id="shop-gems-count">${gems}</span></div>
+      <div class="shop-gems-sub">Gemmes — monnaie premium</div>
+      ${boostActive ? `<div class="shop-boost-active">⚡ ×2 médailles · ${fmtDuration(boostMs)} restant</div>` : ''}
+    </div>
+    <div class="shop-items">${items}</div>
+    <div class="shop-getmore">
+      <button class="shop-getmore-btn" id="shop-watch-ad">📺 Regarder une pub · +5 💎</button>
+      <div class="shop-getmore-info">Les gemmes s'achètent aussi avec de vrais euros (IAP à venir)</div>
+    </div>
+  `;
+  body.querySelectorAll('.shop-item').forEach(el => {
+    el.addEventListener('click', ()=>buyShopItem(el.dataset.item));
+  });
+  document.getElementById('shop-watch-ad')?.addEventListener('click', ()=>{
+    // Mock ad — donne 5 gemmes (cd 5min)
+    if(STATE.lastAdAt && Date.now() - STATE.lastAdAt < 5*60*1000){
+      if(typeof showRunnerBubble === 'function') showRunnerBubble('Reviens dans ' + fmtDuration(5*60*1000 - (Date.now() - STATE.lastAdAt)));
+      return;
+    }
+    STATE.lastAdAt = Date.now();
+    addGems(5);
+    if(typeof showRunnerBubble === 'function') showRunnerBubble('+5 💎 !');
+    renderShopUI();
+  });
+}
+
 /* ================ L'ÉQUIPE — 6 coureurs façon Eatventure ================
    Chaque coureur produit des médailles/sec indépendamment.
    On achète des niveaux (cost = base * factor^level).
@@ -10801,7 +11079,8 @@ function runnerBatchValue(r){
   const baseBatch = r.baseBatch * lvl * runnerMilestoneMul(r.id);
   const pistardMul = (r.id === 'pistard') ? 1 : runnerPistardTeamMul();
   const saisonMul = (typeof saisonGoldMul === 'function') ? saisonGoldMul() : 1;
-  return Math.floor(baseBatch * pistardMul * saisonMul);
+  const shopMul = (typeof getShopBoostMul === 'function') ? getShopBoostMul() : 1;
+  return Math.floor(baseBatch * pistardMul * saisonMul * shopMul);
 }
 /* Production théorique méd/sec (info uniquement) */
 function runnerProductionPerSec(r){
@@ -13156,6 +13435,9 @@ function save(){
       dailyStreak:STATE.dailyStreak ?? 0,
       dailyCycles:STATE.dailyCycles ?? 0,
       team:STATE.team || {},
+      gems:STATE.gems ?? 0,
+      shopBoostX2Until:STATE.shopBoostX2Until ?? 0,
+      lastAdAt:STATE.lastAdAt ?? 0,
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
   }catch(e){}
@@ -13205,6 +13487,9 @@ function load(){
     STATE.dailyStreak = s.dailyStreak ?? 0;
     STATE.dailyCycles = s.dailyCycles ?? 0;
     STATE.team = s.team || {};
+    STATE.gems = s.gems ?? 0;
+    STATE.shopBoostX2Until = s.shopBoostX2Until ?? 0;
+    STATE.lastAdAt = s.lastAdAt ?? 0;
     // Migration : si on a maxTier mais pas de codexUnlocks → backfill
     for(let c=0;c<3;c++){
       for(let t=0; t<=STATE.totals.maxTier[c]; t++){
@@ -13425,6 +13710,11 @@ function boot(){
     document.getElementById('offline-modal')?.classList.remove('show');
     if(A?.ctx) blip(880, .15, "triangle", .22, .55);
   });
+  bindModalClose('shop-premium-modal','shop-premium-close');
+  // Stat gemmes du header → ouvre le shop
+  document.getElementById('stat-gems')?.addEventListener('click', ()=>{
+    if(typeof openShopModal === 'function') openShopModal();
+  });
   // Bouton ASCENSION → ouvre le modal Saison
   document.getElementById('saison-btn')?.addEventListener('click', (e)=>{
     e.stopPropagation();
@@ -13518,6 +13808,7 @@ function boot(){
         else if(action === 'profile' && typeof openRunnerProfile === 'function') openRunnerProfile();
         else if(action === 'saison' && typeof openSaisonModal === 'function') openSaisonModal();
         else if(action === 'daily' && typeof openDailyModal === 'function') openDailyModal();
+        else if(action === 'shop-premium' && typeof openShopModal === 'function') openShopModal();
         else if(action === 'stats'){ renderStatsBody(); openModal('stats-modal'); }
       }, 200);
     });

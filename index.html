@@ -18364,25 +18364,42 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     elem.rotation.z = curvature * .12;
   }
 
-  // ═══ ANIM COURSE : oscillation des jambes/bras en fonction de la vitesse ═══
+  // ═══ ANIM COURSE : oscillation jambes/bras réaliste ═══
   function animateRunner(runner, runSpeed, time){
     const parts = runner.userData.parts;
     if(!parts) return;
-    // Phase de course (plus rapide = oscillation plus rapide)
-    const phase = time * .015 * (1 + runSpeed * 8);
+    // runSpeed sert d'intensité : 0 = immobile (stand), >0 = course
+    // Clamp speed pour anim
+    const s = Math.max(0, Math.min(2, runSpeed));
+    // Si trop lent : freeze en pose neutre (légère idle sway)
+    if(s < .08){
+      const idleSway = Math.sin(time * .002) * .04;
+      parts.legLPivot.rotation.x = 0;
+      parts.legRPivot.rotation.x = 0;
+      parts.armLPivot.rotation.x = idleSway;
+      parts.armRPivot.rotation.x = -idleSway;
+      runner.position.y = 0;
+      parts.headGroup.rotation.x = -.03;
+      return;
+    }
+    // Phase de course : oscillation proportionnelle à la vitesse
+    const phase = time * .009 * (1 + s * 3);
     const swing = Math.sin(phase);
     const swingCo = Math.cos(phase);
+    // Amplitude scale avec la vitesse (lent = petits pas, rapide = grands pas)
+    const ampLeg = .3 + s * .15;  // 0.3 → 0.6 rad max (~17-34°)
+    const ampArm = .35 + s * .15; // 0.35 → 0.65 rad max
     // Jambes alternées
-    parts.legLPivot.rotation.x = swing * .55;
-    parts.legRPivot.rotation.x = -swing * .55;
-    // Bras alternés (contre-phase avec les jambes)
-    parts.armLPivot.rotation.x = -swing * .65;
-    parts.armRPivot.rotation.x = swing * .65;
-    // Léger balancement haut/bas du corps (rebond)
-    const bounce = Math.abs(swingCo) * .06;
+    parts.legLPivot.rotation.x = swing * ampLeg;
+    parts.legRPivot.rotation.x = -swing * ampLeg;
+    // Bras alternés (contre-phase avec les jambes pour réalisme)
+    parts.armLPivot.rotation.x = -swing * ampArm;
+    parts.armRPivot.rotation.x = swing * ampArm;
+    // Rebond vertical : monte au moment où une jambe touche le sol
+    const bounce = Math.abs(swingCo) * .04 * s;
     runner.position.y = bounce;
-    // Léger tilt de la tête (regarde devant)
-    parts.headGroup.rotation.x = -.05 - Math.abs(swing) * .03;
+    // Tilt léger de la tête (légère anticipation forward)
+    parts.headGroup.rotation.x = -.04 - Math.abs(swing) * .015;
   }
 
   // === CAMERA INTRO : pan-in les 3 premières secondes ===
@@ -18445,13 +18462,14 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       const dist = Math.sqrt(dx*dx + dz*dz);
       if(dist < 2 && playerSmoothVel > 0.001){
         npc.userData.cheerT = (npc.userData.cheerT || 0) + dt;
-        // Override des bras pour les lever
+        // Override des bras : levés tout droits (-PI) avec léger wave alterné
         const parts = npc.userData.parts;
         if(parts){
           const cheerAmount = Math.min(1, npc.userData.cheerT * 2);
-          const wave = Math.sin(now * .015) * .3;
-          parts.armLPivot.rotation.x = -2.4 * cheerAmount + wave;
-          parts.armRPivot.rotation.x = -2.4 * cheerAmount - wave;
+          const wave = Math.sin(now * .012) * .25;
+          // -PI = arms straight up. Modulate with wave for "agitating arms" effect
+          parts.armLPivot.rotation.x = -Math.PI * cheerAmount + wave;
+          parts.armRPivot.rotation.x = -Math.PI * cheerAmount - wave;
         }
       } else {
         npc.userData.cheerT = Math.max(0, (npc.userData.cheerT || 0) - dt * 2);

@@ -17799,23 +17799,71 @@ if('serviceWorker' in navigator){
       }
     }
 
-    // ═══ Layer 3 : Mountains (tier 0 = pâles/effacées, tier 2+ = normales) ═══
-    if(tier === 0){
-      ctx.fillStyle = '#9098a0'; // gris fade pour terrain vague
-    } else {
+    // ═══ Layer 3 : Skyline d'arrière-plan (varie selon le stade) ═══
+    if(stadiumId === 'coliseum' && tier >= 1){
+      // Silhouette du Colisée romain : 2 anneaux d'arches en arrière-plan
+      // Position relevée pour dépasser au-dessus de la tribune (baseY = H*.55 - 80)
+      const colDark = pal.mountain;
+      const drift = -(t * speed * 0.3);
+      const baseY = H * .55 - 80;
+      const archCount = 14;
+      const archW = (W * 1.3) / archCount;
+      ctx.fillStyle = colDark;
+      // Niveau supérieur (mur plat avec petits trous)
+      ctx.fillRect(0, baseY - 36, W, 8);
+      // Niveau bas : arches grandes (entre les piliers)
+      for(let i = -1; i <= archCount; i++){
+        const ax = i * archW + (drift % (archW * 2));
+        // Pilier rectangulaire
+        ctx.fillRect(ax, baseY - 28, 8, 32);
+        // Arche en demi-cercle qui relie au prochain pilier
+        if(i < archCount){
+          ctx.beginPath();
+          ctx.arc(ax + archW * 0.5, baseY - 18, archW * 0.42, Math.PI, 0);
+          ctx.lineTo(ax + archW * 0.5 + archW * 0.42, baseY - 28);
+          ctx.lineTo(ax + archW * 0.5 - archW * 0.42, baseY - 28);
+          ctx.closePath();
+          ctx.fill();
+        }
+      }
+      // Petites fenêtres rectangulaires sur le mur supérieur (style 4ème étage)
+      ctx.fillStyle = pal.tribuneLight;
+      for(let i = -1; i <= archCount * 2; i++){
+        const ax = i * (archW * 0.5) + (drift * 0.6 % archW);
+        ctx.fillRect(ax + 2, baseY - 33, 3, 4);
+      }
+    } else if(stadiumId === 'cosmic' && tier >= 1){
+      // Silhouettes de "montagnes lunaires" plus tranchées
       ctx.fillStyle = pal.mountain;
+      const moonT = -(t * speed * 0.3);
+      ctx.beginPath();
+      ctx.moveTo(0, H * .55);
+      for(let i = -1; i <= W / 50 + 1; i++){
+        const x = (i * 50 + moonT % 100);
+        const peakH = H * .42 - 30 - Math.sin(i * 0.8) * 20;
+        ctx.lineTo(x, peakH);
+        ctx.lineTo(x + 25, H * .50);
+      }
+      ctx.lineTo(W, H * .55); ctx.lineTo(0, H * .55); ctx.fill();
+    } else {
+      // Montagnes standard (municipal / olympic / sunset)
+      if(tier === 0){
+        ctx.fillStyle = '#9098a0';
+      } else {
+        ctx.fillStyle = pal.mountain;
+      }
+      const mountT = -(t * speed * 0.5);
+      ctx.beginPath();
+      ctx.moveTo(0, H * .55);
+      for(let i = -1; i <= W / 30 + 1; i++){
+        const x = (i * 30 + mountT % 60);
+        const baseH = H * .42;
+        const peakH = baseH - 20 - Math.sin(i * 1.3) * 15 - Math.cos(i * .7) * 12;
+        ctx.lineTo(x, peakH);
+        ctx.lineTo(x + 15, baseH - 5 - Math.sin((i + 0.5) * 1.3) * 8);
+      }
+      ctx.lineTo(W, H * .55); ctx.lineTo(0, H * .55); ctx.fill();
     }
-    const mountT = -(t * speed * 0.5);
-    ctx.beginPath();
-    ctx.moveTo(0, H * .55);
-    for(let i = -1; i <= W / 30 + 1; i++){
-      const x = (i * 30 + mountT % 60);
-      const baseH = H * .42;
-      const peakH = baseH - 20 - Math.sin(i * 1.3) * 15 - Math.cos(i * .7) * 12;
-      ctx.lineTo(x, peakH);
-      ctx.lineTo(x + 15, baseH - 5 - Math.sin((i + 0.5) * 1.3) * 8);
-    }
-    ctx.lineTo(W, H * .55); ctx.lineTo(0, H * .55); ctx.fill();
 
     // ═══ Layer 3.5 : Projecteurs (tier 4+ uniquement) ═══
     if(tier >= 4){
@@ -17895,22 +17943,59 @@ if('serviceWorker' in navigator){
       if(tier >= 3){
         const flagT = -(t * speed * 0.4);
         const flagCount = 4 + (tier - 3) * 2;
-        for(let i = 0; i < flagCount; i++){
-          const fx = ((flagT + i * (W / flagCount)) % (W + 40) + (W + 40)) % (W + 40);
-          const fy = H * .55 - 78;
-          // Mât
-          ctx.fillStyle = '#3a3a3a';
-          ctx.fillRect(fx, fy, 1.5, 16);
-          // Drapeau ondulant
-          const fcol = ['#e85040','#4a9fd9','#ffd060','#7ec46a'][i % 4];
-          ctx.fillStyle = fcol;
-          const wave = Math.sin((t + i * 30) * 0.04) * 1.5;
-          ctx.beginPath();
-          ctx.moveTo(fx + 1.5, fy);
-          ctx.lineTo(fx + 10, fy + 2 + wave);
-          ctx.lineTo(fx + 1.5, fy + 6);
-          ctx.closePath();
-          ctx.fill();
+        if(stadiumId === 'coliseum'){
+          // === ORIFLAMMES ROMAINS (vexillum) : verticaux, rouge & or, SPQR ===
+          for(let i = 0; i < flagCount; i++){
+            const fx = ((flagT + i * (W / flagCount)) % (W + 40) + (W + 40)) % (W + 40);
+            const fy = H * .55 - 78;
+            // Pique dorée au sommet
+            ctx.fillStyle = '#ffd060';
+            ctx.beginPath();
+            ctx.moveTo(fx, fy - 4);
+            ctx.lineTo(fx + 1, fy - 2);
+            ctx.lineTo(fx - 1, fy - 2);
+            ctx.closePath();
+            ctx.fill();
+            // Mât marron
+            ctx.fillStyle = '#5a3818';
+            ctx.fillRect(fx - .5, fy - 2, 1.5, 22);
+            // Bannière verticale rouge avec frange or
+            const wave = Math.sin((t + i * 30) * 0.05) * 1.5;
+            ctx.fillStyle = '#c83020';
+            ctx.beginPath();
+            ctx.moveTo(fx + 1, fy + 1);
+            ctx.lineTo(fx + 9 + wave, fy + 1);
+            ctx.lineTo(fx + 9 + wave, fy + 14);
+            ctx.lineTo(fx + 5 + wave, fy + 17);
+            ctx.lineTo(fx + 1, fy + 14);
+            ctx.closePath();
+            ctx.fill();
+            // Lisere or
+            ctx.fillStyle = '#ffd060';
+            ctx.fillRect(fx + 1, fy + 1, 8 + wave, 1.5);
+            ctx.fillRect(fx + 1, fy + 13.5, 8 + wave, 1);
+            // Aigle stylisé (carré or sur la bannière)
+            ctx.fillRect(fx + 4 + wave * .3, fy + 6, 2, 3);
+          }
+        } else {
+          // Drapeaux standard (rectangulaires colorés)
+          for(let i = 0; i < flagCount; i++){
+            const fx = ((flagT + i * (W / flagCount)) % (W + 40) + (W + 40)) % (W + 40);
+            const fy = H * .55 - 78;
+            // Mât
+            ctx.fillStyle = '#3a3a3a';
+            ctx.fillRect(fx, fy, 1.5, 16);
+            // Drapeau ondulant
+            const fcol = ['#e85040','#4a9fd9','#ffd060','#7ec46a'][i % 4];
+            ctx.fillStyle = fcol;
+            const wave = Math.sin((t + i * 30) * 0.04) * 1.5;
+            ctx.beginPath();
+            ctx.moveTo(fx + 1.5, fy);
+            ctx.lineTo(fx + 10, fy + 2 + wave);
+            ctx.lineTo(fx + 1.5, fy + 6);
+            ctx.closePath();
+            ctx.fill();
+          }
         }
       }
     }

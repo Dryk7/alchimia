@@ -2625,48 +2625,54 @@ body.tab-drawer-open .tuto-hint{
   padding:0 4px;
 }
 .upg-btn{
-  display:flex; flex-direction:column; align-items:center; gap:2px;
-  padding:7px 4px 8px;
-  background:linear-gradient(180deg, #fff8e4, #f4e2b4);
-  border:2px solid rgba(160,122,68,.40);
-  border-radius:14px;
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  padding:9px 5px 10px;
+  background:linear-gradient(180deg, #fffaee, #f0d8a0);
+  border:2px solid rgba(160,90,40,.40);
+  border-radius:16px;
   cursor:pointer;
   font-family:"Nunito", sans-serif; font-weight:800;
   color:var(--ink);
-  box-shadow:0 2px 4px rgba(80,55,30,.16);
+  box-shadow:0 3px 7px rgba(80,40,20,.20), inset 0 1px 0 rgba(255,255,255,.55);
   transition:transform .12s, box-shadow .12s, border-color .15s;
+  position:relative;
 }
 .upg-btn.affordable{
-  border-color:var(--ember);
-  background:linear-gradient(180deg, #fff3d0, #ffd896);
-  box-shadow:0 3px 8px rgba(217,104,40,.30), 0 0 0 3px rgba(255,208,112,.30);
+  border-color:#c84030;
+  background:linear-gradient(180deg, #ffe0a0, #ffba60);
+  box-shadow:0 4px 12px rgba(200,64,48,.35), 0 0 0 3px rgba(255,200,80,.45), inset 0 1px 0 rgba(255,255,255,.6);
   animation:upgPulse 1.5s ease-in-out infinite;
 }
 .upg-btn.locked{ filter:grayscale(.5) brightness(.85); opacity:.7; cursor:not-allowed; }
-.upg-btn:active:not(.locked){ transform:translateY(2px) scale(.98); }
+.upg-btn:active:not(.locked){ transform:translateY(2px) scale(.98); box-shadow:0 1px 3px rgba(80,40,20,.20), inset 0 1px 0 rgba(255,255,255,.55); }
 .upg-row1{ display:flex; align-items:center; justify-content:space-between; width:100%; padding:0 4px; }
-.upg-ico{ width:22px; height:22px; color:var(--ember); }
+.upg-ico{ width:24px; height:24px; color:#c84030; filter:drop-shadow(0 1px 1px rgba(80,40,20,.20)); }
 .upg-ico svg{ width:100%; height:100%; }
 .upg-lvl{
   font-family:"Nunito", sans-serif; font-weight:900;
   font-size:9px; letter-spacing:.06em;
-  color:var(--ink);
-  background:#fff; border-radius:8px; padding:1px 6px;
-  border:1.5px solid rgba(160,122,68,.30);
+  color:#3a2010;
+  background:#fff;
+  border-radius:8px; padding:2px 7px;
+  border:1.5px solid rgba(160,90,40,.40);
+  box-shadow:0 1px 2px rgba(80,40,20,.12);
 }
 .upg-name{
-  font-family:"Nunito", sans-serif; font-weight:800;
-  font-size:11px; letter-spacing:.04em;
-  margin-top:2px;
-  color:var(--ink);
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:11.5px; letter-spacing:.04em;
+  margin-top:3px;
+  color:#3a2010;
 }
 .upg-cost{
   font-family:"Nunito", sans-serif; font-weight:700;
   font-size:10px;
-  color:var(--ember);
-  margin-top:1px;
+  color:#a0501c;
+  margin-top:2px;
+  padding:1px 6px;
+  background:rgba(255,255,255,.6);
+  border-radius:6px;
 }
-.upg-btn.affordable .upg-cost{ color:#000; font-weight:900; }
+.upg-btn.affordable .upg-cost{ color:#3a2010; font-weight:900; background:rgba(255,255,255,.9); }
 @keyframes upgPulse{
   0%,100%{ box-shadow:0 3px 8px rgba(217,104,40,.30), 0 0 0 3px rgba(255,208,112,.30); }
   50%   { box-shadow:0 3px 10px rgba(217,104,40,.45), 0 0 0 5px rgba(255,208,112,.45); }

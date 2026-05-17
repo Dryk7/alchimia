@@ -19208,7 +19208,9 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       pushMilestone(lapsRun + 1);
     }
     milestones.forEach((mile, idx) => {
-      mile.metersAhead -= speed * 0.5;
+      // Milestones sont des objets STATIQUES dans le monde → drift = drift du décor (speed * 1.2 du sol)
+      // Conversion : speed * 1.2 px/frame, et pixAhead = metersAhead * 8, donc metersAhead -= speed * 1.2 / 8 = speed * 0.15
+      mile.metersAhead -= speed * 0.15;
       const pixAhead = mile.metersAhead * 8;
       if(pixAhead < -100){
         milestones.splice(idx, 1);
@@ -19234,7 +19236,11 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 
     // ═══ NPCs ═══
     npcs.forEach(npc => {
-      npc.metersAhead -= (speed - npc.speed) * 0.5;
+      // NPCs courent dans le MÊME sens que le héros (vers la droite), mais moins vite.
+      // Drift relatif = (speed_hero - speed_npc) px/frame. Background drift = speed * 1.2 px/frame.
+      // Drift NPC = (speed - npc.speed) / speed * background_drift = (speed - npc.speed) * 1.2
+      // En unités metersAhead : metersAhead -= (speed - npc.speed) * 1.2 / 8 = (speed - npc.speed) * 0.15
+      npc.metersAhead -= (speed - npc.speed) * 0.15;
       const pixAhead = npc.metersAhead * 8;
       if(pixAhead < -120){
         npc.metersAhead = 35 + Math.random() * 30;

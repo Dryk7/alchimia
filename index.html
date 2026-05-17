@@ -299,7 +299,7 @@ header{
 }
 .tab-btn{
   flex:1;
-  padding:10px 6px;
+  padding:6px 4px;
   background:linear-gradient(180deg, rgba(248,232,200,.78), rgba(232,200,152,.72));
   backdrop-filter:blur(10px) saturate(1.3);
   -webkit-backdrop-filter:blur(10px) saturate(1.3);
@@ -308,7 +308,7 @@ header{
   border-radius:14px 14px 0 0;
   cursor:pointer;
   display:flex; flex-direction:column; align-items:center;
-  gap:2px;
+  gap:1px;
   color:var(--ink);
   font-family:"Nunito", sans-serif;
   opacity:.85;
@@ -333,20 +333,20 @@ header{
   background:rgba(255,248,228,.96);
   z-index:3;
 }
-.tab-ico{ font-size:18px; line-height:1; }
+.tab-ico{ font-size:20px; line-height:1; }
 .tab-label{
   font-family:"Nunito", sans-serif; font-weight:900;
-  font-size:9.5px; letter-spacing:.10em;
+  font-size:8.5px; letter-spacing:.08em;
   text-transform:uppercase;
   color:var(--ember);
 }
 .tab-badge{
   font-family:"Nunito", sans-serif; font-weight:800;
-  font-size:9.5px;
+  font-size:8.5px;
   color:#3a8c3a;
   white-space:nowrap;
   font-variant-numeric:tabular-nums;
-  margin-top:1px;
+  margin-top:0;
 }
 .tab-badge.alert{
   color:#fff; background:#d04030;
@@ -391,34 +391,37 @@ header{
 
 /* HUD du coureur : avatar + niveau + XP bar + bouton profil — compact v5 */
 .runner-hud{
-  display:grid;
-  grid-template-columns:36px 1fr 30px;
-  gap:8px; align-items:center;
-  background:linear-gradient(180deg, #fff8e4, #f4e2b4);
-  border:2px solid rgba(160,122,68,.40);
+  display:flex; align-items:center; gap:6px;
+  background:linear-gradient(180deg, rgba(255,248,228,.85), rgba(244,226,180,.78));
+  backdrop-filter:blur(10px) saturate(1.3);
+  -webkit-backdrop-filter:blur(10px) saturate(1.3);
+  border:1.5px solid rgba(160,122,68,.40);
   border-radius:14px;
-  padding:4px 8px 5px;
-  box-shadow:0 2px 6px rgba(80,55,30,.14), inset 0 1px 0 rgba(255,255,255,.45);
+  padding:4px 8px 4px 4px;
+  box-shadow:0 2px 8px rgba(80,55,30,.22), inset 0 1px 0 rgba(255,255,255,.45);
+  max-width:140px;
 }
 .runner-avatar{
-  width:36px; height:36px;
+  width:30px; height:30px;
   background:linear-gradient(180deg, #b8def0, #f4d8a8);
-  border:2px solid #a07a44;
+  border:1.5px solid #a07a44;
   border-radius:50%;
   display:flex; align-items:center; justify-content:center;
   cursor:pointer;
   image-rendering:pixelated;
-  box-shadow:0 1px 3px rgba(80,55,30,.20);
+  box-shadow:0 1px 2px rgba(80,55,30,.20);
+  flex-shrink:0;
 }
 .runner-avatar svg{ width:90%; height:90%; }
-.runner-hud-info{ min-width:0; display:flex; flex-direction:column; gap:2px; }
+.runner-hud-info{ min-width:0; display:flex; flex-direction:column; gap:3px; flex:1; }
 .runner-hud-row1{ display:flex; align-items:baseline; gap:8px; }
 .runner-lvl{
   font-family:"Nunito", sans-serif; font-weight:900;
-  font-size:13px; letter-spacing:.02em;
+  font-size:11px; letter-spacing:.02em;
   color:#fff; background:var(--ember);
-  padding:2px 8px; border-radius:8px;
+  padding:1px 6px; border-radius:6px;
   box-shadow:0 1px 2px rgba(217,104,40,.40);
+  align-self:flex-start;
 }
 .runner-title{
   font-family:"Caveat", cursive; font-weight:700;
@@ -426,10 +429,10 @@ header{
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 .runner-xp{
-  height:7px;
+  height:5px;
   background:rgba(255,255,255,.55);
-  border:1.5px solid rgba(80,55,30,.40);
-  border-radius:6px;
+  border:1px solid rgba(80,55,30,.40);
+  border-radius:4px;
   overflow:hidden;
 }
 .runner-xp > span{
@@ -574,6 +577,7 @@ header{
 
 /* === BOUTON DAILY (réclame quotidien) === */
 .daily-btn{
+  /* legacy bandeau - on garde au cas où mais .daily-btn-float prend le relais */
   display:block; width:100%;
   padding:6px 10px;
   background:linear-gradient(180deg, rgba(123,199,246,.92), rgba(74,159,217,.92));
@@ -590,6 +594,37 @@ header{
   text-shadow:0 1px 2px rgba(0,0,0,.20);
   animation:dailyPulse 1.8s ease-in-out infinite;
   margin-top:4px;
+}
+/* === BOUTON DAILY FLOTTANT (immersif) === */
+.daily-btn-float{
+  position:absolute;
+  right:8px;
+  top:50px; /* sous le HUD top, à droite */
+  width:46px; height:46px;
+  background:linear-gradient(180deg, #7bc7f6, #4a9fd9);
+  border:2px solid #fff;
+  border-radius:50%;
+  font-size:22px; line-height:1;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 12px rgba(74,159,217,.45), 0 0 0 2px rgba(123,199,246,.35);
+  animation:dailyPulse 1.8s ease-in-out infinite;
+  z-index:7;
+  padding:0;
+}
+.daily-btn-float:active{ transform:translateY(1px); }
+.daily-badge{
+  position:absolute;
+  top:-4px; right:-4px;
+  background:#e85040;
+  color:#fff;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:9px; letter-spacing:.02em;
+  padding:1px 5px;
+  border-radius:8px;
+  border:1.5px solid #fff;
+  box-shadow:0 1px 3px rgba(0,0,0,.3);
+  white-space:nowrap;
 }
 .daily-btn:active{ transform:translateY(2px); }
 @keyframes dailyPulse{
@@ -5903,15 +5938,47 @@ body.shop-epic-flash::after{
       </div>
       <!-- ═══ CANVAS 2D SIDE PARALLAX (pivot D + km — preview F validé) ═══ -->
       <canvas id="runner-canvas" style="position:absolute;inset:0;width:100%;height:100%;display:block;border-radius:22px;"></canvas>
-      <!-- HUD KM/PACE en haut du canvas -->
-      <div class="runner-hud-overlay" style="position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;pointer-events:none;z-index:5;font-family:Nunito,sans-serif;font-weight:900">
-        <div style="background:rgba(255,255,255,.92);color:#3a2010;padding:6px 12px;border-radius:12px;font-size:11px;display:flex;align-items:center;gap:5px;box-shadow:0 2px 6px rgba(0,0,0,.2)">
-          🏁 <b id="runner-km" style="font-size:15px;color:#e85040">0.00</b><span style="font-size:10px">KM</span>
+      <!-- HUD overlay top : Profil (gauche) + KM (centre) + Pace (droite) -->
+      <div class="runner-hud-overlay" style="position:absolute;top:8px;left:8px;right:8px;display:flex;justify-content:space-between;align-items:flex-start;gap:6px;pointer-events:none;z-index:5;font-family:Nunito,sans-serif;font-weight:900">
+        <!-- Profil compact joueur (en overlay sur le canvas) -->
+        <div class="runner-hud" style="pointer-events:auto">
+          <div class="runner-avatar" id="runner-avatar" role="button" aria-label="Profil du coureur">
+            <svg viewBox="-12 -12 24 24" shape-rendering="crispEdges">
+              <rect data-skin="hair" x="-4" y="-9" width="7" height="2" fill="#4a2818"/>
+              <rect x="-4" y="-7" width="7" height="5" fill="#f0c890"/>
+              <rect x="1" y="-5" width="1" height="1" fill="#1a1010"/>
+              <rect data-skin="jersey" x="-5" y="-2" width="9" height="6" fill="#e85a30"/>
+              <rect data-skin="accent" x="-5" y="-2" width="9" height="1" fill="#ffd070"/>
+              <rect x="-1" y="0" width="2" height="2" fill="#fff"/>
+              <rect x="-3" y="4" width="2" height="3" fill="#f0c890"/>
+              <rect x="1" y="4" width="2" height="3" fill="#f0c890"/>
+            </svg>
+          </div>
+          <div class="runner-hud-info">
+            <span class="runner-lvl" id="runner-lvl">NIV 1</span>
+            <div class="runner-xp"><span id="runner-xp-fill"></span></div>
+          </div>
+          <!-- title + xp-txt cachés mais maintenus pour le code JS -->
+          <span class="runner-title" id="runner-title" style="display:none">Débutant</span>
+          <span class="runner-xp-txt" id="runner-xp-txt" style="display:none">0 / 50 XP</span>
         </div>
-        <div style="background:rgba(255,232,80,.95);color:#3a2010;padding:6px 12px;border-radius:12px;font-size:11px;display:flex;align-items:center;gap:5px;box-shadow:0 2px 6px rgba(0,0,0,.2)">
-          ⚡ <span id="runner-pace" style="font-size:13px">×1.0</span>
+        <!-- Spacer flexible -->
+        <div style="flex:1"></div>
+        <!-- KM pill -->
+        <div style="background:rgba(255,255,255,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#3a2010;padding:5px 10px;border-radius:12px;font-size:11px;display:flex;align-items:center;gap:5px;box-shadow:0 2px 6px rgba(0,0,0,.2);pointer-events:none">
+          🏁 <b id="runner-km" style="font-size:14px;color:#e85040">0.00</b><span style="font-size:10px">KM</span>
+        </div>
+        <!-- Pace pill -->
+        <div style="background:rgba(255,232,80,.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#3a2010;padding:5px 10px;border-radius:12px;font-size:11px;display:flex;align-items:center;gap:5px;box-shadow:0 2px 6px rgba(0,0,0,.2);pointer-events:none">
+          ⚡ <span id="runner-pace" style="font-size:12px">×1.0</span>
         </div>
       </div>
+
+      <!-- Bouton DAILY : flottant rond icône (en overlay du stadium) -->
+      <button id="daily-btn" class="daily-btn-float" style="display:none" aria-label="Récompense quotidienne">
+        🎁
+        <span class="daily-badge" id="daily-btn-day">J1</span>
+      </button>
       <!-- Ancien 3D désactivé (pivot vers Canvas2D) -->
       <canvas id="runner-3d" style="display:none"></canvas>
       <!-- SVG legacy (masqué, gardé pour rs-path utilisé par getPointAtLength dans ancien code) -->
@@ -6167,35 +6234,6 @@ body.shop-epic-flash::after{
 
     <!-- ================ TAP-TO-BOOST UI ================ -->
     <div id="tap-area">
-      <!-- Bandeau Coureur compact : Niveau + XP bar + bouton PROFIL -->
-      <div class="runner-hud">
-        <div class="runner-hud-left">
-          <div class="runner-avatar" id="runner-avatar" role="button" aria-label="Profil du coureur">
-            <svg viewBox="-12 -12 24 24" shape-rendering="crispEdges">
-              <rect data-skin="hair" x="-4" y="-9" width="7" height="2" fill="#4a2818"/>
-              <rect x="-4" y="-7" width="7" height="5" fill="#f0c890"/>
-              <rect x="1" y="-5" width="1" height="1" fill="#1a1010"/>
-              <rect data-skin="jersey" x="-5" y="-2" width="9" height="6" fill="#e85a30"/>
-              <rect data-skin="accent" x="-5" y="-2" width="9" height="1" fill="#ffd070"/>
-              <rect x="-1" y="0" width="2" height="2" fill="#fff"/>
-              <rect x="-3" y="4" width="2" height="3" fill="#f0c890"/>
-              <rect x="1" y="4" width="2" height="3" fill="#f0c890"/>
-            </svg>
-          </div>
-        </div>
-        <div class="runner-hud-info">
-          <div class="runner-hud-row1">
-            <span class="runner-lvl" id="runner-lvl">NIV 1</span>
-            <span class="runner-title" id="runner-title">Débutant</span>
-          </div>
-          <div class="runner-xp"><span id="runner-xp-fill"></span></div>
-          <div class="runner-xp-txt" id="runner-xp-txt">0 / 50 XP</div>
-        </div>
-        <button class="runner-profile-btn" data-action="profile" aria-label="Ouvrir le profil">
-          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 22 q0-7 8-7 t8 7"/></svg>
-        </button>
-      </div>
-
       <!-- Bouton TAP legacy (caché, pour compat events) -->
       <button id="boost-btn" class="boost-btn" aria-label="Booster le coureur" style="display:none">
         <span class="boost-label">TAP</span>
@@ -6208,11 +6246,6 @@ body.shop-epic-flash::after{
       <!-- Bouton ASCENSION (visible quand atteint 100 tours) -->
       <button id="saison-btn" class="saison-btn" style="display:none">
         ✦ ASCENSION DISPO · <span id="saison-btn-stars">+0 ★</span>
-      </button>
-
-      <!-- Bouton DAILY (visible si une récompense est disponible) -->
-      <button id="daily-btn" class="daily-btn" style="display:none">
-        🎁 RÉCOMPENSE QUOTIDIENNE · <span id="daily-btn-day">JOUR 1</span>
       </button>
 
       <!-- ============ TABS SYSTEM (Eatventure style) ============ -->

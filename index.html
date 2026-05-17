@@ -697,7 +697,7 @@ body.tab-drawer-open .tuto-hint{
   position:relative;
 }
 .record-flash::after{
-  content:'🏆 RECORD';
+  content:'RECORD';
   position:absolute;
   top:-18px; right:-4px;
   background:linear-gradient(180deg, #ffd060, #f08a48);
@@ -5688,17 +5688,19 @@ body.shop-epic-flash::after{
         <div style="flex:1"></div>
         <!-- KM pill -->
         <div style="background:rgba(255,255,255,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#3a2010;padding:5px 10px;border-radius:12px;font-size:11px;display:flex;align-items:center;gap:5px;box-shadow:0 2px 6px rgba(0,0,0,.2);pointer-events:none">
-          🏁 <b id="runner-km" style="font-size:14px;color:#e85040">0.00</b><span style="font-size:10px">KM</span>
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="#e85040"><path d="M5 3v18M5 3 h12 l-2 4 l2 4 H5"/></svg>
+          <b id="runner-km" style="font-size:14px;color:#e85040">0.00</b><span style="font-size:10px">KM</span>
         </div>
         <!-- Pill km/h (vitesse instantanée du héros) -->
         <div style="background:rgba(255,232,80,.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#3a2010;padding:5px 10px;border-radius:12px;font-size:11px;display:flex;align-items:center;gap:5px;box-shadow:0 2px 6px rgba(0,0,0,.2);pointer-events:none;font-variant-numeric:tabular-nums">
-          ⚡ <span id="runner-pace" style="font-size:13px;font-weight:900">0.0 km/h</span>
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="#3a2010"><path d="M13 2 L4 14 h7 L9 22 L20 10 h-7 z"/></svg>
+          <span id="runner-pace" style="font-size:13px;font-weight:900">0.0 km/h</span>
         </div>
       </div>
 
       <!-- Bouton DAILY : flottant rond icône (en overlay du stadium) -->
       <button id="daily-btn" class="daily-btn-float" style="display:none" aria-label="Récompense quotidienne">
-        🎁
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><rect x="3" y="9" width="18" height="12" rx="1.5"/><rect x="2" y="6" width="20" height="4" rx="1"/><rect x="11" y="6" width="2" height="15" fill="#c84a2a"/><path d="M7 3 q3 0 5 3 q-5 0-5-3 z" fill="#fff" opacity=".85"/><path d="M17 3 q-3 0-5 3 q5 0 5-3 z" fill="#fff" opacity=".85"/></svg>
         <span class="daily-badge" id="daily-btn-day">J1</span>
       </button>
 
@@ -5737,20 +5739,20 @@ body.shop-epic-flash::after{
         ✦ ASCENSION DISPO · <span id="saison-btn-stars">+0 ★</span>
       </button>
 
-      <!-- ============ TABS SYSTEM (Eatventure style) ============ -->
+      <!-- ============ TABS SYSTEM (icones SVG, sans emoji) ============ -->
       <div class="tabs-strip" id="tabs-strip">
         <button class="tab-btn" data-tab="team">
-          <span class="tab-ico">👥</span>
+          <span class="tab-ico"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><circle cx="8" cy="9" r="3.5"/><circle cx="16" cy="9" r="3.5"/><path d="M2 20 q0-5 6-5 t6 5z"/><path d="M10 20 q0-5 6-5 t6 5z"/></svg></span>
           <span class="tab-label">ÉQUIPE</span>
           <span class="tab-badge" id="tab-team-rate">+0/s</span>
         </button>
         <button class="tab-btn" data-tab="upgrades">
-          <span class="tab-ico">⚡</span>
+          <span class="tab-ico"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M13 2 L4 14 h7 L9 22 L20 10 h-7 z"/></svg></span>
           <span class="tab-label">UPGRADES</span>
           <span class="tab-badge" id="tab-upg-affordable"></span>
         </button>
         <button class="tab-btn" data-tab="stats">
-          <span class="tab-ico">📊</span>
+          <span class="tab-ico"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><rect x="3" y="13" width="4" height="8" rx="1"/><rect x="10" y="8" width="4" height="13" rx="1"/><rect x="17" y="3" width="4" height="18" rx="1"/></svg></span>
           <span class="tab-label">STATS</span>
         </button>
       </div>
@@ -5988,7 +5990,7 @@ body.shop-epic-flash::after{
           <path d="M10 14 H14 V20 H10 z"/>
           <path d="M4 6 v3 a3 3 0 0 0 3 3" /><path d="M20 6 v3 a3 3 0 0 1 -3 3"/>
         </svg>
-        <div class="mi-meta"><div class="mi-title">🏆 Records</div><div class="mi-sub">tes meilleurs scores · partager</div></div>
+        <div class="mi-meta"><div class="mi-title">Records</div><div class="mi-sub">tes meilleurs scores · partager</div></div>
       </button>
       <button class="menu-item" data-action="stats">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
@@ -6678,7 +6680,7 @@ body.shop-epic-flash::after{
 <div id="stadium-modal" class="modal">
   <div class="modal-card">
     <div class="modal-close" id="stadium-close" aria-label="Fermer">×</div>
-    <h2>🏟️ STADES</h2>
+    <h2>STADES</h2>
     <div class="divider"></div>
     <div class="stadium-body" id="stadium-body"></div>
   </div>
@@ -6698,7 +6700,7 @@ body.shop-epic-flash::after{
 <div id="records-modal" class="modal">
   <div class="modal-card">
     <div class="modal-close" id="records-close" aria-label="Fermer">×</div>
-    <h2>🏆 RECORDS</h2>
+    <h2>RECORDS</h2>
     <div class="divider"></div>
     <div class="records-body" id="records-body"></div>
   </div>
@@ -6721,7 +6723,7 @@ body.shop-epic-flash::after{
     <div class="starter-ribbon">⏰ OFFRE DE BIENVENUE</div>
     <h2>STARTER PACK</h2>
     <div class="starter-hero">
-      <div class="starter-emoji">🎁</div>
+      <div class="starter-emoji"></div>
       <div class="starter-title">Réservé aux nouveaux joueurs</div>
     </div>
     <div class="starter-list">
@@ -6750,13 +6752,13 @@ body.shop-epic-flash::after{
   <div class="modal-card offline-card">
     <div class="modal-close" id="offline-close" aria-label="Fermer">×</div>
     <div class="offline-hero">
-      <div class="offline-emoji">🏃‍♂️💨</div>
+      <div class="offline-emoji">Bien joué</div>
       <h2>BIEN JOUÉ COACH !</h2>
       <div class="offline-sub" id="offline-duration">—</div>
     </div>
     <div class="offline-stats">
       <div class="offline-row">
-        <span class="offline-row-lbl">🏁 Kilomètres courus</span>
+        <span class="offline-row-lbl">Kilomètres courus</span>
         <span class="offline-row-val" id="offline-km">+0</span>
       </div>
       <div class="offline-row">
@@ -9565,7 +9567,7 @@ function openTransmute(){
       </div>
       <p class="trm-warn">Tu réinitialiseras le stade. Ton plateau, tes médailles, tes générateurs et tes quêtes <em>seront effacés</em>.</p>
       <p class="trm-keep">Conservés : <strong>Hauts Faits</strong>, <strong>Codex</strong>, <strong>statistiques totales</strong>, et tes <strong>${STATE.stars||0} ★</strong> permanents.</p>
-      ${STATE.gold >= 100 ? `<p class="trm-tip">💡 Astuce : passe au Marché avant de transmuter — chaque tranche de 2000 médailles non dépensées te donne 1 étoile en plus.</p>` : ''}
+      ${STATE.gold >= 100 ? `<p class="trm-tip">Astuce : passe au Marché avant de transmuter — chaque tranche de 2000 médailles non dépensées te donne 1 étoile en plus.</p>` : ''}
       <button class="trm-confirm" id="trm-confirm">CONFIRMER LA TRANSMUTATION</button>
       <p class="trm-hint">Toucher en dehors pour annuler.</p>
     `;
@@ -11709,7 +11711,7 @@ const ITEM_TYPES = [
   { id:'jersey',    emoji:'👕', name:'Maillot',        stat:'goldMul',   baseBonus:0.03, desc:'+% médailles' },
   { id:'headband',  emoji:'🎽', name:'Bandeau',        stat:'critRate',  baseBonus:0.005,desc:'+% crit chance' },
   { id:'watch',     emoji:'⌚', name:'Chrono',         stat:'xpMul',     baseBonus:0.03, desc:'+% XP' },
-  { id:'wristband', emoji:'💪', name:'Brassard',       stat:'staminaMul',baseBonus:0.04, desc:'+% endurance' },
+  { id:'wristband', emoji:'', name:'Brassard',       stat:'staminaMul',baseBonus:0.04, desc:'+% endurance' },
 ];
 const RARITIES = [
   { id:'common',    name:'Commun',     color:'#9b9b9b', weight:55, mul:1   },
@@ -11833,13 +11835,13 @@ function _showDropToast(item, action, scrapMed){
    Chaque stade a sa propre économie : team, upgrades, gold local séparés.
    Le coureur principal (level, cartes, gemmes, étoiles, équipement) reste global. */
 const MAP_STADIUMS = [
-  { id:'municipal',  name:'Stade Municipal',   emoji:'🏟️', theme:'#7ec46a',
+  { id:'municipal',  name:'Stade Municipal',   emoji:'', theme:'#7ec46a',
     minSaison:1, desc:'Le départ. Course classique sur piste cendrée.',
     modifier:{ tapMul:1, cycleMul:1, batchMul:1 } },
   { id:'velodrome',  name:'Vélodrome',         emoji:'🚴', theme:'#4a9fd9',
     minSaison:2, desc:'Vitesse pure. Cycles 50% plus rapides.',
     modifier:{ tapMul:1.2, cycleMul:0.5, batchMul:0.8 } },
-  { id:'indoor',     name:'Athlé Indoor',      emoji:'🏃', theme:'#e85a30',
+  { id:'indoor',     name:'Athlé Indoor',      emoji:'', theme:'#e85a30',
     minSaison:3, desc:'Sprint intense. Tap 2× plus rentable, batches 50%.',
     modifier:{ tapMul:2, cycleMul:0.7, batchMul:0.5 } },
   { id:'trail',      name:'Trail Montagne',    emoji:'⛰️', theme:'#5a9040',
@@ -11968,20 +11970,20 @@ function renderMapStadiums(){
    Deck actif = 3 cartes maximum. Le reste reste en collection. */
 const STAR_CARDS = [
   // Vitesse / Speed
-  { id:'bolt',     name:'Bolt Légende',      emoji:'⚡', rarity:'rare',      stat:'speed',   bonus:0.25, desc:'+25% vitesse globale' },
+  { id:'bolt',     name:'Bolt Légende',      emoji:'', rarity:'rare',      stat:'speed',   bonus:0.25, desc:'+25% vitesse globale' },
   { id:'coach',    name:'Coach Carter',      emoji:'🎓', rarity:'uncommon',  stat:'team',    bonus:0.20, desc:'+20% production team' },
-  { id:'brute',    name:'Brute Force',       emoji:'💪', rarity:'common',    stat:'tap',     bonus:0.15, desc:'+15% méd par tap' },
+  { id:'brute',    name:'Brute Force',       emoji:'', rarity:'common',    stat:'tap',     bonus:0.15, desc:'+15% méd par tap' },
   // Cycle
   { id:'chrono',   name:'Chronométreur',     emoji:'⏱️', rarity:'rare',      stat:'cycle',   bonus:0.10, desc:'-10% temps de cycle' },
   { id:'wind',     name:'Vent d\'Est',       emoji:'🌪️', rarity:'epic',      stat:'cycle',   bonus:0.20, desc:'-20% temps de cycle' },
   // Gold
   { id:'sponsor',  name:'Sponsor Or',        emoji:'💰', rarity:'uncommon',  stat:'goldAll', bonus:0.15, desc:'+15% méd toutes sources' },
-  { id:'champion', name:'Champion National', emoji:'🏆', rarity:'rare',      stat:'lapGold', bonus:0.30, desc:'+30% méd au tour bouclé' },
+  { id:'champion', name:'Champion National', emoji:'', rarity:'rare',      stat:'lapGold', bonus:0.30, desc:'+30% méd au tour bouclé' },
   { id:'diamond',  name:'Diamant',           emoji:'💎', rarity:'epic',      stat:'goldAll', bonus:0.25, desc:'+25% méd + chance gemme' },
   // Crit
   { id:'sniper',   name:'Sniper',            emoji:'🎯', rarity:'uncommon',  stat:'crit',    bonus:0.05, desc:'+5% chance crit' },
-  { id:'star',     name:'Étoile Filante',    emoji:'✨', rarity:'rare',      stat:'crit',    bonus:0.10, desc:'+10% chance crit' },
-  { id:'combo',    name:'Combo King',        emoji:'🔥', rarity:'epic',      stat:'comboLen',bonus:1,    desc:'Combos durent 2× plus longtemps' },
+  { id:'star',     name:'Étoile Filante',    emoji:'', rarity:'rare',      stat:'crit',    bonus:0.10, desc:'+10% chance crit' },
+  { id:'combo',    name:'Combo King',        emoji:'', rarity:'epic',      stat:'comboLen',bonus:1,    desc:'Combos durent 2× plus longtemps' },
   // XP
   { id:'mentor',   name:'Mentor',            emoji:'📚', rarity:'uncommon',  stat:'xp',      bonus:0.30, desc:'+30% XP' },
   { id:'legend',   name:'Légende',           emoji:'🌟', rarity:'rare',      stat:'xp',      bonus:0.50, desc:'+50% XP' },
@@ -12112,9 +12114,9 @@ function renderCardCollection(){
   const deck = deckCards();
   // Sommaire bonus
   const stats = [
-    ['speed','⚡ Vitesse'],['team','👥 Team'],['tap','👆 Tap'],
-    ['goldAll','💰 Méd'],['lapGold','🏁 Tour'],['crit','🎯 Crit'],
-    ['xp','⏱️ XP'],['cycle','⚡ Cycle (réduction)']
+    ['speed','Vitesse'],['team','Team'],['tap','Tap'],
+    ['goldAll','💰 Méd'],['lapGold','Tour'],['crit','🎯 Crit'],
+    ['xp','⏱️ XP'],['cycle','Cycle (réduction)']
   ];
   const allMul = deckAllMul();
   const sumHTML = stats.map(([s,lbl])=>{
@@ -12185,9 +12187,9 @@ const CHEST_TYPES = [
     rarityWeights:{ common:75, uncommon:20, rare:4,  epic:1,  legendary:0   } },
   { id:'iron',      name:'Coffre Fer',        emoji:'🗃️', color:'#9b9b9b', weight:25,
     rarityWeights:{ common:30, uncommon:50, rare:15, epic:4,  legendary:1   } },
-  { id:'gold',      name:'Coffre Or',         emoji:'🏆', color:'#ffba30', weight:12,
+  { id:'gold',      name:'Coffre Or',         emoji:'', color:'#ffba30', weight:12,
     rarityWeights:{ common:5,  uncommon:25, rare:50, epic:17, legendary:3   } },
-  { id:'legendary', name:'Coffre Légendaire', emoji:'✨', color:'#ff8030', weight:3,
+  { id:'legendary', name:'Coffre Légendaire', emoji:'', color:'#ff8030', weight:3,
     rarityWeights:{ common:0,  uncommon:0,  rare:30, epic:55, legendary:15  } },
 ];
 function _rollChestType(){
@@ -12396,7 +12398,7 @@ function renderChestsModal(){
   body.innerHTML = `
     <div id="chest-stage"></div>
     <div class="chests-grid">${cards}</div>
-    <div class="chests-help">🎁 Tu reçois 1 coffre à chaque tour bouclé. Plus la rareté du coffre est haute, meilleurs sont les items à l'intérieur.</div>
+    <div class="chests-help">Tu reçois 1 coffre à chaque tour bouclé. Plus la rareté du coffre est haute, meilleurs sont les items à l'intérieur.</div>
   `;
   body.querySelectorAll('[data-open-chest]').forEach(btn => {
     btn.addEventListener('click', ()=>openChest(btn.dataset.openChest));
@@ -12432,11 +12434,11 @@ function renderEquipment(){
   if(!STATE.equipment) STATE.equipment = {};
   // Sommaire bonus total
   const summary = [
-    ['speed', '⚡ Vitesse'],
+    ['speed', 'Vitesse'],
     ['goldMul', '💰 Médailles'],
     ['critRate', '✦ Crit'],
     ['xpMul', '⏱️ XP'],
-    ['staminaMul', '💪 Stamina'],
+    ['staminaMul', 'Stamina'],
   ];
   const sumHTML = summary.map(([stat, lbl]) => {
     const bonus = equipBonus(stat);
@@ -12468,7 +12470,7 @@ function renderEquipment(){
       <div class="es-list">${sumHTML || '<div class="es-empty">Aucun équipement — joue pour drop ton premier item !</div>'}</div>
     </div>
     <div class="eq-grid">${slots}</div>
-    <div class="eq-help">🎁 Chaque tour bouclé fait drop 1 item. Si meilleur, il s'équipe auto. Sinon, scrap en médailles.</div>
+    <div class="eq-help">Chaque tour bouclé fait drop 1 item. Si meilleur, il s'équipe auto. Sinon, scrap en médailles.</div>
   `;
 }
 
@@ -12559,7 +12561,7 @@ function tapBoost(e){
   if(evX != null && evY != null){
     const pop = document.createElement('div');
     pop.className = 'tap-pop' + (isCrit ? ' crit' : '');
-    pop.textContent = '+' + fmtBigNumber(gain) + (isCrit ? ' ✦' : '');
+    pop.textContent = '+' + fmtBigNumber(gain) + (isCrit ? ' !' : '');
     pop.style.left = (evX + (Math.random()-.5)*20) + 'px';
     pop.style.top = evY + 'px';
     document.body.appendChild(pop);
@@ -12992,7 +12994,7 @@ const SKILLS = [
   {
     id:'sprint',
     name:'SPRINT',
-    icon:'⚡',
+    icon:'',
     color:'#ff6020',
     desc:'×10 méd/tap pendant 30s',
     cooldown:480, // 8 minutes
@@ -13005,7 +13007,7 @@ const SKILLS = [
   {
     id:'tailwind',
     name:'VENT FAVORABLE',
-    icon:'💨',
+    icon:'',
     color:'#7bc7f6',
     desc:'Cycles ÷3 pendant 60s',
     cooldown:600,
@@ -13124,7 +13126,7 @@ function _scheduleNextGolden(){
 }
 function tickGoldenBatch(){
   // DÉSACTIVÉ : remplacé par le système Lapin (RUNNER_2D.spawnRabbit) dans le pivot side parallax
-  // L'ancien spawn d'une médaille dorée 🪙 cliquable s'affichait comme un carré noir
+  // L'ancien spawn d'une médaille dorée cliquable s'affichait comme un carré noir
   // sur les mobiles dont la police emoji ne supporte pas cet emoji.
   return;
 }
@@ -13133,7 +13135,7 @@ function _spawnGolden(){
   if(!stadium) return;
   const golden = document.createElement('div');
   golden.className = 'golden-batch';
-  golden.innerHTML = `<div class="golden-coin">🪙</div>`;
+  golden.innerHTML = `<div class="golden-coin"></div>`;
   // Position aléatoire dans le ciel du stade (top 30-50%, x 10-90%)
   const x = 10 + Math.random() * 80;
   const y = 18 + Math.random() * 28;
@@ -13156,7 +13158,7 @@ function _spawnGolden(){
   }
   // Bulle d'alerte du coureur
   if(typeof showRunnerBubble === 'function'){
-    showRunnerBubble('✨ Médaille dorée !');
+    showRunnerBubble('Médaille dorée !');
   }
 }
 function _despawnGolden(){
@@ -13239,7 +13241,7 @@ function spendGems(n){
 /* ================ SHOP PREMIUM ================ */
 const SHOP_PREMIUM_ITEMS = [
   {
-    id: 'boost-x2-24h', name:'×2 MÉDAILLES · 24h', icon:'⚡',
+    id: 'boost-x2-24h', name:'×2 MÉDAILLES · 24h', icon:'',
     price:50, currency:'gems',
     desc:'Multiplie par 2 toutes tes récoltes pendant 24h.',
     apply(){
@@ -13268,7 +13270,7 @@ const SHOP_PREMIUM_ITEMS = [
     }
   },
   {
-    id: 'pack-medailles-small', name:'PACK 10K MÉDAILLES', icon:'🪙',
+    id: 'pack-medailles-small', name:'PACK 10K MÉDAILLES', icon:'',
     price:10, currency:'gems',
     desc:'10 000 médailles instant.',
     apply(){ STATE.gold = (STATE.gold || 0) + 10000; }
@@ -13280,7 +13282,7 @@ const SHOP_PREMIUM_ITEMS = [
     apply(){ STATE.gold = (STATE.gold || 0) + 1000000; }
   },
   {
-    id: 'pack-etoiles', name:'PACK 10 ÉTOILES', icon:'✨',
+    id: 'pack-etoiles', name:'PACK 10 ÉTOILES', icon:'',
     price:500, currency:'gems',
     desc:'10 étoiles à dépenser dans les perks permanents.',
     apply(){ STATE.stars = (STATE.stars || 0) + 10; }
@@ -13344,7 +13346,7 @@ function claimStarterPack(){
   }
   vibrate([30, 50, 30, 50, 80]);
   document.getElementById('starter-modal')?.classList.remove('show');
-  if(typeof showRunnerBubble === 'function') showRunnerBubble('🎁 STARTER PACK !');
+  if(typeof showRunnerBubble === 'function') showRunnerBubble('STARTER PACK !');
   if(typeof renderStats === 'function') renderStats();
   if(typeof renderTeam === 'function') renderTeam();
 }
@@ -13369,7 +13371,7 @@ function renderShopUI(){
     <div class="shop-hero">
       <div class="shop-gems-big">💎 <span id="shop-gems-count">${gems}</span></div>
       <div class="shop-gems-sub">Gemmes — monnaie premium</div>
-      ${boostActive ? `<div class="shop-boost-active">⚡ ×2 médailles · ${fmtDuration(boostMs)} restant</div>` : ''}
+      ${boostActive ? `<div class="shop-boost-active">×2 médailles · ${fmtDuration(boostMs)} restant</div>` : ''}
     </div>
     <div class="shop-items">${items}</div>
     <div class="shop-getmore">
@@ -13406,7 +13408,7 @@ function renderShopUI(){
    Manager = upgrade one-time payée en gold.
 */
 const TEAM_RUNNERS = [
-  { id:'sprinter',    name:'Sprinter',     emoji:'⚡', color:'#ffa45c',
+  { id:'sprinter',    name:'Sprinter',     emoji:'', color:'#ffa45c',
     base:8,            factor:1.10,  baseBatch:5,         cycleTime:1.5,
     managerCost:50,    unlockLaps:0,   unlockSaison:1,
     desc:'Cycle court · batch léger. Le starter.' },
@@ -13414,7 +13416,7 @@ const TEAM_RUNNERS = [
     base:80,           factor:1.10,  baseBatch:50,        cycleTime:4,
     managerCost:3000,  unlockLaps:5,   unlockSaison:1,
     desc:'Cycle moyen · batch décent.' },
-  { id:'hurdler',     name:'Hurdler',      emoji:'🏃', color:'#c89af0',
+  { id:'hurdler',     name:'Hurdler',      emoji:'', color:'#c89af0',
     base:800,          factor:1.10,  baseBatch:500,       cycleTime:8,
     managerCost:80000, unlockLaps:20,  unlockSaison:1,
     desc:'Cycle lent · batch musclé.' },
@@ -13426,7 +13428,7 @@ const TEAM_RUNNERS = [
     base:120000,       factor:1.11,  baseBatch:80000,     cycleTime:30,
     managerCost:200000000, unlockLaps:100, unlockSaison:1,
     desc:'Multiplie toute l\'équipe ×1.05/niv.' },
-  { id:'legende',     name:'Légende',      emoji:'⭐', color:'#ffd070',
+  { id:'legende',     name:'Légende',      emoji:'', color:'#ffd070',
     base:2000000,      factor:1.12,  baseBatch:2000000,   cycleTime:60,
     managerCost:5e9,   unlockLaps:0,   unlockSaison:2,
     desc:'Le GOAT. Cycle long, gain titanesque.' },
@@ -13647,12 +13649,12 @@ function renderStatsQuick(){
   const bestCombo = r.maxCombo || 0;
   const bestComboTxt = bestCombo >= 3 ? '×' + bestCombo : '—';
   wrap.innerHTML = `
-    <div class="stats-quick-cell">🏁 Tours bouclés <b>${fmtBigNumber(STATE.lapsRun||0)}</b></div>
-    <div class="stats-quick-cell">✨ Saison <b>${STATE.saison||1}</b></div>
-    <div class="stats-quick-cell">👆 Total taps <b>${fmtBigNumber(STATE.totalTaps||0)}</b></div>
-    <div class="stats-quick-cell">🔥 Best combo <b>${bestComboTxt}</b></div>
-    <div class="stats-quick-cell">⚡ Vitesse <b>×${dispSpeed}</b></div>
-    <div class="stats-quick-cell">💪 Forme <b>${formePct}%</b></div>
+    <div class="stats-quick-cell">Tours bouclés <b>${fmtBigNumber(STATE.lapsRun||0)}</b></div>
+    <div class="stats-quick-cell">Saison <b>${STATE.saison||1}</b></div>
+    <div class="stats-quick-cell">Total taps <b>${fmtBigNumber(STATE.totalTaps||0)}</b></div>
+    <div class="stats-quick-cell">Best combo <b>${bestComboTxt}</b></div>
+    <div class="stats-quick-cell">Vitesse <b>×${dispSpeed}</b></div>
+    <div class="stats-quick-cell">Forme <b>${formePct}%</b></div>
   `;
 }
 function updateUpgAffordableBadge(){
@@ -13738,7 +13740,7 @@ function renderRunnerCard(r){
   const hasMgr = runnerHasManager(r.id);
   const cycleReady = cyclePct >= 100;
   const visualTier = (typeof teamRunnerVisualTier === 'function') ? teamRunnerVisualTier(lvl) : 0;
-  const tierBadges = ['','🎽','🥉','🥇','👑','⭐'];
+  const tierBadges = ['','🎽','🥉','','👑',''];
   const tierBadge = tierBadges[visualTier] || '';
   return `<div class="runner-card ${lvl > 0 ? 'hired' : 'unhired'} ${cycleReady ? 'ready' : ''} ${hasMgr ? 'has-mgr' : ''} tier-${visualTier}"
        data-runner="${r.id}" style="--rc-color:${r.color}">
@@ -13811,7 +13813,7 @@ function updateRunnerCard(r){
   // Update tier badge
   const emojiEl = card.querySelector('.rc-emoji');
   if(emojiEl){
-    const tierBadges = ['','🎽','🥉','🥇','👑','⭐'];
+    const tierBadges = ['','🎽','🥉','','👑',''];
     const tierBadge = tierBadges[visualTier] || '';
     let badge = emojiEl.querySelector('.rc-tier-badge');
     if(tierBadge){
@@ -13902,7 +13904,7 @@ function claimDailyReward(){
     if(typeof addGems === 'function') addGems(25);
     STATE.dailyCycles = (STATE.dailyCycles || 0) + 1;
     if(typeof showRunnerBubble === 'function'){
-      showRunnerBubble('🎁 +15k méd + 5 ★ + 25 💎 !');
+      showRunnerBubble('+15k méd + 5 ★ + 25 💎 !');
     }
   }
   STATE.dailyLast = Date.now();
@@ -13940,7 +13942,7 @@ function renderDailyModal(){
     </div>`;
   }).join('');
   const nextText = available
-    ? `<b style="color:#4a9fd9">🎁 Récompense disponible !</b>`
+    ? `<b style="color:#4a9fd9">Récompense disponible !</b>`
     : `Reviens demain pour le jour ${day === 7 ? 1 : day + 1}`;
   body.innerHTML = `
     <div class="daily-streak-info">JOUR ${day} / 7</div>
@@ -14030,10 +14032,10 @@ function openRunnerProfile(){
     <div class="profile-section">
       <h3>STATISTIQUES</h3>
       <div class="stat-grid">
-        <div class="stat-block"><span class="stat-icon">⚡</span><span class="stat-name">Vitesse</span><span class="stat-val">${stats.vitesse}</span></div>
-        <div class="stat-block"><span class="stat-icon">💪</span><span class="stat-name">Endurance</span><span class="stat-val">${stats.endurance}</span></div>
+        <div class="stat-block"><span class="stat-icon"></span><span class="stat-name">Vitesse</span><span class="stat-val">${stats.vitesse}</span></div>
+        <div class="stat-block"><span class="stat-icon"></span><span class="stat-name">Endurance</span><span class="stat-val">${stats.endurance}</span></div>
         <div class="stat-block"><span class="stat-icon">🍀</span><span class="stat-name">Chance</span><span class="stat-val">${stats.chance}</span></div>
-        <div class="stat-block"><span class="stat-icon">✨</span><span class="stat-name">Charisme</span><span class="stat-val">${stats.charisme}</span></div>
+        <div class="stat-block"><span class="stat-icon"></span><span class="stat-name">Charisme</span><span class="stat-val">${stats.charisme}</span></div>
       </div>
     </div>
     <div class="profile-section">
@@ -14205,7 +14207,7 @@ function completeLap(){
   if(typeof checkAchievements === 'function') checkAchievements();
   if(typeof updateRecords === 'function') updateRecords();
   if(typeof progressQuest === 'function') progressQuest('laps', 1);
-  // 🎁 DROP D'ITEM ! Chaque lap = 1 drop (auto-équipe si meilleur, sinon scrap)
+  // DROP D'ITEM ! Chaque lap = 1 drop (auto-équipe si meilleur, sinon scrap)
   if(typeof maybeDropItem === 'function') maybeDropItem();
 }
 
@@ -14265,7 +14267,7 @@ function buySkin(id){
     setTimeout(()=>blip(990, .18, "sine", .26, .7), 100);
   }
   vibrate([20, 40, 20]);
-  if(typeof showRunnerBubble === 'function') showRunnerBubble('✨ Skin ' + skin.name + ' équipé !');
+  if(typeof showRunnerBubble === 'function') showRunnerBubble('Skin ' + skin.name + ' équipé !');
   if(typeof applyRunnerSkin === 'function') applyRunnerSkin();
   if(typeof renderWardrobe === 'function') renderWardrobe();
 }
@@ -14307,11 +14309,11 @@ function updateRecords(){
 }
 function shareProgress(){
   ensureRecords();
-  const txt = `🏟️ FOULÉE — Mes stats :
-🏃 NIV ${STATE.alchLevel||1} ${alchTitle?.() || ''}
-🏁 ${STATE.lapsRun||0} tours bouclés
-✨ Saison ${STATE.saison||1}
-👆 ${STATE.totalTaps||0} taps
+  const txt = `FOULÉE — Mes stats :
+ NIV ${STATE.alchLevel||1} ${alchTitle?.() || ''}
+${STATE.lapsRun||0} tours bouclés
+Saison ${STATE.saison||1}
+${STATE.totalTaps||0} taps
 💰 ${fmtBigNumber(STATE.gold||0)} médailles
 
 Joue à FOULÉE — Le petit stade dans ta poche !`;
@@ -14345,16 +14347,16 @@ function renderRecords(){
   const r = STATE.records;
   body.innerHTML = `
     <div class="records-hero">
-      <div class="records-emoji">🏆</div>
+      <div class="records-emoji"></div>
       <div class="records-title">TES MEILLEURS SCORES</div>
     </div>
     <div class="records-list">
-      <div class="records-row"><span>🏁 Tours bouclés</span><b>${fmtBigNumber(r.maxLapsRun)}</b></div>
+      <div class="records-row"><span>Tours bouclés</span><b>${fmtBigNumber(r.maxLapsRun)}</b></div>
       <div class="records-row"><span>💰 Plus de médailles</span><b>${fmtBigNumber(r.maxGold)}</b></div>
-      <div class="records-row"><span>🏃 Niveau max</span><b>${r.maxLevel}</b></div>
-      <div class="records-row"><span>✨ Saison max</span><b>${r.maxSaison}</b></div>
-      <div class="records-row"><span>🔥 Meilleur combo</span><b>×${r.maxCombo || 1}</b></div>
-      <div class="records-row"><span>👆 Total taps</span><b>${fmtBigNumber(r.totalTaps)}</b></div>
+      <div class="records-row"><span> Niveau max</span><b>${r.maxLevel}</b></div>
+      <div class="records-row"><span>Saison max</span><b>${r.maxSaison}</b></div>
+      <div class="records-row"><span>Meilleur combo</span><b>×${r.maxCombo || 1}</b></div>
+      <div class="records-row"><span>Total taps</span><b>${fmtBigNumber(r.totalTaps)}</b></div>
     </div>
     <button id="records-share" class="records-share-btn">📤 PARTAGER MES STATS</button>
   `;
@@ -14564,7 +14566,7 @@ function setStadium(id){
   if((STATE.saison || 1) < s.minSaison){ if(typeof sfxDeny === 'function') sfxDeny(); return; }
   STATE.selectedStadiumId = id;
   updateSky();
-  if(typeof showRunnerBubble === 'function') showRunnerBubble('🏟️ ' + s.name);
+  if(typeof showRunnerBubble === 'function') showRunnerBubble('' + s.name);
   if(typeof renderStadiumPicker === 'function') renderStadiumPicker();
 }
 function updateSky(){
@@ -18534,11 +18536,11 @@ if('serviceWorker' in navigator){
     ST.gold = (ST.gold || 0) + bonus;
     // Notif
     if(typeof showRunnerBubble === 'function'){
-      showRunnerBubble('🐇 LIÈVRE ! +' + bonus + ' méd');
+      showRunnerBubble('LIÈVRE ! +' + bonus + ' méd');
     } else {
       const pop = document.createElement('div');
       pop.style.cssText = 'position:fixed;top:30%;left:50%;transform:translateX(-50%);background:linear-gradient(180deg,#ff8030,#c84020);color:#fff;font-weight:900;padding:14px 24px;border-radius:18px;font-size:18px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:9999;font-family:Nunito,sans-serif;pointer-events:none;animation:rabbitPop 1.5s ease-out forwards';
-      pop.textContent = '🐇 +' + bonus + ' méd';
+      pop.textContent = 'LIÈVRE +' + bonus + ' méd';
       document.body.appendChild(pop);
       setTimeout(() => pop.remove(), 1500);
     }
@@ -18562,12 +18564,12 @@ if('serviceWorker' in navigator){
     ST.gold = (ST.gold || 0) + bonus;
     // Notif visuelle
     if(typeof showRunnerBubble === 'function'){
-      showRunnerBubble('🐰 LAPIN ! +' + bonus + ' méd');
+      showRunnerBubble('LAPIN ! +' + bonus + ' méd');
     } else {
       // Fallback popup au centre
       const pop = document.createElement('div');
       pop.style.cssText = 'position:fixed;top:30%;left:50%;transform:translateX(-50%);background:linear-gradient(180deg,#ffd060,#e88830);color:#3a2010;font-weight:900;padding:14px 24px;border-radius:18px;font-size:18px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:9999;font-family:Nunito,sans-serif;pointer-events:none;animation:rabbitPop 1.5s ease-out forwards';
-      pop.textContent = '🐰 +' + bonus + ' méd';
+      pop.textContent = 'LAPIN +' + bonus + ' méd';
       document.body.appendChild(pop);
       setTimeout(() => pop.remove(), 1500);
     }
@@ -18604,9 +18606,9 @@ if('serviceWorker' in navigator){
   /* === 1. TUTO CONTEXTUEL : 3 hints qui guident le démarrage === */
   const TUTO_KEY = 'foulee.tutoV2';
   const TUTO_STEPS = [
-    '👆 TAP le stade pour faire courir ton héros !',
-    '💨 Continue ! 1 km débloque un nouveau décor.',
-    '⚡ Achète un UPGRADE en bas pour aller plus vite !',
+    'TAP le stade pour faire courir ton héros',
+    'Continue ! 1 km débloque un nouveau décor',
+    'Achète un UPGRADE en bas pour aller plus vite',
   ];
   let tutoStep = 0;
   const saved = localStorage.getItem(TUTO_KEY);
@@ -18646,11 +18648,11 @@ if('serviceWorker' in navigator){
   /* === 2. ANIMATION PASSAGE DE TIER (km milestone) === */
   const TIER_MESSAGES = [
     null,
-    '👏 Premier pas ! Les spectateurs arrivent.',
-    '🏟️ Stade municipal débloqué !',
-    '🏁 Compétition régionale ! Drapeaux hissés.',
-    '💡 Tournoi national ! Projecteurs allumés.',
-    '🏆 Stade Olympique ! Foule en délire.',
+    'Premier pas ! Les spectateurs arrivent.',
+    'Stade municipal débloqué !',
+    'Compétition régionale ! Drapeaux hissés.',
+    'Tournoi national ! Projecteurs allumés.',
+    'Stade Olympique ! Foule en délire.',
   ];
   const tierBanner = document.getElementById('tier-banner');
   const tierBannerMsg = document.getElementById('tier-banner-msg');
@@ -18698,7 +18700,7 @@ if('serviceWorker' in navigator){
     // Toast au centre de l'écran
     const pop = document.createElement('div');
     pop.style.cssText = 'position:fixed;top:30%;left:50%;transform:translate(-50%,-50%) scale(.6);background:linear-gradient(180deg,#ffd060,#f08a48);color:#1a1010;font-family:Nunito,sans-serif;font-weight:900;padding:20px 32px;border-radius:22px;font-size:18px;box-shadow:0 12px 30px rgba(0,0,0,.5);z-index:9999;border:4px solid #fff;text-align:center;line-height:1.4;pointer-events:none;animation:firstKmPop 2.4s cubic-bezier(.2,.9,.2,1.4) forwards';
-    pop.innerHTML = '🎉 <b>PREMIER KILOMÈTRE !</b><br><span style="font-size:14px;color:#3a1a10">Tu y es ! +' + bonus + ' méd bonus</span>';
+    pop.innerHTML = '<b>PREMIER KILOMÈTRE !</b><br><span style="font-size:14px;color:#3a1a10">Tu y es ! +' + bonus + ' méd bonus</span>';
     document.body.appendChild(pop);
     setTimeout(() => pop.remove(), 2400);
     // SFX special

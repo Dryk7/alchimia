@@ -16802,6 +16802,18 @@ if('serviceWorker' in navigator){
   let heroDashBob = 0;      // pic d'amplitude du bob au tap
   let recentProgress = [];  // historique récent {t, km} pour calcul km/h
   let displayKmh = 0;       // valeur lissée affichée
+  // === MÉTÉO DYNAMIQUE ===
+  // Choisie au load (et exposée pour debug)
+  function pickWeather(){
+    const r = Math.random();
+    if(r < 0.55) return 'sunny';   // 55%
+    if(r < 0.75) return 'cloudy';  // 20%
+    if(r < 0.88) return 'windy';   // 13%
+    if(r < 0.96) return 'rainy';   // 8%
+    return 'foggy';                 // 4%
+  }
+  let weather = pickWeather();
+  const rainDrops = []; // particules de pluie
   const confetti = [];      // particules de confettis au passage de tier
 
   // API : déclenchable depuis l'extérieur via window.RUNNER_2D.spawnConfetti()
@@ -17665,38 +17677,125 @@ if('serviceWorker' in navigator){
     // === TIER : niveau de richesse du décor (0=terrain vague → 5=stade pro) ===
     const tier = (typeof stadiumTier === 'function') ? stadiumTier() : 5;
 
+    // === MÉTÉO : affecte le rendu du ciel et des nuages ===
+    const isRainy = weather === 'rainy';
+    const isCloudy = weather === 'cloudy' || isRainy;
+    const isWindy = weather === 'windy';
+    const isFoggy = weather === 'foggy';
+
     // ═══ Layer 1 : Sky gradient ═══
     const sky = ctx.createLinearGradient(0, 0, 0, H * .55);
-    // Tier 0 : ciel terne grisâtre. Sinon : palette du stade.
     if(tier === 0){
       sky.addColorStop(0, '#a8b4b8');
       sky.addColorStop(1, '#c0c8c8');
+    } else if(isRainy){
+      sky.addColorStop(0, '#6878a0');
+      sky.addColorStop(1, '#8898b8');
+    } else if(isCloudy){
+      sky.addColorStop(0, '#a8b4c4');
+      sky.addColorStop(1, '#c8d4dc');
     } else {
       sky.addColorStop(0, pal.skyTop);
       sky.addColorStop(1, pal.skyBot);
     }
     ctx.fillStyle = sky;
     ctx.fillRect(0, 0, W, H * .55);
-    // Soleil : opacité progressive (visible dès tier 1)
-    if(tier >= 1){
-      const sunAlpha = Math.min(1, (tier - 0.5) / 3);
-      ctx.fillStyle = `rgba(255,250,180,${0.35 * sunAlpha})`;
-      ctx.beginPath(); ctx.arc(W * .82, H * .12, 50, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = `rgba(255,234,136,${sunAlpha})`;
-      ctx.beginPath(); ctx.arc(W * .82, H * .12, 32, 0, Math.PI*2); ctx.fill();
+    // === Identité visuelle par stade (au-delà de la palette) ===
+    const stadiumId = (window.STATE && window.STATE.selectedStadiumId) || (window.STATE && window.STATE.currentStadiumId) || 'municipal';
+
+    // Étoiles scintillantes (stade cosmic)
+    if(stadiumId === 'cosmic'){
+      ctx.fillStyle = '#fff';
+      for(let i = 0; i < 60; i++){
+        const sx = (i * 137) % W;
+        const sy = (i * 73 + 13) % (H * 0.5);
+        const tw = 0.25 + 0.75 * Math.abs(Math.sin(t * 0.05 + i * 1.7));
+        ctx.globalAlpha = tw;
+        const size = (i % 7 === 0) ? 2.5 : 1.5;
+        ctx.fillRect(sx, sy, size, size);
+      }
+      ctx.globalAlpha = 1;
     }
 
-    // ═══ Layer 2 : Nuages — nombre croît avec le tier (0 au tier 0-1, max 4 au tier 4+) ═══
-    const cloudCount = Math.max(0, Math.min(4, tier - 1));
+    // Soleil ou planète selon le stade
+    if(tier >= 1 && !isRainy){
+      const sunAlpha = Math.min(1, (tier - 0.5) / 3) * (isCloudy ? 0.4 : isFoggy ? 0.5 : 1);
+      if(stadiumId === 'cosmic'){
+        // Planète bicolore violet/rose au lieu du soleil
+        ctx.fillStyle = `rgba(180,160,240,${0.3 * sunAlpha})`;
+        ctx.beginPath(); ctx.arc(W * .82, H * .12, 56, 0, Math.PI*2); ctx.fill();
+        const planetGrad = ctx.createLinearGradient(W * .82 - 36, H * .12, W * .82 + 36, H * .12);
+        planetGrad.addColorStop(0, `rgba(232,144,176,${sunAlpha})`);
+        planetGrad.addColorStop(1, `rgba(120,100,200,${sunAlpha})`);
+        ctx.fillStyle = planetGrad;
+        ctx.beginPath(); ctx.arc(W * .82, H * .12, 36, 0, Math.PI*2); ctx.fill();
+        // Anneau
+        ctx.strokeStyle = `rgba(220,200,255,${0.6 * sunAlpha})`;
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.ellipse(W * .82, H * .12, 50, 12, -0.3, 0, Math.PI*2); ctx.stroke();
+      } else if(stadiumId === 'sunset'){
+        // Soleil énorme orange/rouge bas dans le ciel
+        ctx.fillStyle = `rgba(255,140,80,${0.30 * sunAlpha})`;
+        ctx.beginPath(); ctx.arc(W * .80, H * .35, 90, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = `rgba(255,160,100,${0.50 * sunAlpha})`;
+        ctx.beginPath(); ctx.arc(W * .80, H * .35, 65, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = `rgba(255,200,120,${sunAlpha})`;
+        ctx.beginPath(); ctx.arc(W * .80, H * .35, 45, 0, Math.PI*2); ctx.fill();
+      } else {
+        // Soleil standard
+        ctx.fillStyle = `rgba(255,250,180,${0.35 * sunAlpha})`;
+        ctx.beginPath(); ctx.arc(W * .82, H * .12, 50, 0, Math.PI*2); ctx.fill();
+        ctx.fillStyle = `rgba(255,234,136,${sunAlpha})`;
+        ctx.beginPath(); ctx.arc(W * .82, H * .12, 32, 0, Math.PI*2); ctx.fill();
+      }
+    }
+
+    // ═══ Layer 2 : Nuages — densité dépend météo ET tier ═══
+    // sunny normal = tier-1 (0→4), cloudy = +2, rainy = +3, windy = pareil mais drift accéléré
+    let cloudCount = Math.max(0, Math.min(4, tier - 1));
+    if(isCloudy) cloudCount = Math.min(7, cloudCount + 3);
+    if(weather === 'foggy') cloudCount = Math.max(2, cloudCount);
     if(cloudCount > 0){
-      ctx.fillStyle = '#fff';
-      const cloudT = -(t * speed * 0.2);
+      const cloudSpeed = isWindy ? 1.2 : 0.2;
+      const cloudT = -(t * speed * cloudSpeed);
+      ctx.fillStyle = isRainy ? '#a0a8b8' : isCloudy ? '#d8dce0' : '#fff';
       for(let i = 0; i < cloudCount; i++){
-        const cx = ((cloudT + i * (W * .55)) % (W + 200) + (W + 200)) % (W + 200);
+        const cx = ((cloudT + i * (W * .35)) % (W + 250) + (W + 250)) % (W + 250);
+        const cy = H * (.06 + (i % 3) * 0.04);
         ctx.beginPath();
-        ctx.ellipse(cx, H * .08 + i * 8, 45, 14, 0, 0, Math.PI*2); ctx.fill();
-        ctx.ellipse(cx + 25, H * .06 + i * 8, 28, 12, 0, 0, Math.PI*2); ctx.fill();
-        ctx.ellipse(cx - 20, H * .07 + i * 8, 30, 11, 0, 0, Math.PI*2); ctx.fill();
+        ctx.ellipse(cx, cy, 45, 14, 0, 0, Math.PI*2); ctx.fill();
+        ctx.ellipse(cx + 25, cy - 4, 28, 12, 0, 0, Math.PI*2); ctx.fill();
+        ctx.ellipse(cx - 20, cy + 2, 30, 11, 0, 0, Math.PI*2); ctx.fill();
+      }
+    }
+
+    // ═══ Layer 2.5 : Pluie (gouttes verticales) ===
+    if(isRainy){
+      // Spawn de gouttes
+      while(rainDrops.length < 80){
+        rainDrops.push({
+          x: Math.random() * W,
+          y: -Math.random() * H * 0.5,
+          vy: 8 + Math.random() * 6,
+          len: 8 + Math.random() * 6,
+        });
+      }
+      ctx.strokeStyle = 'rgba(180,210,240,.55)';
+      ctx.lineWidth = 1.2;
+      for(let i = rainDrops.length - 1; i >= 0; i--){
+        const d = rainDrops[i];
+        d.y += d.vy * dtMul;
+        d.x -= (isWindy ? 4 : 1.5) * dtMul; // léger vent oblique
+        ctx.beginPath();
+        ctx.moveTo(d.x, d.y);
+        ctx.lineTo(d.x - 1, d.y + d.len);
+        ctx.stroke();
+        if(d.y > H * 0.94){
+          // Petit splash
+          ctx.fillStyle = 'rgba(180,210,240,.4)';
+          ctx.beginPath(); ctx.arc(d.x, H * 0.94, 1.5, 0, Math.PI*2); ctx.fill();
+          rainDrops.splice(i, 1);
+        }
       }
     }
 
@@ -18031,6 +18130,15 @@ if('serviceWorker' in navigator){
       }
     }
 
+    // ═══ MÉTÉO foggy : voile blanc/gris translucide sur la moitié basse ═══
+    if(isFoggy){
+      const fogGrad = ctx.createLinearGradient(0, H * .55, 0, H);
+      fogGrad.addColorStop(0, 'rgba(220,228,232,.45)');
+      fogGrad.addColorStop(1, 'rgba(220,228,232,.10)');
+      ctx.fillStyle = fogGrad;
+      ctx.fillRect(0, H * .55, W, H * .45);
+    }
+
     // ═══ CONFETTIS (passage de tier) ═══
     if(confetti.length){
       const gravity = 0.18;
@@ -18165,6 +18273,8 @@ if('serviceWorker' in navigator){
     getRabbit:()=>rabbit, getHare:()=>hare,
     spawnRabbit, spawnHare,
     spawnConfetti: spawnConfettiBurst,
+    getWeather:()=>weather,
+    setWeather:(w)=>{ weather = w; rainDrops.length = 0; },
   };
 })();
 </script>

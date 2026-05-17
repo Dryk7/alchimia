@@ -2543,6 +2543,12 @@ header{
   animation:hintTapPulse 1.4s ease-in-out infinite;
   box-shadow:0 3px 8px rgba(80,55,30,.20);
 }
+@keyframes rabbitPop{
+  0%   { transform:translateX(-50%) translateY(0) scale(.6); opacity:0; }
+  20%  { transform:translateX(-50%) translateY(-12px) scale(1.15); opacity:1; }
+  60%  { transform:translateX(-50%) translateY(-20px) scale(1); opacity:1; }
+  100% { transform:translateX(-50%) translateY(-40px) scale(.95); opacity:0; }
+}
 @keyframes hintTapPulse{
   0%,100%{ transform:translateX(-50%) scale(1); opacity:.95; }
   50%    { transform:translateX(-50%) scale(1.06); opacity:1; }
@@ -18924,6 +18930,8 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 (function initSideParallax(){
   const cv = document.getElementById('runner-canvas');
   if(!cv) return;
+  if(cv.dataset.parallaxInited) return;
+  cv.dataset.parallaxInited = '1';
   const ctx = cv.getContext('2d');
   const kmEl = document.getElementById('runner-km');
   const paceEl = document.getElementById('runner-pace');
@@ -19024,27 +19032,17 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       shorts:['#1a1010','#000','#1a1a1a'],
       accessory: { cap: true, glasses: true, bib: true, armband: true },
     },
-    // Tier 6 — Champion
-    {
-      label:'champion', baseSpeed:.95, speedVar:.05,
-      jerseys:['#e8b020','#e8c020','#e8b840','#d8a020'],
-      hairs:['#1a1010','#3a2818','#5a4028','#fff'],
-      skins:['#d0a880','#a8804a','#88684a','#684830'],
-      shorts:['#1a1010','#3a3848'],
-      accessory: { cap: true, glasses: true, bib: true, armband: true, cape: true, medal: true },
-    },
   ];
   function pickTierForPlayer(){
     // STATE.alchLevel détermine quel tier on rencontre principalement
-    // Tier = floor((alchLevel - 1) / 8), capped at 6
-    // Variance ±2 pour avoir un mix
+    // Tier = floor((alchLevel - 1) / 10), capped at 5 (champion remplacé par lapin)
     const lvl = (window.STATE && window.STATE.alchLevel) || 1;
-    const baseTier = Math.min(6, Math.floor((lvl - 1) / 8));
-    // Distribution biaisée vers le tier base, mais avec variance ±2
-    const variance = (Math.random() - 0.5) * 4; // -2 à +2
+    const baseTier = Math.min(5, Math.floor((lvl - 1) / 10));
+    // Variance ±2 pour avoir un mix
+    const variance = (Math.random() - 0.5) * 4;
     let t = Math.round(baseTier + variance);
     if(t < 0) t = 0;
-    if(t > 6) t = 6;
+    if(t > 5) t = 5;
     return t;
   }
   const npcs = [];
@@ -19067,19 +19065,51 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       bobPhase: Math.random() * 6.28,
     });
   }
-  // Spawn loop : aléatoire dans le temps, max 6 NPCs visibles
+  // Spawn ERRATIQUE : pas toujours, parfois plusieurs, max 4 visibles
   function npcSpawnLoop(){
-    if(npcs.length < 6){
-      spawnNpc();
+    const r = Math.random();
+    if(npcs.length < 4){
+      if(r < 0.55){
+        // 55% de chance de spawn cette fois-ci
+        spawnNpc();
+        // 12% de chance de spawn un 2ème dans la foulée
+        if(r < 0.12){
+          setTimeout(spawnNpc, 300 + Math.random() * 500);
+        }
+      }
     }
-    // Délai prochain spawn : 1.2-3.5s
-    const delay = 1200 + Math.random() * 2300;
+    // Délai prochain check : 2.5-8s (plus rare, plus erratique)
+    const delay = 2500 + Math.random() * 5500;
     setTimeout(npcSpawnLoop, delay);
   }
-  // Premier spawn immédiat puis loop
-  spawnNpc();
-  setTimeout(spawnNpc, 600);
-  setTimeout(npcSpawnLoop, 1500);
+  // Premier spawn après 800ms (le joueur entre dans le stade), puis loop
+  setTimeout(spawnNpc, 800);
+  setTimeout(npcSpawnLoop, 3500);
+
+  // ═══ LAPIN BONUS : court vite au fond, à attraper pendant qu'il est à l'écran ═══
+  let rabbit = null;
+  function spawnRabbit(){
+    if(rabbit) return;
+    rabbit = {
+      metersAhead: 28 + Math.random() * 5, // juste hors écran à droite (visible vite)
+      mPerSec: 5 + Math.random() * 1.5,    // ~8-10s sur l'écran (très catchable)
+      bobPhase: 0,
+      pinkPhase: 0,
+      screenX: 0, screenY: 0,
+      catchable: true,
+    };
+  }
+  function rabbitSpawnLoop(){
+    // 30% de chance toutes les 20-40s d'apparition lapin
+    if(!rabbit && Math.random() < 0.30){
+      spawnRabbit();
+    }
+    const delay = 20000 + Math.random() * 20000;
+    setTimeout(rabbitSpawnLoop, delay);
+  }
+  setTimeout(rabbitSpawnLoop, 10000); // 1er check après 10s
+  // Pour debug : window.SPAWN_RABBIT()
+  window.SPAWN_RABBIT = spawnRabbit;
 
   // Milestones (panneaux KM)
   const milestones = [];
@@ -19100,6 +19130,61 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     ctx.lineTo(x, y + r);
     ctx.quadraticCurveTo(x, y, x + r, y);
     ctx.closePath();
+  }
+
+  // ═══ Sprite LAPIN — court vite au fond, à attraper ═══
+  function drawRabbit(x, y, scale, phase, glow){
+    const s = scale;
+    // Glow doré autour (très visible = invitation au tap)
+    if(glow > 0){
+      const auraGrad = ctx.createRadialGradient(x, y, 0, x, y, 40 * s);
+      auraGrad.addColorStop(0, `rgba(255,220,80,${.5 * glow})`);
+      auraGrad.addColorStop(.5, `rgba(255,180,80,${.25 * glow})`);
+      auraGrad.addColorStop(1, 'rgba(255,180,80,0)');
+      ctx.fillStyle = auraGrad;
+      ctx.beginPath(); ctx.arc(x, y, 40 * s, 0, Math.PI*2); ctx.fill();
+    }
+    // Animation : bonds verticaux marqués
+    const hop = Math.abs(Math.sin(phase * .7)) * 8 * s;
+    const cy = y - hop;
+    // Ombre au sol (toujours en y, pas en cy)
+    ctx.fillStyle = 'rgba(0,0,0,.3)';
+    ctx.beginPath();
+    ctx.ellipse(x, y + 4 * s, 10 * s * (1 - hop/(10*s)*.4), 2.5 * s, 0, 0, Math.PI*2);
+    ctx.fill();
+    // Pattes arrière (capsules)
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.ellipse(x - 4 * s, cy + 2 * s, 3 * s, 5 * s, .3, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x + 4 * s, cy + 2 * s, 3 * s, 5 * s, -.3, 0, Math.PI*2); ctx.fill();
+    // Corps (ellipse blanche)
+    ctx.beginPath(); ctx.ellipse(x, cy - 2 * s, 9 * s, 7 * s, 0, 0, Math.PI*2); ctx.fill();
+    // Queue (boule blanche derrière)
+    ctx.beginPath(); ctx.arc(x - 9 * s, cy - 1 * s, 3 * s, 0, Math.PI*2); ctx.fill();
+    // Pattes avant
+    ctx.beginPath(); ctx.ellipse(x + 5 * s, cy + 3 * s, 2 * s, 4 * s, .2, 0, Math.PI*2); ctx.fill();
+    // Tête (cercle blanc)
+    ctx.beginPath(); ctx.arc(x + 6 * s, cy - 7 * s, 6 * s, 0, Math.PI*2); ctx.fill();
+    // Oreilles longues (2 ellipses verticales derrière la tête)
+    ctx.beginPath(); ctx.ellipse(x + 4 * s, cy - 14 * s, 1.5 * s, 5 * s, -.15, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x + 8 * s, cy - 14 * s, 1.5 * s, 5 * s, .15, 0, Math.PI*2); ctx.fill();
+    // Intérieur oreilles (rose)
+    ctx.fillStyle = '#ff8a90';
+    ctx.beginPath(); ctx.ellipse(x + 4 * s, cy - 14 * s, .6 * s, 3.5 * s, -.15, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x + 8 * s, cy - 14 * s, .6 * s, 3.5 * s, .15, 0, Math.PI*2); ctx.fill();
+    // Œil noir
+    ctx.fillStyle = '#1a1010';
+    ctx.beginPath(); ctx.arc(x + 8 * s, cy - 7 * s, 1.2 * s, 0, Math.PI*2); ctx.fill();
+    // Reflet blanc dans l'œil
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(x + 8.3 * s, cy - 7.3 * s, .4 * s, 0, Math.PI*2); ctx.fill();
+    // Nez rose
+    ctx.fillStyle = '#ff8a90';
+    ctx.beginPath(); ctx.arc(x + 11 * s, cy - 6 * s, .8 * s, 0, Math.PI*2); ctx.fill();
+    // Moustaches subtiles
+    ctx.strokeStyle = 'rgba(180,180,180,.7)';
+    ctx.lineWidth = .4 * s;
+    ctx.beginPath(); ctx.moveTo(x + 11 * s, cy - 5 * s); ctx.lineTo(x + 14 * s, cy - 4 * s); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + 11 * s, cy - 4 * s); ctx.lineTo(x + 14 * s, cy - 3.5 * s); ctx.stroke();
   }
 
   function drawRunner(x, y, scale, spec, phase, isHero){
@@ -19251,9 +19336,15 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     }
   }
 
-  // ═══ LOOP principal ═══
+  // ═══ LOOP principal — setInterval pour garantir un timing stable ═══
+  let lastFrameT = 0;
   function tick(){
-    t += 1;
+    const now = performance.now();
+    if(!lastFrameT) lastFrameT = now - 16.67;
+    const dt = Math.min(.05, (now - lastFrameT) / 1000);
+    lastFrameT = now;
+    const dtMul = dt * 60;
+    t += dtMul;
     const W = cv._W || cv.width;
     const H = cv._H || cv.height;
     if(!W || !H){ requestAnimationFrame(tick); return; }
@@ -19383,9 +19474,8 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       pushMilestone(lapsRun + 1);
     }
     milestones.forEach((mile, idx) => {
-      // Milestones sont des objets STATIQUES dans le monde → drift = drift du décor (speed * 1.2 du sol)
-      // Conversion : speed * 1.2 px/frame, et pixAhead = metersAhead * 8, donc metersAhead -= speed * 1.2 / 8 = speed * 0.15
-      mile.metersAhead -= speed * 0.15;
+      // Milestones sont des objets STATIQUES dans le monde → drift = drift du décor
+      mile.metersAhead -= speed * 0.15 * dtMul;
       const pixAhead = mile.metersAhead * 8;
       if(pixAhead < -100){
         milestones.splice(idx, 1);
@@ -19412,7 +19502,7 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     // ═══ NPCs — défilent, disparaissent quand hors écran (re-spawn via npcSpawnLoop) ═══
     for(let i = npcs.length - 1; i >= 0; i--){
       const npc = npcs[i];
-      npc.metersAhead -= (speed - npc.speed) * 0.15;
+      npc.metersAhead -= (speed - npc.speed) * 0.15 * dtMul;
       const pixAhead = npc.metersAhead * 8;
       if(pixAhead < -120){
         // NPC out of frame to the left → remove (spawn loop fera apparaître le suivant)
@@ -19421,7 +19511,7 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       }
       const x = W / 2 + pixAhead;
       if(x < -50 || x > W + 50) continue;
-      npc.bobPhase += 0.18;
+      npc.bobPhase += 0.18 * dtMul;
       const npcBob = Math.abs(Math.sin(npc.bobPhase)) * 4;
       const y = H * (.65 + npc.lane * .1) - npcBob;
       const distFactor = 1 - Math.min(1, Math.abs(pixAhead) / 800) * 0.3;
@@ -19435,6 +19525,26 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     const heroBob = Math.abs(Math.sin(t * .25 * pace)) * 6;
     const heroSpec = { jersey:'#e85040', skin:'#f0d4b0', hair:'#7a5838' };
     drawRunner(heroX, heroY - heroBob, 1.0, heroSpec, t * .25 * pace, true);
+
+    // ═══ LAPIN BONUS : court au fond, glow doré ═══
+    if(rabbit){
+      rabbit.metersAhead -= rabbit.mPerSec * dt; // drift en m/s avec dt secondes
+      rabbit.bobPhase += 0.45 * dtMul;
+      rabbit.pinkPhase += 0.08 * dtMul;
+      const pixAhead = rabbit.metersAhead * 8;
+      if(pixAhead < -150){
+        // S'est échappé !
+        console.warn('[RAB ESCAPE] t=', t.toFixed(0), 'mAh=', rabbit.metersAhead.toFixed(2), 'mps=', rabbit.mPerSec);
+        rabbit = null;
+      } else {
+        const rx = W / 2 + pixAhead;
+        const ry = H * .62; // sur la 1ère lane du fond (visible au-dessus de la piste)
+        const glow = 0.7 + Math.sin(rabbit.pinkPhase) * 0.3;
+        rabbit.screenX = rx;
+        rabbit.screenY = ry;
+        drawRabbit(rx, ry, 1.6, rabbit.bobPhase, glow);
+      }
+    }
 
     // ═══ Speed lines (boost visible) ═══
     if(tapBoost > 0.1){
@@ -19450,19 +19560,66 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       }
     }
 
-    requestAnimationFrame(tick);
+    // (scheduleTick gère la prochaine frame, pas de requestAnimationFrame ici)
   }
 
-  // Hook tap : à chaque clic sur le stadium, boost visuel
+  // Hook tap : à chaque clic sur le stadium, boost visuel + check lapin
   const stadiumEl = document.getElementById('runner-stadium');
   if(stadiumEl){
+    // Intercepte AVANT tapBoost (en capture phase) pour le lapin
+    stadiumEl.addEventListener('pointerdown', (e) => {
+      if(!rabbit) return;
+      const rect = stadiumEl.getBoundingClientRect();
+      const tx = e.clientX - rect.left;
+      const ty = e.clientY - rect.top;
+      const dist = Math.sqrt((tx - rabbit.screenX) ** 2 + (ty - rabbit.screenY) ** 2);
+      if(dist < 50){
+        // 🐰 LAPIN ATTRAPÉ !
+        onRabbitCaught();
+        rabbit = null;
+        e.stopPropagation();
+        e.preventDefault();
+      }
+    }, true); // capture phase = intercepte avant tapBoost
+    // Boost visuel à chaque tap (sans interférer avec tapBoost)
     stadiumEl.addEventListener('click', () => {
       lastTapBoost = Math.min(2, lastTapBoost + 0.25);
     });
   }
 
-  requestAnimationFrame(tick);
-  window.RUNNER_2D = { resize, npcs, milestones };
+  // BONUS LAPIN : burst de médailles + animation
+  function onRabbitCaught(){
+    const ST = window.STATE || {};
+    // Bonus : 5 secondes de production passive + 50 méd flat
+    const passive = (typeof totalPassiveGold === 'function') ? totalPassiveGold() : (ST.gold * .01);
+    const bonus = Math.max(50, Math.floor(passive * 5));
+    ST.gold = (ST.gold || 0) + bonus;
+    // Notif visuelle
+    if(typeof showRunnerBubble === 'function'){
+      showRunnerBubble('🐰 LAPIN ! +' + bonus + ' méd');
+    } else {
+      // Fallback popup au centre
+      const pop = document.createElement('div');
+      pop.style.cssText = 'position:fixed;top:30%;left:50%;transform:translateX(-50%);background:linear-gradient(180deg,#ffd060,#e88830);color:#3a2010;font-weight:900;padding:14px 24px;border-radius:18px;font-size:18px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:9999;font-family:Nunito,sans-serif;pointer-events:none;animation:rabbitPop 1.5s ease-out forwards';
+      pop.textContent = '🐰 +' + bonus + ' méd';
+      document.body.appendChild(pop);
+      setTimeout(() => pop.remove(), 1500);
+    }
+    // SFX joyeux
+    if(typeof blip === 'function'){
+      blip(880, .1, 'sine', .2, .5);
+      setTimeout(() => blip(1320, .1, 'sine', .2, .5), 80);
+      setTimeout(() => blip(1760, .15, 'sine', .2, .5), 160);
+    }
+    // Vibration
+    if(typeof vibrate === 'function') vibrate([20, 30, 60]);
+    // Boost visuel marqué
+    lastTapBoost = Math.min(2, lastTapBoost + 0.8);
+  }
+
+  // setInterval fixe ~60fps (16.67ms) pour timing stable cross-environment
+  setInterval(tick, 1000 / 60);
+  window.RUNNER_2D = { resize, npcs, milestones, getRabbit:()=>rabbit, spawnRabbit };
 })();
 </script>
 

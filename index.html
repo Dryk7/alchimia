@@ -18987,6 +18987,8 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
   // État de la scène
   let t = 0;
   let lastTapBoost = 0;     // décroît dans le temps
+  let heroDashX = 0;        // déplacement avant du héros au tap (effet "boost")
+  let heroDashBob = 0;      // pic d'amplitude du bob au tap
   let lastKmInt = 0;        // dernier KM entier vu (pour détecter passage de cap)
   let metersInCurrentKm = 0; // dérivé de STATE.lapProgress
 
@@ -19792,6 +19794,9 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     // Pace : selon vitesse du jeu (derived from runner speed multiplier ou tap récent)
     const tapBoost = lastTapBoost;
     lastTapBoost *= 0.97;
+    // Décroissance du dash (effet "bond" au tap)
+    heroDashX *= 0.86;
+    heroDashBob *= 0.88;
     const speed = 1.5 + tapBoost * 1.5;
     const pace = 1 + tapBoost * 0.8;
 
@@ -19986,20 +19991,45 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     }
 
     // ═══ HÉROS ═══ (couloir 2 = milieu, scale calé sur la perspective NPC)
-    const heroX = W * .35;
     const heroLaneIdx = 2;
     const heroLaneFrac = heroLaneIdx / 4;
     const heroScale = (0.60 + heroLaneFrac * 0.45) * 1.30; // 30% plus gros qu'un NPC du même couloir
-    // Centre du body au milieu du couloir 2
+    // Position : base + dash horizontal au tap (bondit vers l'avant)
+    const heroX = W * .35 + heroDashX;
+    // Centre du body au milieu du couloir 2, bob amplifié au tap
     const heroY = LANES_TOP + (heroLaneIdx + 0.5) * LANE_H;
-    const heroBob = Math.abs(Math.sin(t * .25 * pace)) * 6;
+    const heroBob = Math.abs(Math.sin(t * .25 * pace)) * (6 + heroDashBob);
     const heroSpec = {
       jersey:'#e85040', skin:'#f0d4b0', hair:'#7a5838',
       hairStyle:'dome', faceExpr:'focus', build:'normal',
       tenue:'plain', headExtra:null, bibNum:1,
       accessory: { bib: true } // dossard #1 distinctif du héros
     };
-    // Héros : pieds alignés sur la ligne basse de sa lane, 15% plus gros que NPC
+    // Speedlines burst au tap : traînées blanches DERRIÈRE le héros (dessinées avant pour être sous lui)
+    if(heroDashX > 1){
+      const intensity = Math.min(1, heroDashX / 18);
+      ctx.strokeStyle = `rgba(255,255,255,${0.7 * intensity})`;
+      ctx.lineWidth = 3 * heroScale;
+      ctx.lineCap = 'round';
+      for(let i = 0; i < 6; i++){
+        const sx = heroX - 25 * heroScale - i * 10;
+        const sy = heroY - 8 * heroScale + ((i % 3) - 1) * 6 * heroScale;
+        const len = 15 + heroDashX * 1.2 + i * 3;
+        ctx.beginPath();
+        ctx.moveTo(sx, sy);
+        ctx.lineTo(sx - len, sy);
+        ctx.stroke();
+      }
+      // Petite poussière au sol derrière les pieds
+      ctx.fillStyle = `rgba(255,228,180,${0.6 * intensity})`;
+      for(let i = 0; i < 4; i++){
+        const dx = heroX - 18 * heroScale - i * 5;
+        const dy = heroY + 18 * heroScale + (i % 2) * 2;
+        ctx.beginPath();
+        ctx.arc(dx, dy, 2 + i * 0.5, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
     drawRunner(heroX, heroY - heroBob, heroScale, heroSpec, t * .25 * pace, true);
 
     // ═══ LAPIN BONUS : court au fond de droite à gauche ═══
@@ -20093,7 +20123,9 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       }
     }, true);
     stadiumEl.addEventListener('click', () => {
-      lastTapBoost = Math.min(2, lastTapBoost + 0.25);
+      lastTapBoost = Math.min(2, lastTapBoost + 0.55);
+      heroDashX = Math.min(22, heroDashX + 12);
+      heroDashBob = Math.min(8, heroDashBob + 5);
     });
   }
 

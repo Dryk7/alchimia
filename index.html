@@ -19866,20 +19866,25 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     ctx.fillStyle = pal.track;
     ctx.fillRect(0, H * .55 + 4, W, H * .45 - 4);
     // C1 — Bandes tartan alternées (subtil)
-    // Couleur clair = pal.track (rouge clair), foncé = pal.trackDark variant
-    const tartanDark = pal.trackDark === '#7c2810' ? '#c84030' : pal.trackDark; // rouge mid pour municipal
-    // 5 couloirs de 38px (offset top du track : H * .55 + 4)
+    const tartanDark = pal.trackDark === '#7c2810' ? '#c84030' : pal.trackDark;
+    // === LANES dynamiques : occupent l'espace piste entièrement quel que soit H ===
+    // LANES_TOP : début des couloirs (juste sous le rebord sombre)
+    // LANES_BOTTOM : fin des couloirs (laisse une marge de 4% pour ombre/sol en bas)
+    // LANE_H : hauteur d'une lane, calculée dynamiquement
+    const LANES_TOP = H * .58;
+    const LANES_BOTTOM = H * .96;
+    const LANE_H = (LANES_BOTTOM - LANES_TOP) / 5;
+    // 5 couloirs avec bandes tartan alternées (couloirs 1 et 3)
     for(let lane = 0; lane < 5; lane++){
-      // Couloirs 1 et 3 en plus foncé (alternance)
       if(lane % 2 === 1){
         ctx.fillStyle = tartanDark;
-        ctx.fillRect(0, H * .58 + lane * 38 + 2, W, 36);
+        ctx.fillRect(0, LANES_TOP + lane * LANE_H + 2, W, LANE_H - 4);
       }
     }
     // 6 lignes blanches fines de séparation (continues)
     ctx.fillStyle = '#fff';
     for(let lane = 0; lane <= 5; lane++){
-      ctx.fillRect(0, H * .58 + lane * 38, W, 1.5);
+      ctx.fillRect(0, LANES_TOP + lane * LANE_H, W, 1.5);
     }
     // Texture tartan
     ctx.fillStyle = 'rgba(0,0,0,.12)';
@@ -19941,19 +19946,24 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       if(x < -50 || x > W + 50) continue;
       npc.bobPhase += 0.18 * dtMul;
       const npcBob = Math.abs(Math.sin(npc.bobPhase)) * 4;
-      // NPC centré PILE dans son couloir (lanes dessinées à H*.58 + i*38, 5 couloirs)
-      const laneCenter = H * .58 + (npc.laneIdx + 0.5) * 38;
-      const y = laneCenter - npcBob;
       const laneFrac = npc.laneIdx / 4; // 0=fond, 1=devant
       const distFactor = 1 - Math.min(1, Math.abs(pixAhead) / 800) * 0.3;
-      const laneScale = 0.55 + laneFrac * 0.35;
+      // Perspective marquée : petit au fond (0.6), grand devant (1.05)
+      const laneScale = 0.60 + laneFrac * 0.45;
       const scale = laneScale * distFactor;
+      // Pieds posés sur la ligne BASSE de la lane (-22*s du body center)
+      const laneBottomY = LANES_TOP + (npc.laneIdx + 1) * LANE_H;
+      const y = laneBottomY - 22 * scale - npcBob;
       drawRunner(x, y, scale, npc, npc.bobPhase);
     }
 
-    // ═══ HÉROS ═══ (couloir 2 = milieu)
+    // ═══ HÉROS ═══ (couloir 2 = milieu, scale calé sur la perspective NPC)
     const heroX = W * .35;
-    const heroY = H * .58 + 2.5 * 38; // centre du couloir 2
+    const heroLaneIdx = 2;
+    const heroLaneFrac = heroLaneIdx / 4;
+    const heroScale = (0.60 + heroLaneFrac * 0.45) * 1.30; // 30% plus gros qu'un NPC du même couloir (héros bien visible)
+    const heroLaneBottomY = LANES_TOP + (heroLaneIdx + 1) * LANE_H;
+    const heroY = heroLaneBottomY - 22 * heroScale;
     const heroBob = Math.abs(Math.sin(t * .25 * pace)) * 6;
     const heroSpec = {
       jersey:'#e85040', skin:'#f0d4b0', hair:'#7a5838',
@@ -19961,7 +19971,8 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       tenue:'plain', headExtra:null, bibNum:1,
       accessory: { bib: true } // dossard #1 distinctif du héros
     };
-    drawRunner(heroX, heroY - heroBob, 1.0, heroSpec, t * .25 * pace, true);
+    // Héros : pieds alignés sur la ligne basse de sa lane, 15% plus gros que NPC
+    drawRunner(heroX, heroY - heroBob, heroScale, heroSpec, t * .25 * pace, true);
 
     // ═══ LAPIN BONUS : court au fond de droite à gauche ═══
     if(rabbit){
@@ -19973,11 +19984,13 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
         rabbit = null;
       } else {
         const rx = W / 2 + pixAhead;
-        const ry = H * .58 + 0.5 * 38; // centre du couloir 0 (le fond)
+        // Lapin posé sur la ligne basse du couloir 0 (le fond)
+        const rabbitScale = 1.0;
+        const ry = LANES_TOP + 1 * LANE_H - 22 * rabbitScale;
         const glow = 0.7 + Math.sin(rabbit.pinkPhase) * 0.3;
         rabbit.screenX = rx;
         rabbit.screenY = ry;
-        drawRabbit(rx, ry, 1.2, rabbit.bobPhase, glow);
+        drawRabbit(rx, ry, rabbitScale, rabbit.bobPhase, glow);
       }
     }
 
@@ -19991,11 +20004,11 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
         hare = null;
       } else {
         const hx = W / 2 + pixAhead;
-        // Centré PILE dans son couloir
-        const hy = H * .58 + (hare.laneIdx + 0.5) * 38;
         const laneFrac = hare.laneIdx / 4;
         const pulse = 0.7 + Math.sin(hare.pulsePhase) * 0.3;
         const laneScale = 0.7 + laneFrac * 0.5;
+        // Pieds posés sur la ligne basse du couloir du lièvre
+        const hy = LANES_TOP + (hare.laneIdx + 1) * LANE_H - 22 * laneScale;
         hare.screenX = hx;
         hare.screenY = hy;
         drawHare(hx, hy, laneScale, hare.bobPhase, pulse);

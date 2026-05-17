@@ -19290,14 +19290,48 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     ctx.beginPath(); ctx.moveTo(x + 11 * s, cy - 4 * s); ctx.lineTo(x + 14 * s, cy - 3.5 * s); ctx.stroke();
   }
 
+  // ═══ Cycle biomécanique de course (4 phases) ═══
+  // Retourne { footX, footY, kneeUp } normalisé pour une jambe à phase donnée
+  function legPose(phase, sideRight){
+    // Décalage 180° entre jambe gauche et droite
+    const p = sideRight ? phase : (phase + Math.PI);
+    const t01 = ((p % (Math.PI * 2)) / (Math.PI * 2));
+    let kneeUp, footX, footY;
+    if(t01 < 0.5){
+      // Phase 1 : recoil + lift + extend forward
+      const u = t01 * 2; // 0..1
+      footX = -1 + u * 2;
+      kneeUp = Math.sin(u * Math.PI) * 1.0;
+      footY = u < .5 ? -kneeUp * 0.7 : 0;
+    } else {
+      // Phase 2 : foot planted + push back
+      const u = (t01 - 0.5) * 2;
+      footX = 1 - u * 2;
+      kneeUp = Math.max(0, .3 - u * .3);
+      footY = u * .1;
+    }
+    return { footX, footY, kneeUp };
+  }
+
   function drawRunner(x, y, scale, spec, phase, isHero){
     const s = scale;
-    // Ombre
+    const cyclePhase = phase % (Math.PI * 2);
+    // Hop : 2 envols par cycle (max au mid-flight de chaque jambe)
+    const hopT = (cyclePhase / (Math.PI * 2)) * 4;
+    const hopFrac = hopT % 1;
+    const hop = Math.sin(hopFrac * Math.PI) * 5 * s * (hopT % 2 < 1 ? 1 : .85);
+    const bodyY = y - hop;
+    // Body lean fixe (vers la droite = sens de la course)
+    const lean = .18;
+    const acc = spec.accessory || {};
+
+    // === Ombre au sol (s'écrase quand hop élevé) ===
     ctx.fillStyle = 'rgba(0,0,0,.35)';
     ctx.beginPath();
-    ctx.ellipse(x, y + 28 * s, 18 * s, 4 * s, 0, 0, Math.PI*2);
+    ctx.ellipse(x, y + 28 * s, 18 * s * (1 - hop/(5*s)*.35), 4 * s, 0, 0, Math.PI*2);
     ctx.fill();
-    // Hero aura
+
+    // === Hero aura ===
     if(isHero){
       const auraGrad = ctx.createRadialGradient(x, y, 0, x, y, 50 * s);
       auraGrad.addColorStop(0, 'rgba(255,232,138,.35)');
@@ -19305,137 +19339,195 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       ctx.fillStyle = auraGrad;
       ctx.beginPath(); ctx.arc(x, y + 5 * s, 50 * s, 0, Math.PI*2); ctx.fill();
     }
-    // Animation course
-    const swing = Math.sin(phase);
-    const legL = swing * 18 * s;
-    const legR = -swing * 18 * s;
-    const armL = -swing * 22 * s;
-    const armR = swing * 22 * s;
-    // Jambes
-    ctx.strokeStyle = spec.skin;
-    ctx.lineWidth = 7 * s; ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(x - 4 * s, y + 5 * s); ctx.lineTo(x - 4 * s, y + 22 * s + legL); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(x + 4 * s, y + 5 * s); ctx.lineTo(x + 4 * s, y + 22 * s + legR); ctx.stroke();
+
+    // === Jambes avec cycle biomécanique ===
+    const legL = legPose(cyclePhase, false);
+    const legR = legPose(cyclePhase, true);
+    const legLen = 16 * s;
+    function drawLeg(hipX, hipY, pose){
+      const footX = hipX + pose.footX * 10 * s;
+      const footY = hipY + legLen + pose.footY * 5 * s;
+      const kneeX = (hipX + footX) / 2;
+      const kneeY = (hipY + footY) / 2 - pose.kneeUp * 6 * s;
+      ctx.strokeStyle = spec.skin; ctx.lineWidth = 6 * s; ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(hipX, hipY);
+      ctx.lineTo(kneeX, kneeY);
+      ctx.lineTo(footX, footY);
+      ctx.stroke();
+      return { footX, footY };
+    }
+    const footL = drawLeg(x - 4 * s, bodyY + 5 * s, legL);
+    const footR = drawLeg(x + 4 * s, bodyY + 5 * s, legR);
     // Chaussures
     ctx.fillStyle = spec.jersey;
-    ctx.beginPath(); ctx.ellipse(x - 4 * s, y + 25 * s + legL, 7 * s, 4 * s, 0, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(x + 4 * s, y + 25 * s + legR, 7 * s, 4 * s, 0, 0, Math.PI*2); ctx.fill();
-    // Short (utilise spec.short pour les NPCs équipés)
+    ctx.beginPath(); ctx.ellipse(footL.footX, footL.footY, 6.5 * s, 3.5 * s, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(footR.footX, footR.footY, 6.5 * s, 3.5 * s, 0, 0, Math.PI*2); ctx.fill();
+
+    // === Speedlines derrière le pied qui pousse ===
+    const fastFoot = legR.footX > legL.footX ? footL : footR;
+    if(isHero || (spec.tier || 0) >= 3){
+      ctx.strokeStyle = 'rgba(255,255,255,.45)';
+      ctx.lineWidth = 1.5 * s; ctx.lineCap = 'round';
+      for(let i = 0; i < 3; i++){
+        const sx = fastFoot.footX - (8 + i * 6) * s;
+        const sy = fastFoot.footY - 1 * s + i * 2 * s;
+        ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx - 5 * s, sy); ctx.stroke();
+      }
+    }
+
+    // === CAPE (champion) derrière le corps ===
+    if(acc.cape){
+      ctx.fillStyle = '#e8b020';
+      ctx.beginPath();
+      ctx.moveTo(x - 12 * s, bodyY - 22 * s);
+      ctx.quadraticCurveTo(x, bodyY - 16 * s + Math.sin(phase) * 2 * s, x + 12 * s, bodyY - 22 * s);
+      ctx.lineTo(x + 14 * s, bodyY + 4 * s);
+      ctx.quadraticCurveTo(x, bodyY + 8 * s + Math.sin(phase) * 3 * s, x - 14 * s, bodyY + 4 * s);
+      ctx.fill();
+      ctx.fillStyle = '#ffd860';
+      ctx.fillRect(x - 12 * s, bodyY - 22 * s, 24 * s, 2 * s);
+    }
+
+    // === Corps incliné via transform ===
+    ctx.save();
+    ctx.translate(x, bodyY - 6 * s);
+    ctx.rotate(lean);
+    // Short
     ctx.fillStyle = spec.short || '#fff';
-    ctx.fillRect(x - 11 * s, y - 2 * s, 22 * s, 9 * s);
+    ctx.fillRect(-11 * s, 4 * s, 22 * s, 9 * s);
     // Corps maillot
     ctx.fillStyle = spec.jersey;
-    roundRect(x - 13 * s, y - 22 * s, 26 * s, 22 * s, 6 * s); ctx.fill();
-    ctx.fillStyle = '#ffd060';
-    ctx.fillRect(x - 13 * s, y - 22 * s, 26 * s, 4 * s);
-    // Numéro dossard (plus gros si tier >= 4)
-    const acc = spec.accessory || {};
+    const r = 5 * s;
+    ctx.beginPath();
+    ctx.moveTo(-12 * s + r, -16 * s); ctx.lineTo(12 * s - r, -16 * s);
+    ctx.quadraticCurveTo(12 * s, -16 * s, 12 * s, -16 * s + r);
+    ctx.lineTo(12 * s, 6 * s); ctx.quadraticCurveTo(12 * s, 6 * s, 12 * s - r, 6 * s);
+    ctx.lineTo(-12 * s + r, 6 * s); ctx.quadraticCurveTo(-12 * s, 6 * s, -12 * s, 6 * s - r);
+    ctx.lineTo(-12 * s, -16 * s + r); ctx.quadraticCurveTo(-12 * s, -16 * s, -12 * s + r, -16 * s);
+    ctx.fill();
+    // Bandeau doré
+    ctx.fillStyle = '#ffd060'; ctx.fillRect(-12 * s, -16 * s, 24 * s, 3.5 * s);
+    // Dossard
     const bibSize = acc.bib ? 6.5 : 5;
     ctx.fillStyle = '#fff';
-    ctx.beginPath(); ctx.arc(x, y - 11 * s, bibSize * s, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(0, -6 * s, bibSize * s, 0, Math.PI*2); ctx.fill();
     if(acc.bib){
       ctx.fillStyle = '#e85040';
       ctx.font = `bold ${7 * s}px Nunito`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       const num = ((spec.tier || 0) * 11 + 7) % 99;
-      ctx.fillText(num, x, y - 10.5 * s);
+      ctx.fillText(num, 0, -5.5 * s);
     }
-    // Armband (brassard sur le bras avant droit)
+    // Médaille (au cou)
+    if(acc.medal){
+      ctx.fillStyle = '#c83020';
+      ctx.fillRect(-1 * s, -16 * s, 2 * s, 6 * s);
+      ctx.fillStyle = '#ffd060';
+      ctx.beginPath(); ctx.arc(0, -9 * s, 3 * s, 0, Math.PI*2); ctx.fill();
+    }
+    // Armband
     if(acc.armband){
       ctx.fillStyle = '#e85040';
-      ctx.fillRect(x + 12 * s, y - 9 * s, 4 * s, 3 * s);
+      ctx.fillRect(11 * s, -3 * s, 4 * s, 3 * s);
     }
-    // Bras
-    ctx.strokeStyle = spec.skin;
-    ctx.lineWidth = 6 * s;
-    ctx.beginPath(); ctx.moveTo(x - 13 * s, y - 14 * s); ctx.lineTo(x - 22 * s, y - 2 * s + armL); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(x + 13 * s, y - 14 * s); ctx.lineTo(x + 22 * s, y - 2 * s + armR); ctx.stroke();
-    // Cape (champion)
-    if(acc.cape){
-      ctx.fillStyle = '#e8b020';
+    // === Bras pliés à 90° qui pompent ===
+    const armSwing = Math.sin(cyclePhase);
+    const upperL = -armSwing * .9 - .3;
+    const upperR = armSwing * .9 - .3;
+    function drawArm(shX, shY, upperAngle){
+      const upperLen = 8 * s;
+      const lowerLen = 7 * s;
+      const elbX = shX + Math.sin(upperAngle) * upperLen;
+      const elbY = shY + Math.cos(upperAngle) * upperLen;
+      const lowerAngle = upperAngle + Math.PI * .55;
+      const handX = elbX + Math.sin(lowerAngle) * lowerLen;
+      const handY = elbY + Math.cos(lowerAngle) * lowerLen;
+      ctx.strokeStyle = spec.skin; ctx.lineWidth = 5 * s; ctx.lineCap = 'round';
       ctx.beginPath();
-      ctx.moveTo(x - 12 * s, y - 22 * s);
-      ctx.quadraticCurveTo(x, y - 16 * s + Math.sin(phase) * 2 * s, x + 12 * s, y - 22 * s);
-      ctx.lineTo(x + 14 * s, y + 4 * s);
-      ctx.quadraticCurveTo(x, y + 8 * s + Math.sin(phase) * 3 * s, x - 14 * s, y + 4 * s);
-      ctx.fill();
-      // Bordure dorée plus claire
-      ctx.fillStyle = '#ffd860';
-      ctx.fillRect(x - 12 * s, y - 22 * s, 24 * s, 2 * s);
+      ctx.moveTo(shX, shY);
+      ctx.lineTo(elbX, elbY);
+      ctx.lineTo(handX, handY);
+      ctx.stroke();
     }
-    // Médaille (champion)
-    if(acc.medal){
-      // Ruban
-      ctx.fillStyle = '#c83020';
-      ctx.fillRect(x - 1 * s, y - 22 * s, 2 * s, 6 * s);
-      // Médaille dorée
-      ctx.fillStyle = '#ffd060';
-      ctx.beginPath(); ctx.arc(x, y - 14 * s, 3 * s, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = '#a87020';
-      ctx.beginPath(); ctx.arc(x, y - 14 * s, 3 * s, 0, Math.PI*2); ctx.stroke();
-    }
-    // Tête
+    drawArm(-10 * s, -10 * s, upperL);
+    drawArm(10 * s, -10 * s, upperR);
+    ctx.restore();
+
+    // === Tête (suit le hop, sans lean dur) ===
+    const headY = bodyY - 27 * s;
+    const headX = x + Math.sin(lean) * 8 * s;
     ctx.fillStyle = spec.skin;
-    ctx.beginPath(); ctx.arc(x, y - 34 * s, 14 * s, 0, Math.PI*2); ctx.fill();
-    // Cheveux
+    ctx.beginPath(); ctx.arc(headX, headY, 12 * s, 0, Math.PI*2); ctx.fill();
+
+    // === Cheveux (avec mèche qui ondule derrière) ===
     ctx.fillStyle = spec.hair;
     ctx.beginPath();
-    ctx.arc(x, y - 38 * s, 14 * s, Math.PI, 0);
-    ctx.lineTo(x + 12 * s, y - 32 * s);
-    ctx.lineTo(x - 12 * s, y - 32 * s);
+    ctx.arc(headX, headY - 3 * s, 12 * s, Math.PI, 0);
+    ctx.lineTo(headX + 11 * s, headY + 2 * s);
+    // Mèche flottante (effet vitesse)
+    ctx.lineTo(headX - 13 * s, headY + Math.sin(cyclePhase * 2) * 1.5 * s);
+    ctx.lineTo(headX - 14 * s, headY - 2 * s);
+    ctx.lineTo(headX - 11 * s, headY + 2 * s);
+    ctx.closePath();
     ctx.fill();
-    // Casquette (tier 2+)
+
+    // === Casquette (tier 2+) ===
     if(acc.cap){
       ctx.fillStyle = spec.jersey;
       ctx.beginPath();
-      ctx.arc(x, y - 40 * s, 13 * s, Math.PI, 0);
-      ctx.lineTo(x + 12 * s, y - 36 * s);
-      ctx.lineTo(x - 12 * s, y - 36 * s);
+      ctx.arc(headX, headY - 5 * s, 11 * s, Math.PI, 0);
+      ctx.lineTo(headX + 10 * s, headY - 1 * s);
+      ctx.lineTo(headX - 10 * s, headY - 1 * s);
       ctx.fill();
-      // Visière vers la droite (sens de la course)
-      ctx.fillStyle = spec.jersey;
-      ctx.fillRect(x + 8 * s, y - 38 * s, 9 * s, 2 * s);
+      // Visière vers la droite
+      ctx.fillRect(headX + 6 * s, headY - 3 * s, 9 * s, 2 * s);
     }
-    // Yeux ou Lunettes
+
+    // === Yeux ou Lunettes ===
     if(acc.glasses){
-      // Lunettes de soleil noires
       ctx.fillStyle = '#1a1010';
-      ctx.fillRect(x - 7 * s, y - 35 * s, 14 * s, 4 * s);
-      // Branches
-      ctx.fillRect(x - 11 * s, y - 33 * s, 4 * s, 1 * s);
-      ctx.fillRect(x + 7 * s, y - 33 * s, 4 * s, 1 * s);
-      // Reflet
+      ctx.fillRect(headX - 5 * s, headY - 1 * s, 12 * s, 3.5 * s);
+      ctx.fillRect(headX - 9 * s, headY + .5 * s, 4 * s, 1 * s);
+      ctx.fillRect(headX + 7 * s, headY + .5 * s, 4 * s, 1 * s);
       ctx.fillStyle = 'rgba(255,255,255,.3)';
-      ctx.fillRect(x - 6 * s, y - 34.5 * s, 4 * s, 1 * s);
-      ctx.fillRect(x + 2 * s, y - 34.5 * s, 4 * s, 1 * s);
+      ctx.fillRect(headX - 4 * s, headY - .5 * s, 3 * s, 1 * s);
+      ctx.fillRect(headX + 3 * s, headY - .5 * s, 3 * s, 1 * s);
     } else {
-      // Yeux normaux
       ctx.fillStyle = '#1a1010';
-      ctx.beginPath(); ctx.arc(x + 2 * s, y - 33 * s, 1.8 * s, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(x + 9 * s, y - 33 * s, 1.8 * s, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(headX + 1 * s, headY + 1 * s, 1.5 * s, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(headX + 7 * s, headY + 1 * s, 1.5 * s, 0, Math.PI*2); ctx.fill();
       ctx.fillStyle = '#fff';
-      ctx.beginPath(); ctx.arc(x + 2.8 * s, y - 33.5 * s, .7 * s, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(x + 9.8 * s, y - 33.5 * s, .7 * s, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(headX + 1.6 * s, headY + .5 * s, .6 * s, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(headX + 7.6 * s, headY + .5 * s, .6 * s, 0, Math.PI*2); ctx.fill();
     }
-    // Joues (cachées si lunettes)
+
+    // === Joues (cachées si lunettes) ===
     if(!acc.glasses){
       ctx.fillStyle = 'rgba(255,138,144,.55)';
-      ctx.beginPath(); ctx.ellipse(x - 4 * s, y - 28 * s, 3 * s, 2 * s, 0, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(x + 11 * s, y - 28 * s, 3 * s, 2 * s, 0, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(headX - 5 * s, headY + 4 * s, 2.5 * s, 1.8 * s, 0, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(headX + 10 * s, headY + 4 * s, 2.5 * s, 1.8 * s, 0, 0, Math.PI*2); ctx.fill();
     }
-    // Bouche (sourire concentré si tier élevé)
+
+    // === Bouche ===
     ctx.strokeStyle = '#3a2818';
     ctx.lineWidth = 1.2 * s;
     if((spec.tier || 0) >= 4){
-      // Bouche concentrée (ligne droite)
       ctx.beginPath();
-      ctx.moveTo(x + 3 * s, y - 27 * s);
-      ctx.lineTo(x + 7 * s, y - 27 * s);
+      ctx.moveTo(headX + 3 * s, headY + 5 * s);
+      ctx.lineTo(headX + 7 * s, headY + 5 * s);
       ctx.stroke();
     } else {
-      // Sourire
-      ctx.beginPath(); ctx.arc(x + 5 * s, y - 27 * s, 2 * s, .2, Math.PI - .2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(headX + 5 * s, headY + 5 * s, 2 * s, .2, Math.PI - .2); ctx.stroke();
+    }
+
+    // === Sueur occasionnelle (hero ou tier élevé) ===
+    if((isHero || (spec.tier || 0) >= 4) && Math.sin(cyclePhase * 0.31) > 0.85){
+      ctx.fillStyle = '#7ec8ff';
+      ctx.globalAlpha = 0.8;
+      ctx.beginPath(); ctx.arc(headX - 8 * s, headY - 5 * s, 1.4 * s, 0, Math.PI*2); ctx.fill();
+      ctx.globalAlpha = 1;
     }
   }
 

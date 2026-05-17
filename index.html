@@ -19797,8 +19797,10 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     // Décroissance du dash (effet "bond" au tap)
     heroDashX *= 0.86;
     heroDashBob *= 0.88;
-    const speed = 1.5 + tapBoost * 1.5;
-    const pace = 1 + tapBoost * 0.8;
+    // Vitesse de base réduite (était 1.5) : défilement plus tranquille au repos
+    // Le tap garde son impact (coefficient 1.5 inchangé)
+    const speed = 0.85 + tapBoost * 1.5;
+    const pace = 0.85 + tapBoost * 0.8;
 
     // Update HUD overlay HTML
     if(kmEl) kmEl.textContent = totalKm.toFixed(2);

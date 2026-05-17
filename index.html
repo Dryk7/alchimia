@@ -18971,14 +18971,30 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
   // Tier 4 : semi-pro (cap + glasses + bib)
   // Tier 5 : pro (kit complet + bib + armband)
   // Tier 6 : champion (cape doré + médaille)
+  // === Pools de variations partagés ===
+  const HAIRS_CASUAL = ['dome','long','ponytail','bun','curly','dome','long']; // doublon dome+long = + fréquents
+  const HAIRS_ATHLETIC = ['dome','buzz','ponytail','bald','mohawk','dome','buzz'];
+  const HAIRS_DIVERSE = ['dome','long','ponytail','bun','afro','curly','buzz','bald','mohawk'];
+  const FACES_CASUAL = ['smile','smile','big','smile']; // smile dominant
+  const FACES_PRO = ['focus','focus','smile','shades']; // focus dominant
+  const FACES_VETERAN = ['smile','beard','beard','glasses','focus'];
+  const BUILDS_CASUAL = ['normal','normal','stocky','thin','small'];
+  const BUILDS_PRO = ['normal','thin','normal','thin'];
+  const TENUES_PLAIN = ['plain','plain','plain'];
+  const TENUES_VARIED = ['plain','striped','vbar','plain'];
   const NPC_TIERS = [
     // Tier 0 — Promeneur
     {
       label:'promeneur', baseSpeed:.30, speedVar:.10,
       jerseys:['#a89890','#c8b8a0','#9098a8','#8898a8','#a0a8b0'],
       hairs:['#5a4028','#8a6848','#c0c0c0','#dcd0c0','#3a2818'],
+      hairStyles: HAIRS_DIVERSE,
+      faceExprs: FACES_VETERAN,
+      builds: BUILDS_CASUAL,
+      tenues: TENUES_PLAIN,
       skins:['#f0d4b0','#e0c098','#d0a880','#c09068'],
       shorts:['#3a3848','#4a4048','#5a4838','#3a3a3a'],
+      headExtras:[null,null,null,'bandana'],
       accessory: null,
     },
     // Tier 1 — Jogger casual
@@ -18986,8 +19002,13 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       label:'jogger', baseSpeed:.45, speedVar:.12,
       jerseys:['#7ec46a','#88c878','#ffd060','#e8c078','#f08040'],
       hairs:['#7a5838','#8a6848','#3a2818','#d8a060'],
+      hairStyles: HAIRS_CASUAL,
+      faceExprs: FACES_CASUAL,
+      builds: BUILDS_CASUAL,
+      tenues: TENUES_PLAIN,
       skins:['#f0d4b0','#e0c098','#d0a880','#c09068','#a8804a'],
       shorts:['#fff','#f0e4cc','#9aa8b8'],
+      headExtras:[null,null,'headband'],
       accessory: null,
     },
     // Tier 2 — Jogger sérieux
@@ -18995,8 +19016,13 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       label:'jogger sérieux', baseSpeed:.55, speedVar:.12,
       jerseys:['#4a9fd9','#5ab4d8','#e890b0','#7ec46a','#ffd060'],
       hairs:['#3a2818','#7a5838','#8a6848','#5a4028'],
+      hairStyles: HAIRS_ATHLETIC,
+      faceExprs: FACES_CASUAL,
+      builds: BUILDS_PRO,
+      tenues: TENUES_VARIED,
       skins:['#f0d4b0','#e0c098','#d0a880','#a8804a'],
       shorts:['#1a1a2a','#4a3848','#1f2838'],
+      headExtras:[null,'headband',null],
       accessory: { cap: true },
     },
     // Tier 3 — Amateur compétitif
@@ -19004,8 +19030,13 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       label:'amateur', baseSpeed:.65, speedVar:.10,
       jerseys:['#e85040','#4a9fd9','#7ec46a','#c89af0','#f08040'],
       hairs:['#3a2818','#7a5838','#5a4028'],
+      hairStyles: HAIRS_ATHLETIC,
+      faceExprs: FACES_PRO,
+      builds: BUILDS_PRO,
+      tenues: TENUES_VARIED,
       skins:['#e0c098','#d0a880','#a8804a','#c89068'],
       shorts:['#1a1a2a','#2a2838','#1f3548'],
+      headExtras:[null,'visor','headband'],
       accessory: { glasses: true },
     },
     // Tier 4 — Semi-pro
@@ -19013,8 +19044,13 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       label:'semi-pro', baseSpeed:.75, speedVar:.10,
       jerseys:['#e85040','#4a9fd9','#7ec46a','#ffd060','#c89af0'],
       hairs:['#3a2818','#1a1010','#5a4028'],
+      hairStyles: HAIRS_ATHLETIC,
+      faceExprs: FACES_PRO,
+      builds: BUILDS_PRO,
+      tenues: TENUES_VARIED,
       skins:['#d0a880','#a8804a','#88684a','#c89068'],
       shorts:['#1a1010','#2a1a1a','#1f3548'],
+      headExtras:[null,'visor',null],
       accessory: { cap: true, glasses: true, bib: true },
     },
     // Tier 5 — Pro
@@ -19022,8 +19058,13 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       label:'pro', baseSpeed:.85, speedVar:.08,
       jerseys:['#e8202c','#1a4ae8','#e8a020','#28c8e8'],
       hairs:['#1a1010','#3a2818','#5a4028'],
+      hairStyles: ['buzz','dome','bald','buzz'],
+      faceExprs: ['focus','shades','focus'],
+      builds: ['thin','normal','thin'],
+      tenues: TENUES_VARIED,
       skins:['#d0a880','#a8804a','#88684a','#684830'],
       shorts:['#1a1010','#000','#1a1a1a'],
+      headExtras:[null,'visor',null],
       accessory: { cap: true, glasses: true, bib: true, armband: true },
     },
   ];
@@ -19050,6 +19091,12 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       tierLabel: tier.label,
       jersey: pick(tier.jerseys),
       hair: pick(tier.hairs),
+      hairStyle: pick(tier.hairStyles || ['dome']),
+      faceExpr: pick(tier.faceExprs || ['smile']),
+      build: pick(tier.builds || ['normal']),
+      tenue: pick(tier.tenues || ['plain']),
+      headExtra: pick(tier.headExtras || [null]),
+      bibNum: Math.floor(Math.random() * 99) + 1,
       skin: pick(tier.skins),
       short: pick(tier.shorts),
       accessory: tier.accessory,
@@ -19314,6 +19361,18 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
   }
 
   function drawRunner(x, y, scale, spec, phase, isHero){
+    // === Builds (variations morpho) ===
+    const BUILDS = {
+      normal: { bw: 12, bh: 22, hr: 12 },
+      thin:   { bw: 10, bh: 22, hr: 11 },
+      stocky: { bw: 14, bh: 21, hr: 13 },
+      small:  { bw: 11, bh: 19, hr: 11 },
+    };
+    const build = BUILDS[spec.build || 'normal'];
+    const hairStyle = spec.hairStyle || 'dome';
+    const faceExpr = spec.faceExpr || 'smile';
+    const tenue = spec.tenue || 'plain';
+    const headExtra = spec.headExtra || null;
     const s = scale;
     const cyclePhase = phase % (Math.PI * 2);
     // Hop : 2 envols par cycle (max au mid-flight de chaque jambe)
@@ -19393,21 +19452,35 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     ctx.save();
     ctx.translate(x, bodyY - 6 * s);
     ctx.rotate(lean);
+    // Dimensions corps selon build
+    const bw = build.bw * s;
+    const corpsTop = -16 * s;
+    const corpsBot = 6 * s;
     // Short
     ctx.fillStyle = spec.short || '#fff';
-    ctx.fillRect(-11 * s, 4 * s, 22 * s, 9 * s);
+    ctx.fillRect(-(bw - s), corpsBot - 2 * s, (bw - s) * 2, 9 * s);
     // Corps maillot
     ctx.fillStyle = spec.jersey;
     const r = 5 * s;
     ctx.beginPath();
-    ctx.moveTo(-12 * s + r, -16 * s); ctx.lineTo(12 * s - r, -16 * s);
-    ctx.quadraticCurveTo(12 * s, -16 * s, 12 * s, -16 * s + r);
-    ctx.lineTo(12 * s, 6 * s); ctx.quadraticCurveTo(12 * s, 6 * s, 12 * s - r, 6 * s);
-    ctx.lineTo(-12 * s + r, 6 * s); ctx.quadraticCurveTo(-12 * s, 6 * s, -12 * s, 6 * s - r);
-    ctx.lineTo(-12 * s, -16 * s + r); ctx.quadraticCurveTo(-12 * s, -16 * s, -12 * s + r, -16 * s);
+    ctx.moveTo(-bw + r, corpsTop); ctx.lineTo(bw - r, corpsTop);
+    ctx.quadraticCurveTo(bw, corpsTop, bw, corpsTop + r);
+    ctx.lineTo(bw, corpsBot); ctx.quadraticCurveTo(bw, corpsBot, bw - r, corpsBot);
+    ctx.lineTo(-bw + r, corpsBot); ctx.quadraticCurveTo(-bw, corpsBot, -bw, corpsBot - r);
+    ctx.lineTo(-bw, corpsTop + r); ctx.quadraticCurveTo(-bw, corpsTop, -bw + r, corpsTop);
     ctx.fill();
+    // Motif tenue : rayures ou barre verticale
+    if(tenue === 'striped'){
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(-bw, corpsTop + 6 * s, bw * 2, 2 * s);
+      ctx.fillRect(-bw, corpsTop + 12 * s, bw * 2, 2 * s);
+      ctx.fillRect(-bw, corpsTop + 18 * s, bw * 2, 2 * s);
+    } else if(tenue === 'vbar'){
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(-1.5 * s, corpsTop + 4 * s, 3 * s, (corpsBot - corpsTop) - 6 * s);
+    }
     // Bandeau doré
-    ctx.fillStyle = '#ffd060'; ctx.fillRect(-12 * s, -16 * s, 24 * s, 3.5 * s);
+    ctx.fillStyle = '#ffd060'; ctx.fillRect(-bw, corpsTop, bw * 2, 3.5 * s);
     // Dossard
     const bibSize = acc.bib ? 6.5 : 5;
     ctx.fillStyle = '#fff';
@@ -19417,20 +19490,20 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       ctx.font = `bold ${7 * s}px Nunito`;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      const num = ((spec.tier || 0) * 11 + 7) % 99;
+      const num = spec.bibNum != null ? spec.bibNum : ((spec.tier || 0) * 11 + 7) % 99;
       ctx.fillText(num, 0, -5.5 * s);
     }
     // Médaille (au cou)
     if(acc.medal){
       ctx.fillStyle = '#c83020';
-      ctx.fillRect(-1 * s, -16 * s, 2 * s, 6 * s);
+      ctx.fillRect(-1 * s, corpsTop, 2 * s, 6 * s);
       ctx.fillStyle = '#ffd060';
       ctx.beginPath(); ctx.arc(0, -9 * s, 3 * s, 0, Math.PI*2); ctx.fill();
     }
     // Armband
     if(acc.armband){
       ctx.fillStyle = '#e85040';
-      ctx.fillRect(11 * s, -3 * s, 4 * s, 3 * s);
+      ctx.fillRect(bw - s, -3 * s, 4 * s, 3 * s);
     }
     // === Bras pliés à 90° qui pompent ===
     const armSwing = Math.sin(cyclePhase);
@@ -19451,42 +19524,125 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       ctx.lineTo(handX, handY);
       ctx.stroke();
     }
-    drawArm(-10 * s, -10 * s, upperL);
-    drawArm(10 * s, -10 * s, upperR);
+    const shoulderX = bw - 2 * s;
+    drawArm(-shoulderX, -10 * s, upperL);
+    drawArm(shoulderX, -10 * s, upperR);
     ctx.restore();
 
     // === Tête (suit le hop, sans lean dur) ===
     const headY = bodyY - 27 * s;
     const headX = x + Math.sin(lean) * 8 * s;
+    const hr = build.hr * s;
     ctx.fillStyle = spec.skin;
-    ctx.beginPath(); ctx.arc(headX, headY, 12 * s, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(headX, headY, hr, 0, Math.PI*2); ctx.fill();
 
-    // === Cheveux (avec mèche qui ondule derrière) ===
+    // === Cheveux selon hairStyle (avec mèche qui ondule pour les styles longs) ===
     ctx.fillStyle = spec.hair;
-    ctx.beginPath();
-    ctx.arc(headX, headY - 3 * s, 12 * s, Math.PI, 0);
-    ctx.lineTo(headX + 11 * s, headY + 2 * s);
-    // Mèche flottante (effet vitesse)
-    ctx.lineTo(headX - 13 * s, headY + Math.sin(cyclePhase * 2) * 1.5 * s);
-    ctx.lineTo(headX - 14 * s, headY - 2 * s);
-    ctx.lineTo(headX - 11 * s, headY + 2 * s);
-    ctx.closePath();
-    ctx.fill();
+    if(hairStyle === 'bald'){
+      // chauve : rien
+    } else if(hairStyle === 'buzz'){
+      // Demi-cercle plat sur le crâne
+      ctx.beginPath();
+      ctx.arc(headX, headY - 1 * s, hr - 0.5 * s, Math.PI + 0.2, -0.2);
+      ctx.fill();
+    } else if(hairStyle === 'long'){
+      // Cheveux qui descendent + mèche flottante derrière
+      ctx.beginPath();
+      ctx.arc(headX, headY - 3 * s, hr, Math.PI, 0);
+      ctx.lineTo(headX + hr - 1 * s, headY + 6 * s);
+      ctx.lineTo(headX - hr - 2 * s, headY + 7 * s + Math.sin(cyclePhase * 2) * 1.5 * s);
+      ctx.lineTo(headX - hr - 3 * s, headY - 2 * s);
+      ctx.lineTo(headX - hr + 1 * s, headY + 2 * s);
+      ctx.closePath();
+      ctx.fill();
+    } else if(hairStyle === 'ponytail'){
+      // Cheveux courts derrière + queue qui flotte
+      ctx.beginPath();
+      ctx.arc(headX, headY - 3 * s, hr, Math.PI, 0);
+      ctx.lineTo(headX + hr - 1 * s, headY + 2 * s); ctx.lineTo(headX - hr + 1 * s, headY + 2 * s); ctx.fill();
+      // Queue qui sort à gauche (= derrière puisque on court vers la droite)
+      const ptailWave = Math.sin(cyclePhase * 2) * 2 * s;
+      ctx.beginPath();
+      ctx.ellipse(headX - hr + 1 * s, headY + 2 * s + ptailWave, 3 * s, 6 * s, 0.4, 0, Math.PI*2); ctx.fill();
+    } else if(hairStyle === 'bun'){
+      // Cheveux plats + chignon au-dessus
+      ctx.beginPath();
+      ctx.arc(headX, headY - 2 * s, hr, Math.PI, 0);
+      ctx.lineTo(headX + hr - 1 * s, headY + 2 * s); ctx.lineTo(headX - hr + 1 * s, headY + 2 * s); ctx.fill();
+      ctx.beginPath(); ctx.arc(headX, headY - hr - 2 * s, 3.5 * s, 0, Math.PI*2); ctx.fill();
+    } else if(hairStyle === 'mohawk'){
+      // Bande verticale au milieu
+      ctx.beginPath();
+      ctx.moveTo(headX - 3 * s, headY - hr + 1 * s);
+      ctx.lineTo(headX - 3 * s, headY - hr - 5 * s);
+      ctx.lineTo(headX + 3 * s, headY - hr - 5 * s);
+      ctx.lineTo(headX + 3 * s, headY - hr + 1 * s);
+      ctx.fill();
+      // Base discrète (côtés rasés courts)
+      ctx.beginPath();
+      ctx.arc(headX, headY - 1 * s, hr - 1 * s, Math.PI + 0.2, -0.2);
+      ctx.fill();
+    } else if(hairStyle === 'afro'){
+      // Gros nuage rond au-dessus
+      ctx.beginPath();
+      ctx.arc(headX, headY - 4 * s, hr + 3 * s, 0, Math.PI*2); ctx.fill();
+    } else if(hairStyle === 'curly'){
+      // Cheveux dôme + petites boucles distinctes
+      ctx.beginPath();
+      ctx.arc(headX, headY - 2 * s, hr, Math.PI, 0);
+      ctx.lineTo(headX + hr - 1 * s, headY + 2 * s); ctx.lineTo(headX - hr + 1 * s, headY + 2 * s); ctx.fill();
+      for(let i = -2; i <= 2; i++){
+        ctx.beginPath(); ctx.arc(headX + i * 3 * s, headY - hr - 0.5 * s, 2 * s, 0, Math.PI*2); ctx.fill();
+      }
+    } else {
+      // dome (par défaut) - avec mèche d'origine qui flotte
+      ctx.beginPath();
+      ctx.arc(headX, headY - 3 * s, hr, Math.PI, 0);
+      ctx.lineTo(headX + hr - 1 * s, headY + 2 * s);
+      ctx.lineTo(headX - hr - 1 * s, headY + Math.sin(cyclePhase * 2) * 1.5 * s);
+      ctx.lineTo(headX - hr - 2 * s, headY - 2 * s);
+      ctx.lineTo(headX - hr + 1 * s, headY + 2 * s);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    // === Accessoire de tête supplémentaire (headband, visor, bandana) ===
+    if(headExtra === 'headband'){
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(headX - hr, headY - hr * 0.5, hr * 2, 2.5 * s);
+    } else if(headExtra === 'visor'){
+      ctx.fillStyle = '#ffd060';
+      ctx.fillRect(headX - hr - 2 * s, headY - 2 * s, hr * 2 + 4 * s, 2 * s);
+    } else if(headExtra === 'bandana'){
+      ctx.fillStyle = '#e85040';
+      ctx.fillRect(headX - hr, headY - hr * 0.6, hr * 2, 4 * s);
+    }
 
     // === Casquette (tier 2+) ===
     if(acc.cap){
       ctx.fillStyle = spec.jersey;
       ctx.beginPath();
-      ctx.arc(headX, headY - 5 * s, 11 * s, Math.PI, 0);
-      ctx.lineTo(headX + 10 * s, headY - 1 * s);
-      ctx.lineTo(headX - 10 * s, headY - 1 * s);
+      ctx.arc(headX, headY - 5 * s, hr - s, Math.PI, 0);
+      ctx.lineTo(headX + hr - 2 * s, headY - 1 * s);
+      ctx.lineTo(headX - hr + 2 * s, headY - 1 * s);
       ctx.fill();
       // Visière vers la droite
       ctx.fillRect(headX + 6 * s, headY - 3 * s, 9 * s, 2 * s);
     }
 
-    // === Yeux ou Lunettes ===
-    if(acc.glasses){
+    // === Yeux selon faceExpr (lunettes acc.glasses prioritaire si tier le force) ===
+    const showShades = (faceExpr === 'shades');
+    const showGlasses = acc.glasses || (faceExpr === 'glasses');
+    const eyesHidden = showShades || showGlasses;
+    if(showShades){
+      // Lunettes soleil pleines noires
+      ctx.fillStyle = '#1a1010';
+      ctx.fillRect(headX - 5 * s, headY - 2 * s, 13 * s, 4 * s);
+      ctx.fillStyle = 'rgba(255,255,255,.35)';
+      ctx.fillRect(headX - 3 * s, headY - 1 * s, 2 * s, 1 * s);
+      ctx.fillRect(headX + 4 * s, headY - 1 * s, 2 * s, 1 * s);
+    } else if(showGlasses){
+      // Lunettes de vue (rectangles avec barre)
       ctx.fillStyle = '#1a1010';
       ctx.fillRect(headX - 5 * s, headY - 1 * s, 12 * s, 3.5 * s);
       ctx.fillRect(headX - 9 * s, headY + .5 * s, 4 * s, 1 * s);
@@ -19494,31 +19650,59 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       ctx.fillStyle = 'rgba(255,255,255,.3)';
       ctx.fillRect(headX - 4 * s, headY - .5 * s, 3 * s, 1 * s);
       ctx.fillRect(headX + 3 * s, headY - .5 * s, 3 * s, 1 * s);
+    } else if(faceExpr === 'big'){
+      // Yeux qui sourient (arcs)
+      ctx.strokeStyle = '#1a1010'; ctx.lineWidth = 1.2 * s; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.arc(headX + 1 * s, headY + 1 * s, 1.8 * s, Math.PI + 0.3, -0.3); ctx.stroke();
+      ctx.beginPath(); ctx.arc(headX + 7 * s, headY + 1 * s, 1.8 * s, Math.PI + 0.3, -0.3); ctx.stroke();
     } else {
+      // Yeux ronds (smile, focus, beard)
       ctx.fillStyle = '#1a1010';
       ctx.beginPath(); ctx.arc(headX + 1 * s, headY + 1 * s, 1.5 * s, 0, Math.PI*2); ctx.fill();
       ctx.beginPath(); ctx.arc(headX + 7 * s, headY + 1 * s, 1.5 * s, 0, Math.PI*2); ctx.fill();
       ctx.fillStyle = '#fff';
       ctx.beginPath(); ctx.arc(headX + 1.6 * s, headY + .5 * s, .6 * s, 0, Math.PI*2); ctx.fill();
       ctx.beginPath(); ctx.arc(headX + 7.6 * s, headY + .5 * s, .6 * s, 0, Math.PI*2); ctx.fill();
+      // Sourcils froncés pour focus
+      if(faceExpr === 'focus'){
+        ctx.strokeStyle = spec.hair || '#3a2818'; ctx.lineWidth = 1.4 * s; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(headX - 3 * s, headY - 3 * s); ctx.lineTo(headX + 2 * s, headY - 2 * s); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(headX + 11 * s, headY - 3 * s); ctx.lineTo(headX + 6 * s, headY - 2 * s); ctx.stroke();
+      }
     }
 
-    // === Joues (cachées si lunettes) ===
-    if(!acc.glasses){
+    // === Barbe (par-dessus la bouche si beard) ===
+    if(faceExpr === 'beard'){
+      ctx.fillStyle = spec.hair || '#3a2818';
+      ctx.beginPath();
+      ctx.arc(headX + 4 * s, headY + 5 * s, hr * 0.65, 0.2, Math.PI - 0.2); ctx.fill();
+    }
+
+    // === Joues (cachées si lunettes ou beard) ===
+    if(!eyesHidden && faceExpr !== 'beard'){
       ctx.fillStyle = 'rgba(255,138,144,.55)';
       ctx.beginPath(); ctx.ellipse(headX - 5 * s, headY + 4 * s, 2.5 * s, 1.8 * s, 0, 0, Math.PI*2); ctx.fill();
       ctx.beginPath(); ctx.ellipse(headX + 10 * s, headY + 4 * s, 2.5 * s, 1.8 * s, 0, 0, Math.PI*2); ctx.fill();
     }
 
-    // === Bouche ===
-    ctx.strokeStyle = '#3a2818';
-    ctx.lineWidth = 1.2 * s;
-    if((spec.tier || 0) >= 4){
+    // === Bouche selon faceExpr ===
+    if(faceExpr === 'beard'){
+      // Bouche cachée par la barbe
+    } else if(faceExpr === 'big'){
+      // Grand sourire ouvert avec dents
+      ctx.fillStyle = '#3a2818';
+      ctx.beginPath(); ctx.arc(headX + 5 * s, headY + 5 * s, 2.8 * s, 0.1, Math.PI - 0.1); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.fillRect(headX + 3 * s, headY + 5.5 * s, 4 * s, 1.2 * s);
+    } else if(faceExpr === 'focus'){
+      // Bouche petite ligne sérieuse
+      ctx.strokeStyle = '#3a2818'; ctx.lineWidth = 1.2 * s; ctx.lineCap = 'round';
       ctx.beginPath();
       ctx.moveTo(headX + 3 * s, headY + 5 * s);
       ctx.lineTo(headX + 7 * s, headY + 5 * s);
       ctx.stroke();
     } else {
+      // Sourire arc (smile par défaut, ou pour glasses/shades)
+      ctx.strokeStyle = '#3a2818'; ctx.lineWidth = 1.2 * s;
       ctx.beginPath(); ctx.arc(headX + 5 * s, headY + 5 * s, 2 * s, .2, Math.PI - .2); ctx.stroke();
     }
 
@@ -19731,7 +19915,12 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     const heroX = W * .35;
     const heroY = H * .58 + 2.5 * 38; // centre du couloir 2
     const heroBob = Math.abs(Math.sin(t * .25 * pace)) * 6;
-    const heroSpec = { jersey:'#e85040', skin:'#f0d4b0', hair:'#7a5838' };
+    const heroSpec = {
+      jersey:'#e85040', skin:'#f0d4b0', hair:'#7a5838',
+      hairStyle:'dome', faceExpr:'focus', build:'normal',
+      tenue:'plain', headExtra:null, bibNum:1,
+      accessory: { bib: true } // dossard #1 distinctif du héros
+    };
     drawRunner(heroX, heroY - heroBob, 1.0, heroSpec, t * .25 * pace, true);
 
     // ═══ LAPIN BONUS : court au fond de droite à gauche ═══

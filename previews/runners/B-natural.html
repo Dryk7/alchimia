@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Runner B — Naturel</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0e0d12;color:#fff;font-family:Nunito,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px}
+h1{font-size:16px;margin:0 0 4px}
+.tag{font-size:11px;color:#a89880;margin-bottom:10px}
+.frame{width:360px;aspect-ratio:9/16;border-radius:18px;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.5);background:#e85040}
+canvas{display:block;width:100%;height:100%}
+.desc{margin-top:10px;max-width:340px;font-size:12px;color:#c8b8a0;line-height:1.4}
+</style></head><body>
+<h1>B · Naturel (hop + body lean + bras pliés)</h1>
+<div class="tag">Cycle envol/appui + corps penché + bras à 90°</div>
+<div class="frame"><canvas id="cv" width="360" height="640"></canvas></div>
+<div class="desc">Hop vertical marqué, le corps monte/descend à chaque foulée. Bras pliés à 90° comme un vrai runner.</div>
+<script src="_shared.js"></script>
+<script>
+RUNNER_SCENE(document.getElementById('cv'), function drawRunner(ctx, x, y, scale, phase, jersey, hair, skin){
+  const s = scale;
+  // Phase de course : cycle 4 temps (appui G - envol - appui D - envol)
+  const cyclePhase = phase % (Math.PI * 2);
+  const swing = Math.sin(cyclePhase);
+  // Hop vertical : monte 2× par cycle (envol entre chaque appui)
+  const hop = Math.abs(Math.sin(cyclePhase)) * 6 * s; // 6px max hop
+  const bodyY = y - hop;
+  // Body lean : corps penché vers la droite (sens course)
+  const lean = .12; // radians, ~7°
+  // Ombre (au sol, sans hop)
+  ctx.fillStyle = 'rgba(0,0,0,.35)';
+  ctx.beginPath(); ctx.ellipse(x, y + 28 * s, 18 * s * (1 - hop/(6*s)*.3), 4 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Animation jambes : alternance + flexion genou
+  // Phase 0..PI : jambe gauche en appui (arrière), droite levée (devant pliée)
+  // Phase PI..2PI : inverse
+  const legAngL = swing * 0.6; // -0.6 à +0.6 rad
+  const legAngR = -swing * 0.6;
+  // Position des pieds (au bout de la jambe)
+  const hipL = { x: x - 4 * s, y: bodyY + 5 * s };
+  const hipR = { x: x + 4 * s, y: bodyY + 5 * s };
+  const legLen = 18 * s;
+  // Pied = hanche + (sin(angle), cos(angle)) * longueur
+  const footL = { x: hipL.x + Math.sin(legAngL) * legLen, y: hipL.y + Math.cos(legAngL) * legLen };
+  const footR = { x: hipR.x + Math.sin(legAngR) * legLen, y: hipR.y + Math.cos(legAngR) * legLen };
+  // Genou (mi-jambe avec flexion vers l'arrière quand levée)
+  const kneeFlexL = swing > 0 ? Math.max(0, swing) * 6 * s : 0; // genou plié quand levée
+  const kneeFlexR = swing < 0 ? Math.max(0, -swing) * 6 * s : 0;
+  const kneeL = { x: (hipL.x + footL.x) / 2, y: (hipL.y + footL.y) / 2 - kneeFlexL };
+  const kneeR = { x: (hipR.x + footR.x) / 2, y: (hipR.y + footR.y) / 2 - kneeFlexR };
+  // Dessine jambes avec genou
+  ctx.strokeStyle = skin; ctx.lineWidth = 6 * s; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(hipL.x, hipL.y); ctx.lineTo(kneeL.x, kneeL.y); ctx.lineTo(footL.x, footL.y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(hipR.x, hipR.y); ctx.lineTo(kneeR.x, kneeR.y); ctx.lineTo(footR.x, footR.y); ctx.stroke();
+  // Chaussures
+  ctx.fillStyle = jersey;
+  ctx.beginPath(); ctx.ellipse(footL.x, footL.y, 7 * s, 3.5 * s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(footR.x, footR.y, 7 * s, 3.5 * s, 0, 0, Math.PI*2); ctx.fill();
+  // ═══ Corps incliné en avant via translate/rotate ═══
+  ctx.save();
+  ctx.translate(x, bodyY - 8 * s);
+  ctx.rotate(lean);
+  // Short
+  ctx.fillStyle = '#fff'; ctx.fillRect(-11 * s, 6 * s, 22 * s, 9 * s);
+  // Corps
+  ctx.fillStyle = jersey;
+  const r = 6 * s;
+  ctx.beginPath();
+  ctx.moveTo(-13 * s + r, -14 * s); ctx.lineTo(13 * s - r, -14 * s);
+  ctx.quadraticCurveTo(13 * s, -14 * s, 13 * s, -14 * s + r);
+  ctx.lineTo(13 * s, 8 * s); ctx.quadraticCurveTo(13 * s, 8 * s, 13 * s - r, 8 * s);
+  ctx.lineTo(-13 * s + r, 8 * s); ctx.quadraticCurveTo(-13 * s, 8 * s, -13 * s, 8 * s - r);
+  ctx.lineTo(-13 * s, -14 * s + r); ctx.quadraticCurveTo(-13 * s, -14 * s, -13 * s + r, -14 * s);
+  ctx.fill();
+  // Bandeau
+  ctx.fillStyle = '#ffd060'; ctx.fillRect(-13 * s, -14 * s, 26 * s, 4 * s);
+  // Bras pliés à 90° (épaule → coude → poignet)
+  const armL_angle = -swing * 0.8; // épaule angle
+  const armR_angle = swing * 0.8;
+  const upperArm = 8 * s;
+  const lowerArm = 8 * s;
+  // Épaule gauche
+  const shL = { x: -11 * s, y: -7 * s };
+  const elbL = { x: shL.x + Math.sin(armL_angle) * upperArm, y: shL.y + Math.cos(armL_angle) * upperArm };
+  // Poignet : coude + 90° vers avant
+  const handL = { x: elbL.x + Math.cos(armL_angle - Math.PI/2) * lowerArm, y: elbL.y - Math.sin(armL_angle - Math.PI/2) * lowerArm * 0.5 };
+  // Épaule droite
+  const shR = { x: 11 * s, y: -7 * s };
+  const elbR = { x: shR.x + Math.sin(armR_angle) * upperArm, y: shR.y + Math.cos(armR_angle) * upperArm };
+  const handR = { x: elbR.x + Math.cos(armR_angle + Math.PI/2) * lowerArm, y: elbR.y - Math.sin(armR_angle + Math.PI/2) * lowerArm * 0.5 };
+  ctx.strokeStyle = skin; ctx.lineWidth = 5 * s;
+  ctx.beginPath(); ctx.moveTo(shL.x, shL.y); ctx.lineTo(elbL.x, elbL.y); ctx.lineTo(handL.x, handL.y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(shR.x, shR.y); ctx.lineTo(elbR.x, elbR.y); ctx.lineTo(handR.x, handR.y); ctx.stroke();
+  ctx.restore();
+  // Tête (sans rotation, juste avec hop)
+  const headY = bodyY - 26 * s;
+  ctx.fillStyle = skin; ctx.beginPath(); ctx.arc(x + 2 * s, headY, 13 * s, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = hair;
+  ctx.beginPath(); ctx.arc(x + 2 * s, headY - 3 * s, 13 * s, Math.PI, 0);
+  ctx.lineTo(x + 14 * s, headY + 2 * s); ctx.lineTo(x - 10 * s, headY + 2 * s); ctx.fill();
+  // Yeux (légèrement décalés à droite pour regarder devant)
+  ctx.fillStyle = '#1a1010';
+  ctx.beginPath(); ctx.arc(x + 1 * s, headY + 1 * s, 1.6 * s, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x + 8 * s, headY + 1 * s, 1.6 * s, 0, Math.PI*2); ctx.fill();
+});
+</script>
+</body></html>

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Runner C — Athlète pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0e0d12;color:#fff;font-family:Nunito,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px}
+h1{font-size:16px;margin:0 0 4px}
+.tag{font-size:11px;color:#a89880;margin-bottom:10px}
+.frame{width:360px;aspect-ratio:9/16;border-radius:18px;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.5);background:#e85040}
+canvas{display:block;width:100%;height:100%}
+.desc{margin-top:10px;max-width:340px;font-size:12px;color:#c8b8a0;line-height:1.4}
+</style></head><body>
+<h1>C · Athlète PRO (genou haut + lean fort)</h1>
+<div class="tag">Genou levé devant le corps + buste très penché + bras pompent</div>
+<div class="frame"><canvas id="cv" width="360" height="640"></canvas></div>
+<div class="desc">Style sprint pro : genou avant remonte très haut (cuisse parallèle au sol), buste penché 15°.</div>
+<script src="_shared.js"></script>
+<script>
+RUNNER_SCENE(document.getElementById('cv'), function drawRunner(ctx, x, y, scale, phase, jersey, hair, skin){
+  const s = scale;
+  const cyclePhase = phase % (Math.PI * 2);
+  const swing = Math.sin(cyclePhase);
+  const swingCo = Math.cos(cyclePhase);
+  // Hop marqué (sprint)
+  const hop = Math.abs(Math.sin(cyclePhase)) * 8 * s;
+  const bodyY = y - hop;
+  // Lean fort sprint
+  const lean = .22;
+  // Ombre s'écrase quand hop élevé
+  ctx.fillStyle = 'rgba(0,0,0,.35)';
+  ctx.beginPath(); ctx.ellipse(x, y + 28 * s, 18 * s * (1 - hop/(8*s)*.4), 4 * s, 0, 0, Math.PI*2); ctx.fill();
+  // ═══ JAMBES : genou haut levé style sprint ═══
+  // Quand swing > 0 : jambe gauche levée (genou haut devant), droite tendue derrière
+  // Quand swing < 0 : inverse
+  const hipL = { x: x - 4 * s, y: bodyY + 5 * s };
+  const hipR = { x: x + 4 * s, y: bodyY + 5 * s };
+  // Pied position : derrière (extended) ou devant (levé)
+  function legPos(side){ // side = +1 (droite) ou -1 (gauche)
+    const swingSide = swing * side; // +1 = levée, -1 = derrière
+    if(swingSide > 0){
+      // Genou levé devant (jambe pliée)
+      const kneeAngle = Math.PI/2 + swingSide * .5; // ~90°
+      const knee = { x: hipL.x + (side > 0 ? 4 * s : -4 * s) + Math.sin(kneeAngle - Math.PI/2) * 11 * s, y: hipL.y + Math.cos(kneeAngle - Math.PI/2) * 11 * s - swingSide * 5 * s };
+      // Pied : sous le genou (pied tombant)
+      const foot = { x: knee.x + 2 * s, y: knee.y + 10 * s };
+      return { hip: side > 0 ? hipR : hipL, knee, foot };
+    } else {
+      // Jambe tendue derrière
+      const absSwing = -swingSide;
+      const extAngle = -absSwing * 0.7;
+      const hipPos = side > 0 ? hipR : hipL;
+      const knee = { x: hipPos.x + Math.sin(extAngle) * 9 * s, y: hipPos.y + Math.cos(extAngle) * 9 * s };
+      const foot = { x: hipPos.x + Math.sin(extAngle) * 18 * s - absSwing * 4 * s, y: hipPos.y + Math.cos(extAngle) * 18 * s };
+      return { hip: hipPos, knee, foot };
+    }
+  }
+  const legL = legPos(-1);
+  const legR = legPos(1);
+  ctx.strokeStyle = skin; ctx.lineWidth = 6.5 * s; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(legL.hip.x, legL.hip.y); ctx.lineTo(legL.knee.x, legL.knee.y); ctx.lineTo(legL.foot.x, legL.foot.y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(legR.hip.x, legR.hip.y); ctx.lineTo(legR.knee.x, legR.knee.y); ctx.lineTo(legR.foot.x, legR.foot.y); ctx.stroke();
+  // Chaussures
+  ctx.fillStyle = jersey;
+  ctx.beginPath(); ctx.ellipse(legL.foot.x, legL.foot.y, 7 * s, 3.5 * s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(legR.foot.x, legR.foot.y, 7 * s, 3.5 * s, 0, 0, Math.PI*2); ctx.fill();
+  // ═══ Corps incliné fort ═══
+  ctx.save();
+  ctx.translate(x, bodyY - 6 * s);
+  ctx.rotate(lean);
+  // Short
+  ctx.fillStyle = '#fff'; ctx.fillRect(-11 * s, 4 * s, 22 * s, 9 * s);
+  // Corps
+  ctx.fillStyle = jersey;
+  const r = 5 * s;
+  ctx.beginPath();
+  ctx.moveTo(-12 * s + r, -16 * s); ctx.lineTo(12 * s - r, -16 * s);
+  ctx.quadraticCurveTo(12 * s, -16 * s, 12 * s, -16 * s + r);
+  ctx.lineTo(12 * s, 6 * s); ctx.quadraticCurveTo(12 * s, 6 * s, 12 * s - r, 6 * s);
+  ctx.lineTo(-12 * s + r, 6 * s); ctx.quadraticCurveTo(-12 * s, 6 * s, -12 * s, 6 * s - r);
+  ctx.lineTo(-12 * s, -16 * s + r); ctx.quadraticCurveTo(-12 * s, -16 * s, -12 * s + r, -16 * s);
+  ctx.fill();
+  ctx.fillStyle = '#ffd060'; ctx.fillRect(-12 * s, -16 * s, 24 * s, 3.5 * s);
+  // Bras : pompent fort (avant/arrière marqué)
+  const armPhase = swing * 0.9;
+  const upperArm = 8 * s, lowerArm = 7.5 * s;
+  // Bras gauche
+  const shL = { x: -10 * s, y: -10 * s };
+  const elbL_a = -armPhase + Math.PI * .3;
+  const elbL = { x: shL.x + Math.cos(elbL_a) * upperArm, y: shL.y + Math.sin(elbL_a) * upperArm };
+  // Avant-bras (90° du bras = avant)
+  const handL_a = elbL_a - Math.PI * .5 - .3 + armPhase * .4;
+  const handL = { x: elbL.x + Math.cos(handL_a) * lowerArm, y: elbL.y + Math.sin(handL_a) * lowerArm };
+  // Bras droit (contre-phase)
+  const shR = { x: 10 * s, y: -10 * s };
+  const elbR_a = armPhase + Math.PI * .7;
+  const elbR = { x: shR.x + Math.cos(elbR_a) * upperArm, y: shR.y + Math.sin(elbR_a) * upperArm };
+  const handR_a = elbR_a - Math.PI * .5 + .3 - armPhase * .4;
+  const handR = { x: elbR.x + Math.cos(handR_a) * lowerArm, y: elbR.y + Math.sin(handR_a) * lowerArm };
+  ctx.strokeStyle = skin; ctx.lineWidth = 5 * s;
+  ctx.beginPath(); ctx.moveTo(shL.x, shL.y); ctx.lineTo(elbL.x, elbL.y); ctx.lineTo(handL.x, handL.y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(shR.x, shR.y); ctx.lineTo(elbR.x, elbR.y); ctx.lineTo(handR.x, handR.y); ctx.stroke();
+  ctx.restore();
+  // Tête (légèrement penchée aussi)
+  const headY = bodyY - 27 * s;
+  const headX = x + Math.sin(lean) * 10 * s;
+  ctx.fillStyle = skin; ctx.beginPath(); ctx.arc(headX, headY, 12 * s, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = hair;
+  ctx.beginPath(); ctx.arc(headX, headY - 3 * s, 12 * s, Math.PI, 0);
+  ctx.lineTo(headX + 11 * s, headY + 2 * s); ctx.lineTo(headX - 11 * s, headY + 2 * s); ctx.fill();
+  // Yeux concentrés
+  ctx.fillStyle = '#1a1010';
+  ctx.beginPath(); ctx.arc(headX + 2 * s, headY + 1 * s, 1.5 * s, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(headX + 8 * s, headY + 1 * s, 1.5 * s, 0, Math.PI*2); ctx.fill();
+});
+</script>
+</body></html>

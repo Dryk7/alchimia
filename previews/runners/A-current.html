@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Runner A — Actuel</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0e0d12;color:#fff;font-family:Nunito,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px}
+h1{font-size:16px;margin:0 0 4px}
+.tag{font-size:11px;color:#a89880;margin-bottom:10px}
+.frame{width:360px;aspect-ratio:9/16;border-radius:18px;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.5);background:#e85040}
+canvas{display:block;width:100%;height:100%}
+.desc{margin-top:10px;max-width:340px;font-size:12px;color:#c8b8a0;line-height:1.4}
+</style></head><body>
+<h1>A · Animation ACTUELLE (sur place)</h1>
+<div class="tag">Jambes/bras swing simple, sans hop ni body lean</div>
+<div class="frame"><canvas id="cv" width="360" height="640"></canvas></div>
+<div class="desc">L'effet "marche dans le vide" pointé par user.</div>
+<script src="_shared.js"></script>
+<script>
+RUNNER_SCENE(document.getElementById('cv'), function drawRunner(ctx, x, y, scale, phase, jersey, hair, skin){
+  const s = scale;
+  // Ombre
+  ctx.fillStyle = 'rgba(0,0,0,.35)';
+  ctx.beginPath(); ctx.ellipse(x, y + 28 * s, 18 * s, 4 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Animation course (style actuel)
+  const swing = Math.sin(phase);
+  const legL = swing * 18 * s, legR = -swing * 18 * s;
+  const armL = -swing * 22 * s, armR = swing * 22 * s;
+  // Jambes
+  ctx.strokeStyle = skin; ctx.lineWidth = 7 * s; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(x - 4 * s, y + 5 * s); ctx.lineTo(x - 4 * s, y + 22 * s + legL); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x + 4 * s, y + 5 * s); ctx.lineTo(x + 4 * s, y + 22 * s + legR); ctx.stroke();
+  // Chaussures
+  ctx.fillStyle = jersey;
+  ctx.beginPath(); ctx.ellipse(x - 4 * s, y + 25 * s + legL, 7 * s, 4 * s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x + 4 * s, y + 25 * s + legR, 7 * s, 4 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Short
+  ctx.fillStyle = '#fff'; ctx.fillRect(x - 11 * s, y - 2 * s, 22 * s, 9 * s);
+  // Corps
+  ctx.fillStyle = jersey;
+  const r = 6 * s;
+  ctx.beginPath();
+  ctx.moveTo(x - 13 * s + r, y - 22 * s); ctx.lineTo(x + 13 * s - r, y - 22 * s);
+  ctx.quadraticCurveTo(x + 13 * s, y - 22 * s, x + 13 * s, y - 22 * s + r);
+  ctx.lineTo(x + 13 * s, y); ctx.quadraticCurveTo(x + 13 * s, y, x + 13 * s - r, y);
+  ctx.lineTo(x - 13 * s + r, y); ctx.quadraticCurveTo(x - 13 * s, y, x - 13 * s, y - r);
+  ctx.lineTo(x - 13 * s, y - 22 * s + r); ctx.quadraticCurveTo(x - 13 * s, y - 22 * s, x - 13 * s + r, y - 22 * s);
+  ctx.fill();
+  // Bandeau
+  ctx.fillStyle = '#ffd060'; ctx.fillRect(x - 13 * s, y - 22 * s, 26 * s, 4 * s);
+  // Bras
+  ctx.strokeStyle = skin; ctx.lineWidth = 6 * s;
+  ctx.beginPath(); ctx.moveTo(x - 13 * s, y - 14 * s); ctx.lineTo(x - 22 * s, y - 2 * s + armL); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x + 13 * s, y - 14 * s); ctx.lineTo(x + 22 * s, y - 2 * s + armR); ctx.stroke();
+  // Tête
+  ctx.fillStyle = skin; ctx.beginPath(); ctx.arc(x, y - 34 * s, 14 * s, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = hair;
+  ctx.beginPath(); ctx.arc(x, y - 38 * s, 14 * s, Math.PI, 0);
+  ctx.lineTo(x + 12 * s, y - 32 * s); ctx.lineTo(x - 12 * s, y - 32 * s); ctx.fill();
+  // Yeux
+  ctx.fillStyle = '#1a1010';
+  ctx.beginPath(); ctx.arc(x + 2 * s, y - 33 * s, 1.8 * s, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x + 9 * s, y - 33 * s, 1.8 * s, 0, Math.PI*2); ctx.fill();
+});
+</script>
+</body></html>

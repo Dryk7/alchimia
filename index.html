@@ -13635,13 +13635,24 @@ function renderStatsQuick(){
   if(!wrap) return;
   ensureRecords();
   const r = STATE.records || {};
+  // Fix bug "Vitesse ×0.0" : afficher au moins x1.0 (footing passif)
+  const rawSpeed = (typeof runnerSpeedMultiplier === 'function') ? runnerSpeedMultiplier() : 1;
+  const dispSpeed = Math.max(1, rawSpeed).toFixed(1);
+  // Fix bug "Forme 219%" : normaliser stamina dans la plage [STAMINA_MIN, STAMINA_MAX] → 0-100%
+  const stam = STATE.runnerStamina || 1;
+  const sMin = (typeof STAMINA_MIN !== 'undefined') ? STAMINA_MIN : 0.3;
+  const sMax = (typeof STAMINA_MAX !== 'undefined') ? STAMINA_MAX : 2.2;
+  const formePct = Math.max(0, Math.min(100, Math.round((stam - sMin) / (sMax - sMin) * 100)));
+  // Fix bug "Best combo ×1" : si pas de vrai combo (≥3), afficher "—"
+  const bestCombo = r.maxCombo || 0;
+  const bestComboTxt = bestCombo >= 3 ? '×' + bestCombo : '—';
   wrap.innerHTML = `
     <div class="stats-quick-cell">🏁 Tours bouclés <b>${fmtBigNumber(STATE.lapsRun||0)}</b></div>
     <div class="stats-quick-cell">✨ Saison <b>${STATE.saison||1}</b></div>
     <div class="stats-quick-cell">👆 Total taps <b>${fmtBigNumber(STATE.totalTaps||0)}</b></div>
-    <div class="stats-quick-cell">🔥 Best combo <b>×${r.maxCombo||1}</b></div>
-    <div class="stats-quick-cell">⚡ Vitesse <b>×${(typeof runnerSpeedMultiplier === 'function' ? runnerSpeedMultiplier() : 1).toFixed(1)}</b></div>
-    <div class="stats-quick-cell">💪 Forme <b>${Math.round((STATE.runnerStamina||0)*100)}%</b></div>
+    <div class="stats-quick-cell">🔥 Best combo <b>${bestComboTxt}</b></div>
+    <div class="stats-quick-cell">⚡ Vitesse <b>×${dispSpeed}</b></div>
+    <div class="stats-quick-cell">💪 Forme <b>${formePct}%</b></div>
   `;
 }
 function updateUpgAffordableBadge(){

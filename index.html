@@ -20065,23 +20065,13 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     const speed = 1.0 + tapBoost * 2.0;
     const pace = 1.0 + tapBoost * 1.0;
 
-    // === Compteur km/h : delta progression sur fenêtre glissante 0.6s ===
-    recentProgress.push({t: now, km: totalKm});
-    while(recentProgress.length > 1 && recentProgress[0].t < now - 600){
-      recentProgress.shift();
-    }
-    let rawKmh = 0;
-    if(recentProgress.length >= 2){
-      const a = recentProgress[0];
-      const b = recentProgress[recentProgress.length - 1];
-      const dtSec = (b.t - a.t) / 1000;
-      if(dtSec > 0.05){
-        rawKmh = (b.km - a.km) / dtSec * 3600;
-      }
-    }
-    // Lissage exponentiel court (réactif)
-    displayKmh = displayKmh * 0.70 + rawKmh * 0.30;
-    // Cap à 35 km/h : record du monde du sprint humain ≈ 37 km/h
+    // === Compteur km/h : basé sur le tapBoost visuel (pas la lapProgress empirique) ===
+    // Repos (boost=0)  → 4 km/h (footing passif)
+    // 1 tap (boost=1)  → ~19.5 km/h (course moyenne)
+    // Spam max (boost=2) → 35 km/h (sprint élite, cap réaliste)
+    const targetKmh = 4 + tapBoost * 15.5;
+    // Lissage exponentiel pour évoluer en douceur sans saute
+    displayKmh = displayKmh * 0.80 + targetKmh * 0.20;
     displayKmh = Math.max(0, Math.min(35, displayKmh));
 
     // Update HUD overlay HTML

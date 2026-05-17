@@ -12501,7 +12501,9 @@ function renderEquipment(){
    grâce aux upgrades AUTO, aux managers d'équipe, et aux ascensions.
    → l'automatisation devient un "wow moment" tangible. */
 function runnerBaseSpeed(){
-  let base = 0;
+  // Baseline FOOTING PASSIF : le coureur avance toujours au minimum (~5min/km au repos)
+  // Évite l'effet "surplace" quand on ne tap pas, garde l'aspect idle du jeu.
+  let base = 0.4;
   base += (STATE.upgradeAutoTap || 0) * 0.15;
   base += (STATE.upgradeTapValue || 0) * 0.04;
   base += (STATE.upgradeLapBonus || 0) * 0.06;

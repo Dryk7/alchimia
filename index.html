@@ -20061,9 +20061,10 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     // Décroissance du dash (effet "bond" au tap)
     heroDashX *= 0.86;
     heroDashBob *= 0.88;
-    // x1 au repos, ~x3 sur 1 tap (boost=1), x5 max (boost=2)
-    const speed = 1.0 + tapBoost * 2.0;
-    const pace = 1.0 + tapBoost * 1.0;
+    // Décor : défilement plus tranquille (était * 2.0 = trop rapide au tap)
+    // Anim héros (pace) : garde son boost pour que ça reste spectaculaire visuellement
+    const speed = 1.0 + tapBoost * 0.8;   // repos x1.0 → 1 tap x1.8 → max x2.6
+    const pace = 1.0 + tapBoost * 1.0;    // repos x1.0 → 1 tap x2.0 → max x3.0 (anim)
 
     // === Compteur km/h : basé sur le tapBoost visuel (pas la lapProgress empirique) ===
     // Repos (boost=0)  → 4 km/h (footing passif)

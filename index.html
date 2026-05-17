@@ -697,6 +697,46 @@ header{
   0%, 100% { box-shadow:0 -2px 6px rgba(80,55,30,.10), 0 0 0 0    rgba(255,208,96, 0); }
   50%      { box-shadow:0 -2px 6px rgba(80,55,30,.10), 0 0 0 10px rgba(255,208,96,.55); }
 }
+
+/* === Flash record perso km/h (pill devient or pulsant) === */
+.record-flash{
+  animation:recordFlash 1s ease-out;
+  position:relative;
+}
+.record-flash::after{
+  content:'🏆 RECORD';
+  position:absolute;
+  top:-18px; right:-4px;
+  background:linear-gradient(180deg, #ffd060, #f08a48);
+  color:#1a1010;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:8.5px; letter-spacing:.04em;
+  padding:2px 7px;
+  border-radius:8px;
+  border:1.5px solid #fff;
+  box-shadow:0 2px 6px rgba(0,0,0,.3);
+  white-space:nowrap;
+  animation:recordPop .5s cubic-bezier(.2,.9,.2,1.5);
+}
+@keyframes recordFlash{
+  0% { background:rgba(255,208,96,1)!important; }
+  100% { background:rgba(255,232,80,.85); }
+}
+@keyframes recordPop{
+  0% { transform:scale(.6) translateY(4px); opacity:0; }
+  60% { transform:scale(1.15); opacity:1; }
+  100% { transform:scale(1); opacity:1; }
+}
+
+/* === Pop "Premier kilomètre !" (achievement) === */
+@keyframes firstKmPop{
+  0%   { transform:translate(-50%,-50%) scale(.4) rotate(-8deg); opacity:0; }
+  25%  { transform:translate(-50%,-50%) scale(1.2) rotate(2deg); opacity:1; }
+  35%  { transform:translate(-50%,-50%) scale(1.0) rotate(-1deg); }
+  45%  { transform:translate(-50%,-50%) scale(1.05) rotate(0deg); }
+  80%  { transform:translate(-50%,-50%) scale(1.0) rotate(0deg); opacity:1; }
+  100% { transform:translate(-50%,-50%) scale(.9) rotate(0deg); opacity:0; }
+}
 @keyframes dailyPulse{
   0%,100%{ box-shadow:0 4px 14px rgba(74,159,217,.40), 0 0 0 3px rgba(123,199,246,.30); }
   50%   { box-shadow:0 6px 20px rgba(74,159,217,.60), 0 0 0 6px rgba(123,199,246,.45); }
@@ -7358,7 +7398,11 @@ body.shop-epic-flash::after{
     </div>
     <div class="offline-stats">
       <div class="offline-row">
-        <span class="offline-row-lbl">Médailles gagnées</span>
+        <span class="offline-row-lbl">🏁 Kilomètres courus</span>
+        <span class="offline-row-val" id="offline-km">+0</span>
+      </div>
+      <div class="offline-row">
+        <span class="offline-row-lbl">🏅 Médailles gagnées</span>
         <span class="offline-row-val" id="offline-gold">+0</span>
       </div>
       <div class="offline-row offline-row-info">
@@ -16906,7 +16950,7 @@ function fmtDuration(ms){
   return sec+"s";
 }
 
-function showOfflineToast(offlineMs, gold){
+function showOfflineToast(offlineMs, gold, km){
   // v4 : nouveau modal fancy à la place du toast minimal
   const modal = document.getElementById('offline-modal');
   if(!modal){
@@ -16915,8 +16959,10 @@ function showOfflineToast(offlineMs, gold){
   }
   const durEl = document.getElementById('offline-duration');
   const goldEl = document.getElementById('offline-gold');
+  const kmEl = document.getElementById('offline-km');
   if(durEl) durEl.textContent = 'Ton coureur a couru ' + fmtDuration(offlineMs);
   if(goldEl) goldEl.textContent = '+' + (typeof fmtBigNumber === 'function' ? fmtBigNumber(gold) : gold);
+  if(kmEl) kmEl.textContent = '+' + (km != null ? km.toFixed(2) : '0.00') + ' km';
   modal.classList.add('show');
   if(A?.ctx){
     blip(440, .25, "sine", .18, .6);
@@ -16997,6 +17043,8 @@ function save(){
       cardsDeck:STATE.cardsDeck || [],
       stadiumProgress:STATE.stadiumProgress || {},
       currentStadiumId:STATE.currentStadiumId || 'municipal',
+      bestKmh: STATE.bestKmh || 0,
+      firstKmRewarded: STATE.firstKmRewarded || false,
     };
     localStorage.setItem("alchimia.save", JSON.stringify(s));
   }catch(e){}
@@ -17066,6 +17114,8 @@ function load(){
     STATE.cardsDeck = s.cardsDeck || [];
     STATE.stadiumProgress = s.stadiumProgress || {};
     STATE.currentStadiumId = s.currentStadiumId || 'municipal';
+    STATE.bestKmh = s.bestKmh || 0;
+    STATE.firstKmRewarded = s.firstKmRewarded || false;
     // Migration : si on a maxTier mais pas de codexUnlocks → backfill
     for(let c=0;c<3;c++){
       for(let t=0; t<=STATE.totals.maxTier[c]; t++){
@@ -17114,9 +17164,18 @@ function load(){
       }
       // Efficacité offline : 50% du gain normal (incite à revenir)
       offlineGold = Math.floor(offlineGold * 0.5);
-      if(offlineGold > 0){
+      // Progression km offline : ~5 km/h footing passif, cap 50 km par session
+      const hoursOffline = offlineMs / 3600000;
+      const offlineKm = Math.min(50, hoursOffline * 5);
+      if(offlineKm > 0.01){
+        const totalKmBefore = (STATE.lapsRun || 0) + (STATE.lapProgress || 0);
+        const totalKmAfter = totalKmBefore + offlineKm;
+        STATE.lapsRun = Math.floor(totalKmAfter);
+        STATE.lapProgress = totalKmAfter - STATE.lapsRun;
+      }
+      if(offlineGold > 0 || offlineKm > 0.01){
         STATE.gold += offlineGold;
-        STATE.pendingOfflineToast = { ms: offlineMs, gold: offlineGold };
+        STATE.pendingOfflineToast = { ms: offlineMs, gold: offlineGold, km: offlineKm };
       }
     }
     STATE.sessionStartMs = now;
@@ -17550,7 +17609,7 @@ function boot(){
     bgmPlay();
     if(STATE.pendingOfflineToast){
       const p = STATE.pendingOfflineToast;
-      setTimeout(()=>showOfflineToast(p.ms, p.gold), 700);
+      setTimeout(()=>showOfflineToast(p.ms, p.gold, p.km), 700);
       STATE.pendingOfflineToast = null;
     } else {
       // Tutoriel pour les premiers joueurs
@@ -19332,6 +19391,26 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
   let heroDashBob = 0;      // pic d'amplitude du bob au tap
   let recentProgress = [];  // historique récent {t, km} pour calcul km/h
   let displayKmh = 0;       // valeur lissée affichée
+  const confetti = [];      // particules de confettis au passage de tier
+
+  // API : déclenchable depuis l'extérieur via window.RUNNER_2D.spawnConfetti()
+  function spawnConfettiBurst(){
+    const cols = ['#e85040', '#4a9fd9', '#7ec46a', '#ffd060', '#c89af0', '#f08040', '#fff'];
+    const W = cv._W || 540;
+    for(let i = 0; i < 80; i++){
+      confetti.push({
+        x: W / 2 + (Math.random() - 0.5) * 60,
+        y: 100 + Math.random() * 40,
+        vx: (Math.random() - 0.5) * 6,
+        vy: -3 - Math.random() * 5,
+        rot: Math.random() * Math.PI * 2,
+        vr: (Math.random() - 0.5) * 0.4,
+        size: 4 + Math.random() * 4,
+        col: cols[Math.floor(Math.random() * cols.length)],
+        life: 80 + Math.random() * 30,
+      });
+    }
+  }
   let lastKmInt = 0;        // dernier KM entier vu (pour détecter passage de cap)
   let metersInCurrentKm = 0; // dérivé de STATE.lapProgress
 
@@ -20154,6 +20233,18 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     // Lissage exponentiel pour évoluer en douceur sans saute
     displayKmh = displayKmh * 0.80 + targetKmh * 0.20;
     displayKmh = Math.max(0, Math.min(35, displayKmh));
+    // Record perso km/h (persisté dans STATE.bestKmh)
+    if(window.STATE){
+      const best = window.STATE.bestKmh || 0;
+      if(displayKmh > best + 0.5){ // marge 0.5 pour ne pas spammer le flash
+        window.STATE.bestKmh = displayKmh;
+        // Flash visuel : pill prend la classe record-flash 2s
+        if(paceEl && paceEl.parentElement && !paceEl.parentElement.classList.contains('record-flash')){
+          paceEl.parentElement.classList.add('record-flash');
+          setTimeout(() => paceEl.parentElement && paceEl.parentElement.classList.remove('record-flash'), 2000);
+        }
+      }
+    }
 
     // Update HUD overlay HTML
     if(kmEl) kmEl.textContent = totalKm.toFixed(2);
@@ -20529,6 +20620,32 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       }
     }
 
+    // ═══ CONFETTIS (passage de tier) ═══
+    if(confetti.length){
+      const gravity = 0.18;
+      for(let i = confetti.length - 1; i >= 0; i--){
+        const p = confetti[i];
+        p.x += p.vx * dtMul;
+        p.y += p.vy * dtMul;
+        p.vy += gravity * dtMul;
+        p.vx *= 0.99;
+        p.rot += p.vr * dtMul;
+        p.life -= dtMul;
+        if(p.life <= 0 || p.y > H + 20){
+          confetti.splice(i, 1);
+          continue;
+        }
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = p.col;
+        ctx.globalAlpha = Math.min(1, p.life / 30);
+        ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+        ctx.restore();
+      }
+      ctx.globalAlpha = 1;
+    }
+
     // (scheduleTick gère la prochaine frame, pas de requestAnimationFrame ici)
   }
 
@@ -20632,7 +20749,12 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 
   // setInterval fixe ~60fps (16.67ms) pour timing stable cross-environment
   setInterval(tick, 1000 / 60);
-  window.RUNNER_2D = { resize, npcs, milestones, getRabbit:()=>rabbit, getHare:()=>hare, spawnRabbit, spawnHare };
+  window.RUNNER_2D = {
+    resize, npcs, milestones,
+    getRabbit:()=>rabbit, getHare:()=>hare,
+    spawnRabbit, spawnHare,
+    spawnConfetti: spawnConfettiBurst,
+  };
 })();
 </script>
 
@@ -20701,6 +20823,10 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     tierBanner.classList.remove('out');
     tierBannerMsg.textContent = msg;
     tierBanner.style.display = 'flex';
+    // Confettis dans le canvas pour fêter
+    if(window.RUNNER_2D && window.RUNNER_2D.spawnConfetti){
+      window.RUNNER_2D.spawnConfetti();
+    }
     // SFX si dispo
     if(typeof blip === 'function'){
       blip(660, .12, 'sine', .25, .5);
@@ -20713,6 +20839,31 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       tierBanner.classList.add('out');
       setTimeout(()=>{ if(tierBanner) tierBanner.style.display = 'none'; }, 500);
     }, 3500);
+  }
+
+  /* === 3.5. ACHIEVEMENT 1er km (récompense bonus + message dédié) === */
+  function checkFirstKm(){
+    const ST = window.STATE || {};
+    if(ST.firstKmRewarded) return;
+    if((ST.lapsRun || 0) < 1) return;
+    ST.firstKmRewarded = true;
+    // Bonus : +500 méd pour fêter le premier km
+    const bonus = 500;
+    ST.gold = (ST.gold || 0) + bonus;
+    // Toast au centre de l'écran
+    const pop = document.createElement('div');
+    pop.style.cssText = 'position:fixed;top:30%;left:50%;transform:translate(-50%,-50%) scale(.6);background:linear-gradient(180deg,#ffd060,#f08a48);color:#1a1010;font-family:Nunito,sans-serif;font-weight:900;padding:20px 32px;border-radius:22px;font-size:18px;box-shadow:0 12px 30px rgba(0,0,0,.5);z-index:9999;border:4px solid #fff;text-align:center;line-height:1.4;pointer-events:none;animation:firstKmPop 2.4s cubic-bezier(.2,.9,.2,1.4) forwards';
+    pop.innerHTML = '🎉 <b>PREMIER KILOMÈTRE !</b><br><span style="font-size:14px;color:#3a1a10">Tu y es ! +' + bonus + ' méd bonus</span>';
+    document.body.appendChild(pop);
+    setTimeout(() => pop.remove(), 2400);
+    // SFX special
+    if(typeof blip === 'function'){
+      blip(523, .15, 'sine', .3, .5);
+      setTimeout(()=>blip(659, .15, 'sine', .3, .5), 150);
+      setTimeout(()=>blip(784, .15, 'sine', .3, .5), 300);
+      setTimeout(()=>blip(1047, .25, 'sine', .3, .5), 450);
+    }
+    if(typeof vibrate === 'function') vibrate([60, 80, 60, 80, 120]);
   }
 
   /* === 3. HALO sur l'onglet UPGRADES === */
@@ -20753,6 +20904,8 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     }
     // Halo upgrade
     updateHalo();
+    // Premier km
+    checkFirstKm();
   }, 400);
 
   // Expose en debug

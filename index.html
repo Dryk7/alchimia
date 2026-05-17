@@ -152,32 +152,36 @@ header{
 .brand .name-wrap{position:relative; padding:0}
 .brand .name{
   font-family:"Nunito", system-ui, sans-serif; font-weight:900;
-  letter-spacing:.04em; font-size:18px;
-  color:var(--ink);
+  letter-spacing:.05em; font-size:19px;
+  color:#c84030;
   line-height:1;
+  text-shadow:0 1px 0 rgba(255,255,255,.6), 0 2px 4px rgba(80,40,20,.18);
 }
 .brand .name small{
-  display:block; font-family:"Nunito", system-ui, sans-serif;
-  font-weight:600; font-size:9px;
-  letter-spacing:.18em; color:var(--ember); opacity:.85;
-  margin-top:3px; text-transform:uppercase;
+  display:block; font-family:"Caveat", cursive;
+  font-weight:700; font-size:13px;
+  letter-spacing:.06em; color:var(--ember); opacity:.85;
+  margin-top:1px; text-transform:none;
+  text-shadow:none;
 }
 .brand .name-wrap::before, .brand .name-wrap::after{ display:none }
 
-.stats{display:flex; gap:5px; justify-content:flex-end; align-items:center; flex-wrap:nowrap; min-width:0}
+.stats{display:flex; gap:6px; justify-content:flex-end; align-items:center; flex-wrap:nowrap; min-width:0}
 .stat{
-  display:flex; align-items:center; gap:4px;
-  padding:5px 8px;
-  background:linear-gradient(180deg, #fff8e4, #f4e2b4);
-  border:1.5px solid rgba(160,122,68,.30);
-  border-radius:12px;
-  font-family:"Nunito", system-ui, sans-serif; font-weight:800;
+  display:flex; align-items:center; gap:5px;
+  padding:6px 10px;
+  background:linear-gradient(180deg, #fff8e4, #f0d8a0);
+  border:1.5px solid rgba(160,90,40,.40);
+  border-radius:13px;
+  font-family:"Nunito", system-ui, sans-serif; font-weight:900;
   font-size:13px; line-height:1;
   color:var(--ink);
   min-width:0;
   position:relative;
-  box-shadow:0 2px 4px rgba(80,55,30,.12), inset 0 1px 0 rgba(255,255,255,.50);
+  box-shadow:0 3px 6px rgba(80,40,20,.18), inset 0 1px 0 rgba(255,255,255,.6);
+  transition:transform .12s, box-shadow .12s;
 }
+.stat:active{ transform:translateY(1px); box-shadow:0 1px 3px rgba(80,40,20,.18), inset 0 1px 0 rgba(255,255,255,.6); }
 /* Cartouche : 4 picots aux coins + double trait intérieur */
 .stat::before{
   content:""; position:absolute; inset:2px;
@@ -335,20 +339,23 @@ header{
   background:rgba(255,248,228,.96);
   z-index:3;
 }
-.tab-ico{ font-size:20px; line-height:1; }
+.tab-ico{ font-size:20px; line-height:1; color:var(--ember); }
+.tab-ico svg{ display:block; }
+.tab-btn.active .tab-ico{ color:#c84030; }
 .tab-label{
   font-family:"Nunito", sans-serif; font-weight:900;
-  font-size:8.5px; letter-spacing:.08em;
+  font-size:9.5px; letter-spacing:.10em;
   text-transform:uppercase;
   color:var(--ember);
 }
+.tab-btn.active .tab-label{ color:#c84030; }
 .tab-badge{
   font-family:"Nunito", sans-serif; font-weight:800;
-  font-size:8.5px;
+  font-size:9px;
   color:#3a8c3a;
   white-space:nowrap;
   font-variant-numeric:tabular-nums;
-  margin-top:0;
+  margin-top:1px;
 }
 .tab-badge.alert{
   color:#fff; background:#d04030;
@@ -393,25 +400,28 @@ header{
 
 /* HUD du coureur : avatar + niveau + XP bar + bouton profil — compact v5 */
 .runner-hud{
-  display:flex; align-items:center; gap:6px;
-  background:linear-gradient(180deg, rgba(255,248,228,.85), rgba(244,226,180,.78));
+  display:flex; align-items:center; gap:7px;
+  background:linear-gradient(180deg, rgba(255,248,228,.92), rgba(244,226,180,.85));
   backdrop-filter:blur(10px) saturate(1.3);
   -webkit-backdrop-filter:blur(10px) saturate(1.3);
-  border:1.5px solid rgba(160,122,68,.40);
-  border-radius:14px;
-  padding:4px 8px 4px 4px;
-  box-shadow:0 2px 8px rgba(80,55,30,.22), inset 0 1px 0 rgba(255,255,255,.45);
-  max-width:140px;
+  border:1.5px solid rgba(160,90,40,.50);
+  border-radius:16px;
+  padding:5px 10px 5px 5px;
+  box-shadow:0 3px 10px rgba(80,40,20,.25), inset 0 1px 0 rgba(255,255,255,.55);
+  max-width:148px;
+  cursor:pointer;
+  transition:transform .12s, box-shadow .12s;
 }
+.runner-hud:active{ transform:translateY(1px); box-shadow:0 1px 4px rgba(80,40,20,.25), inset 0 1px 0 rgba(255,255,255,.55); }
 .runner-avatar{
-  width:30px; height:30px;
+  width:32px; height:32px;
   background:linear-gradient(180deg, #b8def0, #f4d8a8);
-  border:1.5px solid #a07a44;
+  border:2px solid #a07a44;
   border-radius:50%;
   display:flex; align-items:center; justify-content:center;
   cursor:pointer;
   image-rendering:pixelated;
-  box-shadow:0 1px 2px rgba(80,55,30,.20);
+  box-shadow:0 2px 4px rgba(80,55,30,.30), inset 0 -2px 4px rgba(160,90,40,.20);
   flex-shrink:0;
 }
 .runner-avatar svg{ width:90%; height:90%; }
@@ -419,10 +429,11 @@ header{
 .runner-hud-row1{ display:flex; align-items:baseline; gap:8px; }
 .runner-lvl{
   font-family:"Nunito", sans-serif; font-weight:900;
-  font-size:11px; letter-spacing:.02em;
-  color:#fff; background:var(--ember);
-  padding:1px 6px; border-radius:6px;
-  box-shadow:0 1px 2px rgba(217,104,40,.40);
+  font-size:11px; letter-spacing:.04em;
+  color:#fff;
+  background:linear-gradient(180deg, #f08a48, #c84030);
+  padding:2px 8px; border-radius:8px;
+  box-shadow:0 1px 3px rgba(200,64,48,.50), inset 0 1px 0 rgba(255,255,255,.35);
   align-self:flex-start;
 }
 .runner-title{

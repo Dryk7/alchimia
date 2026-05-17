@@ -431,16 +431,18 @@ header{
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 .runner-xp{
-  height:5px;
-  background:rgba(255,255,255,.55);
-  border:1px solid rgba(80,55,30,.40);
-  border-radius:4px;
+  height:8px;
+  background:rgba(255,255,255,.85);
+  border:1.5px solid rgba(80,55,30,.55);
+  border-radius:5px;
   overflow:hidden;
+  box-shadow:inset 0 1px 2px rgba(80,55,30,.15);
 }
 .runner-xp > span{
   display:block; height:100%; width:0%;
-  background:linear-gradient(90deg, #5ab050, #88d878);
-  transition:width .3s;
+  background:linear-gradient(90deg, #48b048, #7ed478 50%, #b4ec80);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.45), 0 0 6px rgba(120,220,120,.55);
+  transition:width .35s cubic-bezier(.2,.9,.2,1.2);
 }
 .runner-xp-txt{
   font-family:"Nunito", sans-serif; font-weight:700;
@@ -17009,23 +17011,29 @@ if('serviceWorker' in navigator){
   }
   // Spawn ERRATIQUE : pas toujours, parfois plusieurs, max 4 visibles
   function npcSpawnLoop(){
-    const r = Math.random();
-    if(npcs.length < 4){
-      if(r < 0.55){
-        // 55% de chance de spawn cette fois-ci
-        spawnNpc();
-        // 12% de chance de spawn un 2ème dans la foulée
-        if(r < 0.12){
-          setTimeout(spawnNpc, 300 + Math.random() * 500);
+    // Tier 0 (chantier) : le joueur est seul, pas de PNJ. Les coureurs
+    // arrivent seulement quand le stade s'éveille (tier 1+)
+    const curTier = (typeof stadiumTier === 'function') ? stadiumTier() : 5;
+    if(curTier >= 1){
+      const r = Math.random();
+      if(npcs.length < 4){
+        if(r < 0.55){
+          spawnNpc();
+          if(r < 0.12){
+            setTimeout(spawnNpc, 300 + Math.random() * 500);
+          }
         }
       }
     }
-    // Délai prochain check : 2.5-8s (plus rare, plus erratique)
+    // Délai prochain check : 2.5-8s
     const delay = 2500 + Math.random() * 5500;
     setTimeout(npcSpawnLoop, delay);
   }
-  // Premier spawn après 800ms (le joueur entre dans le stade), puis loop
-  setTimeout(spawnNpc, 800);
+  // 1er spawn différé : seulement si déjà au-delà du chantier
+  setTimeout(()=>{
+    const curTier = (typeof stadiumTier === 'function') ? stadiumTier() : 5;
+    if(curTier >= 1) spawnNpc();
+  }, 800);
   setTimeout(npcSpawnLoop, 3500);
 
   // ═══ LAPIN BONUS : événement rare, à attraper pour bonus ═══
@@ -17033,8 +17041,9 @@ if('serviceWorker' in navigator){
   function spawnRabbit(){
     if(rabbit) return;
     rabbit = {
-      metersAhead: 28 + Math.random() * 5,
-      mPerSec: 5 + Math.random() * 1.5,
+      // Spawn plus loin (vu de plus loin) + plus lent → fenêtre de tap plus longue
+      metersAhead: 38 + Math.random() * 6, // 38-44m (était 28-33)
+      mPerSec: 2.8 + Math.random() * 1.0,   // 2.8-3.8 m/s (était 5-6.5) → ~14s pour traverser
       bobPhase: 0,
       pinkPhase: 0,
       screenX: 0, screenY: 0,

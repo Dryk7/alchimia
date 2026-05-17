@@ -16878,6 +16878,10 @@ if('serviceWorker' in navigator){
   let balloon = null;      // { x, y, vx, color, ribbonPhase }
   const BALLOON_COLORS = ['#e85040', '#4a9fd9', '#ffd060', '#7ec46a', '#c89af0'];
   const confetti = [];      // particules de confettis au passage de tier
+  // === Effets météo spéciaux ===
+  let lightning = 0;       // intensité éclair en rainy (0=off, 1=plein flash)
+  let lightningCooldown = 4 + Math.random() * 8; // sec avant prochain éclair
+  const shootingStars = []; // étoiles filantes en cosmic
 
   // API : déclenchable depuis l'extérieur via window.RUNNER_2D.spawnConfetti()
   function spawnConfettiBurst(){
@@ -17785,6 +17789,38 @@ if('serviceWorker' in navigator){
         ctx.fillRect(sx, sy, size, size);
       }
       ctx.globalAlpha = 1;
+      // === Étoiles filantes : rare event qui traverse le ciel cosmic ===
+      if(shootingStars.length < 1 && Math.random() < 0.002 * dtMul){
+        const fromLeft = Math.random() < 0.5;
+        shootingStars.push({
+          x: fromLeft ? -30 : W + 30,
+          y: H * (0.05 + Math.random() * 0.20),
+          vx: (fromLeft ? 1 : -1) * (5 + Math.random() * 3),
+          vy: 1.5 + Math.random() * 1,
+          life: 80,
+          trail: [],
+        });
+      }
+      for(let i = shootingStars.length - 1; i >= 0; i--){
+        const s = shootingStars[i];
+        s.x += s.vx * dtMul;
+        s.y += s.vy * dtMul;
+        s.life -= dtMul;
+        s.trail.push({x: s.x, y: s.y});
+        if(s.trail.length > 12) s.trail.shift();
+        if(s.life <= 0 || s.y > H * 0.45){ shootingStars.splice(i, 1); continue; }
+        // Trail (gradient blanc qui s'estompe)
+        for(let j = 0; j < s.trail.length; j++){
+          const t2 = s.trail[j];
+          const a = (j / s.trail.length) * (s.life / 80);
+          ctx.fillStyle = `rgba(255,255,255,${a})`;
+          ctx.fillRect(t2.x - 1, t2.y - 1, 2, 2);
+        }
+        // Tête de l'étoile filante
+        const headA = Math.min(1, s.life / 30);
+        ctx.fillStyle = `rgba(255,255,210,${headA})`;
+        ctx.beginPath(); ctx.arc(s.x, s.y, 2.5, 0, Math.PI*2); ctx.fill();
+      }
     }
 
     // Soleil ou planète selon le stade
@@ -17841,6 +17877,36 @@ if('serviceWorker' in navigator){
 
     // ═══ Layer 2.5 : Pluie (gouttes verticales) ===
     if(isRainy){
+      // Éclair occasionnel : flash blanc bref qui éclaire le ciel
+      lightningCooldown -= dt;
+      if(lightningCooldown <= 0){
+        lightning = 1;
+        lightningCooldown = 6 + Math.random() * 12; // 6-18s entre éclairs
+      }
+      if(lightning > 0){
+        // Flash décroît rapidement
+        lightning -= 5 * dt;
+        if(lightning < 0) lightning = 0;
+        // Overlay blanc/jaune en haut du ciel
+        ctx.fillStyle = `rgba(255,240,180,${lightning * 0.55})`;
+        ctx.fillRect(0, 0, W, H * 0.55);
+        // Zigzag d'éclair (visible quand intensity > 0.5)
+        if(lightning > 0.5){
+          ctx.strokeStyle = `rgba(255,255,255,${lightning})`;
+          ctx.lineWidth = 2.5;
+          ctx.lineCap = 'round';
+          const bx = W * (0.35 + Math.random() * 0.3);
+          ctx.beginPath();
+          ctx.moveTo(bx, 0);
+          let cy = 0;
+          while(cy < H * 0.45){
+            cy += 30 + Math.random() * 25;
+            const cx = bx + (Math.random() - 0.5) * 50;
+            ctx.lineTo(cx, cy);
+          }
+          ctx.stroke();
+        }
+      }
       // Spawn de gouttes
       while(rainDrops.length < 80){
         rainDrops.push({

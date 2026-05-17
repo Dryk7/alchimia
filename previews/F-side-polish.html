@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Preview F — Side parallax POLISH (km + NPCs + milestones)</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0e0d12;color:#fff;font-family:Nunito,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px}
+h1{font-size:18px;margin:0 0 6px}
+.tag{font-size:12px;color:#a89880;margin-bottom:14px}
+.frame{width:360px;aspect-ratio:9/16;border-radius:22px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.5);position:relative;background:#94d4ec}
+canvas{display:block;width:100%;height:100%}
+.hud{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;pointer-events:none;font-weight:900;z-index:5}
+.km{background:rgba(255,255,255,.92);color:#3a2010;padding:8px 14px;border-radius:14px;font-size:13px;display:flex;align-items:center;gap:6px;box-shadow:0 3px 8px rgba(0,0,0,.2)}
+.km b{font-size:18px;color:#e85040}
+.pace{background:rgba(255,232,80,.95);color:#3a2010;padding:8px 14px;border-radius:14px;font-size:13px;display:flex;align-items:center;gap:6px;box-shadow:0 3px 8px rgba(0,0,0,.2)}
+.tap-btn{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);background:linear-gradient(180deg,#ff8030,#e85040);color:#fff;font-weight:900;font-size:15px;padding:14px 40px;border-radius:30px;box-shadow:0 4px 14px rgba(232,80,64,.5);cursor:pointer;user-select:none;border:none;z-index:5}
+.tap-btn:active{transform:translateX(-50%) scale(.96)}
+.parcours-tag{position:absolute;top:60px;left:14px;background:rgba(58,32,16,.85);color:#ffd070;padding:5px 12px;border-radius:10px;font-size:11px;font-weight:800;letter-spacing:1px;z-index:5}
+.desc{margin-top:18px;max-width:360px;font-size:13px;color:#c8b8a0;line-height:1.5}
+.desc b{color:#fff}
+.desc .ok{color:#7ec46a}
+.legend{margin-top:10px;max-width:360px;font-size:11px;color:#7898c8;font-style:italic;line-height:1.5}
+</style></head><body>
+<h1>F · Side parallax POLISH (le rendu cible)</h1>
+<div class="tag">D + KM counter + NPCs qu'on dépasse + milestones + 5 layers parallax</div>
+<div class="frame">
+  <canvas id="cv" width="360" height="640"></canvas>
+  <div class="hud">
+    <div class="km">🏁 <b id="km-val">0.42</b> KM</div>
+    <div class="pace">⚡ <span id="pace">×1.2</span></div>
+  </div>
+  <div class="parcours-tag">🏟️ STADE MUNICIPAL</div>
+  <button class="tap-btn" id="tap-btn">TAP ! +1m</button>
+</div>
+<div class="desc">
+<b>F · ce qu'on construirait vraiment :</b><br>
+<span class="ok">+ KM counter en gros, accélération avec tap (×1.2 etc.)</span><br>
+<span class="ok">+ NPCs qu'on dépasse (et qui nous dépassent au début)</span><br>
+<span class="ok">+ Milestones : panneaux "1 KM, 5 KM" qui passent</span><br>
+<span class="ok">+ 5 couches parallax (sky / clouds / mountain / tribune+foule / track close)</span><br>
+<span class="ok">+ Bouton TAP gros visible, feedback boost</span><br>
+<span class="ok">+ Parcours nommé en tag (peut changer : Stade / Parc / Montagne…)</span>
+</div>
+<div class="legend">↑ Clique TAP pour booster, regarde le perso dépasser des NPCs</div>
+
+<script>
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+const tapBtn = document.getElementById('tap-btn');
+const kmEl = document.getElementById('km-val');
+const paceEl = document.getElementById('pace');
+
+// État
+let t = 0;
+let baseSpeed = 1.5;       // vitesse de défilement constant
+let tapBoost = 0;          // boost qui décroît dans le temps
+let metersRun = 420;       // mètres parcourus (start 0.42 km pour illustration)
+const PIX_PER_M = 8;       // 8px = 1m
+let parcoursId = 0;        // 0=stade, 1=parc, 2=montagne
+const parcoursLabels = ['🏟️ STADE MUNICIPAL', '🌳 PARC URBAIN', '⛰️ COL ALPIN'];
+const parcoursTagEl = document.querySelector('.parcours-tag');
+
+// NPCs : objets avec position (m relatif au joueur) + speed (lent)
+const npcs = [];
+function spawnNpc(){
+  const types = [
+    { jersey:'#4a9fd9', skin:'#a8804a', hair:'#3a2818', speed:.7 },
+    { jersey:'#7ec46a', skin:'#f0d4b0', hair:'#8a6848', speed:.55 },
+    { jersey:'#ffd060', skin:'#e0c098', hair:'#c0c0c0', speed:.45 },
+    { jersey:'#e890b0', skin:'#e0c098', hair:'#dcd0c0', speed:.4 },
+    { jersey:'#c89af0', skin:'#f0d4b0', hair:'#d8a060', speed:.55 },
+  ];
+  const tpl = types[Math.floor(Math.random()*types.length)];
+  npcs.push({
+    ...tpl,
+    metersAhead: 30 + Math.random() * 40, // devant le player (m)
+    lane: 0.6 + Math.random() * 0.3, // y position relative
+    bobPhase: Math.random() * 6.28,
+  });
+}
+for(let i = 0; i < 4; i++) spawnNpc();
+
+// Milestones : panneaux KM (1, 2, 3, ... 5 etc.)
+const milestones = [];
+let nextMileM = Math.ceil(metersRun / 1000) * 1000;
+function pushMilestone(){
+  milestones.push({
+    metersAhead: 50, // démarrent loin devant
+    targetM: nextMileM,
+    bobT: 0
+  });
+  nextMileM += 1000;
+}
+pushMilestone();
+
+function draw(now){
+  t += 1;
+  // Vitesse effective
+  tapBoost *= 0.97;
+  const speed = baseSpeed * (1 + tapBoost * 0.8);
+  paceEl.textContent = '×' + (1 + tapBoost * 0.8).toFixed(1);
+  // Avancer le joueur
+  metersRun += speed * 0.5; // ~12 m/s à vitesse 1.5
+  kmEl.textContent = (metersRun / 1000).toFixed(2);
+  // Changer de parcours tous les 3 km
+  const newParcours = Math.floor(metersRun / 3000) % 3;
+  if(newParcours !== parcoursId){
+    parcoursId = newParcours;
+    parcoursTagEl.textContent = parcoursLabels[parcoursId];
+  }
+
+  const W = cv.width, H = cv.height;
+
+  // ═══ COULEURS selon parcours ═══
+  const palettes = [
+    { skyTop:'#7ec4ee', skyBot:'#c8e8f8', mountain:'#5870a8', tribune:'#a85820', tribuneLight:'#d88040', track:'#e85040', trackDark:'#7c2810', grass:'#5cab38' },
+    { skyTop:'#a8d8c8', skyBot:'#d8eed8', mountain:'#5c8a48', tribune:'#705828', tribuneLight:'#94785c', track:'#a87850', trackDark:'#5a3818', grass:'#3a7028' },
+    { skyTop:'#a890c8', skyBot:'#e0d0e8', mountain:'#48486c', tribune:'#88687c', tribuneLight:'#a888a0', track:'#b8a890', trackDark:'#5a4838', grass:'#7898a8' },
+  ];
+  const pal = palettes[parcoursId];
+
+  // ═══ LAYER 1 : Sky gradient ═══
+  const sky = ctx.createLinearGradient(0, 0, 0, H * .55);
+  sky.addColorStop(0, pal.skyTop);
+  sky.addColorStop(1, pal.skyBot);
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, W, H * .55);
+
+  // Soleil
+  ctx.fillStyle = 'rgba(255,250,180,.35)';
+  ctx.beginPath(); ctx.arc(W * .8, 80, 50, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#ffea88';
+  ctx.beginPath(); ctx.arc(W * .8, 80, 32, 0, Math.PI*2); ctx.fill();
+
+  // ═══ LAYER 2 : Nuages (slow drift) ═══
+  ctx.fillStyle = '#fff';
+  const cloudT = -(t * speed * 0.2);
+  for(let i = 0; i < 4; i++){
+    const cx = ((cloudT + i * 200) % (W + 200) + (W + 200)) % (W + 200);
+    ctx.beginPath();
+    ctx.ellipse(cx, 50 + i * 8, 45, 14, 0, 0, Math.PI*2); ctx.fill();
+    ctx.ellipse(cx + 25, 38 + i * 8, 28, 12, 0, 0, Math.PI*2); ctx.fill();
+    ctx.ellipse(cx - 20, 45 + i * 8, 30, 11, 0, 0, Math.PI*2); ctx.fill();
+  }
+
+  // ═══ LAYER 3 : Mountains (medium) ═══
+  ctx.fillStyle = pal.mountain;
+  const mountT = -(t * speed * 0.5);
+  ctx.beginPath();
+  ctx.moveTo(0, H * .55);
+  for(let i = -1; i <= W / 30 + 1; i++){
+    const x = (i * 30 + mountT % 60);
+    const baseH = H * .42;
+    const peakH = baseH - 20 - Math.sin(i * 1.3) * 15 - Math.cos(i * .7) * 12;
+    ctx.lineTo(x, peakH);
+    ctx.lineTo(x + 15, baseH - 5 - Math.sin((i + 0.5) * 1.3) * 8);
+  }
+  ctx.lineTo(W, H * .55); ctx.lineTo(0, H * .55); ctx.fill();
+
+  // ═══ LAYER 4 : Tribune + foule (fast) ═══
+  ctx.fillStyle = pal.tribune;
+  ctx.fillRect(0, H * .55 - 75, W, 75);
+  // Étages tribune
+  ctx.fillStyle = pal.tribuneLight;
+  ctx.fillRect(0, H * .55 - 70, W, 30);
+  ctx.fillRect(0, H * .55 - 30, W, 12);
+  // Foule en pixels (très rapide)
+  const crowdT = -(t * speed * 0.9);
+  for(let i = 0; i < 60; i++){
+    const x = ((crowdT + i * 14) % (W + 14) + (W + 14)) % (W + 14);
+    const c = ['#e84030','#48a8e8','#48dc48','#ffd060','#ec90c0','#9080d0'][i % 6];
+    // Corps
+    ctx.fillStyle = c;
+    ctx.fillRect(x, H * .55 - 60, 6, 8);
+    ctx.fillRect(x, H * .55 - 38, 6, 6);
+    // Tête
+    ctx.fillStyle = '#f0d4b0';
+    ctx.fillRect(x, H * .55 - 68, 6, 6);
+    ctx.fillRect(x, H * .55 - 44, 6, 5);
+  }
+  // Bandeau FOULÉE
+  ctx.fillStyle = '#2c6090';
+  ctx.fillRect(0, H * .55 - 22, W, 18);
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 11px Nunito';
+  ctx.textAlign = 'left';
+  const txt = '★ FOULÉE OLYMPIC ARENA ★ FOULÉE OLYMPIC ARENA ';
+  const txtW = ctx.measureText(txt).width;
+  const bandT = -(t * speed * 0.9) % txtW;
+  for(let i = 0; i < W / txtW + 2; i++){
+    ctx.fillText(txt, bandT + i * txtW, H * .55 - 10);
+  }
+
+  // ═══ LAYER 5 : Track (closest, fastest) ═══
+  ctx.fillStyle = pal.trackDark;
+  ctx.fillRect(0, H * .55, W, 4);
+  ctx.fillStyle = pal.track;
+  ctx.fillRect(0, H * .55 + 4, W, H * .45 - 4);
+  // Lane lines qui défilent (très rapide)
+  ctx.fillStyle = '#fff';
+  const laneT = -(t * speed * 1.2);
+  for(let lane = 0; lane < 4; lane++){
+    const y = H * .58 + lane * 40;
+    for(let i = 0; i < W / 50 + 2; i++){
+      const x = ((laneT + i * 50) % (W + 50) + (W + 50)) % (W + 50);
+      ctx.fillRect(x, y, 28, 3);
+    }
+  }
+  // Texture tartan (petits points sombres aléatoires qui défilent)
+  ctx.fillStyle = 'rgba(0,0,0,.12)';
+  const texT = -(t * speed * 1.2);
+  for(let i = 0; i < 50; i++){
+    const x = ((texT + i * 23) % (W + 23) + (W + 23)) % (W + 23);
+    const y = H * .55 + ((i * 17) % (H * .42)) + 8;
+    ctx.fillRect(x, y, 2, 2);
+  }
+  // Petite ombre de stade au sol
+  const grad = ctx.createLinearGradient(0, H * .55, 0, H * .55 + 20);
+  grad.addColorStop(0, 'rgba(0,0,0,.25)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, H * .55, W, 20);
+
+  // ═══ MILESTONES (panneaux KM) qui passent ═══
+  milestones.forEach((mile, idx) => {
+    mile.metersAhead -= speed * 0.5;
+    const pixAhead = mile.metersAhead * PIX_PER_M;
+    if(pixAhead < -100){
+      // Sortie : retire et spawn next
+      milestones.splice(idx, 1);
+      pushMilestone();
+      return;
+    }
+    const x = W / 2 + pixAhead;
+    if(x > -80 && x < W + 80){
+      mile.bobT += 0.04;
+      const bob = Math.sin(mile.bobT) * 3;
+      const py = H * .55 - 45 + bob;
+      // Panneau bois
+      ctx.fillStyle = '#8a6840';
+      ctx.fillRect(x - 30, py, 60, 28);
+      ctx.fillStyle = '#6a4828';
+      ctx.fillRect(x - 30, py + 24, 60, 4);
+      // Texte KM
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 16px Nunito';
+      ctx.textAlign = 'center';
+      ctx.fillText((mile.targetM/1000) + ' KM', x, py + 18);
+      // Mât
+      ctx.fillStyle = '#5a3818';
+      ctx.fillRect(x - 2, py + 28, 4, 18);
+    }
+  });
+
+  // ═══ NPCs qui passent ═══
+  npcs.forEach((npc, idx) => {
+    // Les NPCs ralentissent par rapport au player : ils reculent à mesure qu'on avance
+    npc.metersAhead -= (speed - npc.speed) * 0.5;
+    const pixAhead = npc.metersAhead * PIX_PER_M;
+    if(pixAhead < -120){
+      // Sortie écran à gauche → respawn devant
+      npc.metersAhead = 35 + Math.random() * 30;
+      return;
+    }
+    const x = W / 2 + pixAhead;
+    if(x < -50 || x > W + 50) return;
+    npc.bobPhase += 0.18;
+    const npcBob = Math.abs(Math.sin(npc.bobPhase)) * 4;
+    const y = H * (.65 + npc.lane * .1) - npcBob;
+    // Plus loin = plus petit
+    const distFactor = 1 - Math.min(1, Math.abs(pixAhead) / 800) * 0.3;
+    const scale = 0.7 * distFactor;
+    drawRunner(x, y, scale, npc, npc.bobPhase);
+  });
+
+  // ═══ HÉROS — fixe au centre, plus gros ═══
+  const heroX = W * .35;
+  const heroY = H * .72;
+  const heroBob = Math.abs(Math.sin(t * .25 * (1 + tapBoost))) * 6;
+  const heroSpec = { jersey:'#e85040', skin:'#f0d4b0', hair:'#7a5838' };
+  drawRunner(heroX, heroY - heroBob, 1.0, heroSpec, t * .25 * (1 + tapBoost), true);
+
+  // ═══ Speed lines (visibles avec boost) ═══
+  if(tapBoost > 0.1){
+    ctx.strokeStyle = `rgba(255,255,255,${Math.min(.6, tapBoost * .8)})`;
+    ctx.lineWidth = 2;
+    for(let i = 0; i < 8; i++){
+      const sx = ((heroX - 20 - i * 35 - t * 12) % W + W) % W;
+      const sy = H * .65 + (i * 12) % 70;
+      ctx.beginPath();
+      ctx.moveTo(sx, sy);
+      ctx.lineTo(sx - 20 - tapBoost * 10, sy);
+      ctx.stroke();
+    }
+  }
+
+  requestAnimationFrame(draw);
+}
+
+// ═══ FONCTION drawRunner — perso mignon style Eatventure ═══
+function drawRunner(x, y, scale, spec, phase, isHero){
+  const s = scale;
+  // Ombre
+  ctx.fillStyle = 'rgba(0,0,0,.35)';
+  ctx.beginPath();
+  ctx.ellipse(x, y + 28 * s, 18 * s, 4 * s, 0, 0, Math.PI*2);
+  ctx.fill();
+  // Hero aura
+  if(isHero){
+    const auraGrad = ctx.createRadialGradient(x, y, 0, x, y, 50 * s);
+    auraGrad.addColorStop(0, 'rgba(255,232,138,.35)');
+    auraGrad.addColorStop(1, 'rgba(255,232,138,0)');
+    ctx.fillStyle = auraGrad;
+    ctx.beginPath(); ctx.arc(x, y + 5 * s, 50 * s, 0, Math.PI*2); ctx.fill();
+  }
+  // Animation course
+  const swing = Math.sin(phase);
+  const legL = swing * 18 * s;
+  const legR = -swing * 18 * s;
+  const armL = -swing * 22 * s;
+  const armR = swing * 22 * s;
+  // Jambes (capsules)
+  ctx.strokeStyle = spec.skin;
+  ctx.lineWidth = 7 * s;
+  ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(x - 4 * s, y + 5 * s); ctx.lineTo(x - 4 * s, y + 22 * s + legL); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x + 4 * s, y + 5 * s); ctx.lineTo(x + 4 * s, y + 22 * s + legR); ctx.stroke();
+  // Chaussures
+  ctx.fillStyle = spec.jersey;
+  ctx.beginPath(); ctx.ellipse(x - 4 * s, y + 25 * s + legL, 7 * s, 4 * s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x + 4 * s, y + 25 * s + legR, 7 * s, 4 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Short blanc
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(x - 11 * s, y - 2 * s, 22 * s, 9 * s);
+  // Corps maillot rond
+  ctx.fillStyle = spec.jersey;
+  roundRect(ctx, x - 13 * s, y - 22 * s, 26 * s, 22 * s, 6 * s);
+  ctx.fill();
+  // Bande dorée maillot
+  ctx.fillStyle = '#ffd060';
+  ctx.fillRect(x - 13 * s, y - 22 * s, 26 * s, 4 * s);
+  // Numéro dossard
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(x, y - 11 * s, 5 * s, 0, Math.PI*2); ctx.fill();
+  // Bras (contre-phase)
+  ctx.strokeStyle = spec.skin;
+  ctx.lineWidth = 6 * s;
+  ctx.beginPath(); ctx.moveTo(x - 13 * s, y - 14 * s); ctx.lineTo(x - 22 * s, y - 2 * s + armL); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x + 13 * s, y - 14 * s); ctx.lineTo(x + 22 * s, y - 2 * s + armR); ctx.stroke();
+  // Tête ronde
+  ctx.fillStyle = spec.skin;
+  ctx.beginPath(); ctx.arc(x, y - 34 * s, 14 * s, 0, Math.PI*2); ctx.fill();
+  // Cheveux (path)
+  ctx.fillStyle = spec.hair;
+  ctx.beginPath();
+  ctx.arc(x, y - 38 * s, 14 * s, Math.PI, 0);
+  ctx.lineTo(x + 12 * s, y - 32 * s);
+  ctx.lineTo(x - 12 * s, y - 32 * s);
+  ctx.fill();
+  // Yeux (round)
+  ctx.fillStyle = '#1a1010';
+  ctx.beginPath(); ctx.arc(x + 2 * s, y - 33 * s, 1.8 * s, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x + 9 * s, y - 33 * s, 1.8 * s, 0, Math.PI*2); ctx.fill();
+  // Reflet blanc dans yeux
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(x + 2.8 * s, y - 33.5 * s, .7 * s, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x + 9.8 * s, y - 33.5 * s, .7 * s, 0, Math.PI*2); ctx.fill();
+  // Joues roses
+  ctx.fillStyle = 'rgba(255,138,144,.55)';
+  ctx.beginPath(); ctx.ellipse(x - 4 * s, y - 28 * s, 3 * s, 2 * s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x + 11 * s, y - 28 * s, 3 * s, 2 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Petite bouche souriante
+  ctx.strokeStyle = '#3a2818';
+  ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.arc(x + 5 * s, y - 27 * s, 2 * s, .2, Math.PI - .2); ctx.stroke();
+}
+
+function roundRect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+// Tap pour booster
+tapBtn.addEventListener('click', () => {
+  tapBoost = Math.min(2, tapBoost + 0.6);
+  metersRun += 1;
+});
+
+requestAnimationFrame(draw);
+</script>
+</body></html>

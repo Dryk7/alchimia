@@ -2075,16 +2075,17 @@ body.tab-drawer-open .tuto-hint{
 }
 .runner-card{
   display:grid;
-  grid-template-columns:44px 1fr auto;
+  grid-template-columns:48px 1fr auto;
   align-items:center;
-  gap:10px;
-  padding:8px 10px;
-  background:#fff;
-  border:2px solid rgba(160,122,68,.25);
-  border-radius:12px;
+  gap:12px;
+  padding:10px 12px;
+  background:linear-gradient(180deg, #fffaee 0%, #fff5dc 100%);
+  border:2px solid rgba(160,90,40,.35);
+  border-radius:14px;
   cursor:pointer;
   transition:transform .12s ease, border-color .15s, background-color .15s, box-shadow .15s;
   position:relative;
+  box-shadow:0 2px 6px rgba(80,40,20,.12), inset 0 1px 0 rgba(255,255,255,.5);
 }
 .runner-card.locked{
   cursor:not-allowed;
@@ -2104,21 +2105,23 @@ body.tab-drawer-open .tuto-hint{
   border-left-width:5px;
 }
 .runner-card.affordable{
-  box-shadow:0 0 0 2px rgba(74,159,217,.25), 0 4px 10px rgba(74,159,217,.15);
-  border-color:#4a9fd9;
+  box-shadow:0 0 0 3px rgba(255,200,80,.40), 0 4px 12px rgba(200,64,48,.20);
+  border-color:#c84030;
+  background:linear-gradient(180deg, #fff8e4, #ffd896);
+  animation:upgPulse 1.8s ease-in-out infinite;
 }
-.runner-card.affordable .rc-buy{ color:#fff; background:linear-gradient(180deg, #5ab0ee, #3a8fc9); }
+.runner-card.affordable .rc-buy{ color:#fff; background:linear-gradient(180deg, #f08a48, #c84030); box-shadow:0 2px 4px rgba(200,64,48,.4); }
 .runner-card:active{ transform:scale(.98); }
 .runner-card.unhired{ opacity:.92; }
 .runner-card.unhired .rc-buy{ background:linear-gradient(180deg, #ffd070, #f0a050); color:#5a2810; }
 .rc-emoji{
-  width:44px; height:44px;
+  width:48px; height:48px;
   display:flex; align-items:center; justify-content:center;
   background:var(--rc-color, #f0c890);
-  border:2px solid #fff;
-  border-radius:12px;
-  font-size:24px;
-  box-shadow:0 2px 4px rgba(80,55,30,.20);
+  border:2.5px solid #fff;
+  border-radius:14px;
+  font-size:26px;
+  box-shadow:0 3px 6px rgba(80,40,20,.25), inset 0 -2px 4px rgba(0,0,0,.10);
 }
 .rc-body{ min-width:0; }
 .rc-head{

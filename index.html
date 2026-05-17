@@ -13,7 +13,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Caveat:wght@500;700&family=VT323&display=swap" rel="stylesheet">
-<!-- THREE.js (rendu 3D du stade, autorise par l'utilisateur, meme CDN que le life-sim) -->
+<!-- THREE.js importmap désactivé (pivot Canvas2D, module mort en bas de page) -->
+<!--
 <script type="importmap">
 {
   "imports": {
@@ -22,6 +23,7 @@
   }
 }
 </script>
+-->
 <style>
 /* =========================================================
    ALCHIMIA v2 — DA Maximum
@@ -576,25 +578,7 @@ header{
 }
 
 /* === BOUTON DAILY (réclame quotidien) === */
-.daily-btn{
-  /* legacy bandeau - on garde au cas où mais .daily-btn-float prend le relais */
-  display:block; width:100%;
-  padding:6px 10px;
-  background:linear-gradient(180deg, rgba(123,199,246,.92), rgba(74,159,217,.92));
-  backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px);
-  border:2px solid rgba(255,255,255,.85);
-  border-radius:12px;
-  font-family:"Nunito", sans-serif; font-weight:900;
-  font-size:12px; letter-spacing:.04em;
-  color:#fff;
-  cursor:pointer;
-  box-shadow:0 3px 10px rgba(74,159,217,.40), 0 0 0 2px rgba(123,199,246,.30);
-  text-transform:uppercase;
-  text-shadow:0 1px 2px rgba(0,0,0,.20);
-  animation:dailyPulse 1.8s ease-in-out infinite;
-  margin-top:4px;
-}
+/* .daily-btn legacy supprimé : remplacé par .daily-btn-float (bouton rond) */
 /* === BOUTON DAILY FLOTTANT (immersif) === */
 .daily-btn-float{
   position:absolute;
@@ -2708,426 +2692,6 @@ header{
 #runner-stadium::before, #runner-stadium::after{ display:none }
 #runner-svg{
   display:block; width:100%; height:100%;
-}
-
-/* ================ PROGRESSION VISUELLE v7 (tiers 0-9) ================
-   Le stade s'enrichit au fur et à mesure que le joueur progresse. */
-
-/* Tier 0 (très tôt) : terrain vague — ciel sale, gazon jauni, rien d'autre */
-#runner-stadium[data-tier="0"] #rs-sky-bg{ fill:#a8b8b0; }
-#runner-stadium[data-tier="0"] #rs-celestial{ fill:#d8b888; opacity:.7; }
-#runner-stadium[data-tier="0"] #rs-celestial + circle,
-#runner-stadium[data-tier="0"] #rs-celestial + circle + circle{ opacity:0; }
-#runner-stadium[data-tier="0"] #rs-clouds,
-#runner-stadium[data-tier="0"] #rs-blimp,
-#runner-stadium[data-tier="0"] #rs-roof,
-#runner-stadium[data-tier="0"] #rs-lights,
-#runner-stadium[data-tier="0"] #rs-scoreboard,
-#runner-stadium[data-tier="0"] #rs-banners{ display:none; }
-/* Gazon jauni */
-#runner-stadium[data-tier="0"] rect[fill="url(#rs-grass-grad)"]{ fill:#c8a868; }
-/* Foreground : pas de buissons / banc, juste herbes pourries */
-#runner-stadium[data-tier="0"] #rs-foreground ellipse,
-#runner-stadium[data-tier="0"] #rs-foreground rect[width="20"],
-#runner-stadium[data-tier="0"] #rs-foreground rect[fill="#5a4028"],
-#runner-stadium[data-tier="0"] #rs-foreground rect[fill="#3a2818"]{ display:none; }
-/* Pas de fleurs */
-#runner-stadium[data-tier="0"] #rs-foreground rect[fill="#ff8a48"],
-#runner-stadium[data-tier="0"] #rs-foreground rect[fill="#ff5a30"],
-#runner-stadium[data-tier="0"] #rs-foreground rect[fill="#c8a8f0"],
-#runner-stadium[data-tier="0"] #rs-foreground rect[fill="#fff"]{ display:none; }
-/* Lanes : cache que les couloirs en pointillé externes (rx=123) et lanes (rx=110/103) */
-#runner-stadium[data-tier="0"] ellipse[rx="123"],
-#runner-stadium[data-tier="0"] ellipse[rx="115"],
-#runner-stadium[data-tier="0"] ellipse[rx="103"],
-#runner-stadium[data-tier="0"] ellipse[rx="110"],
-#runner-stadium[data-tier="0"] ellipse[rx="100"]{ display:none; }
-/* Ligne d'arrivée et drapeau (cachés au tier 0) */
-#runner-stadium[data-tier="0"] rect[fill="#1a1010"][height="11"],
-#runner-stadium[data-tier="0"] rect[fill="#3a2818"][height="28"]{ display:none; }
-
-/* Tier 1 : 1 marche tribune, ciel encore terne, pas de sponsors */
-#runner-stadium[data-tier="1"] #rs-clouds,
-#runner-stadium[data-tier="1"] #rs-blimp,
-#runner-stadium[data-tier="1"] #rs-roof,
-#runner-stadium[data-tier="1"] #rs-lights,
-#runner-stadium[data-tier="1"] #rs-scoreboard,
-#runner-stadium[data-tier="1"] #rs-banners{ display:none; }
-#runner-stadium[data-tier="1"] #rs-sky-bg{ fill:#9bbac2; }
-#runner-stadium[data-tier="1"] rect[fill="url(#rs-grass-grad)"]{ fill:#a0b870; }
-
-/* Tier 2 : tribunes 2 marches + ciel un peu mieux + 1 sponsor */
-#runner-stadium[data-tier="2"] #rs-blimp,
-#runner-stadium[data-tier="2"] #rs-roof,
-#runner-stadium[data-tier="2"] #rs-lights,
-#runner-stadium[data-tier="2"] #rs-scoreboard{ display:none; }
-#runner-stadium[data-tier="2"] #rs-banners > *:not(:first-child):not(:nth-child(2)):not(:nth-child(3)):not(:nth-child(4)){ display:none; }
-#runner-stadium[data-tier="2"] #rs-sky-bg{ fill:#a5c5d0; }
-/* Cache 2 des 3 sponsors */
-#runner-stadium[data-tier="2"] #rs-banners > *:nth-child(n+5){ display:none; }
-
-/* Tier 3 : tribunes 3 marches + scoreboard simple en bois + 2 sponsors */
-#runner-stadium[data-tier="3"] #rs-blimp,
-#runner-stadium[data-tier="3"] #rs-roof,
-#runner-stadium[data-tier="3"] #rs-lights{ display:none; }
-#runner-stadium[data-tier="3"] #rs-banners > *:nth-child(n+9){ display:none; }
-/* Scoreboard : le rendre marron pas LED */
-#runner-stadium[data-tier="3"] #rs-scoreboard rect:first-child{ fill:#6e5a48; }
-#runner-stadium[data-tier="3"] #rs-scoreboard rect:nth-child(2){ fill:#5a4838; }
-
-/* Tier 4 : tribunes 4 marches + 1 projecteur + premiers nuages */
-#runner-stadium[data-tier="4"] #rs-blimp,
-#runner-stadium[data-tier="4"] #rs-roof{ display:none; }
-/* Tier 4 : cache le projecteur droit */
-#runner-stadium[data-tier="4"] #rs-lights > *:nth-child(n+8){ display:none; }
-/* Cache certains nuages */
-#runner-stadium[data-tier="4"] #rs-clouds > *:nth-child(n+4){ display:none; }
-
-/* Tier 5+ : tout débloqué (tribunes pleines, toit, sponsors complets, 2 projecteurs, dirigeable, etc.) */
-/* (Aucun override nécessaire — par défaut tout s'affiche) */
-
-/* Tier 7+ : ciel encore plus profond */
-#runner-stadium[data-tier="7"] #rs-sky-bg,
-#runner-stadium[data-tier="8"] #rs-sky-bg,
-#runner-stadium[data-tier="9"] #rs-sky-bg{ fill:url(#rs-sky-grad); }
-
-/* Tier 8+ : ciel mauve cosmique + étoiles */
-#runner-stadium[data-tier="9"] #rs-sky-bg{ fill:#1a1640; }
-#runner-stadium[data-tier="9"] #rs-celestial{ fill:#fff; }
-
-/* ================ ANIMATIONS STADIUM v7 ================ */
-/* 1. NUAGES glissent lentement de gauche à droite */
-#rs-clouds ellipse{
-  transform-box:fill-box;
-  transform-origin:center;
-}
-#rs-clouds{
-  animation:cloudsDrift 60s linear infinite;
-}
-@keyframes cloudsDrift{
-  0%   { transform:translateX(-20px); }
-  50%  { transform:translateX(20px); }
-  100% { transform:translateX(-20px); }
-}
-
-/* 2. SOLEIL pulse + scintille */
-#rs-celestial{
-  transform-origin:center;
-  transform-box:fill-box;
-  animation:sunPulse 4s ease-in-out infinite;
-}
-@keyframes sunPulse{
-  0%,100% { opacity:1; transform:scale(1); }
-  50%     { opacity:.92; transform:scale(1.06); }
-}
-
-/* 3. DIRIGEABLE traverse le ciel */
-#rs-blimp{
-  animation:blimpFly 50s linear infinite;
-}
-@keyframes blimpFly{
-  0%   { transform:translate(-50px, 60px); }
-  50%  { transform:translate(370px, 75px); }
-  51%  { transform:translate(-50px, 90px); opacity:0; }
-  52%  { opacity:1; }
-  100% { transform:translate(-50px, 60px); }
-}
-
-/* 4. DRAPEAU flotte (effet vent) */
-#rs-runner-svg #drapeau-flag, .rs-flag{
-  animation:flagWave 1.2s ease-in-out infinite;
-  transform-origin:159px 332px;
-  transform-box:fill-box;
-}
-/* Cible le drapeau dans le SVG */
-#runner-svg g[shape-rendering="crispEdges"] rect[fill="#1a1010"][x="160"]{
-  animation:flagBlackWave 1.2s ease-in-out infinite;
-  transform-origin:160px 332px;
-}
-@keyframes flagBlackWave{
-  0%,100% { transform:skewX(-3deg); }
-  50%     { transform:skewX(3deg); }
-}
-
-/* 5. PROJECTEURS — halos pulsent */
-.rs-light-glow{
-  transform-origin:center;
-  transform-box:fill-box;
-  animation:lightPulse 2s ease-in-out infinite;
-}
-@keyframes lightPulse{
-  0%,100% { opacity:.6; transform:scale(1); }
-  50%     { opacity:1; transform:scale(1.15); }
-}
-
-/* 6. SPECTATEURS — wave périodique (ola sur les têtes ET les corps) */
-#rs-crowd circle, #rs-crowd rect{
-  animation:crowdBob 1.6s ease-in-out infinite;
-  animation-delay:var(--crowd-delay, 0s);
-  transform-box:fill-box;
-}
-@keyframes crowdBob{
-  0%,100% { transform:translateY(0); }
-  50%     { transform:translateY(-1.6px); }
-}
-
-/* 6b. NUAGES — dérive lente continue */
-#rs-clouds ellipse{
-  animation:cloudDrift 60s linear infinite;
-}
-#rs-clouds ellipse:nth-child(odd){ animation-duration:80s; }
-@keyframes cloudDrift{
-  0%   { transform:translateX(-20px); }
-  100% { transform:translateX(320px); }
-}
-
-/* 6c. HERO AURA — pulse subtile */
-.rs-hero-aura{
-  transform-origin:center;
-  transform-box:fill-box;
-  animation:heroAuraPulse 2.4s ease-in-out infinite;
-}
-.rs-hero-aura:nth-child(2){ animation-delay:.5s; animation-duration:3s; }
-@keyframes heroAuraPulse{
-  0%,100% { opacity:.18; transform:scale(.95); }
-  50%     { opacity:.35; transform:scale(1.1); }
-}
-
-/* 6d. PODIUM or — légère pulse dorée */
-#runner-svg g rect[fill="#ffd84a"]{
-  animation:podiumGold 3s ease-in-out infinite;
-}
-@keyframes podiumGold{
-  0%,100% { filter:brightness(1); }
-  50%     { filter:brightness(1.18); }
-}
-
-/* 7. RUNNER — speedlines visibles quand rapide + jambes anim */
-.rs-speedlines{
-  animation:none;
-}
-#runner-stadium[data-fast="1"] .rs-speedlines{
-  animation:speedlinesFlick .25s linear infinite;
-}
-@keyframes speedlinesFlick{
-  0% { opacity:0; transform:translateX(0); }
-  50%{ opacity:.7; transform:translateX(-2px); }
-  100%{ opacity:0; transform:translateX(-4px); }
-}
-#runner-stadium[data-fast="1"] .rs-speedlines{ opacity:1 !important; }
-.rs-arm1{ animation:armSwing 0.4s ease-in-out infinite alternate; transform-box:fill-box; transform-origin:-6px -3px; }
-.rs-arm2{ animation:armSwing 0.4s ease-in-out infinite alternate-reverse; transform-box:fill-box; transform-origin:5px -3px; }
-@keyframes armSwing{
-  0%   { transform:rotate(-25deg); }
-  100% { transform:rotate(25deg); }
-}
-.rs-leg1{ animation:legPump 0.4s ease-in-out infinite alternate; transform-box:fill-box; transform-origin:-2px 6px; }
-.rs-leg2{ animation:legPump 0.4s ease-in-out infinite alternate-reverse; transform-box:fill-box; transform-origin:2px 6px; }
-@keyframes legPump{
-  0%   { transform:rotate(-20deg); }
-  100% { transform:rotate(20deg); }
-}
-.rs-shoe1{ animation:legPump 0.4s ease-in-out infinite alternate; transform-box:fill-box; transform-origin:-2px 10px; }
-.rs-shoe2{ animation:legPump 0.4s ease-in-out infinite alternate-reverse; transform-box:fill-box; transform-origin:2px 10px; }
-/* Gouttes de sueur (animation aléatoire) */
-.rs-sweat{
-  animation:sweatDrop 1.8s ease-in-out infinite;
-  animation-delay:var(--sweat-delay, 0s);
-}
-@keyframes sweatDrop{
-  0%   { opacity:0; transform:translate(0, 0); }
-  20%  { opacity:.85; }
-  60%  { opacity:.85; transform:translate(1px, 4px); }
-  100% { opacity:0; transform:translate(2px, 8px); }
-}
-
-/* 8. SCOREBOARD LED scintille */
-#rs-sb-laps, #rs-sb-stars{
-  animation:ledFlicker 3s steps(3, end) infinite;
-}
-@keyframes ledFlicker{
-  0%,90%,100% { fill:#fff; }
-  93%,97%     { fill:#ffd070; }
-}
-
-/* 9. FOREGROUND herbes sway */
-#rs-foreground rect[fill="#5a8038"]{
-  transform-origin:bottom center;
-  transform-box:fill-box;
-  animation:grassSway 2.5s ease-in-out infinite;
-  animation-delay:var(--grass-delay, 0s);
-}
-@keyframes grassSway{
-  0%,100% { transform:rotate(-2deg); }
-  50%     { transform:rotate(2deg); }
-}
-
-/* 10. SPONSORS pulse léger (effet LED) */
-#rs-banners rect[fill="#e85a30"],
-#rs-banners rect[fill="#4a9fd9"],
-#rs-banners rect[fill="#7ec46a"]{
-  animation:sponsorPulse 4s ease-in-out infinite;
-}
-@keyframes sponsorPulse{
-  0%,100% { filter:brightness(1); }
-  50%     { filter:brightness(1.15); }
-}
-/* HUD overlay haut du stade : redondant maintenant que le scoreboard SVG existe.
-   On le cache mais on garde les valeurs (utilisées par updateRunner). */
-.rs-hud{
-  display:none;
-  position:absolute; top:6px; left:0; right:0;
-  justify-content:space-between; align-items:flex-start;
-  padding:0 16px;
-  pointer-events:none;
-  z-index:5;
-}
-.rs-lap, .rs-niv, .rs-speed{
-  display:flex; flex-direction:row; align-items:center; gap:6px;
-  font-family:"Nunito", sans-serif; font-weight:800;
-  color:var(--ink);
-  padding:4px 12px;
-  background:#fff8e4;
-  border-radius:14px;
-  border:1.5px solid rgba(160,122,68,.30);
-  box-shadow:0 2px 4px rgba(80,55,30,.18);
-  white-space:nowrap;
-}
-.rs-lap-lbl, .rs-niv-lbl, .rs-speed-lbl{
-  font-family:"Nunito", sans-serif;
-  font-size:8.5px; letter-spacing:.10em; font-weight:700;
-  color:var(--ember);
-  text-transform:uppercase;
-  line-height:1;
-}
-.rs-lap-num, .rs-niv-num, .rs-speed-num{
-  font-family:"Nunito", sans-serif; font-weight:900;
-  font-size:16px;
-  color:var(--ink);
-  line-height:1;
-}
-.rs-niv{ /* centre légèrement plus prominent */
-  border-color:var(--gold-bright);
-  background:rgba(20,12,4,.45);
-}
-.rs-niv-num{ color:var(--gold-bright) }
-
-/* Barres en bas du stade : progression du tour + stamina */
-.rs-bars{
-  /* Caché v7 : le scoreboard SVG + position du coureur suffisent */
-  display:none;
-  position:absolute; bottom:8px; left:12px; right:12px;
-  flex-direction:column; gap:5px;
-  pointer-events:none;
-  z-index:4;
-}
-.rs-bar-row{
-  display:flex; align-items:center; gap:7px;
-}
-.rs-bar-lbl{
-  font-family:"Nunito", sans-serif; font-weight:800;
-  font-size:9px; letter-spacing:.10em;
-  color:#fff;
-  text-shadow:0 1px 2px rgba(80,55,30,.6);
-  min-width:38px;
-  text-align:left;
-}
-.rs-bar-row > .rs-lapbar,
-.rs-bar-row > .rs-stamina{ flex:1 }
-.rs-lapbar, .rs-stamina{
-  position:relative; height:7px;
-  background:rgba(255,255,255,.45);
-  border:1.5px solid rgba(80,55,30,.50);
-  border-radius:6px;
-  overflow:hidden;
-  box-shadow:0 1px 2px rgba(80,55,30,.20);
-}
-.rs-lapbar > span, .rs-stamina > span{
-  display:block; height:100%; width:0%;
-  transition:width .25s;
-}
-.rs-lapbar > span{
-  background:linear-gradient(90deg, #f0a248, #ffc870);
-}
-.rs-stamina > span{
-  background:linear-gradient(90deg, #d8542a, #f0a050, #7ec8e8);
-}
-.rs-stamina[data-low="1"] > span{
-  background:linear-gradient(90deg, #b82828, #d8542a);
-  animation:staminaLowPulse .6s ease-in-out infinite;
-}
-@keyframes staminaLowPulse{
-  0%,100%{ opacity:.6 }
-  50%{ opacity:1 }
-}
-/* Lap complete flash */
-#runner-stadium.lap-complete{
-  animation:lapCompleteFlash 1.4s ease-out;
-}
-@keyframes lapCompleteFlash{
-  0%   { box-shadow:0 0 0 transparent, inset 0 0 0 transparent; }
-  15%  { box-shadow:0 0 30px var(--gold-bright), inset 0 0 30px rgba(255,232,168,.45); border-color:#fff; }
-  60%  { box-shadow:0 0 20px var(--gold-bright), inset 0 0 16px rgba(255,232,168,.20); }
-  100% { box-shadow:0 0 0 transparent, inset 0 0 0 transparent; }
-}
-/* Animation des jambes + chaussures + bras du coureur */
-.rs-leg1, .rs-shoe1{ animation:legAlt 0.30s steps(2) infinite }
-.rs-leg2, .rs-shoe2{ animation:legAlt 0.30s steps(2) infinite reverse }
-.rs-arm1{ animation:armSwing 0.30s steps(2) infinite reverse }
-.rs-arm2{ animation:armSwing 0.30s steps(2) infinite }
-@keyframes legAlt{
-  0%   { transform:translateY(0); }
-  50%  { transform:translateY(-2.5px); }
-  100% { transform:translateY(0); }
-}
-@keyframes armSwing{
-  0%   { transform:translateY(0) translateX(0); }
-  50%  { transform:translateY(-1.5px) translateX(.5px); }
-  100% { transform:translateY(0) translateX(0); }
-}
-/* Bounce léger du corps complet */
-.rs-body{ animation:bodyBob 0.30s steps(2) infinite }
-@keyframes bodyBob{
-  0%   { transform:translateY(0); }
-  50%  { transform:translateY(-0.5px); }
-  100% { transform:translateY(0); }
-}
-/* Petit saut de joie quand un ravitaillement arrive */
-.rs-body.runner-cheer{ animation:runnerCheer 0.72s ease-out !important; }
-@keyframes runnerCheer{
-  0%   { transform:translateY(0)   scale(1);    }
-  20%  { transform:translateY(-4px) scale(1.10); }
-  45%  { transform:translateY(-2px) scale(1.05); }
-  100% { transform:translateY(0)   scale(1);    }
-}
-/* Speed lines derrière le coureur — visibles quand frenzy ou vitesse élevée */
-.rs-speedlines{
-  animation:speedFlicker 0.18s steps(2) infinite;
-}
-@keyframes speedFlicker{
-  0%   { opacity:0; transform:translateX(0); }
-  50%  { opacity:.85; transform:translateX(-2px); }
-  100% { opacity:0; transform:translateX(0); }
-}
-/* Goutte de sueur qui tombe occasionnellement */
-.rs-sweat{
-  animation:sweatDrop 3.2s ease-in infinite;
-}
-@keyframes sweatDrop{
-  0%   { opacity:0; transform:translate(0, 0); }
-  8%   { opacity:.9; transform:translate(0, 0); }
-  20%  { opacity:.9; transform:translate(1.5px, 8px); }
-  25%  { opacity:0; transform:translate(2px, 10px); }
-  100% { opacity:0; }
-}
-/* Quand frenzy actif : aura orange autour du coureur */
-body.frenzy-on #rs-runner{
-  filter:drop-shadow(0 0 4px #ffd070) drop-shadow(0 0 8px var(--ember));
-}
-body.frenzy-on .rs-speedlines{ animation-duration:0.10s }
-/* Quand vitesse haute (multiplier >= 2), montrer speedlines en permanence */
-#runner-stadium[data-fast="1"] .rs-speedlines{
-  animation:speedFlicker 0.14s steps(2) infinite;
 }
 
 /* Bulle de dialogue du coureur — flotte au-dessus du stade */
@@ -16714,152 +16278,19 @@ function floating(x, y, txt, kind="gain"){
   setTimeout(()=>f.remove(), 1300);
 }
 
-/* ================ ONBOARDING ================ */
-/* Tutoriel piloté par les actions du joueur — on avance quand l'objectif est atteint, pas par timer.
-   Chaque étape a un check() qui dit si elle est validée et permet le passage à la suivante. */
-const TUTORIAL_STEPS = [
-  {
-    id:'spawn', title:'PREMIER RAVITO',
-    text:'Tape le distributeur <strong style="color:var(--plant-2)">bleu</strong> pour me donner ma première <em>gourde</em>. Coût : 3 énergie.',
-    target:'.gen[data-chain="0"]', position:'above',
-    advanceOn:'spawn',
-    minDelay: 0,
-  },
-  {
-    id:'spawn2', title:'UNE SECONDE',
-    text:'Encore une. <strong>Deux gourdes identiques fusionnent</strong> en bouteille — et je cours plus vite.',
-    target:'.gen[data-chain="0"]', position:'above',
-    advanceOn:'spawn2',
-    minDelay: 600,
-  },
-  {
-    id:'merge', title:'FUSIONNER',
-    text:'Maintenant, <strong>glisse une gourde sur l\'autre</strong>. Tu verras ma réaction au-dessus de la piste.',
-    target:'#grid-frame', position:'overlay',
-    advanceOn:'merge',
-    minDelay: 800,
-  },
-  {
-    id:'help', title:'LE MANUEL',
-    text:'Si tu te perds, le <strong>?</strong> en haut à droite te dit tout sur le stade, les distributeurs et l\'ascension.',
-    target:'#help-toggle', position:'left',
-    advanceOn:'click',
-    minDelay: 2000,
-  },
-  {
-    id:'menu', title:'TON VESTIAIRE',
-    text:'Le <strong>☰</strong> en haut à gauche : Banc de Mixage, Vestiaire Doré, stats du coureur, paramètres. Tu y reviendras.',
-    target:'#menu-toggle', position:'right',
-    advanceOn:'click',
-    minDelay: 2500,
-  },
-];
-
-let _tutorialStep = -1;
-let _tutorialActive = false;
-let _tutorialEvents = { spawnPlant:0, mergeAny:0, anyClick:0 };
-
-function startTutorial(){
-  if(localStorage.getItem('alchimia.tutorialDone')) return;
-  if(_tutorialActive) return;
-  _tutorialActive = true;
-  _tutorialStep = -1;
-  setTimeout(advanceTutorial, 600);
-}
-
-function advanceTutorial(){
-  if(!_tutorialActive) return;
-  // Cleanup current hint
-  document.querySelectorAll('.hint, .hint-pulse').forEach(e=>e.remove());
-  _tutorialStep++;
-  if(_tutorialStep >= TUTORIAL_STEPS.length){
-    _tutorialActive = false;
-    localStorage.setItem('alchimia.tutorialDone','1');
-    return;
-  }
-  const s = TUTORIAL_STEPS[_tutorialStep];
-  setTimeout(()=>showTutorialStep(s), s.minDelay || 0);
-}
-
-function showTutorialStep(s){
-  if(!_tutorialActive) return;
-  const target = document.querySelector(s.target);
-  if(!target){ advanceTutorial(); return; }
-  const r = target.getBoundingClientRect();
-  const hint = document.createElement('div');
-  hint.className = 'hint';
-  let left = r.left + r.width/2;
-  let top;
-  if(s.position === 'above'){
-    hint.classList.add('bottom-arrow');
-    top = r.top - 12;
-  } else if(s.position === 'left'){
-    hint.classList.add('top-arrow');
-    top = r.top + r.height + 12;
-    left = r.left + r.width/2;
-  } else if(s.position === 'right'){
-    hint.classList.add('top-arrow');
-    top = r.top + r.height + 12;
-    left = r.left + r.width/2;
-  } else if(s.position === 'overlay'){
-    top = r.top + r.height/2;
-  } else {
-    top = r.top + r.height/2;
-  }
-  hint.style.left = '0px'; hint.style.top = top + 'px';
-  hint.innerHTML = `
-    <div class="hint-title">${s.title}</div>
-    <div class="hint-text">${s.text}</div>
-    <div class="hint-arrow"></div>
-  `;
-  document.body.appendChild(hint);
-  requestAnimationFrame(()=>{
-    const hr = hint.getBoundingClientRect();
-    let hl = left - hr.width/2;
-    hl = Math.max(8, Math.min(window.innerWidth - hr.width - 8, hl));
-    hint.style.left = hl + 'px';
-    if(s.position === 'overlay') hint.style.top = (top - hr.height/2) + 'px';
-    else if(s.position === 'above') hint.style.top = (top - hr.height) + 'px';
-    hint.classList.add('show');
-  });
-  // Pulse halo (sauf pour overlay)
-  if(s.position !== 'overlay'){
-    const pulse = document.createElement('div');
-    pulse.className = 'hint-pulse';
-    pulse.style.position = 'fixed';
-    pulse.style.left = (r.left + r.width/2 - 40) + 'px';
-    pulse.style.top = (r.top + r.height/2 - 40) + 'px';
-    pulse.style.zIndex = 78;
-    pulse.style.pointerEvents = 'none';
-    document.body.appendChild(pulse);
-  }
-}
-
-// Hooks appelés quand les actions surviennent
-function tutorialOnSpawn(chain){
-  if(!_tutorialActive) return;
-  if(chain === 0) _tutorialEvents.spawnPlant++;
-  const cur = TUTORIAL_STEPS[_tutorialStep];
-  if(!cur) return;
-  if(cur.advanceOn === 'spawn' && _tutorialEvents.spawnPlant >= 1) advanceTutorial();
-  else if(cur.advanceOn === 'spawn2' && _tutorialEvents.spawnPlant >= 2) advanceTutorial();
-}
-function tutorialOnMerge(){
-  if(!_tutorialActive) return;
-  _tutorialEvents.mergeAny++;
-  const cur = TUTORIAL_STEPS[_tutorialStep];
-  if(cur && cur.advanceOn === 'merge') advanceTutorial();
-}
-function tutorialOnHelpClick(){
-  if(!_tutorialActive) return;
-  const cur = TUTORIAL_STEPS[_tutorialStep];
-  if(cur && cur.id === 'help') advanceTutorial();
-}
-function tutorialOnMenuClick(){
-  if(!_tutorialActive) return;
-  const cur = TUTORIAL_STEPS[_tutorialStep];
-  if(cur && cur.id === 'menu') advanceTutorial();
-}
+/* ================ ONBOARDING LEGACY ================ */
+/* DÉPRÉCIÉ : tutoriel V1 du système fusion (merger des plants/gourdes).
+   Remplacé par le système onboarding V2 (fin de body, 3 hints contextuels
+   pour le tap stadium). Les fonctions tutorialOnXxx() restent comme no-op
+   pour ne pas casser les appels conditionnels typeof === 'function'. */
+// === TUTORIAL V1 STUBS ===
+// Tutoriel legacy supprimé. Les hooks restent en no-op pour préserver
+// les appels existants `typeof tutorialOnXxx === 'function'`.
+function startTutorial(){ /* no-op : remplacé par onboarding V2 (3 hints) */ }
+function tutorialOnSpawn(){}
+function tutorialOnMerge(){}
+function tutorialOnHelpClick(){}
+function tutorialOnMenuClick(){}
 
 function renderActiveEvents(){
   const wrap = document.getElementById("active-events");
@@ -17611,10 +17042,8 @@ function boot(){
       const p = STATE.pendingOfflineToast;
       setTimeout(()=>showOfflineToast(p.ms, p.gold, p.km), 700);
       STATE.pendingOfflineToast = null;
-    } else {
-      // Tutoriel pour les premiers joueurs
-      startTutorial();
     }
+    // Le tutoriel est maintenant géré par le système onboarding V2 (fin de body)
     // Le coureur salue l'entrée — bulle d'accueil
     setTimeout(()=>{
       if(typeof showRunnerBubble === 'function'){
@@ -17718,14 +17147,12 @@ if('serviceWorker' in navigator){
 </script>
 
 <!-- ═══════════════════════════════════════════════════════════════════════
-     STADE 3D — Rendu THREE.js style "life-sim 3D light"
-     - Camera ortho top-down avec petit tilt
-     - Stade = ring orange, piste = ring rouge, gazon = disque vert
-     - Persos = rounded box (corps) + sphere (tête)
-     - Lighting : ambient + directional + soft shadow plane
-     - Anime via STATE.lapProgress + _npcInstances
+     STADE 3D — Module THREE.js DÉSACTIVÉ (pivot Canvas2D side parallax)
+     `type="text/disabled"` empêche le navigateur d'évaluer le code et de
+     télécharger les modules THREE depuis le CDN (~500KB économisés).
+     Le code reste pour history/rollback mais n'est jamais exécuté.
      ═══════════════════════════════════════════════════════════════════════ -->
-<script type="module">
+<script type="text/disabled">
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';

@@ -18961,26 +18961,125 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     return palettes[id] || palettes.municipal;
   }
 
-  // NPCs
+  // ═══ NPCs avec tiers d'équipement basés sur niveau joueur ═══
+  // Tier 0 : promeneur (slow, casual)
+  // Tier 1 : jogger débutant
+  // Tier 2 : jogger sérieux (casquette)
+  // Tier 3 : amateur compétitif (lunettes)
+  // Tier 4 : semi-pro (cap + glasses + bib)
+  // Tier 5 : pro (kit complet + bib + armband)
+  // Tier 6 : champion (cape doré + médaille)
+  const NPC_TIERS = [
+    // Tier 0 — Promeneur
+    {
+      label:'promeneur', baseSpeed:.30, speedVar:.10,
+      jerseys:['#a89890','#c8b8a0','#9098a8','#8898a8','#a0a8b0'],
+      hairs:['#5a4028','#8a6848','#c0c0c0','#dcd0c0','#3a2818'],
+      skins:['#f0d4b0','#e0c098','#d0a880','#c09068'],
+      shorts:['#3a3848','#4a4048','#5a4838','#3a3a3a'],
+      accessory: null,
+    },
+    // Tier 1 — Jogger casual
+    {
+      label:'jogger', baseSpeed:.45, speedVar:.12,
+      jerseys:['#7ec46a','#88c878','#ffd060','#e8c078','#f08040'],
+      hairs:['#7a5838','#8a6848','#3a2818','#d8a060'],
+      skins:['#f0d4b0','#e0c098','#d0a880','#c09068','#a8804a'],
+      shorts:['#fff','#f0e4cc','#9aa8b8'],
+      accessory: null,
+    },
+    // Tier 2 — Jogger sérieux
+    {
+      label:'jogger sérieux', baseSpeed:.55, speedVar:.12,
+      jerseys:['#4a9fd9','#5ab4d8','#e890b0','#7ec46a','#ffd060'],
+      hairs:['#3a2818','#7a5838','#8a6848','#5a4028'],
+      skins:['#f0d4b0','#e0c098','#d0a880','#a8804a'],
+      shorts:['#1a1a2a','#4a3848','#1f2838'],
+      accessory: { cap: true },
+    },
+    // Tier 3 — Amateur compétitif
+    {
+      label:'amateur', baseSpeed:.65, speedVar:.10,
+      jerseys:['#e85040','#4a9fd9','#7ec46a','#c89af0','#f08040'],
+      hairs:['#3a2818','#7a5838','#5a4028'],
+      skins:['#e0c098','#d0a880','#a8804a','#c89068'],
+      shorts:['#1a1a2a','#2a2838','#1f3548'],
+      accessory: { glasses: true },
+    },
+    // Tier 4 — Semi-pro
+    {
+      label:'semi-pro', baseSpeed:.75, speedVar:.10,
+      jerseys:['#e85040','#4a9fd9','#7ec46a','#ffd060','#c89af0'],
+      hairs:['#3a2818','#1a1010','#5a4028'],
+      skins:['#d0a880','#a8804a','#88684a','#c89068'],
+      shorts:['#1a1010','#2a1a1a','#1f3548'],
+      accessory: { cap: true, glasses: true, bib: true },
+    },
+    // Tier 5 — Pro
+    {
+      label:'pro', baseSpeed:.85, speedVar:.08,
+      jerseys:['#e8202c','#1a4ae8','#e8a020','#28c8e8'],
+      hairs:['#1a1010','#3a2818','#5a4028'],
+      skins:['#d0a880','#a8804a','#88684a','#684830'],
+      shorts:['#1a1010','#000','#1a1a1a'],
+      accessory: { cap: true, glasses: true, bib: true, armband: true },
+    },
+    // Tier 6 — Champion
+    {
+      label:'champion', baseSpeed:.95, speedVar:.05,
+      jerseys:['#e8b020','#e8c020','#e8b840','#d8a020'],
+      hairs:['#1a1010','#3a2818','#5a4028','#fff'],
+      skins:['#d0a880','#a8804a','#88684a','#684830'],
+      shorts:['#1a1010','#3a3848'],
+      accessory: { cap: true, glasses: true, bib: true, armband: true, cape: true, medal: true },
+    },
+  ];
+  function pickTierForPlayer(){
+    // STATE.alchLevel détermine quel tier on rencontre principalement
+    // Tier = floor((alchLevel - 1) / 8), capped at 6
+    // Variance ±2 pour avoir un mix
+    const lvl = (window.STATE && window.STATE.alchLevel) || 1;
+    const baseTier = Math.min(6, Math.floor((lvl - 1) / 8));
+    // Distribution biaisée vers le tier base, mais avec variance ±2
+    const variance = (Math.random() - 0.5) * 4; // -2 à +2
+    let t = Math.round(baseTier + variance);
+    if(t < 0) t = 0;
+    if(t > 6) t = 6;
+    return t;
+  }
   const npcs = [];
   function spawnNpc(){
-    const types = [
-      { jersey:'#4a9fd9', skin:'#a8804a', hair:'#3a2818', speed:.7 },
-      { jersey:'#7ec46a', skin:'#f0d4b0', hair:'#8a6848', speed:.55 },
-      { jersey:'#ffd060', skin:'#e0c098', hair:'#c0c0c0', speed:.45 },
-      { jersey:'#e890b0', skin:'#e0c098', hair:'#dcd0c0', speed:.4 },
-      { jersey:'#c89af0', skin:'#f0d4b0', hair:'#d8a060', speed:.55 },
-      { jersey:'#f08040', skin:'#d8b888', hair:'#5a4028', speed:.5 },
-    ];
-    const tpl = types[Math.floor(Math.random() * types.length)];
+    const tierIdx = pickTierForPlayer();
+    const tier = NPC_TIERS[tierIdx];
+    const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+    const speed = tier.baseSpeed + (Math.random() - 0.5) * tier.speedVar;
     npcs.push({
-      ...tpl,
-      metersAhead: 35 + Math.random() * 30,
-      lane: 0.62 + Math.random() * 0.25,
+      tier: tierIdx,
+      tierLabel: tier.label,
+      jersey: pick(tier.jerseys),
+      hair: pick(tier.hairs),
+      skin: pick(tier.skins),
+      short: pick(tier.shorts),
+      accessory: tier.accessory,
+      speed,
+      metersAhead: 38 + Math.random() * 30,
+      lane: 0.60 + Math.random() * 0.28,
       bobPhase: Math.random() * 6.28,
     });
   }
-  for(let i = 0; i < 4; i++) spawnNpc();
+  // Spawn loop : aléatoire dans le temps, max 6 NPCs visibles
+  function npcSpawnLoop(){
+    if(npcs.length < 6){
+      spawnNpc();
+    }
+    // Délai prochain spawn : 1.2-3.5s
+    const delay = 1200 + Math.random() * 2300;
+    setTimeout(npcSpawnLoop, delay);
+  }
+  // Premier spawn immédiat puis loop
+  spawnNpc();
+  setTimeout(spawnNpc, 600);
+  setTimeout(npcSpawnLoop, 1500);
 
   // Milestones (panneaux KM)
   const milestones = [];
@@ -19033,22 +19132,61 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     ctx.fillStyle = spec.jersey;
     ctx.beginPath(); ctx.ellipse(x - 4 * s, y + 25 * s + legL, 7 * s, 4 * s, 0, 0, Math.PI*2); ctx.fill();
     ctx.beginPath(); ctx.ellipse(x + 4 * s, y + 25 * s + legR, 7 * s, 4 * s, 0, 0, Math.PI*2); ctx.fill();
-    // Short blanc
-    ctx.fillStyle = '#fff';
+    // Short (utilise spec.short pour les NPCs équipés)
+    ctx.fillStyle = spec.short || '#fff';
     ctx.fillRect(x - 11 * s, y - 2 * s, 22 * s, 9 * s);
     // Corps maillot
     ctx.fillStyle = spec.jersey;
     roundRect(x - 13 * s, y - 22 * s, 26 * s, 22 * s, 6 * s); ctx.fill();
     ctx.fillStyle = '#ffd060';
     ctx.fillRect(x - 13 * s, y - 22 * s, 26 * s, 4 * s);
-    // Numéro
+    // Numéro dossard (plus gros si tier >= 4)
+    const acc = spec.accessory || {};
+    const bibSize = acc.bib ? 6.5 : 5;
     ctx.fillStyle = '#fff';
-    ctx.beginPath(); ctx.arc(x, y - 11 * s, 5 * s, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x, y - 11 * s, bibSize * s, 0, Math.PI*2); ctx.fill();
+    if(acc.bib){
+      ctx.fillStyle = '#e85040';
+      ctx.font = `bold ${7 * s}px Nunito`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      const num = ((spec.tier || 0) * 11 + 7) % 99;
+      ctx.fillText(num, x, y - 10.5 * s);
+    }
+    // Armband (brassard sur le bras avant droit)
+    if(acc.armband){
+      ctx.fillStyle = '#e85040';
+      ctx.fillRect(x + 12 * s, y - 9 * s, 4 * s, 3 * s);
+    }
     // Bras
     ctx.strokeStyle = spec.skin;
     ctx.lineWidth = 6 * s;
     ctx.beginPath(); ctx.moveTo(x - 13 * s, y - 14 * s); ctx.lineTo(x - 22 * s, y - 2 * s + armL); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(x + 13 * s, y - 14 * s); ctx.lineTo(x + 22 * s, y - 2 * s + armR); ctx.stroke();
+    // Cape (champion)
+    if(acc.cape){
+      ctx.fillStyle = '#e8b020';
+      ctx.beginPath();
+      ctx.moveTo(x - 12 * s, y - 22 * s);
+      ctx.quadraticCurveTo(x, y - 16 * s + Math.sin(phase) * 2 * s, x + 12 * s, y - 22 * s);
+      ctx.lineTo(x + 14 * s, y + 4 * s);
+      ctx.quadraticCurveTo(x, y + 8 * s + Math.sin(phase) * 3 * s, x - 14 * s, y + 4 * s);
+      ctx.fill();
+      // Bordure dorée plus claire
+      ctx.fillStyle = '#ffd860';
+      ctx.fillRect(x - 12 * s, y - 22 * s, 24 * s, 2 * s);
+    }
+    // Médaille (champion)
+    if(acc.medal){
+      // Ruban
+      ctx.fillStyle = '#c83020';
+      ctx.fillRect(x - 1 * s, y - 22 * s, 2 * s, 6 * s);
+      // Médaille dorée
+      ctx.fillStyle = '#ffd060';
+      ctx.beginPath(); ctx.arc(x, y - 14 * s, 3 * s, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#a87020';
+      ctx.beginPath(); ctx.arc(x, y - 14 * s, 3 * s, 0, Math.PI*2); ctx.stroke();
+    }
     // Tête
     ctx.fillStyle = spec.skin;
     ctx.beginPath(); ctx.arc(x, y - 34 * s, 14 * s, 0, Math.PI*2); ctx.fill();
@@ -19059,21 +19197,58 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     ctx.lineTo(x + 12 * s, y - 32 * s);
     ctx.lineTo(x - 12 * s, y - 32 * s);
     ctx.fill();
-    // Yeux
-    ctx.fillStyle = '#1a1010';
-    ctx.beginPath(); ctx.arc(x + 2 * s, y - 33 * s, 1.8 * s, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(x + 9 * s, y - 33 * s, 1.8 * s, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#fff';
-    ctx.beginPath(); ctx.arc(x + 2.8 * s, y - 33.5 * s, .7 * s, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.arc(x + 9.8 * s, y - 33.5 * s, .7 * s, 0, Math.PI*2); ctx.fill();
-    // Joues
-    ctx.fillStyle = 'rgba(255,138,144,.55)';
-    ctx.beginPath(); ctx.ellipse(x - 4 * s, y - 28 * s, 3 * s, 2 * s, 0, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(x + 11 * s, y - 28 * s, 3 * s, 2 * s, 0, 0, Math.PI*2); ctx.fill();
-    // Bouche
+    // Casquette (tier 2+)
+    if(acc.cap){
+      ctx.fillStyle = spec.jersey;
+      ctx.beginPath();
+      ctx.arc(x, y - 40 * s, 13 * s, Math.PI, 0);
+      ctx.lineTo(x + 12 * s, y - 36 * s);
+      ctx.lineTo(x - 12 * s, y - 36 * s);
+      ctx.fill();
+      // Visière vers la droite (sens de la course)
+      ctx.fillStyle = spec.jersey;
+      ctx.fillRect(x + 8 * s, y - 38 * s, 9 * s, 2 * s);
+    }
+    // Yeux ou Lunettes
+    if(acc.glasses){
+      // Lunettes de soleil noires
+      ctx.fillStyle = '#1a1010';
+      ctx.fillRect(x - 7 * s, y - 35 * s, 14 * s, 4 * s);
+      // Branches
+      ctx.fillRect(x - 11 * s, y - 33 * s, 4 * s, 1 * s);
+      ctx.fillRect(x + 7 * s, y - 33 * s, 4 * s, 1 * s);
+      // Reflet
+      ctx.fillStyle = 'rgba(255,255,255,.3)';
+      ctx.fillRect(x - 6 * s, y - 34.5 * s, 4 * s, 1 * s);
+      ctx.fillRect(x + 2 * s, y - 34.5 * s, 4 * s, 1 * s);
+    } else {
+      // Yeux normaux
+      ctx.fillStyle = '#1a1010';
+      ctx.beginPath(); ctx.arc(x + 2 * s, y - 33 * s, 1.8 * s, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x + 9 * s, y - 33 * s, 1.8 * s, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(x + 2.8 * s, y - 33.5 * s, .7 * s, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x + 9.8 * s, y - 33.5 * s, .7 * s, 0, Math.PI*2); ctx.fill();
+    }
+    // Joues (cachées si lunettes)
+    if(!acc.glasses){
+      ctx.fillStyle = 'rgba(255,138,144,.55)';
+      ctx.beginPath(); ctx.ellipse(x - 4 * s, y - 28 * s, 3 * s, 2 * s, 0, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(x + 11 * s, y - 28 * s, 3 * s, 2 * s, 0, 0, Math.PI*2); ctx.fill();
+    }
+    // Bouche (sourire concentré si tier élevé)
     ctx.strokeStyle = '#3a2818';
     ctx.lineWidth = 1.2 * s;
-    ctx.beginPath(); ctx.arc(x + 5 * s, y - 27 * s, 2 * s, .2, Math.PI - .2); ctx.stroke();
+    if((spec.tier || 0) >= 4){
+      // Bouche concentrée (ligne droite)
+      ctx.beginPath();
+      ctx.moveTo(x + 3 * s, y - 27 * s);
+      ctx.lineTo(x + 7 * s, y - 27 * s);
+      ctx.stroke();
+    } else {
+      // Sourire
+      ctx.beginPath(); ctx.arc(x + 5 * s, y - 27 * s, 2 * s, .2, Math.PI - .2); ctx.stroke();
+    }
   }
 
   // ═══ LOOP principal ═══
@@ -19234,27 +19409,25 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       }
     });
 
-    // ═══ NPCs ═══
-    npcs.forEach(npc => {
-      // NPCs courent dans le MÊME sens que le héros (vers la droite), mais moins vite.
-      // Drift relatif = (speed_hero - speed_npc) px/frame. Background drift = speed * 1.2 px/frame.
-      // Drift NPC = (speed - npc.speed) / speed * background_drift = (speed - npc.speed) * 1.2
-      // En unités metersAhead : metersAhead -= (speed - npc.speed) * 1.2 / 8 = (speed - npc.speed) * 0.15
+    // ═══ NPCs — défilent, disparaissent quand hors écran (re-spawn via npcSpawnLoop) ═══
+    for(let i = npcs.length - 1; i >= 0; i--){
+      const npc = npcs[i];
       npc.metersAhead -= (speed - npc.speed) * 0.15;
       const pixAhead = npc.metersAhead * 8;
       if(pixAhead < -120){
-        npc.metersAhead = 35 + Math.random() * 30;
-        return;
+        // NPC out of frame to the left → remove (spawn loop fera apparaître le suivant)
+        npcs.splice(i, 1);
+        continue;
       }
       const x = W / 2 + pixAhead;
-      if(x < -50 || x > W + 50) return;
+      if(x < -50 || x > W + 50) continue;
       npc.bobPhase += 0.18;
       const npcBob = Math.abs(Math.sin(npc.bobPhase)) * 4;
       const y = H * (.65 + npc.lane * .1) - npcBob;
       const distFactor = 1 - Math.min(1, Math.abs(pixAhead) / 800) * 0.3;
       const scale = 0.7 * distFactor;
       drawRunner(x, y, scale, npc, npc.bobPhase);
-    });
+    }
 
     // ═══ HÉROS ═══
     const heroX = W * .35;

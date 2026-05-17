@@ -17943,7 +17943,53 @@ if('serviceWorker' in navigator){
       if(tier >= 3){
         const flagT = -(t * speed * 0.4);
         const flagCount = 4 + (tier - 3) * 2;
-        if(stadiumId === 'coliseum'){
+        if(stadiumId === 'olympic'){
+          // === DRAPEAUX INTERNATIONAUX (FR, JP, IT, DE, NL) ===
+          // Chaque drapeau : 12px de large, 7px de haut, ondule horizontalement
+          const FLAGS_INTL = [
+            function FR(fx, fy, w, h, wave){
+              const s = w / 3;
+              ctx.fillStyle = '#0a3d8c'; ctx.fillRect(fx, fy, s, h);
+              ctx.fillStyle = '#fff';     ctx.fillRect(fx + s, fy, s, h);
+              ctx.fillStyle = '#e8002c';  ctx.fillRect(fx + s * 2, fy, s + wave, h);
+            },
+            function JP(fx, fy, w, h, wave){
+              ctx.fillStyle = '#fff'; ctx.fillRect(fx, fy, w + wave, h);
+              ctx.fillStyle = '#bc002d';
+              ctx.beginPath(); ctx.arc(fx + w * 0.5 + wave * .3, fy + h * 0.5, h * 0.38, 0, Math.PI*2); ctx.fill();
+            },
+            function IT(fx, fy, w, h, wave){
+              const s = w / 3;
+              ctx.fillStyle = '#009246'; ctx.fillRect(fx, fy, s, h);
+              ctx.fillStyle = '#fff';     ctx.fillRect(fx + s, fy, s, h);
+              ctx.fillStyle = '#ce2b37';  ctx.fillRect(fx + s * 2, fy, s + wave, h);
+            },
+            function DE(fx, fy, w, h, wave){
+              const s = h / 3;
+              ctx.fillStyle = '#1a1010';  ctx.fillRect(fx, fy, w + wave, s);
+              ctx.fillStyle = '#d00000';  ctx.fillRect(fx, fy + s, w + wave, s);
+              ctx.fillStyle = '#ffce00';  ctx.fillRect(fx, fy + s * 2, w + wave, s);
+            },
+            function NL(fx, fy, w, h, wave){
+              const s = h / 3;
+              ctx.fillStyle = '#ae1c28';  ctx.fillRect(fx, fy, w + wave, s);
+              ctx.fillStyle = '#fff';      ctx.fillRect(fx, fy + s, w + wave, s);
+              ctx.fillStyle = '#21468b';  ctx.fillRect(fx, fy + s * 2, w + wave, s);
+            },
+          ];
+          for(let i = 0; i < flagCount; i++){
+            const fx = ((flagT + i * (W / flagCount)) % (W + 40) + (W + 40)) % (W + 40);
+            const fy = H * .55 - 80;
+            // Mât doré (style olympique)
+            ctx.fillStyle = '#ffd060';
+            ctx.beginPath(); ctx.arc(fx + 0.75, fy - 2, 1.5, 0, Math.PI*2); ctx.fill();
+            ctx.fillStyle = '#5a4828';
+            ctx.fillRect(fx, fy - 1, 1.5, 22);
+            // Drapeau international
+            const wave = Math.sin((t + i * 30) * 0.045) * 1.8;
+            FLAGS_INTL[i % FLAGS_INTL.length](fx + 1.5, fy, 12, 7, wave);
+          }
+        } else if(stadiumId === 'coliseum'){
           // === ORIFLAMMES ROMAINS (vexillum) : verticaux, rouge & or, SPQR ===
           for(let i = 0; i < flagCount; i++){
             const fx = ((flagT + i * (W / flagCount)) % (W + 40) + (W + 40)) % (W + 40);

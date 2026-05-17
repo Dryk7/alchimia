@@ -4433,57 +4433,68 @@ body.frenzy-on #grid-frame{
 /* ================ INTRO ================ */
 #intro{
   position:fixed; inset:0; z-index:95;
-  background:linear-gradient(180deg, #b8def0 0%, #f5d8a0 70%, #f7c87c 100%);
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  text-align:center; padding:24px;
+  background:#7ec4e8;
+  overflow:hidden;
   transition:opacity .9s;
 }
 #intro.gone{opacity:0; pointer-events:none}
-#intro .ouroboros{
-  width:220px; height:160px; color:var(--ink);
-  margin-bottom:18px;
-  filter:drop-shadow(0 4px 10px rgba(80,55,30,.25));
-  animation:ouroIn 1.6s cubic-bezier(.2,.9,.2,1.2);
+/* Canvas plein écran (scène DA cohérente avec le jeu) */
+#intro #intro-canvas{
+  position:absolute; inset:0;
+  width:100%; height:100%;
+  display:block;
 }
-#intro .intro-stadium{ image-rendering:pixelated }
+/* Overlay UI au-dessus du canvas */
+#intro .intro-overlay{
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; align-items:center;
+  padding:38px 24px 48px;
+  pointer-events:none;
+}
+#intro .intro-overlay > *{ pointer-events:auto; }
 #intro .logo{
   font-family:"Nunito", system-ui, sans-serif; font-weight:900;
-  font-size:42px; letter-spacing:.04em;
-  color:var(--ink);
-  margin:0 0 8px;
+  font-size:48px; letter-spacing:.06em;
+  color:#fff;
+  margin:0 0 6px;
   animation:logoIn 1.4s ease-out;
-  text-shadow:0 2px 0 rgba(255,255,255,.6);
+  text-shadow:
+    0 3px 0 #c84030,
+    0 6px 14px rgba(0,0,0,.45);
 }
 #intro .tagline{
   font-family:"Caveat", cursive; font-weight:700;
-  color:var(--ember); font-size:20px;
+  color:#fff; font-size:22px;
   letter-spacing:0;
   max-width:340px;
-  margin-bottom:36px;
+  margin-bottom:auto;
   opacity:0; animation:fadeIn .8s ease-out .8s forwards;
-  line-height:1.25;
+  line-height:1.2;
+  text-align:center;
+  text-shadow:0 2px 6px rgba(0,0,0,.4);
 }
 #intro .start{
   font-family:"Nunito", sans-serif; font-weight:900;
-  font-size:14px; letter-spacing:.06em;
+  font-size:16px; letter-spacing:.08em;
   color:#fff;
   background:linear-gradient(180deg, #f08a48, #d96828);
   border:3px solid #fff;
-  padding:14px 32px;
-  border-radius:24px;
+  padding:16px 36px;
+  border-radius:28px;
   cursor:pointer; text-transform:uppercase;
-  box-shadow:0 6px 16px rgba(217,104,40,.35), 0 2px 0 rgba(255,255,255,.5) inset;
-  opacity:0; animation:fadeIn .8s ease-out 1.4s forwards;
+  box-shadow:
+    0 8px 22px rgba(217,104,40,.50),
+    0 2px 0 rgba(255,255,255,.5) inset;
+  opacity:0; animation:fadeIn .8s ease-out 1.4s forwards, ctaPulse 2.2s ease-in-out 2s infinite;
   position:relative;
   transition:transform .15s, box-shadow .15s;
 }
-#intro .start:active{ transform:translateY(2px); box-shadow:0 2px 8px rgba(217,104,40,.4); }
+#intro .start:active{ transform:translateY(2px); box-shadow:0 4px 10px rgba(217,104,40,.5); }
 #intro .start::before, #intro .start::after{ display:none }
-#intro .seal-row{
-  display:flex; gap:18px; margin-top:30px;
-  opacity:0; animation:fadeIn .9s ease-out 1.7s forwards;
+@keyframes ctaPulse{
+  0%,100%{ transform:scale(1); box-shadow:0 8px 22px rgba(217,104,40,.50), 0 2px 0 rgba(255,255,255,.5) inset; }
+  50%   { transform:scale(1.04); box-shadow:0 10px 28px rgba(217,104,40,.65), 0 2px 0 rgba(255,255,255,.5) inset; }
 }
-#intro .seal-row svg{width:22px; height:22px; color:var(--gold); opacity:.55}
 
 @keyframes logoIn{
   0%{opacity:0; transform:scale(.7); filter:blur(8px)}
@@ -6834,49 +6845,233 @@ body.shop-epic-flash::after{
 
 <!-- INTRO -->
 <div id="intro">
-  <!-- Mini piste avec un coureur qui tourne, comme un teaser -->
-  <svg class="ouroboros intro-stadium" viewBox="-50 -36 100 72">
-    <defs>
-      <path id="intro-path" d="M -30,8 A 38,12 0 0 1 30,8 A 38,12 0 0 1 -30,8 Z" fill="none"/>
-    </defs>
-    <!-- piste -->
-    <ellipse cx="0" cy="8" rx="42" ry="14" fill="#d88030" stroke="#1a1010" stroke-width="1.5"/>
-    <ellipse cx="0" cy="8" rx="32" ry="8" fill="#4a7028" stroke="#1a1010" stroke-width="1"/>
-    <ellipse cx="0" cy="8" rx="36" ry="10" fill="none" stroke="#fff" stroke-width=".35" stroke-dasharray="3 4" opacity=".7"/>
-    <!-- ligne d'arrivée -->
-    <line x1="0" y1="-3" x2="0" y2="19" stroke="#fff" stroke-width=".5" stroke-dasharray="1.5 1.5" opacity=".75"/>
-    <!-- runner pixel art qui tourne sur la piste -->
-    <g>
-      <g shape-rendering="crispEdges">
-        <ellipse cx="0" cy="6" rx="3" ry=".8" fill="#000" opacity=".35"/>
-        <rect x="-2" y="-6" width="4" height="1.5" fill="#4a2818"/>
-        <rect x="-2" y="-4.5" width="4" height="3" fill="#f0c890"/>
-        <rect x="-2.5" y="-1.5" width="5" height="3" fill="#e85a30"/>
-        <rect x="-2.5" y="-1.5" width="5" height=".6" fill="#ffd070"/>
-        <rect x="-.5" y="-.5" width="1" height="1.5" fill="#fff"/>
-        <rect x="-3.5" y="-1" width="1" height="2" fill="#f0c890"/>
-        <rect x="2.5" y="-1" width="1" height="2" fill="#f0c890"/>
-        <rect x="-2" y="1.5" width="4" height="2" fill="#fff"/>
-        <rect x="-1.5" y="3.5" width="1.5" height="2.5" fill="#f0c890"/>
-        <rect x="0" y="3.5" width="1.5" height="2.5" fill="#f0c890"/>
-      </g>
-      <animateMotion dur="6s" repeatCount="indefinite" rotate="auto">
-        <mpath href="#intro-path"/>
-      </animateMotion>
-    </g>
-  </svg>
-  <h1 class="logo">FOULÉE</h1>
-  <div class="tagline">Le petit stade dans ta poche.<br>Tape pour courir. Cours des km. Va plus loin.</div>
-  <button class="start" id="start-btn">Entrer dans le Stade</button>
-  <div class="seal-row">
-    <!-- Icônes sport : gourde, pomme, masque, médaille, chrono -->
-    <svg viewBox="0 0 24 24" fill="currentColor"><rect x="10" y="3" width="4" height="3"/><rect x="9" y="6" width="6" height="2"/><rect x="7" y="8" width="10" height="13" rx="2"/><rect x="9" y="14" width="6" height="3" fill="#000" opacity=".25"/></svg>
-    <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="14" r="7"/><rect x="11" y="5" width="1.2" height="3"/><path d="M13 4 q5 -1 4 4 q-4 1 -4 -4 z"/></svg>
-    <svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="9" width="2" height="2"/><rect x="19" y="9" width="2" height="2"/><rect x="5" y="8" width="14" height="6" rx="2"/><rect x="9" y="10" width="6" height="3" fill="#000" opacity=".25"/></svg>
-    <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="9,3 12,8 15,3 12,11"/><circle cx="12" cy="16" r="6"/><circle cx="12" cy="16" r="3" fill="#000" opacity=".25"/></svg>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="13" r="7"/><path d="M12 13 L12 9"/><path d="M12 13 L15 13"/><path d="M10 3 L14 3"/><path d="M12 3 L12 5"/></svg>
+  <!-- Scène complète : ciel / montagnes / tribune / piste / héros en pose de départ -->
+  <canvas id="intro-canvas"></canvas>
+  <!-- Overlay UI : titre + tagline + CTA -->
+  <div class="intro-overlay">
+    <h1 class="logo">FOULÉE</h1>
+    <div class="tagline">Tape pour courir.<br>Trace ta première foulée.</div>
+    <button class="start" id="start-btn">PRENDRE LE DÉPART</button>
   </div>
 </div>
+
+<script>
+/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */
+(function initSplash(){
+  const cv = document.getElementById('intro-canvas');
+  if(!cv) return;
+  const ctx = cv.getContext('2d');
+  function resize(){
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    cv.width = window.innerWidth * dpr;
+    cv.height = window.innerHeight * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    cv._W = window.innerWidth;
+    cv._H = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  let t = 0;
+  let stopped = false;
+
+  function drawHeroIdle(x, y, scale){
+    const s = scale;
+    const bob = Math.sin(t * 0.04) * 1.5;
+    const bodyY = y - bob;
+    // Ombre douce
+    ctx.fillStyle = 'rgba(0,0,0,.35)';
+    ctx.beginPath(); ctx.ellipse(x, y + 22 * s, 14 * s, 3 * s, 0, 0, Math.PI*2); ctx.fill();
+    // Jambes droites (pose départ : pieds écartés, pas en course)
+    ctx.strokeStyle = '#f0d4b0'; ctx.lineWidth = 5 * s; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x - 4 * s, bodyY + 5 * s); ctx.lineTo(x - 4 * s, bodyY + 18 * s); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + 4 * s, bodyY + 5 * s); ctx.lineTo(x + 4 * s, bodyY + 18 * s); ctx.stroke();
+    // Chaussures rouges
+    ctx.fillStyle = '#e85040';
+    ctx.beginPath(); ctx.ellipse(x - 4 * s, bodyY + 20 * s, 5 * s, 3 * s, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x + 4 * s, bodyY + 20 * s, 5 * s, 3 * s, 0, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(x - 6 * s, bodyY + 22 * s, 4 * s, 1 * s);
+    ctx.fillRect(x + 2 * s, bodyY + 22 * s, 4 * s, 1 * s);
+    // Short blanc
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(x - 9 * s, bodyY - 1 * s, 18 * s, 8 * s);
+    // Corps maillot rouge (rounded rect)
+    ctx.fillStyle = '#e85040';
+    const r = 5 * s;
+    ctx.beginPath();
+    ctx.moveTo(x - 10 * s + r, bodyY - 18 * s); ctx.lineTo(x + 10 * s - r, bodyY - 18 * s);
+    ctx.quadraticCurveTo(x + 10 * s, bodyY - 18 * s, x + 10 * s, bodyY - 18 * s + r);
+    ctx.lineTo(x + 10 * s, bodyY); ctx.quadraticCurveTo(x + 10 * s, bodyY, x + 10 * s - r, bodyY);
+    ctx.lineTo(x - 10 * s + r, bodyY); ctx.quadraticCurveTo(x - 10 * s, bodyY, x - 10 * s, bodyY - r);
+    ctx.lineTo(x - 10 * s, bodyY - 18 * s + r); ctx.quadraticCurveTo(x - 10 * s, bodyY - 18 * s, x - 10 * s + r, bodyY - 18 * s);
+    ctx.fill();
+    // Bandeau doré
+    ctx.fillStyle = '#ffd060'; ctx.fillRect(x - 10 * s, bodyY - 18 * s, 20 * s, 3 * s);
+    // Dossard #1
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(x, bodyY - 8 * s, 6 * s, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#e85040';
+    ctx.font = `bold ${9 * s}px Nunito, sans-serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('1', x, bodyY - 7 * s);
+    // Bras le long du corps (légèrement pliés)
+    ctx.strokeStyle = '#f0d4b0'; ctx.lineWidth = 4.5 * s; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x - 10 * s, bodyY - 11 * s); ctx.lineTo(x - 13 * s, bodyY + 3 * s); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + 10 * s, bodyY - 11 * s); ctx.lineTo(x + 13 * s, bodyY + 3 * s); ctx.stroke();
+    // Tête
+    ctx.fillStyle = '#f0d4b0';
+    ctx.beginPath(); ctx.arc(x, bodyY - 28 * s, 12 * s, 0, Math.PI*2); ctx.fill();
+    // Cheveux dôme brun
+    ctx.fillStyle = '#7a5838';
+    ctx.beginPath();
+    ctx.arc(x, bodyY - 31 * s, 12 * s, Math.PI, 0);
+    ctx.lineTo(x + 11 * s, bodyY - 26 * s); ctx.lineTo(x - 11 * s, bodyY - 26 * s); ctx.fill();
+    // Yeux focus
+    ctx.fillStyle = '#1a1010';
+    ctx.beginPath(); ctx.arc(x - 3 * s, bodyY - 27 * s, 1.5 * s, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + 3 * s, bodyY - 27 * s, 1.5 * s, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(x - 2.5 * s, bodyY - 27.5 * s, .6 * s, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + 3.5 * s, bodyY - 27.5 * s, .6 * s, 0, Math.PI*2); ctx.fill();
+    // Sourcils concentré
+    ctx.strokeStyle = '#7a5838'; ctx.lineWidth = 1.2 * s; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x - 5 * s, bodyY - 30 * s); ctx.lineTo(x - 1.5 * s, bodyY - 29 * s); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + 5 * s, bodyY - 30 * s); ctx.lineTo(x + 1.5 * s, bodyY - 29 * s); ctx.stroke();
+    // Joues
+    ctx.fillStyle = 'rgba(255,138,144,.55)';
+    ctx.beginPath(); ctx.ellipse(x - 6 * s, bodyY - 24 * s, 2.5 * s, 1.5 * s, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x + 6 * s, bodyY - 24 * s, 2.5 * s, 1.5 * s, 0, 0, Math.PI*2); ctx.fill();
+    // Bouche : ligne concentrée
+    ctx.strokeStyle = '#3a2818'; ctx.lineWidth = 1.2 * s;
+    ctx.beginPath(); ctx.moveTo(x - 1.5 * s, bodyY - 23 * s); ctx.lineTo(x + 1.5 * s, bodyY - 23 * s); ctx.stroke();
+  }
+
+  function draw(){
+    if(stopped) return;
+    t += 1;
+    const W = cv._W, H = cv._H;
+    // === Ciel gradient ===
+    const skyG = ctx.createLinearGradient(0, 0, 0, H * .55);
+    skyG.addColorStop(0, '#7ec4e8');
+    skyG.addColorStop(1, '#bce0f0');
+    ctx.fillStyle = skyG;
+    ctx.fillRect(0, 0, W, H * .55);
+    // Soleil
+    ctx.fillStyle = 'rgba(255,255,255,.35)';
+    ctx.beginPath(); ctx.arc(W * .80, H * .18, 42, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#ffe888';
+    ctx.beginPath(); ctx.arc(W * .80, H * .18, 32, 0, Math.PI*2); ctx.fill();
+    // Nuages parallax très lent
+    ctx.fillStyle = 'rgba(255,255,255,.92)';
+    function cloud(cx, cy, scl){
+      ctx.beginPath();
+      ctx.arc(cx, cy, 14 * scl, 0, Math.PI*2);
+      ctx.arc(cx + 12 * scl, cy - 4 * scl, 12 * scl, 0, Math.PI*2);
+      ctx.arc(cx + 22 * scl, cy + 2 * scl, 10 * scl, 0, Math.PI*2);
+      ctx.fill();
+    }
+    const cloudT = t * 0.08;
+    for(let i = 0; i < 4; i++){
+      const cx = ((i * (W / 3) - cloudT) % (W + 120) + (W + 120)) % (W + 120);
+      const cy = H * .14 + (i % 2) * 24;
+      cloud(cx, cy, 0.9 + (i % 2) * 0.4);
+    }
+    // Montagnes lointaines
+    ctx.fillStyle = '#6c8acc';
+    ctx.beginPath();
+    ctx.moveTo(0, H * .55);
+    for(let x = 0; x <= W; x += 28){
+      const yOff = Math.sin(x * 0.011) * 14 + Math.cos(x * 0.024) * 9;
+      ctx.lineTo(x, H * .50 - 18 + yOff);
+    }
+    ctx.lineTo(W, H * .55); ctx.closePath();
+    ctx.fill();
+    // === Tribune (foule colorée) ===
+    const tribY = H * .53;
+    const tribH = H * .04;
+    const colors = ['#e85040', '#4a9fd9', '#7ec46a', '#ffd060', '#c89af0', '#f08040'];
+    for(let i = 0; i < Math.ceil(W / 8) + 1; i++){
+      ctx.fillStyle = colors[(i * 7) % colors.length];
+      ctx.fillRect(i * 8, tribY, 7, tribH);
+    }
+    // Ombre sous tribune
+    const trGrad = ctx.createLinearGradient(0, tribY + tribH, 0, tribY + tribH + 16);
+    trGrad.addColorStop(0, 'rgba(0,0,0,.30)');
+    trGrad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = trGrad;
+    ctx.fillRect(0, tribY + tribH, W, 16);
+    // Bandeau "FOULÉE OLYMPIC ARENA"
+    ctx.fillStyle = '#1a1a2a';
+    ctx.fillRect(0, H * .58, W, 18);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 12px Nunito, sans-serif';
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+    const txt = '★ FOULÉE OLYMPIC ARENA ';
+    const txtW = ctx.measureText(txt).width;
+    const bandT = -(t * 0.4) % txtW;
+    for(let i = 0; i < Math.ceil(W / txtW) + 2; i++){
+      ctx.fillText(txt, bandT + i * txtW, H * .58 + 9);
+    }
+    // === Piste rouge + lanes ===
+    ctx.fillStyle = '#7c2810';
+    ctx.fillRect(0, H * .58 + 18, W, 4);
+    ctx.fillStyle = '#e85040';
+    ctx.fillRect(0, H * .58 + 22, W, H - H * .58 - 22);
+    const LANES_TOP = H * .60;
+    const LANES_BOTTOM = H * .96;
+    const LANE_H = (LANES_BOTTOM - LANES_TOP) / 5;
+    for(let lane = 0; lane < 5; lane++){
+      if(lane % 2 === 1){
+        ctx.fillStyle = '#c84030';
+        ctx.fillRect(0, LANES_TOP + lane * LANE_H + 2, W, LANE_H - 4);
+      }
+    }
+    ctx.fillStyle = '#fff';
+    for(let lane = 0; lane <= 5; lane++){
+      ctx.fillRect(0, LANES_TOP + lane * LANE_H, W, 1.5);
+    }
+    // === LIGNE DE DÉPART (épaisse + damier) ===
+    const startLineX = W * .52;
+    // Bordure noire
+    ctx.fillStyle = '#1a1010';
+    ctx.fillRect(startLineX - 1, LANES_TOP, 14, LANES_BOTTOM - LANES_TOP);
+    // Damier alternance
+    const sqH = 8;
+    for(let lane = 0; lane < 5; lane++){
+      const top = LANES_TOP + lane * LANE_H;
+      for(let row = 0; row < LANE_H / sqH; row++){
+        const isWhite = (lane + row) % 2 === 0;
+        ctx.fillStyle = isWhite ? '#fff' : '#1a1010';
+        ctx.fillRect(startLineX + 1, top + row * sqH, 10, sqH);
+      }
+    }
+    // Texte "DÉPART" verticale à côté
+    ctx.save();
+    ctx.translate(startLineX + 22, LANES_TOP + (LANES_BOTTOM - LANES_TOP) / 2);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillStyle = '#fff';
+    ctx.strokeStyle = '#1a1010';
+    ctx.lineWidth = 3.5;
+    ctx.font = 'bold 14px Nunito, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.strokeText('DÉPART', 0, 0);
+    ctx.fillText('DÉPART', 0, 0);
+    ctx.restore();
+    // === HÉROS en pose départ (couloir 2 = milieu, juste avant la ligne) ===
+    const heroLaneIdx = 2;
+    const heroX = W * .35;
+    const heroY = LANES_TOP + (heroLaneIdx + 0.5) * LANE_H;
+    const heroScale = (0.60 + (heroLaneIdx / 4) * 0.45) * 1.55; // un peu plus grand qu'in-game (focus sur le héros)
+    drawHeroIdle(heroX, heroY, heroScale);
+    requestAnimationFrame(draw);
+  }
+  draw();
+  // Stoppe l'animation 1s après que le splash devienne invisible (économie)
+  window._introStopAnim = () => { setTimeout(() => { stopped = true; }, 1000); };
+})();
+</script>
 
 <!-- ASCENSION CINEMATIC : médaille du tour bouclé -->
 <!-- ASCENSION / SAISON -->
@@ -17204,6 +17399,8 @@ function boot(){
 
   document.getElementById("start-btn").addEventListener("click", ()=>{
     document.getElementById("intro").classList.add("gone");
+    // Stoppe l'animation canvas du splash (économie batterie)
+    if(window._introStopAnim) window._introStopAnim();
     audioInit();
     if(A.ctx && A.ctx.state === "suspended") A.ctx.resume();
     bgmPlay();

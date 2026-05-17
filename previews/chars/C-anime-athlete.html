@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C — Anime athlète</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0e0d12;color:#fff;font-family:Nunito,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px}
+h1{font-size:16px;margin:0 0 4px}
+.tag{font-size:11px;color:#a89880;margin-bottom:10px}
+.frame{width:540px;aspect-ratio:9/6;border-radius:18px;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.5)}
+canvas{display:block;width:100%;height:100%}
+.desc{margin-top:10px;max-width:520px;font-size:12px;color:#c8b8a0;line-height:1.4}
+</style></head><body>
+<h1>C · Anime ATHLÈTE (proportions humaines + maillot ajusté)</h1>
+<div class="tag">Têtes plus petites, corps plus longs et athlétiques</div>
+<div class="frame"><canvas id="cv" width="540" height="360"></canvas></div>
+<div class="desc">Proportions style anime sportif : tête 1/5 du corps (pas 1/3 comme chibi). Maillot ajusté avec poitrine définie + bandeau sportif tour de tête + ombrage musculaire.</div>
+<script src="_shared.js"></script>
+<script>
+CHARS_SCENE(document.getElementById('cv'), function drawChar(ctx, x, y, scale, phase, c){
+  const s = scale;
+  const swing = Math.sin(phase);
+  const hop = Math.abs(Math.sin(phase * 2)) * 4 * s;
+  const bodyY = y - hop;
+  // Ombre
+  ctx.fillStyle = 'rgba(0,0,0,.32)';
+  ctx.beginPath(); ctx.ellipse(x, y + 22 * s, 12 * s, 3 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Jambes plus longues
+  const legL = swing * 14 * s, legR = -swing * 14 * s;
+  ctx.strokeStyle = c.skin; ctx.lineWidth = 4 * s; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(x - 3 * s, bodyY + 6 * s); ctx.lineTo(x - 3 * s, bodyY + 22 * s + legL); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x + 3 * s, bodyY + 6 * s); ctx.lineTo(x + 3 * s, bodyY + 22 * s + legR); ctx.stroke();
+  // Chaussures sportives pointues
+  ctx.fillStyle = c.jersey;
+  ctx.beginPath(); ctx.ellipse(x - 3 * s, bodyY + 24 * s + legL, 5 * s, 2.5 * s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x + 3 * s, bodyY + 24 * s + legR, 5 * s, 2.5 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Bande blanche chaussure
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(x - 5 * s, bodyY + 24 * s + legL, 4 * s, .8 * s);
+  ctx.fillRect(x + 1 * s, bodyY + 24 * s + legR, 4 * s, .8 * s);
+  // Short ajusté
+  ctx.fillStyle = '#fff'; ctx.fillRect(x - 7 * s, bodyY, 14 * s, 8 * s);
+  ctx.fillStyle = 'rgba(0,0,0,.1)'; ctx.fillRect(x - 7 * s, bodyY, 14 * s, 1.5 * s);
+  ctx.fillStyle = c.jersey; ctx.fillRect(x - 7 * s, bodyY + 5 * s, 14 * s, 1 * s);
+  // Tronc ajusté (rectangle plus étroit + plus long)
+  ctx.fillStyle = c.jersey;
+  const r = 4 * s;
+  ctx.beginPath();
+  ctx.moveTo(x - 8 * s + r, bodyY - 16 * s); ctx.lineTo(x + 8 * s - r, bodyY - 16 * s);
+  ctx.quadraticCurveTo(x + 8 * s, bodyY - 16 * s, x + 8 * s, bodyY - 16 * s + r);
+  ctx.lineTo(x + 8 * s, bodyY); ctx.quadraticCurveTo(x + 8 * s, bodyY, x + 8 * s - r, bodyY);
+  ctx.lineTo(x - 8 * s + r, bodyY); ctx.quadraticCurveTo(x - 8 * s, bodyY, x - 8 * s, bodyY - r);
+  ctx.lineTo(x - 8 * s, bodyY - 16 * s + r); ctx.quadraticCurveTo(x - 8 * s, bodyY - 16 * s, x - 8 * s + r, bodyY - 16 * s);
+  ctx.fill();
+  // Ombrage musculaire (V central foncé)
+  ctx.fillStyle = 'rgba(0,0,0,.13)';
+  ctx.beginPath();
+  ctx.moveTo(x, bodyY - 14 * s); ctx.lineTo(x - 4 * s, bodyY - 8 * s); ctx.lineTo(x, bodyY - 6 * s); ctx.lineTo(x + 4 * s, bodyY - 8 * s); ctx.closePath(); ctx.fill();
+  // Bande horizontale
+  ctx.fillStyle = '#fff'; ctx.fillRect(x - 8 * s, bodyY - 11 * s, 16 * s, 1.2 * s);
+  // Bras plus longs et fins
+  ctx.strokeStyle = c.skin; ctx.lineWidth = 3.5 * s;
+  ctx.beginPath(); ctx.moveTo(x - 8 * s, bodyY - 13 * s); ctx.lineTo(x - 16 * s, bodyY - 2 * s - swing * 7 * s); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x + 8 * s, bodyY - 13 * s); ctx.lineTo(x + 16 * s, bodyY - 2 * s + swing * 7 * s); ctx.stroke();
+  // Tête plus PETITE (anime proportions)
+  ctx.fillStyle = c.skin;
+  ctx.beginPath(); ctx.arc(x, bodyY - 24 * s, 8 * s, 0, Math.PI*2); ctx.fill();
+  // Menton anguleux (silhouette anime)
+  ctx.fillStyle = c.skin;
+  ctx.beginPath();
+  ctx.moveTo(x - 5 * s, bodyY - 21 * s);
+  ctx.quadraticCurveTo(x, bodyY - 16 * s, x + 5 * s, bodyY - 21 * s);
+  ctx.fill();
+  // Cheveux style anime (pointes)
+  ctx.fillStyle = c.hair;
+  ctx.beginPath();
+  ctx.moveTo(x - 8 * s, bodyY - 23 * s);
+  ctx.lineTo(x - 9 * s, bodyY - 30 * s);
+  ctx.lineTo(x - 5 * s, bodyY - 28 * s);
+  ctx.lineTo(x - 3 * s, bodyY - 32 * s);
+  ctx.lineTo(x + 1 * s, bodyY - 30 * s);
+  ctx.lineTo(x + 4 * s, bodyY - 33 * s);
+  ctx.lineTo(x + 6 * s, bodyY - 29 * s);
+  ctx.lineTo(x + 8 * s, bodyY - 30 * s);
+  ctx.lineTo(x + 8 * s, bodyY - 22 * s);
+  ctx.lineTo(x - 8 * s, bodyY - 22 * s);
+  ctx.closePath();
+  ctx.fill();
+  // Bandeau athlète autour du front
+  ctx.fillStyle = c.tier >= 2 ? c.jersey : '#fff';
+  ctx.fillRect(x - 8 * s, bodyY - 24 * s, 16 * s, 1.5 * s);
+  // YEUX style anime (en amande, plus larges)
+  ctx.fillStyle = '#1a1010';
+  ctx.fillRect(x - 4 * s, bodyY - 22 * s, 2.5 * s, 1.5 * s);
+  ctx.fillRect(x + 1.5 * s, bodyY - 22 * s, 2.5 * s, 1.5 * s);
+  // Catchlight
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(x - 3.5 * s, bodyY - 22 * s, .8 * s, .6 * s);
+  ctx.fillRect(x + 2 * s, bodyY - 22 * s, .8 * s, .6 * s);
+  // Sourire confiant
+  ctx.strokeStyle = '#3a2818'; ctx.lineWidth = .8 * s; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(x - 1.5 * s, bodyY - 19 * s); ctx.lineTo(x + 1.5 * s, bodyY - 19 * s); ctx.stroke();
+});
+</script>
+</body></html>

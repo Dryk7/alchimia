@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>E — Mascot Disney</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0e0d12;color:#fff;font-family:Nunito,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px}
+h1{font-size:16px;margin:0 0 4px}
+.tag{font-size:11px;color:#a89880;margin-bottom:10px}
+.frame{width:540px;aspect-ratio:9/6;border-radius:18px;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.5)}
+canvas{display:block;width:100%;height:100%}
+.desc{margin-top:10px;max-width:520px;font-size:12px;color:#c8b8a0;line-height:1.4}
+</style></head><body>
+<h1>E · Mascot Disney/Pixar (gros yeux + sourire géant)</h1>
+<div class="tag">Expression exagérée, joie marquée</div>
+<div class="frame"><canvas id="cv" width="540" height="360"></canvas></div>
+<div class="desc">Énormes yeux blancs avec pupilles + sourire géant qui montre les dents + sourcils expressifs. Style mascotte type Mario / Animal Crossing.</div>
+<script src="_shared.js"></script>
+<script>
+CHARS_SCENE(document.getElementById('cv'), function drawChar(ctx, x, y, scale, phase, c){
+  const s = scale;
+  const swing = Math.sin(phase);
+  const hop = Math.abs(Math.sin(phase * 2)) * 4 * s;
+  const bodyY = y - hop;
+  // Ombre
+  ctx.fillStyle = 'rgba(0,0,0,.35)';
+  ctx.beginPath(); ctx.ellipse(x, y + 22 * s, 14 * s, 3 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Jambes courtes et rondes
+  const legL = swing * 10 * s, legR = -swing * 10 * s;
+  ctx.strokeStyle = c.skin; ctx.lineWidth = 6 * s; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(x - 3 * s, bodyY + 5 * s); ctx.lineTo(x - 3 * s, bodyY + 16 * s + legL); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x + 3 * s, bodyY + 5 * s); ctx.lineTo(x + 3 * s, bodyY + 16 * s + legR); ctx.stroke();
+  // Grosses chaussures arrondies
+  ctx.fillStyle = c.jersey;
+  ctx.beginPath(); ctx.ellipse(x - 3 * s, bodyY + 19 * s + legL, 6 * s, 4 * s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x + 3 * s, bodyY + 19 * s + legR, 6 * s, 4 * s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(x - 6 * s, bodyY + 20 * s + legL, 5 * s, 1.5 * s);
+  ctx.fillRect(x, bodyY + 20 * s + legR, 5 * s, 1.5 * s);
+  // Short bombé
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.ellipse(x, bodyY + 4 * s, 11 * s, 5 * s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = c.jersey;
+  ctx.fillRect(x - 11 * s, bodyY + 5 * s, 22 * s, 1.5 * s);
+  // Corps bien rond
+  ctx.fillStyle = c.jersey;
+  ctx.beginPath();
+  ctx.ellipse(x, bodyY - 8 * s, 11 * s, 12 * s, 0, 0, Math.PI*2);
+  ctx.fill();
+  // Highlight sur le maillot (effet lumière)
+  ctx.fillStyle = 'rgba(255,255,255,.2)';
+  ctx.beginPath(); ctx.ellipse(x - 4 * s, bodyY - 12 * s, 3 * s, 5 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Bandeau doré
+  ctx.fillStyle = '#ffd060';
+  ctx.beginPath(); ctx.ellipse(x, bodyY - 17 * s, 10 * s, 2.5 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Bras boules (gants Mickey style)
+  const armLY = bodyY - 6 * s - swing * 6 * s;
+  const armRY = bodyY - 6 * s + swing * 6 * s;
+  ctx.strokeStyle = c.skin; ctx.lineWidth = 4 * s;
+  ctx.beginPath(); ctx.moveTo(x - 10 * s, bodyY - 8 * s); ctx.lineTo(x - 16 * s, armLY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x + 10 * s, bodyY - 8 * s); ctx.lineTo(x + 16 * s, armRY); ctx.stroke();
+  // Mains rondes blanches (style Mickey)
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(x - 16 * s, armLY, 2.5 * s, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x + 16 * s, armRY, 2.5 * s, 0, Math.PI*2); ctx.fill();
+  // GROSSE TÊTE ronde (proportions mascot)
+  ctx.fillStyle = c.skin;
+  ctx.beginPath(); ctx.arc(x, bodyY - 28 * s, 15 * s, 0, Math.PI*2); ctx.fill();
+  // Highlight tête
+  ctx.fillStyle = 'rgba(255,255,255,.15)';
+  ctx.beginPath(); ctx.ellipse(x - 5 * s, bodyY - 32 * s, 4 * s, 5 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Cheveux ronds bouclés (style mickey ears mais cheveux)
+  ctx.fillStyle = c.hair;
+  ctx.beginPath();
+  ctx.arc(x, bodyY - 32 * s, 15 * s, Math.PI + 0.3, -0.3);
+  ctx.arc(x - 9 * s, bodyY - 35 * s, 5 * s, 0, Math.PI*2);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(x + 8 * s, bodyY - 36 * s, 6 * s, 0, Math.PI*2);
+  ctx.fill();
+  // ÉNORMES YEUX BLANCS (signature mascot)
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.ellipse(x - 4.5 * s, bodyY - 28 * s, 4 * s, 5 * s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x + 4.5 * s, bodyY - 28 * s, 4 * s, 5 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Pupilles noires énormes
+  ctx.fillStyle = '#1a1010';
+  ctx.beginPath(); ctx.ellipse(x - 4 * s, bodyY - 27 * s, 2.5 * s, 3.5 * s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x + 5 * s, bodyY - 27 * s, 2.5 * s, 3.5 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Catchlight (énorme reflet)
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.ellipse(x - 3 * s, bodyY - 28.5 * s, 1.3 * s, 1.7 * s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x + 6 * s, bodyY - 28.5 * s, 1.3 * s, 1.7 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Sourcils expressifs
+  ctx.strokeStyle = c.hair; ctx.lineWidth = 1.5 * s; ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(x - 7 * s, bodyY - 33 * s); ctx.quadraticCurveTo(x - 4 * s, bodyY - 34 * s, x - 1 * s, bodyY - 33 * s); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x + 1 * s, bodyY - 33 * s); ctx.quadraticCurveTo(x + 4 * s, bodyY - 34 * s, x + 7 * s, bodyY - 33 * s); ctx.stroke();
+  // Joues très visibles
+  ctx.fillStyle = 'rgba(255,138,144,.7)';
+  ctx.beginPath(); ctx.ellipse(x - 9 * s, bodyY - 22 * s, 3 * s, 2 * s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x + 9 * s, bodyY - 22 * s, 3 * s, 2 * s, 0, 0, Math.PI*2); ctx.fill();
+  // ÉNORME SOURIRE (dents visibles)
+  ctx.fillStyle = '#3a2818';
+  ctx.beginPath();
+  ctx.arc(x, bodyY - 21 * s, 5 * s, 0.1, Math.PI - 0.1);
+  ctx.fill();
+  // Dents
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(x - 4 * s, bodyY - 18 * s, 8 * s, 2 * s);
+  // Langue
+  ctx.fillStyle = '#ff8a90';
+  ctx.beginPath(); ctx.ellipse(x, bodyY - 17 * s, 2 * s, 1 * s, 0, 0, Math.PI*2); ctx.fill();
+});
+</script>
+</body></html>

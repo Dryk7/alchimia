@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>D — Pixel art chunky</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0e0d12;color:#fff;font-family:Nunito,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px}
+h1{font-size:16px;margin:0 0 4px}
+.tag{font-size:11px;color:#a89880;margin-bottom:10px}
+.frame{width:540px;aspect-ratio:9/6;border-radius:18px;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.5)}
+canvas{display:block;width:100%;height:100%;image-rendering:pixelated}
+.desc{margin-top:10px;max-width:520px;font-size:12px;color:#c8b8a0;line-height:1.4}
+</style></head><body>
+<h1>D · Pixel art chunky 16-bit</h1>
+<div class="tag">Style SNES / Track & Field, gros pixels visibles, palette limitée</div>
+<div class="frame"><canvas id="cv" width="540" height="360"></canvas></div>
+<div class="desc">Tout dessiné en gros blocs pixel art. Charme rétro fort, identité visuelle assumée.</div>
+<script src="_shared.js"></script>
+<script>
+CHARS_SCENE(document.getElementById('cv'), function drawChar(ctx, x, y, scale, phase, c){
+  const s = scale * 1.5; // px size un peu plus gros pour pixel art
+  const swing = Math.sin(phase);
+  const hop = Math.sin(phase * 2) > 0 ? 2 * s : 0; // hop discret 2 frames
+  const bodyY = y - hop;
+  ctx.imageSmoothingEnabled = false;
+  function px(rx, ry, w, h, color){
+    ctx.fillStyle = color;
+    ctx.fillRect(Math.round(rx), Math.round(ry), Math.round(w), Math.round(h));
+  }
+  // Ombre pixelisée
+  px(x - 6 * s, y + 22 * s, 12 * s, 1.5 * s, 'rgba(0,0,0,.3)');
+  // Couleurs ombrées
+  const skinD = shade(c.skin, -0.18);
+  const jersD = shade(c.jersey, -0.20);
+  const hairD = shade(c.hair, -0.15);
+  // Jambes (2 blocs verticaux)
+  const legLeft = swing > 0 ? 0 : 2 * s;  // alternance avant/arrière
+  const legRight = swing > 0 ? 2 * s : 0;
+  px(x - 3 * s, bodyY + 6 * s, 2 * s, 8 * s - legLeft, c.skin);
+  px(x + 1 * s, bodyY + 6 * s, 2 * s, 8 * s - legRight, c.skin);
+  // Chaussures pixels
+  px(x - 4 * s, bodyY + 14 * s - legLeft, 4 * s, 2 * s, c.jersey);
+  px(x, bodyY + 14 * s - legRight, 4 * s, 2 * s, c.jersey);
+  // Short blanc
+  px(x - 6 * s, bodyY, 12 * s, 6 * s, '#fff');
+  px(x - 6 * s, bodyY + 4 * s, 12 * s, 2 * s, '#dcdce0');
+  // Corps maillot
+  px(x - 7 * s, bodyY - 14 * s, 14 * s, 14 * s, c.jersey);
+  px(x - 7 * s, bodyY - 14 * s, 14 * s, 2 * s, '#ffd060'); // bandeau
+  px(x - 7 * s, bodyY - 4 * s, 14 * s, 2 * s, jersD); // ombre bas du maillot
+  // Dossard
+  px(x - 2 * s, bodyY - 10 * s, 4 * s, 4 * s, '#fff');
+  // Bras pixels
+  const armLY = bodyY - 8 * s + (swing > 0 ? 2 * s : -2 * s);
+  const armRY = bodyY - 8 * s - (swing > 0 ? 2 * s : -2 * s);
+  px(x - 9 * s, armLY, 2 * s, 8 * s, c.skin);
+  px(x + 7 * s, armRY, 2 * s, 8 * s, c.skin);
+  // Tête (8x8 pixel block)
+  px(x - 5 * s, bodyY - 25 * s, 10 * s, 9 * s, c.skin);
+  px(x - 5 * s, bodyY - 17 * s, 10 * s, 1 * s, skinD); // ombre sous menton
+  // Cheveux
+  px(x - 6 * s, bodyY - 27 * s, 12 * s, 4 * s, c.hair);
+  px(x - 6 * s, bodyY - 27 * s, 12 * s, 1 * s, shade(c.hair, 0.15)); // highlight
+  // Yeux (2 pixels noirs)
+  px(x - 3 * s, bodyY - 22 * s, 2 * s, 2 * s, '#000');
+  px(x + 1 * s, bodyY - 22 * s, 2 * s, 2 * s, '#000');
+  // Pixel blanc dans l'œil
+  px(x - 2 * s, bodyY - 22 * s, 1 * s, 1 * s, '#fff');
+  px(x + 2 * s, bodyY - 22 * s, 1 * s, 1 * s, '#fff');
+  // Joues (carré rose)
+  px(x - 5 * s, bodyY - 19 * s, 1 * s, 1 * s, '#ff8a90');
+  px(x + 4 * s, bodyY - 19 * s, 1 * s, 1 * s, '#ff8a90');
+  // Bouche (1 pixel)
+  px(x, bodyY - 18 * s, 1 * s, 1 * s, '#3a2818');
+});
+
+function shade(hex, amt){
+  const m = hex.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+  if(!m) return hex;
+  const r = Math.max(0, Math.min(255, parseInt(m[1], 16) + Math.floor(amt * 255)));
+  const g = Math.max(0, Math.min(255, parseInt(m[2], 16) + Math.floor(amt * 255)));
+  const b = Math.max(0, Math.min(255, parseInt(m[3], 16) + Math.floor(amt * 255)));
+  return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+</script>
+</body></html>

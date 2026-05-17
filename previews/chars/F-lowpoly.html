@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>F — Low-poly fake 3D</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0e0d12;color:#fff;font-family:Nunito,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px}
+h1{font-size:16px;margin:0 0 4px}
+.tag{font-size:11px;color:#a89880;margin-bottom:10px}
+.frame{width:540px;aspect-ratio:9/6;border-radius:18px;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.5)}
+canvas{display:block;width:100%;height:100%}
+.desc{margin-top:10px;max-width:520px;font-size:12px;color:#c8b8a0;line-height:1.4}
+</style></head><body>
+<h1>F · Low-poly fake 3D (dégradés)</h1>
+<div class="tag">Effet 3D simulé avec dégradés clair/foncé par partie du corps</div>
+<div class="frame"><canvas id="cv" width="540" height="360"></canvas></div>
+<div class="desc">Chaque partie (corps, tête, jambes) a un gradient clair en haut/gauche, foncé en bas/droite → simule le volume 3D en 2D. Style Kenney / Adventure Time.</div>
+<script src="_shared.js"></script>
+<script>
+function shade(hex, amt){
+  const m = hex.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+  if(!m) return hex;
+  const r = Math.max(0, Math.min(255, parseInt(m[1], 16) + Math.floor(amt * 255)));
+  const g = Math.max(0, Math.min(255, parseInt(m[2], 16) + Math.floor(amt * 255)));
+  const b = Math.max(0, Math.min(255, parseInt(m[3], 16) + Math.floor(amt * 255)));
+  return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+function grad3D(ctx, x1, y1, x2, y2, color){
+  const g = ctx.createLinearGradient(x1, y1, x2, y2);
+  g.addColorStop(0, shade(color, 0.15));
+  g.addColorStop(.5, color);
+  g.addColorStop(1, shade(color, -0.18));
+  return g;
+}
+
+CHARS_SCENE(document.getElementById('cv'), function drawChar(ctx, x, y, scale, phase, c){
+  const s = scale;
+  const swing = Math.sin(phase);
+  const hop = Math.abs(Math.sin(phase * 2)) * 4 * s;
+  const bodyY = y - hop;
+  // Ombre douce avec gradient
+  const sh = ctx.createRadialGradient(x, y + 22 * s, 0, x, y + 22 * s, 14 * s);
+  sh.addColorStop(0, 'rgba(0,0,0,.4)');
+  sh.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = sh;
+  ctx.beginPath(); ctx.ellipse(x, y + 22 * s, 14 * s, 3.5 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Jambes avec gradient (clair côté gauche, foncé côté droit)
+  const legL = swing * 12 * s, legR = -swing * 12 * s;
+  function drawLeg(lx, ly1, ly2){
+    const g = ctx.createLinearGradient(lx - 3 * s, 0, lx + 3 * s, 0);
+    g.addColorStop(0, shade(c.skin, 0.1));
+    g.addColorStop(1, shade(c.skin, -0.15));
+    ctx.strokeStyle = g; ctx.lineWidth = 5 * s; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(lx, ly1); ctx.lineTo(lx, ly2); ctx.stroke();
+  }
+  drawLeg(x - 3 * s, bodyY + 5 * s, bodyY + 18 * s + legL);
+  drawLeg(x + 3 * s, bodyY + 5 * s, bodyY + 18 * s + legR);
+  // Chaussures avec lift / shadow
+  ctx.fillStyle = grad3D(ctx, x - 4 * s, bodyY + 19 * s + legL - 2 * s, x + 4 * s, bodyY + 21 * s + legL + 2 * s, c.jersey);
+  ctx.beginPath(); ctx.ellipse(x - 3 * s, bodyY + 20 * s + legL, 5 * s, 3 * s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = grad3D(ctx, x - 4 * s, bodyY + 19 * s + legR - 2 * s, x + 4 * s, bodyY + 21 * s + legR + 2 * s, c.jersey);
+  ctx.beginPath(); ctx.ellipse(x + 3 * s, bodyY + 20 * s + legR, 5 * s, 3 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Short avec gradient
+  ctx.fillStyle = grad3D(ctx, x, bodyY - 1 * s, x, bodyY + 7 * s, '#fff');
+  ctx.fillRect(x - 9 * s, bodyY - 1 * s, 18 * s, 8 * s);
+  // Corps avec dégradé 3D : clair en haut/gauche, foncé en bas/droite
+  ctx.fillStyle = grad3D(ctx, x - 10 * s, bodyY - 18 * s, x + 10 * s, bodyY, c.jersey);
+  const r = 5 * s;
+  ctx.beginPath();
+  ctx.moveTo(x - 10 * s + r, bodyY - 18 * s); ctx.lineTo(x + 10 * s - r, bodyY - 18 * s);
+  ctx.quadraticCurveTo(x + 10 * s, bodyY - 18 * s, x + 10 * s, bodyY - 18 * s + r);
+  ctx.lineTo(x + 10 * s, bodyY); ctx.quadraticCurveTo(x + 10 * s, bodyY, x + 10 * s - r, bodyY);
+  ctx.lineTo(x - 10 * s + r, bodyY); ctx.quadraticCurveTo(x - 10 * s, bodyY, x - 10 * s, bodyY - r);
+  ctx.lineTo(x - 10 * s, bodyY - 18 * s + r); ctx.quadraticCurveTo(x - 10 * s, bodyY - 18 * s, x - 10 * s + r, bodyY - 18 * s);
+  ctx.fill();
+  // Highlight droit du corps (effet specular)
+  ctx.fillStyle = 'rgba(255,255,255,.18)';
+  ctx.fillRect(x - 9 * s, bodyY - 17 * s, 3 * s, 16 * s);
+  // Bandeau avec gradient
+  const bandG = ctx.createLinearGradient(x, bodyY - 18 * s, x, bodyY - 15 * s);
+  bandG.addColorStop(0, '#ffe080'); bandG.addColorStop(1, '#c08020');
+  ctx.fillStyle = bandG;
+  ctx.fillRect(x - 10 * s, bodyY - 18 * s, 20 * s, 3 * s);
+  // Bras avec gradient
+  ctx.strokeStyle = grad3D(ctx, x - 17 * s, bodyY - 11 * s, x - 10 * s, bodyY, c.skin);
+  ctx.lineWidth = 4.5 * s; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(x - 10 * s, bodyY - 11 * s); ctx.lineTo(x - 17 * s, bodyY - 2 * s - swing * 6 * s); ctx.stroke();
+  ctx.strokeStyle = grad3D(ctx, x + 10 * s, bodyY - 11 * s, x + 17 * s, bodyY, c.skin);
+  ctx.beginPath(); ctx.moveTo(x + 10 * s, bodyY - 11 * s); ctx.lineTo(x + 17 * s, bodyY - 2 * s + swing * 6 * s); ctx.stroke();
+  // Tête avec dégradé sphérique (radial gradient pour vrai effet 3D)
+  const headG = ctx.createRadialGradient(x - 3 * s, bodyY - 31 * s, 1 * s, x, bodyY - 28 * s, 12 * s);
+  headG.addColorStop(0, shade(c.skin, 0.2));
+  headG.addColorStop(.5, c.skin);
+  headG.addColorStop(1, shade(c.skin, -0.18));
+  ctx.fillStyle = headG;
+  ctx.beginPath(); ctx.arc(x, bodyY - 28 * s, 12 * s, 0, Math.PI*2); ctx.fill();
+  // Cheveux avec gradient
+  const hairG = ctx.createLinearGradient(x, bodyY - 35 * s, x, bodyY - 28 * s);
+  hairG.addColorStop(0, shade(c.hair, 0.15));
+  hairG.addColorStop(1, shade(c.hair, -0.15));
+  ctx.fillStyle = hairG;
+  ctx.beginPath();
+  ctx.arc(x, bodyY - 31 * s, 12 * s, Math.PI, 0);
+  ctx.lineTo(x + 11 * s, bodyY - 26 * s); ctx.lineTo(x - 11 * s, bodyY - 26 * s); ctx.fill();
+  // Yeux avec catchlight 3D
+  ctx.fillStyle = '#1a1010';
+  ctx.beginPath(); ctx.arc(x - 3.5 * s, bodyY - 27 * s, 1.8 * s, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x + 3.5 * s, bodyY - 27 * s, 1.8 * s, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(x - 3 * s, bodyY - 27.5 * s, .7 * s, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x + 4 * s, bodyY - 27.5 * s, .7 * s, 0, Math.PI*2); ctx.fill();
+  // Joues
+  ctx.fillStyle = 'rgba(255,138,144,.55)';
+  ctx.beginPath(); ctx.ellipse(x - 6 * s, bodyY - 24 * s, 2.5 * s, 1.5 * s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x + 6 * s, bodyY - 24 * s, 2.5 * s, 1.5 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Sourire
+  ctx.strokeStyle = '#3a2818'; ctx.lineWidth = 1.2 * s;
+  ctx.beginPath(); ctx.arc(x, bodyY - 23 * s, 2.5 * s, .2, Math.PI - .2); ctx.stroke();
+});
+</script>
+</body></html>

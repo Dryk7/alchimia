@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A — Actuel</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0e0d12;color:#fff;font-family:Nunito,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px}
+h1{font-size:16px;margin:0 0 4px}
+.tag{font-size:11px;color:#a89880;margin-bottom:10px}
+.frame{width:540px;aspect-ratio:9/6;border-radius:18px;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.5)}
+canvas{display:block;width:100%;height:100%}
+.desc{margin-top:10px;max-width:520px;font-size:12px;color:#c8b8a0;line-height:1.4}
+</style></head><body>
+<h1>A · Actuel (chibi simple)</h1>
+<div class="tag">Référence — ce qu'on a maintenant</div>
+<div class="frame"><canvas id="cv" width="540" height="360"></canvas></div>
+<div class="desc">Tête ronde + cheveux dôme + yeux ronds + corps rounded rect. Style "Eatventure basic".</div>
+<script src="_shared.js"></script>
+<script>
+CHARS_SCENE(document.getElementById('cv'), function drawChar(ctx, x, y, scale, phase, c){
+  const s = scale;
+  const swing = Math.sin(phase);
+  const hop = Math.abs(Math.sin(phase * 2)) * 4 * s;
+  const bodyY = y - hop;
+  // Ombre
+  ctx.fillStyle = 'rgba(0,0,0,.35)';
+  ctx.beginPath(); ctx.ellipse(x, y + 22 * s, 14 * s, 3 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Jambes simples
+  const legL = swing * 12 * s, legR = -swing * 12 * s;
+  ctx.strokeStyle = c.skin; ctx.lineWidth = 5 * s; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(x - 3 * s, bodyY + 5 * s); ctx.lineTo(x - 3 * s, bodyY + 18 * s + legL); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x + 3 * s, bodyY + 5 * s); ctx.lineTo(x + 3 * s, bodyY + 18 * s + legR); ctx.stroke();
+  // Chaussures
+  ctx.fillStyle = c.jersey;
+  ctx.beginPath(); ctx.ellipse(x - 3 * s, bodyY + 20 * s + legL, 5 * s, 3 * s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x + 3 * s, bodyY + 20 * s + legR, 5 * s, 3 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Short blanc
+  ctx.fillStyle = '#fff'; ctx.fillRect(x - 9 * s, bodyY - 1 * s, 18 * s, 8 * s);
+  // Corps
+  ctx.fillStyle = c.jersey;
+  const r = 5 * s;
+  ctx.beginPath();
+  ctx.moveTo(x - 10 * s + r, bodyY - 18 * s); ctx.lineTo(x + 10 * s - r, bodyY - 18 * s);
+  ctx.quadraticCurveTo(x + 10 * s, bodyY - 18 * s, x + 10 * s, bodyY - 18 * s + r);
+  ctx.lineTo(x + 10 * s, bodyY); ctx.quadraticCurveTo(x + 10 * s, bodyY, x + 10 * s - r, bodyY);
+  ctx.lineTo(x - 10 * s + r, bodyY); ctx.quadraticCurveTo(x - 10 * s, bodyY, x - 10 * s, bodyY - r);
+  ctx.lineTo(x - 10 * s, bodyY - 18 * s + r); ctx.quadraticCurveTo(x - 10 * s, bodyY - 18 * s, x - 10 * s + r, bodyY - 18 * s);
+  ctx.fill();
+  ctx.fillStyle = '#ffd060'; ctx.fillRect(x - 10 * s, bodyY - 18 * s, 20 * s, 3 * s);
+  // Bras
+  ctx.strokeStyle = c.skin; ctx.lineWidth = 4.5 * s;
+  ctx.beginPath(); ctx.moveTo(x - 10 * s, bodyY - 11 * s); ctx.lineTo(x - 17 * s, bodyY - 2 * s - swing * 6 * s); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x + 10 * s, bodyY - 11 * s); ctx.lineTo(x + 17 * s, bodyY - 2 * s + swing * 6 * s); ctx.stroke();
+  // Tête
+  ctx.fillStyle = c.skin; ctx.beginPath(); ctx.arc(x, bodyY - 28 * s, 11 * s, 0, Math.PI*2); ctx.fill();
+  // Cheveux dôme
+  ctx.fillStyle = c.hair;
+  ctx.beginPath();
+  ctx.arc(x, bodyY - 31 * s, 11 * s, Math.PI, 0);
+  ctx.lineTo(x + 10 * s, bodyY - 26 * s); ctx.lineTo(x - 10 * s, bodyY - 26 * s); ctx.fill();
+  // Yeux ronds
+  ctx.fillStyle = '#1a1010';
+  ctx.beginPath(); ctx.arc(x - 3 * s, bodyY - 27 * s, 1.4 * s, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x + 3 * s, bodyY - 27 * s, 1.4 * s, 0, Math.PI*2); ctx.fill();
+  // Joues
+  ctx.fillStyle = 'rgba(255,138,144,.5)';
+  ctx.beginPath(); ctx.ellipse(x - 5 * s, bodyY - 24 * s, 2 * s, 1.5 * s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x + 5 * s, bodyY - 24 * s, 2 * s, 1.5 * s, 0, 0, Math.PI*2); ctx.fill();
+});
+</script>
+</body></html>

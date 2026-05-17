@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>B — Chibi polish</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0e0d12;color:#fff;font-family:Nunito,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px}
+h1{font-size:16px;margin:0 0 4px}
+.tag{font-size:11px;color:#a89880;margin-bottom:10px}
+.frame{width:540px;aspect-ratio:9/6;border-radius:18px;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.5)}
+canvas{display:block;width:100%;height:100%}
+.desc{margin-top:10px;max-width:520px;font-size:12px;color:#c8b8a0;line-height:1.4}
+</style></head><body>
+<h1>B · Chibi POLISH (yeux brillants + cheveux stylés)</h1>
+<div class="tag">Raffinement du style actuel : têtes plus mignonnes</div>
+<div class="frame"><canvas id="cv" width="540" height="360"></canvas></div>
+<div class="desc">Têtes plus rondes + ombre douce sous le menton + yeux pétillants avec catchlight + cheveux avec mèche + bouche expressive + bandeau brillant. Garde proportions chibi.</div>
+<script src="_shared.js"></script>
+<script>
+CHARS_SCENE(document.getElementById('cv'), function drawChar(ctx, x, y, scale, phase, c){
+  const s = scale;
+  const swing = Math.sin(phase);
+  const hop = Math.abs(Math.sin(phase * 2)) * 4 * s;
+  const bodyY = y - hop;
+  // Ombre soft
+  ctx.fillStyle = 'rgba(0,0,0,.32)';
+  ctx.beginPath(); ctx.ellipse(x, y + 22 * s, 14 * s, 3 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Jambes
+  const legL = swing * 12 * s, legR = -swing * 12 * s;
+  ctx.strokeStyle = c.skin; ctx.lineWidth = 5 * s; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(x - 3 * s, bodyY + 5 * s); ctx.lineTo(x - 3 * s, bodyY + 18 * s + legL); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x + 3 * s, bodyY + 5 * s); ctx.lineTo(x + 3 * s, bodyY + 18 * s + legR); ctx.stroke();
+  // Chaussures avec semelle visible
+  ctx.fillStyle = c.jersey;
+  ctx.beginPath(); ctx.ellipse(x - 3 * s, bodyY + 20 * s + legL, 5 * s, 3 * s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x + 3 * s, bodyY + 20 * s + legR, 5 * s, 3 * s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(x - 5 * s, bodyY + 22 * s + legL, 4 * s, 1 * s);
+  ctx.fillRect(x + 1 * s, bodyY + 22 * s + legR, 4 * s, 1 * s);
+  // Short avec ombre interne
+  ctx.fillStyle = '#fff'; ctx.fillRect(x - 9 * s, bodyY - 1 * s, 18 * s, 8 * s);
+  ctx.fillStyle = 'rgba(0,0,0,.08)'; ctx.fillRect(x - 9 * s, bodyY - 1 * s, 18 * s, 2 * s);
+  // Corps avec gradient subtil
+  const grad = ctx.createLinearGradient(x, bodyY - 18 * s, x, bodyY);
+  grad.addColorStop(0, c.jersey);
+  grad.addColorStop(1, shade(c.jersey, -0.12));
+  ctx.fillStyle = grad;
+  const r = 5 * s;
+  ctx.beginPath();
+  ctx.moveTo(x - 10 * s + r, bodyY - 18 * s); ctx.lineTo(x + 10 * s - r, bodyY - 18 * s);
+  ctx.quadraticCurveTo(x + 10 * s, bodyY - 18 * s, x + 10 * s, bodyY - 18 * s + r);
+  ctx.lineTo(x + 10 * s, bodyY); ctx.quadraticCurveTo(x + 10 * s, bodyY, x + 10 * s - r, bodyY);
+  ctx.lineTo(x - 10 * s + r, bodyY); ctx.quadraticCurveTo(x - 10 * s, bodyY, x - 10 * s, bodyY - r);
+  ctx.lineTo(x - 10 * s, bodyY - 18 * s + r); ctx.quadraticCurveTo(x - 10 * s, bodyY - 18 * s, x - 10 * s + r, bodyY - 18 * s);
+  ctx.fill();
+  // Bandeau doré brillant
+  const bandGrad = ctx.createLinearGradient(x, bodyY - 18 * s, x, bodyY - 14 * s);
+  bandGrad.addColorStop(0, '#ffe080');
+  bandGrad.addColorStop(1, '#d8a040');
+  ctx.fillStyle = bandGrad;
+  ctx.fillRect(x - 10 * s, bodyY - 18 * s, 20 * s, 3 * s);
+  // Bras
+  ctx.strokeStyle = c.skin; ctx.lineWidth = 4.5 * s;
+  ctx.beginPath(); ctx.moveTo(x - 10 * s, bodyY - 11 * s); ctx.lineTo(x - 17 * s, bodyY - 2 * s - swing * 6 * s); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x + 10 * s, bodyY - 11 * s); ctx.lineTo(x + 17 * s, bodyY - 2 * s + swing * 6 * s); ctx.stroke();
+  // Tête (un peu plus grosse, plus chibi)
+  ctx.fillStyle = c.skin;
+  ctx.beginPath(); ctx.arc(x, bodyY - 30 * s, 13 * s, 0, Math.PI*2); ctx.fill();
+  // Ombre sous le menton (effet 3D)
+  ctx.fillStyle = 'rgba(0,0,0,.12)';
+  ctx.beginPath(); ctx.ellipse(x, bodyY - 19 * s, 9 * s, 2 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Cheveux stylés avec mèche
+  ctx.fillStyle = c.hair;
+  ctx.beginPath();
+  ctx.arc(x, bodyY - 33 * s, 13 * s, Math.PI, 0);
+  ctx.lineTo(x + 12 * s, bodyY - 28 * s);
+  ctx.quadraticCurveTo(x + 14 * s, bodyY - 30 * s, x + 11 * s, bodyY - 31 * s);
+  ctx.lineTo(x - 5 * s, bodyY - 31 * s);
+  ctx.lineTo(x - 12 * s, bodyY - 28 * s);
+  ctx.fill();
+  // Mèche frontale
+  ctx.beginPath();
+  ctx.moveTo(x + 2 * s, bodyY - 34 * s);
+  ctx.quadraticCurveTo(x + 8 * s, bodyY - 36 * s, x + 6 * s, bodyY - 30 * s);
+  ctx.lineTo(x + 1 * s, bodyY - 31 * s);
+  ctx.fill();
+  // YEUX PÉTILLANTS (plus gros, avec gradient + catchlight)
+  // Cernes (anti-cernes blanc subtil)
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(x - 3.5 * s, bodyY - 28 * s, 2.5 * s, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x + 3.5 * s, bodyY - 28 * s, 2.5 * s, 0, Math.PI*2); ctx.fill();
+  // Iris (couleur cohérente avec cheveux ou marron par défaut)
+  const eyeColor = darken(c.hair, -0.1);
+  ctx.fillStyle = '#1a1010';
+  ctx.beginPath(); ctx.arc(x - 3 * s, bodyY - 28 * s, 1.8 * s, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x + 3 * s, bodyY - 28 * s, 1.8 * s, 0, Math.PI*2); ctx.fill();
+  // Catchlight (reflet blanc)
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(x - 2.4 * s, bodyY - 28.5 * s, .8 * s, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(x + 3.6 * s, bodyY - 28.5 * s, .8 * s, 0, Math.PI*2); ctx.fill();
+  // Joues rose vif
+  ctx.fillStyle = 'rgba(255,138,144,.7)';
+  ctx.beginPath(); ctx.ellipse(x - 6 * s, bodyY - 25 * s, 2.5 * s, 1.7 * s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(x + 6 * s, bodyY - 25 * s, 2.5 * s, 1.7 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Bouche expressive (sourire)
+  ctx.strokeStyle = '#3a2818'; ctx.lineWidth = 1.2 * s; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(x, bodyY - 23 * s, 2.5 * s, .2, Math.PI - .2); ctx.stroke();
+});
+
+function shade(hex, amt){
+  const m = hex.match(/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+  if(!m) return hex;
+  const r = Math.max(0, Math.min(255, parseInt(m[1], 16) + Math.floor(amt * 255)));
+  const g = Math.max(0, Math.min(255, parseInt(m[2], 16) + Math.floor(amt * 255)));
+  const b = Math.max(0, Math.min(255, parseInt(m[3], 16) + Math.floor(amt * 255)));
+  return '#' + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+}
+function darken(hex, amt){ return shade(hex, amt); }
+</script>
+</body></html>

@@ -5979,9 +5979,9 @@ body.shop-epic-flash::after{
         <div style="background:rgba(255,255,255,.78);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#3a2010;padding:5px 10px;border-radius:12px;font-size:11px;display:flex;align-items:center;gap:5px;box-shadow:0 2px 6px rgba(0,0,0,.2);pointer-events:none">
           🏁 <b id="runner-km" style="font-size:14px;color:#e85040">0.00</b><span style="font-size:10px">KM</span>
         </div>
-        <!-- Pace pill -->
-        <div style="background:rgba(255,232,80,.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#3a2010;padding:5px 10px;border-radius:12px;font-size:11px;display:flex;align-items:center;gap:5px;box-shadow:0 2px 6px rgba(0,0,0,.2);pointer-events:none">
-          ⚡ <span id="runner-pace" style="font-size:12px">×1.0</span>
+        <!-- Pill km/h (vitesse instantanée du héros) -->
+        <div style="background:rgba(255,232,80,.85);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#3a2010;padding:5px 10px;border-radius:12px;font-size:11px;display:flex;align-items:center;gap:5px;box-shadow:0 2px 6px rgba(0,0,0,.2);pointer-events:none;font-variant-numeric:tabular-nums">
+          ⚡ <span id="runner-pace" style="font-size:13px;font-weight:900">0.0 km/h</span>
         </div>
       </div>
 
@@ -13112,8 +13112,9 @@ function tapBoost(e){
   if(typeof gainXp === 'function') gainXp(isCrit ? 3 : 1);
   STATE.totalTaps = (STATE.totalTaps || 0) + 1;
   // v7 : CHAQUE TAP POUSSE LE COUREUR — boost manuel de lapProgress
-  // Au début, ~30 taps pour 1 tour. Avec progression auto, devient bonus.
-  const tapPush = 0.033 + (STATE.upgradeTapValue || 0) * 0.001; // 3.3% au départ
+  // Difficulté volontaire : ~67 taps pour 1 km au départ (au lieu de 30).
+  // Les upgrades de tapValue accélèrent progressivement.
+  const tapPush = 0.015 + (STATE.upgradeTapValue || 0) * 0.0008; // 1.5% au départ
   STATE.lapProgress = (STATE.lapProgress || 0) + tapPush * (isCrit ? 2 : 1);
   if(STATE.lapProgress >= 1){
     STATE.lapProgress = 0;
@@ -19249,6 +19250,8 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
   let lastTapBoost = 0;     // décroît dans le temps
   let heroDashX = 0;        // déplacement avant du héros au tap (effet "boost")
   let heroDashBob = 0;      // pic d'amplitude du bob au tap
+  let recentProgress = [];  // historique récent {t, km} pour calcul km/h
+  let displayKmh = 0;       // valeur lissée affichée
   let lastKmInt = 0;        // dernier KM entier vu (pour détecter passage de cap)
   let metersInCurrentKm = 0; // dérivé de STATE.lapProgress
 
@@ -20062,9 +20065,27 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     const speed = 0.85 + tapBoost * 1.5;
     const pace = 0.85 + tapBoost * 0.8;
 
+    // === Compteur km/h : delta progression sur fenêtre glissante 1.2s ===
+    recentProgress.push({t: now, km: totalKm});
+    while(recentProgress.length > 1 && recentProgress[0].t < now - 1200){
+      recentProgress.shift();
+    }
+    let rawKmh = 0;
+    if(recentProgress.length >= 2){
+      const a = recentProgress[0];
+      const b = recentProgress[recentProgress.length - 1];
+      const dtSec = (b.t - a.t) / 1000;
+      if(dtSec > 0.1){
+        rawKmh = (b.km - a.km) / dtSec * 3600;
+      }
+    }
+    // Lissage exponentiel (évite les sauts brusques)
+    displayKmh = displayKmh * 0.82 + rawKmh * 0.18;
+    if(displayKmh < 0) displayKmh = 0;
+
     // Update HUD overlay HTML
     if(kmEl) kmEl.textContent = totalKm.toFixed(2);
-    if(paceEl) paceEl.textContent = '×' + pace.toFixed(1);
+    if(paceEl) paceEl.textContent = displayKmh.toFixed(1) + ' km/h';
 
     const pal = currentPalette();
     // === TIER : niveau de richesse du décor (0=terrain vague → 5=stade pro) ===

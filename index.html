@@ -14463,12 +14463,12 @@ function stadiumTier(){
   const laps = STATE.lapsRun || 0;
   const saison = STATE.saison || 1;
   if(saison === 1){
-    if(laps < 2)  return 0;  // terrain vague
-    if(laps < 5)  return 1;  // 1 marche tribune, 1 sponsor
-    if(laps < 15) return 2;  // 2 marches + drapeau
-    if(laps < 30) return 3;  // 3 marches + scoreboard simple
-    if(laps < 60) return 4;  // 4 marches + 1 projecteur + nuages
-    return 5;                // tout débloqué
+    if(laps < 1)  return 0;  // tier 0 = avant le 1er km (chantier)
+    if(laps < 5)  return 1;  // 1er km → premiers spectateurs
+    if(laps < 15) return 2;  // stade municipal
+    if(laps < 30) return 3;  // compétition régionale (drapeaux)
+    if(laps < 60) return 4;  // tournoi national (1 projecteur)
+    return 5;                // stade olympique complet
   }
   if(saison === 2) return 6;
   if(saison === 3) return 7;
@@ -18590,7 +18590,12 @@ if('serviceWorker' in navigator){
   ];
   const tierBanner = document.getElementById('tier-banner');
   const tierBannerMsg = document.getElementById('tier-banner-msg');
-  let lastTier = (typeof stadiumTier === 'function') ? stadiumTier() : 0;
+  // Tier déjà annoncé au joueur (persisté en localStorage)
+  // → l'animation tier banner se redéclenche bien si on monte de palier,
+  //   même après un reload ou un reset partiel
+  const TIER_SEEN_KEY = 'foulee.lastSeenTier';
+  let lastTier = parseInt(localStorage.getItem(TIER_SEEN_KEY) || '-1', 10);
+  if(isNaN(lastTier)) lastTier = -1;
   let bannerTimeout = null;
   function showTierBanner(tier){
     if(!tierBanner || !tierBannerMsg) return;
@@ -18675,13 +18680,22 @@ if('serviceWorker' in navigator){
       const cur = stadiumTier();
       if(cur > lastTier){
         showTierBanner(cur);
+        lastTier = cur;
+        try { localStorage.setItem(TIER_SEEN_KEY, String(cur)); } catch(e){}
+      } else if(cur < lastTier){
+        // Ascension / reset : on rebaisse silencieusement le repère
+        lastTier = cur;
+        try { localStorage.setItem(TIER_SEEN_KEY, String(cur)); } catch(e){}
       }
-      lastTier = cur;
     }
     // Halo upgrade
     updateHalo();
     // Premier km
     checkFirstKm();
+    // HUD live : MÉD + NIV + XP refresh continu (fix Bug #1)
+    // → le compteur header ne reste plus figé après gain passif/reset
+    if(typeof renderStats === 'function') renderStats();
+    if(typeof updateRunnerHUD === 'function') updateRunnerHUD();
   }, 400);
 
   // Expose en debug

@@ -17757,25 +17757,49 @@ if('serviceWorker' in navigator){
     const isWindy = weather === 'windy';
     const isFoggy = weather === 'foggy';
 
+    // === Stadium identity (déplacé en haut pour le cycle jour/nuit) ===
+    const stadiumId = (window.STATE && window.STATE.selectedStadiumId) || (window.STATE && window.STATE.currentStadiumId) || 'municipal';
+
+    // === CYCLE JOUR/NUIT basé sur l'heure du téléphone ===
+    // Sauf pour cosmic (ciel toujours étoilé) et sunset (toujours coucher)
+    // Phase : 0 = pleine nuit, 1 = plein jour, 0.5 = aube/crépuscule
+    const stadiumOverride = (stadiumId === 'cosmic' || stadiumId === 'sunset');
+    const realDate = new Date();
+    const hour = realDate.getHours() + realDate.getMinutes() / 60;
+    // Phase : 0 = 0h (nuit profonde), 0.5 = 6h ou 18h (aube/crépus), 1 = 12h (midi)
+    // Courbe sinusoïdale : sin((hour - 6) * π/12)
+    let dayPhase = 0.5 + 0.5 * Math.sin((hour - 6) * Math.PI / 12);
+    if(stadiumOverride) dayPhase = 1; // cosmic/sunset gèrent leur propre ciel
+    // Tinted palette selon la phase
+    function tintByPhase(hex, phase){
+      if(phase >= 1) return hex;
+      const r = parseInt(hex.slice(1,3), 16);
+      const g = parseInt(hex.slice(3,5), 16);
+      const b = parseInt(hex.slice(5,7), 16);
+      // Vers la nuit : on assombrit et on tinte bleu nuit
+      const dr = Math.round(r * (0.15 + 0.85 * phase));
+      const dg = Math.round(g * (0.15 + 0.85 * phase));
+      const db = Math.round(b * (0.30 + 0.70 * phase));
+      return `rgb(${dr},${dg},${db})`;
+    }
+
     // ═══ Layer 1 : Sky gradient ═══
     const sky = ctx.createLinearGradient(0, 0, 0, H * .55);
     if(tier === 0){
-      sky.addColorStop(0, '#a8b4b8');
-      sky.addColorStop(1, '#c0c8c8');
+      sky.addColorStop(0, tintByPhase('#a8b4b8', dayPhase));
+      sky.addColorStop(1, tintByPhase('#c0c8c8', dayPhase));
     } else if(isRainy){
-      sky.addColorStop(0, '#6878a0');
-      sky.addColorStop(1, '#8898b8');
+      sky.addColorStop(0, tintByPhase('#6878a0', dayPhase));
+      sky.addColorStop(1, tintByPhase('#8898b8', dayPhase));
     } else if(isCloudy){
-      sky.addColorStop(0, '#a8b4c4');
-      sky.addColorStop(1, '#c8d4dc');
+      sky.addColorStop(0, tintByPhase('#a8b4c4', dayPhase));
+      sky.addColorStop(1, tintByPhase('#c8d4dc', dayPhase));
     } else {
-      sky.addColorStop(0, pal.skyTop);
-      sky.addColorStop(1, pal.skyBot);
+      sky.addColorStop(0, tintByPhase(pal.skyTop, dayPhase));
+      sky.addColorStop(1, tintByPhase(pal.skyBot, dayPhase));
     }
     ctx.fillStyle = sky;
     ctx.fillRect(0, 0, W, H * .55);
-    // === Identité visuelle par stade (au-delà de la palette) ===
-    const stadiumId = (window.STATE && window.STATE.selectedStadiumId) || (window.STATE && window.STATE.currentStadiumId) || 'municipal';
 
     // Étoiles scintillantes (stade cosmic)
     if(stadiumId === 'cosmic'){
@@ -17823,9 +17847,25 @@ if('serviceWorker' in navigator){
       }
     }
 
+    // Lune + étoiles si nuit profonde (dayPhase < 0.3) et pas un stade override
+    if(!stadiumOverride && dayPhase < 0.3 && tier >= 1){
+      // Étoiles dispersées
+      ctx.fillStyle = `rgba(255,255,255,${0.6 * (1 - dayPhase / 0.3)})`;
+      for(let i = 0; i < 40; i++){
+        const sx = (i * 137) % W;
+        const sy = (i * 73 + 13) % (H * 0.4);
+        const size = (i % 7 === 0) ? 2 : 1;
+        ctx.fillRect(sx, sy, size, size);
+      }
+      // Lune en haut à droite
+      ctx.fillStyle = 'rgba(240,240,220,.9)';
+      ctx.beginPath(); ctx.arc(W * .80, H * .12, 26, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = `rgba(0,0,50,${(1 - dayPhase / 0.3) * 0.5})`;
+      ctx.beginPath(); ctx.arc(W * .83, H * .10, 22, 0, Math.PI*2); ctx.fill();
+    }
     // Soleil ou planète selon le stade
-    if(tier >= 1 && !isRainy){
-      const sunAlpha = Math.min(1, (tier - 0.5) / 3) * (isCloudy ? 0.4 : isFoggy ? 0.5 : 1);
+    if(tier >= 1 && !isRainy && dayPhase >= 0.3){
+      const sunAlpha = Math.min(1, (tier - 0.5) / 3) * (isCloudy ? 0.4 : isFoggy ? 0.5 : 1) * Math.min(1, (dayPhase - 0.3) / 0.4);
       if(stadiumId === 'cosmic'){
         // Planète bicolore violet/rose au lieu du soleil
         ctx.fillStyle = `rgba(180,160,240,${0.3 * sunAlpha})`;

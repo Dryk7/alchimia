@@ -20067,32 +20067,50 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     if(paceEl) paceEl.textContent = '×' + pace.toFixed(1);
 
     const pal = currentPalette();
+    // === TIER : niveau de richesse du décor (0=terrain vague → 5=stade pro) ===
+    const tier = (typeof stadiumTier === 'function') ? stadiumTier() : 5;
 
     // ═══ Layer 1 : Sky gradient ═══
     const sky = ctx.createLinearGradient(0, 0, 0, H * .55);
-    sky.addColorStop(0, pal.skyTop);
-    sky.addColorStop(1, pal.skyBot);
+    // Tier 0 : ciel terne grisâtre. Sinon : palette du stade.
+    if(tier === 0){
+      sky.addColorStop(0, '#a8b4b8');
+      sky.addColorStop(1, '#c0c8c8');
+    } else {
+      sky.addColorStop(0, pal.skyTop);
+      sky.addColorStop(1, pal.skyBot);
+    }
     ctx.fillStyle = sky;
     ctx.fillRect(0, 0, W, H * .55);
-    // Soleil
-    ctx.fillStyle = 'rgba(255,250,180,.35)';
-    ctx.beginPath(); ctx.arc(W * .82, H * .12, 50, 0, Math.PI*2); ctx.fill();
-    ctx.fillStyle = '#ffea88';
-    ctx.beginPath(); ctx.arc(W * .82, H * .12, 32, 0, Math.PI*2); ctx.fill();
-
-    // ═══ Layer 2 : Nuages ═══
-    ctx.fillStyle = '#fff';
-    const cloudT = -(t * speed * 0.2);
-    for(let i = 0; i < 4; i++){
-      const cx = ((cloudT + i * (W * .55)) % (W + 200) + (W + 200)) % (W + 200);
-      ctx.beginPath();
-      ctx.ellipse(cx, H * .08 + i * 8, 45, 14, 0, 0, Math.PI*2); ctx.fill();
-      ctx.ellipse(cx + 25, H * .06 + i * 8, 28, 12, 0, 0, Math.PI*2); ctx.fill();
-      ctx.ellipse(cx - 20, H * .07 + i * 8, 30, 11, 0, 0, Math.PI*2); ctx.fill();
+    // Soleil : opacité progressive (visible dès tier 1)
+    if(tier >= 1){
+      const sunAlpha = Math.min(1, (tier - 0.5) / 3);
+      ctx.fillStyle = `rgba(255,250,180,${0.35 * sunAlpha})`;
+      ctx.beginPath(); ctx.arc(W * .82, H * .12, 50, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = `rgba(255,234,136,${sunAlpha})`;
+      ctx.beginPath(); ctx.arc(W * .82, H * .12, 32, 0, Math.PI*2); ctx.fill();
     }
 
-    // ═══ Layer 3 : Mountains ═══
-    ctx.fillStyle = pal.mountain;
+    // ═══ Layer 2 : Nuages — nombre croît avec le tier (0 au tier 0-1, max 4 au tier 4+) ═══
+    const cloudCount = Math.max(0, Math.min(4, tier - 1));
+    if(cloudCount > 0){
+      ctx.fillStyle = '#fff';
+      const cloudT = -(t * speed * 0.2);
+      for(let i = 0; i < cloudCount; i++){
+        const cx = ((cloudT + i * (W * .55)) % (W + 200) + (W + 200)) % (W + 200);
+        ctx.beginPath();
+        ctx.ellipse(cx, H * .08 + i * 8, 45, 14, 0, 0, Math.PI*2); ctx.fill();
+        ctx.ellipse(cx + 25, H * .06 + i * 8, 28, 12, 0, 0, Math.PI*2); ctx.fill();
+        ctx.ellipse(cx - 20, H * .07 + i * 8, 30, 11, 0, 0, Math.PI*2); ctx.fill();
+      }
+    }
+
+    // ═══ Layer 3 : Mountains (tier 0 = pâles/effacées, tier 2+ = normales) ═══
+    if(tier === 0){
+      ctx.fillStyle = '#9098a0'; // gris fade pour terrain vague
+    } else {
+      ctx.fillStyle = pal.mountain;
+    }
     const mountT = -(t * speed * 0.5);
     ctx.beginPath();
     ctx.moveTo(0, H * .55);
@@ -20105,33 +20123,102 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     }
     ctx.lineTo(W, H * .55); ctx.lineTo(0, H * .55); ctx.fill();
 
-    // ═══ Layer 4 : Tribune + foule ═══
-    ctx.fillStyle = pal.tribune;
-    ctx.fillRect(0, H * .55 - 75, W, 75);
-    ctx.fillStyle = pal.tribuneLight;
-    ctx.fillRect(0, H * .55 - 70, W, 30);
-    ctx.fillRect(0, H * .55 - 30, W, 12);
-    const crowdT = -(t * speed * 0.9);
-    for(let i = 0; i < 60; i++){
-      const x = ((crowdT + i * 14) % (W + 14) + (W + 14)) % (W + 14);
-      const c = ['#e84030','#48a8e8','#48dc48','#ffd060','#ec90c0','#9080d0'][i % 6];
-      ctx.fillStyle = c;
-      ctx.fillRect(x, H * .55 - 60, 6, 8);
-      ctx.fillRect(x, H * .55 - 38, 6, 6);
-      ctx.fillStyle = '#f0d4b0';
-      ctx.fillRect(x, H * .55 - 68, 6, 6);
-      ctx.fillRect(x, H * .55 - 44, 6, 5);
+    // ═══ Layer 3.5 : Projecteurs (tier 4+ uniquement) ═══
+    if(tier >= 4){
+      const projCount = tier >= 5 ? 2 : 1;
+      for(let p = 0; p < projCount; p++){
+        const px = p === 0 ? W * .15 : W * .85;
+        const py = H * .35;
+        // Mât
+        ctx.fillStyle = '#3a3a3a';
+        ctx.fillRect(px - 2, py, 4, H * .20);
+        // Projecteur (gros rectangle inclined)
+        ctx.fillStyle = '#5a5a5a';
+        ctx.fillRect(px - 10, py - 8, 20, 10);
+        // Halo lumineux (jaune transparent)
+        const haloGrad = ctx.createRadialGradient(px, py, 0, px, py, 80);
+        haloGrad.addColorStop(0, 'rgba(255,240,160,.35)');
+        haloGrad.addColorStop(1, 'rgba(255,240,160,0)');
+        ctx.fillStyle = haloGrad;
+        ctx.beginPath(); ctx.arc(px, py, 80, 0, Math.PI*2); ctx.fill();
+      }
     }
-    ctx.fillStyle = '#2c6090';
-    ctx.fillRect(0, H * .55 - 22, W, 18);
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 11px Nunito';
-    ctx.textAlign = 'left';
-    const txt = '★ FOULÉE OLYMPIC ARENA ★ FOULÉE OLYMPIC ARENA ';
-    const txtW = ctx.measureText(txt).width;
-    const bandT = -(t * speed * 0.9) % txtW;
-    for(let i = 0; i < W / txtW + 2; i++){
-      ctx.fillText(txt, bandT + i * txtW, H * .55 - 10);
+
+    // ═══ Layer 4 : Tribune + foule (densité progressive) ═══
+    // Tier 0 : tribune fantôme, pas de foule
+    if(tier === 0){
+      ctx.fillStyle = '#a89890';
+      ctx.fillRect(0, H * .55 - 30, W, 30);
+      ctx.fillStyle = '#988880';
+      ctx.fillRect(0, H * .55 - 26, W, 6);
+      // Pancarte délavée
+      ctx.fillStyle = '#5a4838';
+      ctx.fillRect(0, H * .55 - 12, W, 12);
+      ctx.fillStyle = '#7a6858';
+      ctx.font = 'bold 10px Nunito';
+      ctx.textAlign = 'left';
+      const txt0 = 'CHANTIER · ENTRAÎNEMENT LIBRE  ';
+      const txt0W = ctx.measureText(txt0).width;
+      const bandT0 = -(t * speed * 0.9) % txt0W;
+      for(let i = 0; i < W / txt0W + 2; i++){
+        ctx.fillText(txt0, bandT0 + i * txt0W, H * .55 - 4);
+      }
+    } else {
+      ctx.fillStyle = pal.tribune;
+      ctx.fillRect(0, H * .55 - 75, W, 75);
+      ctx.fillStyle = pal.tribuneLight;
+      ctx.fillRect(0, H * .55 - 70, W, 30);
+      ctx.fillRect(0, H * .55 - 30, W, 12);
+      // Densité de la foule croît avec le tier
+      // tier 1 = 20%, tier 2 = 50%, tier 3 = 75%, tier 4 = 90%, tier 5+ = 100%
+      const crowdFill = tier === 1 ? 0.20 : tier === 2 ? 0.50 : tier === 3 ? 0.75 : tier === 4 ? 0.90 : 1.0;
+      const crowdMax = 60;
+      const crowdCount = Math.floor(crowdMax * crowdFill);
+      const crowdT = -(t * speed * 0.9);
+      for(let i = 0; i < crowdCount; i++){
+        const x = ((crowdT + i * 14) % (W + 14) + (W + 14)) % (W + 14);
+        const c = ['#e84030','#48a8e8','#48dc48','#ffd060','#ec90c0','#9080d0'][i % 6];
+        ctx.fillStyle = c;
+        ctx.fillRect(x, H * .55 - 60, 6, 8);
+        ctx.fillRect(x, H * .55 - 38, 6, 6);
+        ctx.fillStyle = '#f0d4b0';
+        ctx.fillRect(x, H * .55 - 68, 6, 6);
+        ctx.fillRect(x, H * .55 - 44, 6, 5);
+      }
+      // Bandeau scrolling (tier 1+)
+      ctx.fillStyle = '#2c6090';
+      ctx.fillRect(0, H * .55 - 22, W, 18);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 11px Nunito';
+      ctx.textAlign = 'left';
+      const txt = '★ FOULÉE OLYMPIC ARENA ★ FOULÉE OLYMPIC ARENA ';
+      const txtW = ctx.measureText(txt).width;
+      const bandT = -(t * speed * 0.9) % txtW;
+      for(let i = 0; i < W / txtW + 2; i++){
+        ctx.fillText(txt, bandT + i * txtW, H * .55 - 10);
+      }
+      // Drapeaux sur le toit de la tribune (tier 3+)
+      if(tier >= 3){
+        const flagT = -(t * speed * 0.4);
+        const flagCount = 4 + (tier - 3) * 2;
+        for(let i = 0; i < flagCount; i++){
+          const fx = ((flagT + i * (W / flagCount)) % (W + 40) + (W + 40)) % (W + 40);
+          const fy = H * .55 - 78;
+          // Mât
+          ctx.fillStyle = '#3a3a3a';
+          ctx.fillRect(fx, fy, 1.5, 16);
+          // Drapeau ondulant
+          const fcol = ['#e85040','#4a9fd9','#ffd060','#7ec46a'][i % 4];
+          ctx.fillStyle = fcol;
+          const wave = Math.sin((t + i * 30) * 0.04) * 1.5;
+          ctx.beginPath();
+          ctx.moveTo(fx + 1.5, fy);
+          ctx.lineTo(fx + 10, fy + 2 + wave);
+          ctx.lineTo(fx + 1.5, fy + 6);
+          ctx.closePath();
+          ctx.fill();
+        }
+      }
     }
 
     // ═══ Layer 5 : Track avec couloirs Tartan (style C1) ═══

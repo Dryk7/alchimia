@@ -2538,37 +2538,43 @@ header{
 
 /* Combo display : énorme, en plein milieu du stade pendant le spam */
 .combo-display{
-  position:absolute; top:35%; left:50%; transform:translate(-50%, -50%);
+  position:absolute;
+  top:60px; left:50%;
+  transform:translate(-50%, 0) scale(.6);
   display:none; align-items:center; gap:8px;
-  pointer-events:none; z-index:6;
-  background:linear-gradient(180deg, #ff6020, #c83020);
-  border:4px solid #fff;
+  pointer-events:none; z-index:14;
+  background:linear-gradient(180deg, #ff8030, #c83020);
+  border:3px solid #fff;
   border-radius:22px;
-  padding:8px 22px;
-  box-shadow:0 8px 24px rgba(217,40,20,.55), 0 0 0 4px rgba(255,255,255,.15);
+  padding:8px 20px;
+  box-shadow:0 6px 18px rgba(217,40,20,.65), 0 0 0 3px rgba(255,200,80,.45);
   font-family:"Nunito", sans-serif; font-weight:900;
   color:#fff;
   letter-spacing:.04em;
+  opacity:0;
 }
-.combo-display.show{ display:inline-flex; animation:comboPop .25s cubic-bezier(.2,.9,.2,1.4), comboShake .3s ease-in-out 3 }
-@keyframes comboPop{
-  0%   { transform:translate(-50%, -50%) scale(.6); opacity:0; }
-  100% { transform:translate(-50%, -50%) scale(1); opacity:1; }
+.combo-display.show{
+  display:inline-flex;
+  animation:comboInOut .35s cubic-bezier(.2,.9,.2,1.4) forwards,
+            comboPulse 0.7s ease-in-out infinite 0.35s;
 }
-@keyframes comboShake{
-  0%,100% { transform:translate(-50%, -50%) rotate(0); }
-  25%     { transform:translate(-52%, -50%) rotate(-2deg); }
-  75%     { transform:translate(-48%, -50%) rotate(2deg); }
+@keyframes comboInOut{
+  0%   { transform:translate(-50%, 0) scale(.5); opacity:0; }
+  100% { transform:translate(-50%, 0) scale(1);  opacity:1; }
 }
-.combo-x{ font-size:30px; text-shadow:0 3px 6px rgba(160,40,0,.6); }
+@keyframes comboPulse{
+  0%, 100% { transform:translate(-50%, 0) scale(1)     rotate(-1deg); box-shadow:0 6px 18px rgba(217,40,20,.65), 0 0 0 3px rgba(255,200,80,.45); }
+  50%      { transform:translate(-50%, 0) scale(1.08)  rotate(1deg);  box-shadow:0 8px 24px rgba(217,40,20,.85), 0 0 0 5px rgba(255,200,80,.65); }
+}
+.combo-x{ font-size:22px; text-shadow:0 2px 4px rgba(160,40,0,.6); line-height:1; }
 .combo-fire{
-  display:inline-block; width:18px; height:18px;
-  background:radial-gradient(circle at 50% 70%, #ffd070, #ff6020 60%, transparent 75%);
-  animation:comboFlame .35s ease-in-out infinite alternate;
+  display:inline-block; width:18px; height:22px;
+  background:radial-gradient(ellipse at 50% 70%, #ffd070, #ff6020 60%, transparent 80%);
+  animation:comboFlame .25s ease-in-out infinite alternate;
 }
 @keyframes comboFlame{
-  0%   { transform:scale(.9); opacity:.85; }
-  100% { transform:scale(1.15); opacity:1; }
+  0%   { transform:scale(.85) translateY(0);   opacity:.85; }
+  100% { transform:scale(1.20) translateY(-2px); opacity:1; }
 }
 
 /* Upgrade buttons — 4 colonnes (tap / crit / tour / auto) */
@@ -12474,7 +12480,7 @@ function bumpStamina(amount){
 
 /* ================ TAP-TO-BOOST CORE (v2 pivot) ================ */
 const TAP_COOLDOWN_MS = 150; // anti-spam léger (reduit pour permettre combo)
-const TAP_COMBO_WINDOW = 900; // fenêtre entre 2 taps pour garder combo
+const TAP_COMBO_WINDOW = 1500; // fenêtre entre 2 taps pour garder combo (+66% pour visibilité)
 let _lastTapAt = 0;
 let _comboCount = 0;
 let _comboTimer = null;

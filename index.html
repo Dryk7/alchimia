@@ -19061,9 +19061,8 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       accessory: tier.accessory,
       speed,
       metersAhead: 38 + Math.random() * 30,
-      // lane : index entre 0 (couloir du fond) et 4 (couloir devant), avec léger jitter
+      // lane : index entre 0 (couloir du fond) et 4 (couloir devant), centré pile
       laneIdx: Math.floor(Math.random() * 5),
-      laneJitter: (Math.random() - 0.5) * 0.5,
       bobPhase: Math.random() * 6.28,
     });
   }
@@ -19127,7 +19126,6 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       pulsePhase: 0,
       screenX: 0, screenY: 0,
       laneIdx,
-      laneJitter: (Math.random() - 0.5) * 0.3,
       catchable: true,
     };
   }
@@ -19633,8 +19631,8 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       if(x < -50 || x > W + 50) continue;
       npc.bobPhase += 0.18 * dtMul;
       const npcBob = Math.abs(Math.sin(npc.bobPhase)) * 4;
-      // NPC centré dans son couloir (lanes dessinées à H*.58 + i*38, 5 couloirs)
-      const laneCenter = H * .58 + (npc.laneIdx + 0.5 + npc.laneJitter) * 38;
+      // NPC centré PILE dans son couloir (lanes dessinées à H*.58 + i*38, 5 couloirs)
+      const laneCenter = H * .58 + (npc.laneIdx + 0.5) * 38;
       const y = laneCenter - npcBob;
       const laneFrac = npc.laneIdx / 4; // 0=fond, 1=devant
       const distFactor = 1 - Math.min(1, Math.abs(pixAhead) / 800) * 0.3;
@@ -19678,8 +19676,8 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
         hare = null;
       } else {
         const hx = W / 2 + pixAhead;
-        // Centré dans son couloir
-        const hy = H * .58 + (hare.laneIdx + 0.5 + hare.laneJitter) * 38;
+        // Centré PILE dans son couloir
+        const hy = H * .58 + (hare.laneIdx + 0.5) * 38;
         const laneFrac = hare.laneIdx / 4;
         const pulse = 0.7 + Math.sin(hare.pulsePhase) * 0.3;
         const laneScale = 0.7 + laneFrac * 0.5;

@@ -18451,18 +18451,32 @@ if('serviceWorker' in navigator){
       const x = W / 2 + pixAhead;
       if(x > -80 && x < W + 80){
         mile.bobT += 0.04;
-        const bob = Math.sin(mile.bobT) * 3;
-        const py = H * .55 - 45 + bob;
+        const bob = Math.sin(mile.bobT) * 4;
+        // Position plus haute dans le ciel (était H*.55-45, maintenant H*.30 → bien visible)
+        const py = H * .30 + bob;
+        // Panneau plus grand : 80x36 (était 60x28)
         ctx.fillStyle = '#8a6840';
-        ctx.fillRect(x - 30, py, 60, 28);
+        ctx.fillRect(x - 40, py, 80, 36);
         ctx.fillStyle = '#6a4828';
-        ctx.fillRect(x - 30, py + 24, 60, 4);
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 16px Nunito';
+        ctx.fillRect(x - 40, py + 32, 80, 4);
+        // Bordure plus marquée
+        ctx.fillStyle = 'rgba(0,0,0,.30)';
+        ctx.fillRect(x - 40, py, 80, 2);
+        // Texte plus gros + ombre
+        ctx.fillStyle = 'rgba(0,0,0,.45)';
+        ctx.font = 'bold 20px Nunito';
         ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(mile.targetKm + ' KM', x, py + 19);
+        ctx.fillStyle = '#fff';
         ctx.fillText(mile.targetKm + ' KM', x, py + 18);
+        ctx.textBaseline = 'alphabetic';
+        // Piquet en bois plus visible
         ctx.fillStyle = '#5a3818';
-        ctx.fillRect(x - 2, py + 28, 4, 18);
+        ctx.fillRect(x - 3, py + 36, 6, H * .55 - (py + 36) - 4);
+        // Highlight sur le piquet
+        ctx.fillStyle = 'rgba(255,255,255,.15)';
+        ctx.fillRect(x - 3, py + 36, 1.5, H * .55 - (py + 36) - 4);
       }
     });
 
@@ -18828,11 +18842,12 @@ if('serviceWorker' in navigator){
       }
     }, true);
     stadiumEl.addEventListener('click', () => {
-      // 1 tap suffit à amener à ~x3 (tapBoost=1) ; spam soutenu = x5 (cap à 2)
-      lastTapBoost = Math.min(2, lastTapBoost + 1.0);
-      heroDashX = Math.min(22, heroDashX + 12);
-      heroDashBob = Math.min(8, heroDashBob + 5);
-      cameraShake = Math.min(7, cameraShake + 3);
+      // Bonus tap visuel : ajouté progressivement (était +1.0, trop fort)
+      // Spam soutenu permet d'atteindre 1.5-2.0 mais 1 tap reste modéré
+      lastTapBoost = Math.min(2, lastTapBoost + 0.55);
+      heroDashX = Math.min(18, heroDashX + 8);
+      heroDashBob = Math.min(6, heroDashBob + 3.5);
+      cameraShake = Math.min(5, cameraShake + 2);
     });
   }
 

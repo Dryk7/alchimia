@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FOULÉE · Tartan contraste levels</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:linear-gradient(180deg,#1a1814,#0a0a14);color:#fff;font-family:Nunito,sans-serif;min-height:100vh;padding:30px}
+h1{text-align:center;margin:0 0 8px;font-size:22px}
+.subtitle{text-align:center;color:#a89880;margin-bottom:30px;font-size:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;max-width:1200px;margin:0 auto}
+.card{background:#1c1a18;border-radius:14px;overflow:hidden;border:2px solid #2a2820;cursor:pointer;text-decoration:none;color:inherit;display:block;transition:transform .2s,border-color .2s}
+.card:hover{transform:translateY(-3px);border-color:#a89880}
+.card iframe{display:block;width:100%;height:330px;border:0;pointer-events:none}
+.card-body{padding:14px}
+.card h2{margin:0 0 3px;font-size:14px}
+.card .sub{font-size:11px;color:#a89880;margin-bottom:6px}
+.tag-letter{display:inline-block;background:#e85040;color:#fff;font-weight:900;padding:2px 8px;border-radius:6px;font-size:11px;margin-right:6px}
+</style></head><body>
+<h1>FOULÉE · 3 niveaux de contraste Tartan</h1>
+<div class="subtitle">Compare et choisis le contraste qui te plaît</div>
+<div class="grid">
+  <a href="C1-tartan-light.html" class="card">
+    <iframe src="C1-tartan-light.html" loading="lazy"></iframe>
+    <div class="card-body">
+      <h2><span class="tag-letter">C1</span>Léger</h2>
+      <div class="sub">#e85040 / #c84030 (subtil)</div>
+    </div>
+  </a>
+  <a href="C2-tartan-medium.html" class="card">
+    <iframe src="C2-tartan-medium.html" loading="lazy"></iframe>
+    <div class="card-body">
+      <h2><span class="tag-letter">C2</span>Moyen</h2>
+      <div class="sub">#f06048 / #a02818 (visible)</div>
+    </div>
+  </a>
+  <a href="C3-tartan-strong.html" class="card">
+    <iframe src="C3-tartan-strong.html" loading="lazy"></iframe>
+    <div class="card-body">
+      <h2><span class="tag-letter">C3</span>Fort</h2>
+      <div class="sub">#f87858 / #5a1010 (rayé marqué)</div>
+    </div>
+  </a>
+</div>
+</body></html>

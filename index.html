@@ -16878,7 +16878,9 @@ if('serviceWorker' in navigator){
 
   // État de la scène
   let t = 0;
-  let lastTapBoost = 0;     // décroît dans le temps
+  let lastTapBoost = 0;     // dérivé de tapCount (0 → 2)
+  let tapCount = 0;         // compteur 0-100 : 100 taps actifs = vitesse max
+  let lastTapTime = 0;      // timestamp du dernier tap (pour gérer décroissance)
   let heroDashX = 0;        // déplacement avant du héros au tap (effet "boost")
   let heroDashBob = 0;      // pic d'amplitude du bob au tap
   let recentProgress = [];  // historique récent {t, km} pour calcul km/h
@@ -17758,14 +17760,20 @@ if('serviceWorker' in navigator){
     metersInCurrentKm = lapProgress * 1000;
     // Détection de passage de KM pour spawn milestone derrière
     if(lapsRun > lastKmInt){
-      // boost visuel boost à chaque km
-      lastTapBoost = Math.min(2, lastTapBoost + 0.7);
+      // Boost de 15 "taps virtuels" au passage d'un km
+      tapCount = Math.min(100, tapCount + 15);
+      lastTapTime = performance.now();
       lastKmInt = lapsRun;
     }
-    // Pace : selon vitesse du jeu (derived from runner speed multiplier ou tap récent)
+    // === Système tapCount : 100 taps = vitesse max ===
+    // tapCount décroît UNIQUEMENT si pas tapé depuis 300ms (sinon plateau)
+    const sinceLastTap = (performance.now() - lastTapTime) / 1000;
+    if(sinceLastTap > 0.3){
+      tapCount = Math.max(0, tapCount - dt * 35); // décroît à ~35/sec au repos
+    }
+    // Map tapCount (0..100) → lastTapBoost (0..2)
+    lastTapBoost = (tapCount / 100) * 2;
     const tapBoost = lastTapBoost;
-    // Décroissance plus rapide : le boost revient à zero plus vite (~1s)
-    lastTapBoost *= 0.94;
     // Décroissance du dash (effet "bond" au tap)
     heroDashX *= 0.86;
     heroDashBob *= 0.88;
@@ -18842,9 +18850,9 @@ if('serviceWorker' in navigator){
       }
     }, true);
     stadiumEl.addEventListener('click', () => {
-      // Bonus tap visuel : ajouté progressivement (était +1.0, trop fort)
-      // Spam soutenu permet d'atteindre 1.5-2.0 mais 1 tap reste modéré
-      lastTapBoost = Math.min(2, lastTapBoost + 0.55);
+      // 1 tap incrémente le compteur de 1. Cap à 100 → vitesse max
+      tapCount = Math.min(100, tapCount + 1);
+      lastTapTime = performance.now();
       heroDashX = Math.min(18, heroDashX + 8);
       heroDashBob = Math.min(6, heroDashBob + 3.5);
       cameraShake = Math.min(5, cameraShake + 2);
@@ -18875,8 +18883,9 @@ if('serviceWorker' in navigator){
       setTimeout(() => blip(660, .15, 'sine', .2, .5), 160);
     }
     if(typeof vibrate === 'function') vibrate([30, 40, 80]);
-    // Boost visuel TRÈS marqué (le lièvre était rapide)
-    lastTapBoost = Math.min(2, lastTapBoost + 1.2);
+    // Boost de ~35 "taps virtuels" (le lièvre te donne un sprint sustained)
+    tapCount = Math.min(100, tapCount + 35);
+    lastTapTime = performance.now();
   }
 
   // BONUS LAPIN : burst de médailles + animation
@@ -18905,8 +18914,9 @@ if('serviceWorker' in navigator){
     }
     // Vibration
     if(typeof vibrate === 'function') vibrate([20, 30, 60]);
-    // Boost visuel marqué
-    lastTapBoost = Math.min(2, lastTapBoost + 0.8);
+    // Boost de ~20 "taps virtuels" pour le lapin
+    tapCount = Math.min(100, tapCount + 20);
+    lastTapTime = performance.now();
   }
 
   // setInterval fixe ~60fps (16.67ms) pour timing stable cross-environment

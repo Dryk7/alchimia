@@ -19086,13 +19086,13 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
   setTimeout(spawnNpc, 800);
   setTimeout(npcSpawnLoop, 3500);
 
-  // ═══ LAPIN BONUS : court vite au fond, à attraper pendant qu'il est à l'écran ═══
+  // ═══ LAPIN BONUS : événement rare, à attraper pour bonus ═══
   let rabbit = null;
   function spawnRabbit(){
     if(rabbit) return;
     rabbit = {
-      metersAhead: 28 + Math.random() * 5, // juste hors écran à droite (visible vite)
-      mPerSec: 5 + Math.random() * 1.5,    // ~8-10s sur l'écran (très catchable)
+      metersAhead: 28 + Math.random() * 5,
+      mPerSec: 5 + Math.random() * 1.5,
       bobPhase: 0,
       pinkPhase: 0,
       screenX: 0, screenY: 0,
@@ -19100,16 +19100,43 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     };
   }
   function rabbitSpawnLoop(){
-    // 30% de chance toutes les 20-40s d'apparition lapin
-    if(!rabbit && Math.random() < 0.30){
+    // 15% de chance toutes les 40-70s = en moyenne 1 lapin / ~3-4 min
+    if(!rabbit && Math.random() < 0.15){
       spawnRabbit();
     }
-    const delay = 20000 + Math.random() * 20000;
+    const delay = 40000 + Math.random() * 30000;
     setTimeout(rabbitSpawnLoop, delay);
   }
-  setTimeout(rabbitSpawnLoop, 10000); // 1er check après 10s
-  // Pour debug : window.SPAWN_RABBIT()
+  setTimeout(rabbitSpawnLoop, 25000); // 1er check après 25s
+
+  // ═══ LIÈVRE CHALLENGER : court PLUS VITE que le héros, te dépasse par la gauche ═══
+  // Tap dessus = boost vitesse temporaire. Sinon il te dépasse sans pénalité.
+  let hare = null;
+  function spawnHare(){
+    if(hare) return;
+    hare = {
+      // Commence DERRIÈRE (à gauche), avance plus vite que le héros → passe et sort à droite
+      metersAhead: -28 - Math.random() * 5,
+      mPerSec: 4.5 + Math.random() * 1.5, // vitesse RELATIVE (différentiel héros → lièvre)
+      bobPhase: 0,
+      pulsePhase: 0,
+      screenX: 0, screenY: 0,
+      catchable: true,
+    };
+  }
+  function hareSpawnLoop(){
+    // 18% de chance toutes les 50-90s
+    if(!hare && Math.random() < 0.18){
+      spawnHare();
+    }
+    const delay = 50000 + Math.random() * 40000;
+    setTimeout(hareSpawnLoop, delay);
+  }
+  setTimeout(hareSpawnLoop, 35000);
+
+  // Debug helpers
   window.SPAWN_RABBIT = spawnRabbit;
+  window.SPAWN_HARE = spawnHare;
 
   // Milestones (panneaux KM)
   const milestones = [];
@@ -19133,6 +19160,83 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
   }
 
   // ═══ Sprite LAPIN — court vite au fond, à attraper ═══
+  // ═══ Sprite LIÈVRE — court plus vite que le héros, passe par la gauche ═══
+  function drawHare(x, y, scale, phase, pulse){
+    const s = scale;
+    // Speed lines derrière (effet vitesse)
+    ctx.strokeStyle = `rgba(255,140,40,${.5 + pulse * .3})`;
+    ctx.lineWidth = 2.5 * s;
+    for(let i = 0; i < 4; i++){
+      ctx.beginPath();
+      ctx.moveTo(x - 18 * s - i * 8 * s, y - 6 * s + i * 3 * s);
+      ctx.lineTo(x - 6 * s - i * 8 * s, y - 6 * s + i * 3 * s);
+      ctx.stroke();
+    }
+    // Glow orange pulsant (urgent)
+    const auraGrad = ctx.createRadialGradient(x, y, 0, x, y, 45 * s);
+    auraGrad.addColorStop(0, `rgba(255,140,40,${.55 * pulse})`);
+    auraGrad.addColorStop(.5, `rgba(255,100,40,${.25 * pulse})`);
+    auraGrad.addColorStop(1, 'rgba(255,100,40,0)');
+    ctx.fillStyle = auraGrad;
+    ctx.beginPath(); ctx.arc(x, y, 45 * s, 0, Math.PI*2); ctx.fill();
+    // Animation bonds (plus rapide que rabbit)
+    const hop = Math.abs(Math.sin(phase * 1.0)) * 10 * s;
+    const cy = y - hop;
+    // Ombre
+    ctx.fillStyle = 'rgba(0,0,0,.35)';
+    ctx.beginPath();
+    ctx.ellipse(x, y + 4 * s, 11 * s * (1 - hop/(10*s)*.4), 3 * s, 0, 0, Math.PI*2);
+    ctx.fill();
+    // Pattes arrière (couleur brun/gris du lièvre)
+    const fur = '#a87850';
+    const furLight = '#c89870';
+    ctx.fillStyle = fur;
+    ctx.beginPath(); ctx.ellipse(x - 5 * s, cy + 2 * s, 3.5 * s, 6 * s, .3, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x + 4 * s, cy + 2 * s, 3.5 * s, 6 * s, -.3, 0, Math.PI*2); ctx.fill();
+    // Corps (ellipse brune)
+    ctx.fillStyle = fur;
+    ctx.beginPath(); ctx.ellipse(x, cy - 2 * s, 10 * s, 8 * s, 0, 0, Math.PI*2); ctx.fill();
+    // Ventre crème
+    ctx.fillStyle = '#f0d8a8';
+    ctx.beginPath(); ctx.ellipse(x + 1 * s, cy, 7 * s, 4 * s, 0, 0, Math.PI*2); ctx.fill();
+    // Queue
+    ctx.fillStyle = furLight;
+    ctx.beginPath(); ctx.arc(x - 10 * s, cy - 1 * s, 3 * s, 0, Math.PI*2); ctx.fill();
+    // Pattes avant
+    ctx.fillStyle = fur;
+    ctx.beginPath(); ctx.ellipse(x + 6 * s, cy + 3 * s, 2.5 * s, 5 * s, .25, 0, Math.PI*2); ctx.fill();
+    // Tête
+    ctx.beginPath(); ctx.arc(x + 7 * s, cy - 7 * s, 6.5 * s, 0, Math.PI*2); ctx.fill();
+    // Oreilles longues (plus longues que le lapin !)
+    ctx.beginPath(); ctx.ellipse(x + 5 * s, cy - 16 * s, 1.6 * s, 7 * s, -.1, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x + 9 * s, cy - 16 * s, 1.6 * s, 7 * s, .15, 0, Math.PI*2); ctx.fill();
+    // Intérieur oreilles
+    ctx.fillStyle = '#ff8a90';
+    ctx.beginPath(); ctx.ellipse(x + 5 * s, cy - 16 * s, .7 * s, 5 * s, -.1, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x + 9 * s, cy - 16 * s, .7 * s, 5 * s, .15, 0, Math.PI*2); ctx.fill();
+    // Dossard orange (#1 sur la poitrine)
+    ctx.fillStyle = '#ff8030';
+    ctx.beginPath(); ctx.arc(x + 1 * s, cy + 1 * s, 3 * s, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold ${4 * s}px Nunito`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('1', x + 1 * s, cy + 1 * s);
+    // Œil noir (concentré)
+    ctx.fillStyle = '#1a1010';
+    ctx.beginPath(); ctx.arc(x + 9 * s, cy - 7 * s, 1.3 * s, 0, Math.PI*2); ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(x + 9.3 * s, cy - 7.3 * s, .4 * s, 0, Math.PI*2); ctx.fill();
+    // Nez rose
+    ctx.fillStyle = '#ff6080';
+    ctx.beginPath(); ctx.arc(x + 12.5 * s, cy - 6 * s, .9 * s, 0, Math.PI*2); ctx.fill();
+    // Moustaches
+    ctx.strokeStyle = 'rgba(80,40,20,.7)';
+    ctx.lineWidth = .5 * s;
+    ctx.beginPath(); ctx.moveTo(x + 12 * s, cy - 5 * s); ctx.lineTo(x + 16 * s, cy - 4 * s); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + 12 * s, cy - 4 * s); ctx.lineTo(x + 16 * s, cy - 3 * s); ctx.stroke();
+  }
+
   function drawRabbit(x, y, scale, phase, glow){
     const s = scale;
     // Glow doré autour (très visible = invitation au tap)
@@ -19526,23 +19630,40 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     const heroSpec = { jersey:'#e85040', skin:'#f0d4b0', hair:'#7a5838' };
     drawRunner(heroX, heroY - heroBob, 1.0, heroSpec, t * .25 * pace, true);
 
-    // ═══ LAPIN BONUS : court au fond, glow doré ═══
+    // ═══ LAPIN BONUS : court au fond de droite à gauche ═══
     if(rabbit){
-      rabbit.metersAhead -= rabbit.mPerSec * dt; // drift en m/s avec dt secondes
+      rabbit.metersAhead -= rabbit.mPerSec * dt;
       rabbit.bobPhase += 0.45 * dtMul;
       rabbit.pinkPhase += 0.08 * dtMul;
       const pixAhead = rabbit.metersAhead * 8;
       if(pixAhead < -150){
-        // S'est échappé !
-        console.warn('[RAB ESCAPE] t=', t.toFixed(0), 'mAh=', rabbit.metersAhead.toFixed(2), 'mps=', rabbit.mPerSec);
         rabbit = null;
       } else {
         const rx = W / 2 + pixAhead;
-        const ry = H * .62; // sur la 1ère lane du fond (visible au-dessus de la piste)
+        const ry = H * .62;
         const glow = 0.7 + Math.sin(rabbit.pinkPhase) * 0.3;
         rabbit.screenX = rx;
         rabbit.screenY = ry;
         drawRabbit(rx, ry, 1.6, rabbit.bobPhase, glow);
+      }
+    }
+
+    // ═══ LIÈVRE CHALLENGER : court de gauche à droite (te dépasse) ═══
+    if(hare){
+      hare.metersAhead += hare.mPerSec * dt; // AVANCE (te dépasse)
+      hare.bobPhase += 0.6 * dtMul;
+      hare.pulsePhase += 0.1 * dtMul;
+      const pixAhead = hare.metersAhead * 8;
+      if(pixAhead > 280){
+        // Sorti à droite (te dépasse complètement)
+        hare = null;
+      } else {
+        const hx = W / 2 + pixAhead;
+        const hy = H * .72; // sur le couloir du milieu (à côté du héros)
+        const pulse = 0.7 + Math.sin(hare.pulsePhase) * 0.3;
+        hare.screenX = hx;
+        hare.screenY = hy;
+        drawHare(hx, hy, 1.4, hare.bobPhase, pulse);
       }
     }
 
@@ -19563,28 +19684,69 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
     // (scheduleTick gère la prochaine frame, pas de requestAnimationFrame ici)
   }
 
-  // Hook tap : à chaque clic sur le stadium, boost visuel + check lapin
+  // Hook tap : à chaque clic sur le stadium, check lapin + lièvre AVANT tapBoost
   const stadiumEl = document.getElementById('runner-stadium');
   if(stadiumEl){
-    // Intercepte AVANT tapBoost (en capture phase) pour le lapin
+    // Intercepte en capture phase pour lapin/lièvre
     stadiumEl.addEventListener('pointerdown', (e) => {
-      if(!rabbit) return;
+      if(!rabbit && !hare) return;
       const rect = stadiumEl.getBoundingClientRect();
       const tx = e.clientX - rect.left;
       const ty = e.clientY - rect.top;
-      const dist = Math.sqrt((tx - rabbit.screenX) ** 2 + (ty - rabbit.screenY) ** 2);
-      if(dist < 50){
-        // 🐰 LAPIN ATTRAPÉ !
-        onRabbitCaught();
-        rabbit = null;
-        e.stopPropagation();
-        e.preventDefault();
+      // Check lapin
+      if(rabbit){
+        const dist = Math.sqrt((tx - rabbit.screenX) ** 2 + (ty - rabbit.screenY) ** 2);
+        if(dist < 50){
+          onRabbitCaught();
+          rabbit = null;
+          e.stopPropagation();
+          e.preventDefault();
+          return;
+        }
       }
-    }, true); // capture phase = intercepte avant tapBoost
-    // Boost visuel à chaque tap (sans interférer avec tapBoost)
+      // Check lièvre
+      if(hare){
+        const dist = Math.sqrt((tx - hare.screenX) ** 2 + (ty - hare.screenY) ** 2);
+        if(dist < 50){
+          onHareCaught();
+          hare = null;
+          e.stopPropagation();
+          e.preventDefault();
+          return;
+        }
+      }
+    }, true);
     stadiumEl.addEventListener('click', () => {
       lastTapBoost = Math.min(2, lastTapBoost + 0.25);
     });
+  }
+
+  // BONUS LIÈVRE : tap dessus = burst gold + boost vitesse temporaire
+  function onHareCaught(){
+    const ST = window.STATE || {};
+    // Bonus gold proportionnel au level (l'attraper devient + lucratif tard)
+    const lvl = ST.alchLevel || 1;
+    const bonus = Math.max(100, 50 + lvl * 25);
+    ST.gold = (ST.gold || 0) + bonus;
+    // Notif
+    if(typeof showRunnerBubble === 'function'){
+      showRunnerBubble('🐇 LIÈVRE ! +' + bonus + ' méd');
+    } else {
+      const pop = document.createElement('div');
+      pop.style.cssText = 'position:fixed;top:30%;left:50%;transform:translateX(-50%);background:linear-gradient(180deg,#ff8030,#c84020);color:#fff;font-weight:900;padding:14px 24px;border-radius:18px;font-size:18px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:9999;font-family:Nunito,sans-serif;pointer-events:none;animation:rabbitPop 1.5s ease-out forwards';
+      pop.textContent = '🐇 +' + bonus + ' méd';
+      document.body.appendChild(pop);
+      setTimeout(() => pop.remove(), 1500);
+    }
+    // SFX descendant (vs lapin ascendant)
+    if(typeof blip === 'function'){
+      blip(1320, .1, 'sine', .2, .5);
+      setTimeout(() => blip(880, .1, 'sine', .2, .5), 80);
+      setTimeout(() => blip(660, .15, 'sine', .2, .5), 160);
+    }
+    if(typeof vibrate === 'function') vibrate([30, 40, 80]);
+    // Boost visuel TRÈS marqué (le lièvre était rapide)
+    lastTapBoost = Math.min(2, lastTapBoost + 1.2);
   }
 
   // BONUS LAPIN : burst de médailles + animation
@@ -19619,7 +19781,7 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 
   // setInterval fixe ~60fps (16.67ms) pour timing stable cross-environment
   setInterval(tick, 1000 / 60);
-  window.RUNNER_2D = { resize, npcs, milestones, getRabbit:()=>rabbit, spawnRabbit };
+  window.RUNNER_2D = { resize, npcs, milestones, getRabbit:()=>rabbit, getHare:()=>hare, spawnRabbit, spawnHare };
 })();
 </script>
 

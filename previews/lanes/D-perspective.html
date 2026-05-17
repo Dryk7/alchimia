@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Lanes D — Perspective</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0e0d12;color:#fff;font-family:Nunito,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px}
+h1{font-size:16px;margin:0 0 4px}
+.tag{font-size:11px;color:#a89880;margin-bottom:10px}
+.frame{width:360px;aspect-ratio:9/16;border-radius:18px;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.5);background:#7ec4ee}
+canvas{display:block;width:100%;height:100%}
+.desc{margin-top:10px;max-width:340px;font-size:12px;color:#c8b8a0;line-height:1.4}
+</style></head><body>
+<h1>D · Perspective dynamique</h1>
+<div class="tag">Couloirs plus serrés au fond, plus larges devant · effet vitesse marqué</div>
+<div class="frame"><canvas id="cv" width="360" height="640"></canvas></div>
+<div class="desc">+ Vraie perspective athlé, dynamique, immersif. − Plus complexe visuellement.</div>
+
+<script src="_shared.js"></script>
+<script>
+SCENE_TEMPLATE(document.getElementById('cv'), function drawLanes(ctx, W, H, t, speed){
+  // Espacements croissants : fond plus serré, devant plus large
+  // 5 couloirs avec offsets [0, 0.18, 0.40, 0.66, 0.95] de la zone piste
+  const trackTop = H * .58;
+  const trackBot = H;
+  const trackH = trackBot - trackTop;
+  const laneOffsets = [0, 0.18, 0.40, 0.66, 0.95, 1.25];
+  // Lignes blanches continues, épaisseur croissante (fond=fin, devant=épais)
+  ctx.fillStyle = '#fff';
+  for(let lane = 0; lane < laneOffsets.length; lane++){
+    const y = trackTop + laneOffsets[lane] * trackH * .35;
+    if(y > trackBot) continue;
+    const thickness = 1 + lane * 0.5;
+    ctx.fillRect(0, y, W, thickness);
+  }
+  // Pointillés blancs subtils sur les couloirs proches (effet vitesse devant)
+  const laneT = -(t * speed * 1.5);
+  for(let lane = 3; lane < laneOffsets.length - 1; lane++){
+    const y = trackTop + (laneOffsets[lane] + laneOffsets[lane+1]) / 2 * trackH * .35;
+    if(y > trackBot) continue;
+    for(let i = 0; i < W / 70 + 2; i++){
+      const x = ((laneT + i * 70) % (W + 70) + (W + 70)) % (W + 70);
+      ctx.fillRect(x, y, 24, 1.5);
+    }
+  }
+});
+</script>
+</body></html>

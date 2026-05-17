@@ -7059,13 +7059,76 @@ body.shop-epic-flash::after{
     ctx.strokeText('DÉPART', 0, 0);
     ctx.fillText('DÉPART', 0, 0);
     ctx.restore();
+    // === PNJ en train de courir en arrière-plan (couloir 0 = fond) ===
+    // Boucle : de droite à gauche, défilement modéré → donne vie sans distraire
+    const pnjLaneIdx = 0;
+    const pnjLaneFrac = pnjLaneIdx / 4;
+    const pnjScale = (0.60 + pnjLaneFrac * 0.45) * 1.0; // ~0.60 (perspective fond)
+    const pnjPeriod = 6 * 60; // 6 secondes pour traverser
+    const pnjT = (t % pnjPeriod) / pnjPeriod;
+    const pnjX = W * 1.15 - pnjT * (W * 1.30); // sort par la gauche
+    const pnjY = LANES_TOP + (pnjLaneIdx + 0.5) * LANE_H;
+    if(pnjX > -50 && pnjX < W + 50){
+      drawHeroIdle._isPnj = true;
+      drawPnjRunner(pnjX, pnjY, pnjScale, t);
+    }
     // === HÉROS en pose départ (couloir 2 = milieu, juste avant la ligne) ===
     const heroLaneIdx = 2;
     const heroX = W * .35;
     const heroY = LANES_TOP + (heroLaneIdx + 0.5) * LANE_H;
-    const heroScale = (0.60 + (heroLaneIdx / 4) * 0.45) * 1.55; // un peu plus grand qu'in-game (focus sur le héros)
+    const heroScale = (0.60 + (heroLaneIdx / 4) * 0.45) * 1.55;
     drawHeroIdle(heroX, heroY, heroScale);
     requestAnimationFrame(draw);
+  }
+
+  // PNJ chibi qui court en arrière-plan (bleu) — animation simple
+  function drawPnjRunner(x, y, scale, time){
+    const s = scale;
+    const phase = time * 0.18;
+    const swing = Math.sin(phase);
+    const hop = Math.abs(Math.sin(phase * 2)) * 4 * s;
+    const bodyY = y - hop;
+    // Ombre
+    ctx.fillStyle = 'rgba(0,0,0,.30)';
+    ctx.beginPath(); ctx.ellipse(x, y + 22 * s, 12 * s, 2.5 * s, 0, 0, Math.PI*2); ctx.fill();
+    // Jambes (cycle simple)
+    const legL = swing * 10 * s, legR = -swing * 10 * s;
+    ctx.strokeStyle = '#d0a880'; ctx.lineWidth = 5 * s; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x - 3 * s, bodyY + 5 * s); ctx.lineTo(x - 3 * s, bodyY + 18 * s + legL); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + 3 * s, bodyY + 5 * s); ctx.lineTo(x + 3 * s, bodyY + 18 * s + legR); ctx.stroke();
+    // Chaussures bleues
+    ctx.fillStyle = '#4a9fd9';
+    ctx.beginPath(); ctx.ellipse(x - 3 * s, bodyY + 20 * s + legL, 5 * s, 3 * s, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x + 3 * s, bodyY + 20 * s + legR, 5 * s, 3 * s, 0, 0, Math.PI*2); ctx.fill();
+    // Short blanc
+    ctx.fillStyle = '#fff'; ctx.fillRect(x - 9 * s, bodyY - 1 * s, 18 * s, 8 * s);
+    // Corps bleu
+    ctx.fillStyle = '#4a9fd9';
+    const r = 5 * s;
+    ctx.beginPath();
+    ctx.moveTo(x - 10 * s + r, bodyY - 18 * s); ctx.lineTo(x + 10 * s - r, bodyY - 18 * s);
+    ctx.quadraticCurveTo(x + 10 * s, bodyY - 18 * s, x + 10 * s, bodyY - 18 * s + r);
+    ctx.lineTo(x + 10 * s, bodyY); ctx.quadraticCurveTo(x + 10 * s, bodyY, x + 10 * s - r, bodyY);
+    ctx.lineTo(x - 10 * s + r, bodyY); ctx.quadraticCurveTo(x - 10 * s, bodyY, x - 10 * s, bodyY - r);
+    ctx.lineTo(x - 10 * s, bodyY - 18 * s + r); ctx.quadraticCurveTo(x - 10 * s, bodyY - 18 * s, x - 10 * s + r, bodyY - 18 * s);
+    ctx.fill();
+    ctx.fillStyle = '#ffd060'; ctx.fillRect(x - 10 * s, bodyY - 18 * s, 20 * s, 3 * s);
+    // Bras
+    ctx.strokeStyle = '#d0a880'; ctx.lineWidth = 4.5 * s;
+    ctx.beginPath(); ctx.moveTo(x - 10 * s, bodyY - 11 * s); ctx.lineTo(x - 17 * s, bodyY - 2 * s - swing * 6 * s); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + 10 * s, bodyY - 11 * s); ctx.lineTo(x + 17 * s, bodyY - 2 * s + swing * 6 * s); ctx.stroke();
+    // Tête
+    ctx.fillStyle = '#d0a880';
+    ctx.beginPath(); ctx.arc(x, bodyY - 28 * s, 12 * s, 0, Math.PI*2); ctx.fill();
+    // Cheveux noirs
+    ctx.fillStyle = '#1a1010';
+    ctx.beginPath();
+    ctx.arc(x, bodyY - 31 * s, 12 * s, Math.PI, 0);
+    ctx.lineTo(x + 11 * s, bodyY - 26 * s); ctx.lineTo(x - 11 * s, bodyY - 26 * s); ctx.fill();
+    // Yeux simples
+    ctx.fillStyle = '#1a1010';
+    ctx.beginPath(); ctx.arc(x - 3 * s, bodyY - 27 * s, 1.4 * s, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(x + 3 * s, bodyY - 27 * s, 1.4 * s, 0, Math.PI*2); ctx.fill();
   }
   draw();
   // Stoppe l'animation 1s après que le splash devienne invisible (économie)

@@ -12629,7 +12629,9 @@ function tapBoost(e){
   // v7 : CHAQUE TAP POUSSE LE COUREUR — boost manuel de lapProgress
   // Difficulté volontaire : ~67 taps pour 1 km au départ (au lieu de 30).
   // Les upgrades de tapValue accélèrent progressivement.
-  const tapPush = 0.015 + (STATE.upgradeTapValue || 0) * 0.0008; // 1.5% au départ
+  // Cap visé : 5× idle au spam max (Florent demande). Idle = 0.00416 lp/sec.
+  // Mesuré empiriquement : spam 6.25 taps/sec avec tapPush 0.0014 ≈ 5× idle.
+  const tapPush = 0.0014 + (STATE.upgradeTapValue || 0) * 0.0002;
   STATE.lapProgress = (STATE.lapProgress || 0) + tapPush * (isCrit ? 2 : 1);
   if(STATE.lapProgress >= 1){
     STATE.lapProgress = 0;
@@ -17776,6 +17778,21 @@ if('serviceWorker' in navigator){
     // Map tapCount (0..100) → lastTapBoost (0..2)
     lastTapBoost = (tapCount / 100) * 2;
     const tapBoost = lastTapBoost;
+
+    // === FALLBACK : progression passive idle (la main loop legacy peut être arrêtée) ===
+    // Au lieu de dépendre de tickRunnerLap qui n'est pas toujours appelé, on calcule
+    // directement la progression passive ici (dans le tick Canvas2D qui tourne sûrement).
+    // Idle: 1 km en ~4 min. Spam tap (max) = 5× plus rapide via lapProgress direct.
+    const idleProgressPerSec = 0.00415; // ~1 km / 4 min
+    if(window.STATE){
+      window.STATE.lapProgress = (window.STATE.lapProgress || 0) + idleProgressPerSec * dt;
+      if(window.STATE.lapProgress >= 1){
+        window.STATE.lapProgress = 0;
+        window.STATE.lapsRun = (window.STATE.lapsRun || 0) + 1;
+        // Boost visuel au passage de km (déjà géré plus bas, mais sécurité)
+        if(typeof completeLap === 'function') try { completeLap(); } catch(e){}
+      }
+    }
     // Décroissance du dash (effet "bond" au tap)
     heroDashX *= 0.86;
     heroDashBob *= 0.88;

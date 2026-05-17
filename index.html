@@ -627,6 +627,76 @@ header{
   white-space:nowrap;
 }
 .daily-btn:active{ transform:translateY(2px); }
+
+/* === TUTO CONTEXTUEL (light, 3 hints au tout début) === */
+.tuto-hint{
+  position:absolute;
+  left:50%; bottom:24px;
+  transform:translateX(-50%);
+  display:flex; align-items:center; gap:6px;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  color:#3a2010;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:13px; letter-spacing:.02em;
+  padding:10px 16px;
+  border:2.5px solid #e85040;
+  border-radius:14px;
+  box-shadow:0 4px 14px rgba(0,0,0,.30), 0 0 0 3px rgba(232,80,64,.20);
+  z-index:14;
+  pointer-events:none;
+  text-align:center;
+  max-width:84%;
+  animation:tutoBounce 1.5s ease-in-out infinite;
+}
+@keyframes tutoBounce{
+  0%, 100% { transform:translateX(-50%) translateY(0) scale(1); }
+  50%      { transform:translateX(-50%) translateY(-4px) scale(1.04); }
+}
+
+/* === BANNER DE PROGRESSION TIER (km milestone) === */
+.tier-banner{
+  position:absolute;
+  left:50%; top:60px;
+  transform:translateX(-50%);
+  display:flex; align-items:center; gap:8px;
+  background:linear-gradient(180deg, #ffd060, #f08a48);
+  color:#1a1010;
+  font-family:"Nunito", sans-serif; font-weight:900;
+  font-size:14px; letter-spacing:.02em;
+  padding:11px 22px;
+  border:3px solid #fff;
+  border-radius:18px;
+  box-shadow:0 8px 24px rgba(0,0,0,.40), 0 0 0 2px rgba(255,208,96,.40);
+  z-index:13;
+  pointer-events:none;
+  text-align:center;
+  max-width:88%;
+  animation:tierBannerIn .6s cubic-bezier(.2,.9,.2,1.4);
+}
+.tier-banner.out{
+  animation:tierBannerOut .5s ease-in forwards;
+}
+@keyframes tierBannerIn{
+  0%   { transform:translateX(-50%) translateY(-80px) scale(.7); opacity:0; }
+  60%  { transform:translateX(-50%) translateY(0)     scale(1.1); opacity:1; }
+  100% { transform:translateX(-50%) translateY(0)     scale(1);   opacity:1; }
+}
+@keyframes tierBannerOut{
+  0%   { opacity:1; transform:translateX(-50%) translateY(0); }
+  100% { opacity:0; transform:translateX(-50%) translateY(-30px); }
+}
+
+/* === HALO sur l'onglet UPGRADES (quand 50 méd accumulés, aucun upgrade encore acheté) === */
+.tab-btn.halo-pulse{
+  animation:tabHaloPulse 1.6s ease-in-out infinite;
+  border-color:#ffd060 !important;
+}
+@keyframes tabHaloPulse{
+  0%, 100% { box-shadow:0 -2px 6px rgba(80,55,30,.10), 0 0 0 0    rgba(255,208,96, 0); }
+  50%      { box-shadow:0 -2px 6px rgba(80,55,30,.10), 0 0 0 10px rgba(255,208,96,.55); }
+}
 @keyframes dailyPulse{
   0%,100%{ box-shadow:0 4px 14px rgba(74,159,217,.40), 0 0 0 3px rgba(123,199,246,.30); }
   50%   { box-shadow:0 6px 20px rgba(74,159,217,.60), 0 0 0 6px rgba(123,199,246,.45); }
@@ -5990,6 +6060,16 @@ body.shop-epic-flash::after{
         🎁
         <span class="daily-badge" id="daily-btn-day">J1</span>
       </button>
+
+      <!-- Banner de progression tier (apparaît brièvement quand on franchit un cap km) -->
+      <div id="tier-banner" class="tier-banner" style="display:none">
+        <span id="tier-banner-msg"></span>
+      </div>
+
+      <!-- Tuto contextuel light (3 hints au tout début) -->
+      <div id="tuto-hint" class="tuto-hint" style="display:none">
+        <span id="tuto-msg"></span>
+      </div>
       <!-- Ancien 3D désactivé (pivot vers Canvas2D) -->
       <canvas id="runner-3d" style="display:none"></canvas>
       <!-- SVG legacy (masqué, gardé pour rs-path utilisé par getPointAtLength dans ancien code) -->
@@ -20553,6 +20633,132 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
   // setInterval fixe ~60fps (16.67ms) pour timing stable cross-environment
   setInterval(tick, 1000 / 60);
   window.RUNNER_2D = { resize, npcs, milestones, getRabbit:()=>rabbit, getHare:()=>hare, spawnRabbit, spawnHare };
+})();
+</script>
+
+<!-- ════════ ONBOARDING : tuto contextuel + animation tier + halo upgrade ════════ -->
+<script>
+(function onboarding(){
+  /* === 1. TUTO CONTEXTUEL : 3 hints qui guident le démarrage === */
+  const TUTO_KEY = 'foulee.tutoV2';
+  const TUTO_STEPS = [
+    '👆 TAP le stade pour faire courir ton héros !',
+    '💨 Continue ! 1 km débloque un nouveau décor.',
+    '⚡ Achète un UPGRADE en bas pour aller plus vite !',
+  ];
+  let tutoStep = 0;
+  const saved = localStorage.getItem(TUTO_KEY);
+  if(saved === 'done') tutoStep = -1;
+  else if(saved != null) tutoStep = Math.max(0, Math.min(2, parseInt(saved, 10) || 0));
+
+  const tutoHint = document.getElementById('tuto-hint');
+  const tutoMsg = document.getElementById('tuto-msg');
+  function showTutoStep(s){
+    if(s < 0 || s >= TUTO_STEPS.length || !tutoHint || !tutoMsg) return;
+    tutoMsg.textContent = TUTO_STEPS[s];
+    tutoHint.style.display = 'flex';
+  }
+  function setTutoStep(s){
+    tutoStep = s;
+    if(s < 0){
+      localStorage.setItem(TUTO_KEY, 'done');
+      if(tutoHint) tutoHint.style.display = 'none';
+    } else {
+      localStorage.setItem(TUTO_KEY, String(s));
+      showTutoStep(s);
+    }
+  }
+
+  // Affiche le hint quand le splash disparaît (intro.gone)
+  function waitSplashGoneThenShow(){
+    if(tutoStep < 0) return;
+    const intro = document.getElementById('intro');
+    if(!intro || intro.classList.contains('gone')){
+      showTutoStep(tutoStep);
+    } else {
+      setTimeout(waitSplashGoneThenShow, 400);
+    }
+  }
+  waitSplashGoneThenShow();
+
+  /* === 2. ANIMATION PASSAGE DE TIER (km milestone) === */
+  const TIER_MESSAGES = [
+    null,
+    '👏 Premier pas ! Les spectateurs arrivent.',
+    '🏟️ Stade municipal débloqué !',
+    '🏁 Compétition régionale ! Drapeaux hissés.',
+    '💡 Tournoi national ! Projecteurs allumés.',
+    '🏆 Stade Olympique ! Foule en délire.',
+  ];
+  const tierBanner = document.getElementById('tier-banner');
+  const tierBannerMsg = document.getElementById('tier-banner-msg');
+  let lastTier = (typeof stadiumTier === 'function') ? stadiumTier() : 0;
+  let bannerTimeout = null;
+  function showTierBanner(tier){
+    if(!tierBanner || !tierBannerMsg) return;
+    const msg = TIER_MESSAGES[Math.min(5, tier)];
+    if(!msg) return;
+    tierBanner.classList.remove('out');
+    tierBannerMsg.textContent = msg;
+    tierBanner.style.display = 'flex';
+    // SFX si dispo
+    if(typeof blip === 'function'){
+      blip(660, .12, 'sine', .25, .5);
+      setTimeout(()=>blip(880, .14, 'sine', .25, .5), 100);
+      setTimeout(()=>blip(1320, .18, 'sine', .25, .5), 220);
+    }
+    if(typeof vibrate === 'function') vibrate([40, 60, 80]);
+    if(bannerTimeout) clearTimeout(bannerTimeout);
+    bannerTimeout = setTimeout(()=>{
+      tierBanner.classList.add('out');
+      setTimeout(()=>{ if(tierBanner) tierBanner.style.display = 'none'; }, 500);
+    }, 3500);
+  }
+
+  /* === 3. HALO sur l'onglet UPGRADES === */
+  const upgTab = document.querySelector('[data-tab="upgrades"]');
+  function updateHalo(){
+    if(!upgTab) return;
+    const ST = window.STATE || {};
+    const gold = ST.gold || 0;
+    const anyBought = (ST.upgradeTapValue || 0) + (ST.upgradeCritChance || 0) +
+                      (ST.upgradeLapBonus || 0) + (ST.upgradeAutoTap || 0);
+    if(gold >= 50 && anyBought === 0){
+      upgTab.classList.add('halo-pulse');
+    } else {
+      upgTab.classList.remove('halo-pulse');
+    }
+  }
+
+  /* === Loop unique : update toutes les 400ms (peu coûteux) === */
+  setInterval(()=>{
+    const ST = window.STATE || {};
+    // Tuto avance ?
+    if(tutoStep === 0 && (ST.totalTaps || 0) >= 5){
+      setTutoStep(1);
+    } else if(tutoStep === 1 && (ST.lapsRun || 0) >= 1){
+      setTutoStep(2);
+    } else if(tutoStep === 2){
+      const anyBought = (ST.upgradeTapValue || 0) + (ST.upgradeCritChance || 0) +
+                        (ST.upgradeLapBonus || 0) + (ST.upgradeAutoTap || 0);
+      if(anyBought > 0) setTutoStep(-1);
+    }
+    // Tier change ?
+    if(typeof stadiumTier === 'function'){
+      const cur = stadiumTier();
+      if(cur > lastTier){
+        showTierBanner(cur);
+      }
+      lastTier = cur;
+    }
+    // Halo upgrade
+    updateHalo();
+  }, 400);
+
+  // Expose en debug
+  window._onboarding = {
+    setTutoStep, showTierBanner, resetTuto:()=>{ localStorage.removeItem(TUTO_KEY); tutoStep=0; showTutoStep(0); }
+  };
 })();
 </script>
 

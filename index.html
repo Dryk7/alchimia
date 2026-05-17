@@ -19061,7 +19061,9 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       accessory: tier.accessory,
       speed,
       metersAhead: 38 + Math.random() * 30,
-      lane: 0.60 + Math.random() * 0.28,
+      // lane : index entre 0 (couloir du fond) et 4 (couloir devant), avec léger jitter
+      laneIdx: Math.floor(Math.random() * 5),
+      laneJitter: (Math.random() - 0.5) * 0.5,
       bobPhase: Math.random() * 6.28,
     });
   }
@@ -19114,13 +19116,18 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
   let hare = null;
   function spawnHare(){
     if(hare) return;
+    // Couloir aléatoire SAUF celui du héros (lane 2-3 = milieu)
+    // Préfère un couloir différent : 0, 1, 4 (les plus loin du héros)
+    const lanes = [0, 1, 3, 4];
+    const laneIdx = lanes[Math.floor(Math.random() * lanes.length)];
     hare = {
-      // Commence DERRIÈRE (à gauche), avance plus vite que le héros → passe et sort à droite
       metersAhead: -28 - Math.random() * 5,
-      mPerSec: 4.5 + Math.random() * 1.5, // vitesse RELATIVE (différentiel héros → lièvre)
+      mPerSec: 4.5 + Math.random() * 1.5,
       bobPhase: 0,
       pulsePhase: 0,
       screenX: 0, screenY: 0,
+      laneIdx,
+      laneJitter: (Math.random() - 0.5) * 0.3,
       catchable: true,
     };
   }
@@ -19617,9 +19624,14 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
       if(x < -50 || x > W + 50) continue;
       npc.bobPhase += 0.18 * dtMul;
       const npcBob = Math.abs(Math.sin(npc.bobPhase)) * 4;
-      const y = H * (.65 + npc.lane * .1) - npcBob;
+      // 5 couloirs étalés de H*.60 (fond) à H*.84 (devant)
+      // laneIdx 0 = fond (plus loin), 4 = devant (plus proche)
+      const laneFrac = (npc.laneIdx + npc.laneJitter) / 4; // 0..1
+      const y = H * (.60 + laneFrac * .24) - npcBob;
       const distFactor = 1 - Math.min(1, Math.abs(pixAhead) / 800) * 0.3;
-      const scale = 0.7 * distFactor;
+      // Scale perspective : couloir du fond (laneFrac 0) plus petit, devant (1) plus grand
+      const laneScale = 0.55 + laneFrac * 0.35;
+      const scale = laneScale * distFactor;
       drawRunner(x, y, scale, npc, npc.bobPhase);
     }
 
@@ -19650,20 +19662,23 @@ import { FXAAShader } from 'three/addons/shaders/FXAAShader.js';
 
     // ═══ LIÈVRE CHALLENGER : court de gauche à droite (te dépasse) ═══
     if(hare){
-      hare.metersAhead += hare.mPerSec * dt; // AVANCE (te dépasse)
+      hare.metersAhead += hare.mPerSec * dt;
       hare.bobPhase += 0.6 * dtMul;
       hare.pulsePhase += 0.1 * dtMul;
       const pixAhead = hare.metersAhead * 8;
       if(pixAhead > 280){
-        // Sorti à droite (te dépasse complètement)
         hare = null;
       } else {
         const hx = W / 2 + pixAhead;
-        const hy = H * .72; // sur le couloir du milieu (à côté du héros)
+        // Couloir aléatoire selon laneIdx (0=fond, 4=devant)
+        const laneFrac = (hare.laneIdx + hare.laneJitter) / 4;
+        const hy = H * (.60 + laneFrac * .24);
         const pulse = 0.7 + Math.sin(hare.pulsePhase) * 0.3;
+        // Scale perspective : couloir du fond plus petit
+        const laneScale = 0.7 + laneFrac * 0.5; // 0.7 (fond) à 1.2 (devant)
         hare.screenX = hx;
         hare.screenY = hy;
-        drawHare(hx, hy, 1.4, hare.bobPhase, pulse);
+        drawHare(hx, hy, laneScale, hare.bobPhase, pulse);
       }
     }
 

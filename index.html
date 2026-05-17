@@ -13335,16 +13335,10 @@ function _scheduleNextGolden(){
   _nextGoldenAt = Date.now() + delay;
 }
 function tickGoldenBatch(){
-  const now = Date.now();
-  if(!_nextGoldenAt) _scheduleNextGolden();
-  // Expiration auto
-  if(_goldenActive && now - _goldenActive.spawnedAt > GOLDEN_LIFETIME_MS){
-    _despawnGolden();
-  }
-  // Spawn quand le timer est dépassé et qu'aucun n'est actif
-  if(!_goldenActive && now >= _nextGoldenAt){
-    _spawnGolden();
-  }
+  // DÉSACTIVÉ : remplacé par le système Lapin (RUNNER_2D.spawnRabbit) dans le pivot side parallax
+  // L'ancien spawn d'une médaille dorée 🪙 cliquable s'affichait comme un carré noir
+  // sur les mobiles dont la police emoji ne supporte pas cet emoji.
+  return;
 }
 function _spawnGolden(){
   const stadium = document.getElementById('runner-stadium');

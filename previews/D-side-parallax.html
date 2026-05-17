@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Preview D — Vue latérale parallax</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#1a1814;color:#fff;font-family:Nunito,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px}
+h1{font-size:18px;margin:0 0 6px}
+.tag{font-size:12px;color:#a89880;margin-bottom:14px}
+.frame{width:360px;aspect-ratio:9/16;background:#a8d8f0;border-radius:22px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.5);position:relative}
+canvas{display:block;width:100%;height:100%}
+.desc{margin-top:18px;max-width:360px;font-size:13px;color:#c8b8a0;line-height:1.5}
+.desc b{color:#fff}
+</style></head><body>
+<h1>D · Vue latérale 2D parallax (Endless Runner)</h1>
+<div class="tag">Side view, perso au centre, décor défile derrière en couches</div>
+<div class="frame"><canvas id="cv" width="360" height="640"></canvas></div>
+<div class="desc"><b>+</b> Lisibilité MAX (perso toujours bien visible), animation simple, esthétique éprouvée (Subway Surfers, Jetpack Joyride). Sensation de vitesse forte.<br><b>−</b> Casse le concept "voir le stade entier", c'est plus un endless runner qu'un jeu de stade.</div>
+<script>
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+let t = 0;
+function draw(){
+  t += 1;
+  const W = cv.width, H = cv.height;
+
+  // Sky gradient
+  const sky = ctx.createLinearGradient(0, 0, 0, H * .55);
+  sky.addColorStop(0, '#7ec4ee');
+  sky.addColorStop(1, '#c8e8f8');
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, W, H * .55);
+
+  // Soleil
+  ctx.fillStyle = '#ffea88';
+  ctx.beginPath(); ctx.arc(W * .8, 70, 35, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = 'rgba(255,250,180,.3)';
+  ctx.beginPath(); ctx.arc(W * .8, 70, 50, 0, Math.PI*2); ctx.fill();
+
+  // Nuages (couche 1 - loin)
+  ctx.fillStyle = '#fff';
+  const cloudX = -(t * .3) % 200;
+  [0, 200, 400, 600].forEach(x => {
+    const cx = (cloudX + x) % (W + 200);
+    ctx.beginPath();
+    ctx.ellipse(cx, 80, 45, 18, 0, 0, Math.PI*2); ctx.fill();
+    ctx.ellipse(cx + 30, 65, 30, 14, 0, 0, Math.PI*2); ctx.fill();
+  });
+
+  // Mountains background (couche 2)
+  ctx.fillStyle = '#5870a8';
+  ctx.beginPath();
+  ctx.moveTo(0, H * .55);
+  for(let i = 0; i <= W; i += 20){
+    const offset = -(t * .5) % 80;
+    const x = i + offset;
+    const y = H * .42 + Math.sin(i * .02) * 25;
+    ctx.lineTo(i, y);
+  }
+  ctx.lineTo(W, H * .55); ctx.lineTo(0, H * .55); ctx.fill();
+
+  // Tribune en arrière-plan (couche 3 - mid)
+  ctx.fillStyle = '#a85820';
+  ctx.fillRect(0, H * .55 - 60, W, 60);
+  // Foule en pixels (défile vite)
+  for(let i = 0; i < 50; i++){
+    const x = ((i * 18 - t * 1.5) % (W + 18) + W) % (W + 18);
+    const c = ['#e84030','#48a8e8','#48dc48','#ffd060','#ec90c0'][i % 5];
+    ctx.fillStyle = c;
+    ctx.fillRect(x, H * .55 - 50, 8, 8);
+    ctx.fillStyle = '#f0d4b0';
+    ctx.fillRect(x, H * .55 - 58, 8, 8);
+  }
+  ctx.fillStyle = '#7c3810';
+  ctx.fillRect(0, H * .55 - 20, W, 20);
+  // Bandeau FOULÉE
+  ctx.fillStyle = '#2c6090';
+  ctx.fillRect(0, H * .55 - 18, W, 14);
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 11px Nunito';
+  ctx.textAlign = 'center';
+  ctx.fillText('★ FOULÉE OLYMPIC ★ FOULÉE OLYMPIC ★ FOULÉE OLYMPIC ★', W/2, H * .55 - 7);
+
+  // Piste rouge (couche 4 - close, défile vite)
+  ctx.fillStyle = '#e85040';
+  ctx.fillRect(0, H * .55, W, H * .45);
+  // Lane lines qui défilent
+  ctx.fillStyle = '#fff';
+  for(let i = 0; i < 16; i++){
+    const x = ((i * 50 - t * 5) % (W + 50) + W) % (W + 50);
+    ctx.fillRect(x, H * .58, 30, 4);
+    ctx.fillRect(x, H * .75, 30, 4);
+    ctx.fillRect(x, H * .92, 30, 4);
+  }
+  // Texture tartan dots
+  for(let i = 0; i < 80; i++){
+    const x = ((i * 23 - t * 6) % (W + 23) + W) % (W + 23);
+    const y = H * .55 + ((i * 17) % (H * .45));
+    ctx.fillStyle = 'rgba(0,0,0,.08)';
+    ctx.fillRect(x, y, 3, 3);
+  }
+
+  // RUNNER au centre, sprite cartoon
+  const cx = W * .35, cy = H * .73;
+  const bob = Math.abs(Math.sin(t * .15)) * 5;
+  // Ombre
+  ctx.fillStyle = 'rgba(0,0,0,.3)';
+  ctx.beginPath(); ctx.ellipse(cx, cy + 50, 25, 5, 0, 0, Math.PI*2); ctx.fill();
+  // Jambes en course (sin alterné)
+  const legL = Math.sin(t * .3) * 25;
+  const legR = -Math.sin(t * .3) * 25;
+  ctx.strokeStyle = '#f0d4b0';
+  ctx.lineWidth = 10; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(cx, cy + 18 - bob); ctx.lineTo(cx - 5, cy + 42 - bob + legL); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx, cy + 18 - bob); ctx.lineTo(cx + 5, cy + 42 - bob + legR); ctx.stroke();
+  // Chaussures
+  ctx.fillStyle = '#e85040';
+  ctx.beginPath(); ctx.ellipse(cx - 5, cy + 47 - bob + legL, 9, 5, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(cx + 5, cy + 47 - bob + legR, 9, 5, 0, 0, Math.PI*2); ctx.fill();
+  // Corps maillot
+  ctx.fillStyle = '#e85040';
+  ctx.fillRect(cx - 18, cy - 20 - bob, 36, 38);
+  // Numéro
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(cx, cy - 5 - bob, 7, 0, Math.PI*2); ctx.fill();
+  // Bras (en course, en contre-phase)
+  const armL = -Math.sin(t * .3) * 30;
+  const armR = Math.sin(t * .3) * 30;
+  ctx.strokeStyle = '#f0d4b0';
+  ctx.lineWidth = 8;
+  ctx.beginPath(); ctx.moveTo(cx - 16, cy - 12 - bob); ctx.lineTo(cx - 28, cy + armL - bob); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx + 16, cy - 12 - bob); ctx.lineTo(cx + 28, cy + armR - bob); ctx.stroke();
+  // Tête
+  ctx.fillStyle = '#f0d4b0';
+  ctx.beginPath(); ctx.arc(cx, cy - 38 - bob, 18, 0, Math.PI*2); ctx.fill();
+  // Cheveux
+  ctx.fillStyle = '#7a5838';
+  ctx.beginPath(); ctx.arc(cx, cy - 42 - bob, 18, Math.PI, 0); ctx.fill();
+  // Yeux
+  ctx.fillStyle = '#1a1010';
+  ctx.beginPath(); ctx.arc(cx + 3, cy - 36 - bob, 2.5, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx + 11, cy - 36 - bob, 2.5, 0, Math.PI*2); ctx.fill();
+  // Joue rose
+  ctx.fillStyle = 'rgba(255,138,144,.5)';
+  ctx.beginPath(); ctx.arc(cx + 13, cy - 31 - bob, 4, 0, Math.PI*2); ctx.fill();
+  // Bouche
+  ctx.strokeStyle = '#3a2818'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(cx + 5, cy - 28 - bob, 3.5, 0, Math.PI); ctx.stroke();
+
+  // Speed lines derrière
+  ctx.strokeStyle = 'rgba(255,255,255,.6)';
+  ctx.lineWidth = 2;
+  for(let i = 0; i < 5; i++){
+    const sx = ((cx - 40 - i * 25 - t * 8) % W + W) % W;
+    ctx.beginPath();
+    ctx.moveTo(sx, cy - 10 + i * 8);
+    ctx.lineTo(sx - 15, cy - 10 + i * 8);
+    ctx.stroke();
+  }
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body></html>

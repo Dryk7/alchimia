@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Preview B — Pixel Art SNES</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0a0a14;color:#fff;font-family:Nunito,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px}
+h1{font-size:18px;margin:0 0 6px}
+.tag{font-size:12px;color:#a89880;margin-bottom:14px}
+.frame{width:360px;aspect-ratio:1/1;background:#5870d4;border-radius:0;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.5);border:4px solid #1a1a2e;image-rendering:pixelated}
+canvas{display:block;width:100%;height:100%;image-rendering:pixelated;image-rendering:crisp-edges}
+.desc{margin-top:18px;max-width:360px;font-size:13px;color:#c8b8a0;line-height:1.5}
+.desc b{color:#fff}
+.hud{font-family:'Press Start 2P',monospace;font-size:9px;color:#ffea48;text-shadow:2px 2px 0 #1a1a2e;margin-bottom:6px;letter-spacing:2px}
+</style></head><body>
+<h1>B · Pixel Art SNES (Track & Field)</h1>
+<div class="tag">Chunky 16-bit, palette limitée 16 couleurs, sprites pixel art</div>
+<div class="hud">SCORE 000125    TIME 1:24    LAP 03</div>
+<div class="frame">
+<canvas id="cv" width="64" height="64"></canvas>
+</div>
+<div class="desc"><b>+</b> Identité ultra-forte, charme rétro, communauté pixel art existe, pas d'uncanny valley. Adapté au goût Dofus Rétro.<br><b>−</b> Reste un parti pris fort qui peut vieillir vite. Animation par sprite sheets nécessaire pour fluidité.</div>
+<script>
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+// Palette SNES limitée (16 couleurs)
+const P = {
+  sky:'#5870d4', cloud:'#a8b8e8', sun:'#ffea48',
+  grass:'#3aac3a', grassDark:'#1c7c2e',
+  trackR:'#c83820', trackDark:'#8c2010', lane:'#f0f0e0',
+  tribuneL:'#dc8c40', tribuneM:'#a85820', tribuneD:'#582c10',
+  fan1:'#48a8e8', fan2:'#e84030', fan3:'#48dc48', fan4:'#ec90c0',
+  body:'#e8c898', hair:'#583020', shirt:'#e84030', short:'#f8f8f8', shoe:'#1a1a2e',
+  black:'#0a0a14', white:'#f8f8f8'
+};
+function px(x,y,c){ ctx.fillStyle = c; ctx.fillRect(x, y, 1, 1); }
+function rect(x,y,w,h,c){ ctx.fillStyle = c; ctx.fillRect(x, y, w, h); }
+
+// Ciel
+rect(0, 0, 64, 18, P.sky);
+// Nuages
+rect(8, 4, 8, 2, P.cloud); rect(10, 3, 4, 1, P.cloud); rect(10, 6, 4, 1, P.cloud);
+rect(36, 6, 6, 2, P.cloud); rect(38, 5, 2, 1, P.cloud);
+// Soleil
+rect(52, 4, 6, 6, P.sun); px(51, 5, P.sun); px(51, 8, P.sun); px(58, 5, P.sun); px(58, 8, P.sun);
+// Tribune arrière (3 niveaux dégradé)
+rect(0, 18, 64, 4, P.tribuneD);
+rect(0, 20, 64, 3, P.tribuneM);
+rect(0, 22, 64, 2, P.tribuneL);
+// Foule pixel (alternance couleurs)
+for(let i = 0; i < 64; i += 2){
+  const c = [P.fan1, P.fan2, P.fan3, P.fan4][(i / 2) % 4];
+  px(i, 19, c);
+  px(i + 1, 20, c);
+}
+// Banner FOULÉE
+rect(8, 24, 48, 3, P.trackDark);
+ctx.fillStyle = P.sun;
+ctx.font = '4px "Press Start 2P", monospace';
+ctx.fillText('FOULEE', 22, 27);
+// Piste rouge (ovale stylisé)
+rect(0, 28, 64, 24, P.trackDark);
+rect(2, 30, 60, 20, P.trackR);
+// Lane lines
+for(let y = 32; y < 50; y += 4){
+  for(let x = 4; x < 60; x += 2) px(x, y, P.lane);
+}
+// Gazon central
+rect(10, 34, 44, 12, P.grass);
+rect(10, 34, 44, 1, P.grassDark);
+rect(10, 45, 44, 1, P.grassDark);
+// Podium pixel
+rect(28, 38, 3, 4, P.lane);  // arg
+rect(31, 36, 3, 6, P.sun);   // or
+rect(34, 39, 3, 3, P.shoe);  // bronze
+ctx.fillStyle = P.shoe;
+ctx.font = '3px "Press Start 2P", monospace';
+ctx.fillText('1', 32, 40);
+// Coureur (sprite pixel 8x12) au centre bas
+function drawRunner(cx, cy, mainColor, hair){
+  // Ombre
+  rect(cx - 2, cy + 6, 5, 1, P.black);
+  // Jambes
+  rect(cx - 1, cy + 4, 1, 2, P.body);
+  rect(cx + 1, cy + 4, 1, 2, P.body);
+  // Chaussures
+  rect(cx - 1, cy + 6, 1, 1, P.shoe);
+  rect(cx + 1, cy + 6, 1, 1, P.shoe);
+  // Short
+  rect(cx - 1, cy + 3, 3, 1, P.short);
+  // Corps shirt
+  rect(cx - 1, cy, 3, 3, mainColor);
+  // Bras
+  rect(cx - 2, cy + 1, 1, 2, P.body);
+  rect(cx + 2, cy + 1, 1, 2, P.body);
+  // Tête
+  rect(cx - 1, cy - 2, 3, 2, P.body);
+  // Cheveux
+  rect(cx - 1, cy - 3, 3, 1, hair);
+  // Œil
+  px(cx + 1, cy - 1, P.black);
+}
+drawRunner(32, 50, P.shirt, P.hair);
+drawRunner(18, 49, P.fan1, P.black);
+drawRunner(46, 51, P.fan3, P.fan2);
+
+// Sol
+rect(0, 52, 64, 12, P.grassDark);
+for(let i = 0; i < 64; i += 4) px(i, 55, P.grass);
+for(let i = 2; i < 64; i += 4) px(i, 58, P.grass);
+
+// Arbre pixel
+rect(2, 48, 1, 4, P.hair);
+rect(0, 44, 5, 5, P.grass);
+rect(1, 43, 3, 1, P.grass);
+rect(59, 48, 1, 4, P.hair);
+rect(57, 44, 5, 5, P.grass);
+rect(58, 43, 3, 1, P.grass);
+</script>
+</body></html>

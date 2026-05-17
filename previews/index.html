@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FOULÉE — Previews directions graphiques</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:linear-gradient(180deg,#1a1814,#0a0a14);color:#fff;font-family:Nunito,sans-serif;min-height:100vh;padding:30px}
+h1{text-align:center;margin:0 0 8px;font-size:24px}
+.subtitle{text-align:center;color:#a89880;margin-bottom:30px;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;max-width:1400px;margin:0 auto}
+.card{background:#1c1a18;border-radius:14px;overflow:hidden;border:2px solid #2a2820;transition:transform .2s,border-color .2s;cursor:pointer;text-decoration:none;color:inherit;display:block}
+.card:hover{transform:translateY(-4px);border-color:#a89880}
+.card iframe{display:block;width:100%;height:340px;border:0;pointer-events:none}
+.card-body{padding:16px}
+.card h2{margin:0 0 4px;font-size:16px}
+.card .sub{font-size:11px;color:#a89880;margin-bottom:8px}
+.card .verdict{font-size:12px;line-height:1.5;color:#c8b8a0}
+.card .pros{color:#7ec46a}
+.card .cons{color:#e85040}
+.tag-letter{display:inline-block;background:#e85040;color:#fff;font-weight:900;padding:2px 8px;border-radius:6px;font-size:11px;margin-right:6px}
+.current-tag{background:#a89880;color:#1a1814}
+</style></head><body>
+<h1>FOULÉE · Directions graphiques</h1>
+<div class="subtitle">5 previews pour départager. Clique sur une carte pour ouvrir en plein écran.</div>
+
+<div class="grid">
+  <a href="A-eatventure-svg.html" class="card">
+    <iframe src="A-eatventure-svg.html" loading="lazy"></iframe>
+    <div class="card-body">
+      <h2><span class="tag-letter">A</span>Eatventure cartoon SVG</h2>
+      <div class="sub">Couleurs vives + outlines + persos ronds</div>
+      <div class="verdict">
+        <div class="pros">+ Cohérent, identité claire, simple à maintenir</div>
+        <div class="cons">− "Cartoon basic" peut sembler cheap</div>
+      </div>
+    </div>
+  </a>
+
+  <a href="B-pixel-art.html" class="card">
+    <iframe src="B-pixel-art.html" loading="lazy"></iframe>
+    <div class="card-body">
+      <h2><span class="tag-letter">B</span>Pixel art SNES</h2>
+      <div class="sub">Chunky 16-bit, palette limitée, style arcade</div>
+      <div class="verdict">
+        <div class="pros">+ Identité ultra-forte, charme rétro, pas d'uncanny</div>
+        <div class="cons">− Parti pris fort, pas pour tous goûts</div>
+      </div>
+    </div>
+  </a>
+
+  <a href="C-3d-low-poly.html" class="card">
+    <iframe src="C-3d-low-poly.html" loading="lazy"></iframe>
+    <div class="card-body">
+      <h2><span class="tag-letter">C</span>3D low-poly (Kenney-style)</h2>
+      <div class="sub">Modèles 3D pré-faits, look pro</div>
+      <div class="verdict">
+        <div class="pros">+ Vraiment pro, AAA mobile atteignable</div>
+        <div class="cons">− Casse le single-HTML (assets externes)</div>
+      </div>
+    </div>
+  </a>
+
+  <a href="D-side-parallax.html" class="card">
+    <iframe src="D-side-parallax.html" loading="lazy"></iframe>
+    <div class="card-body">
+      <h2><span class="tag-letter">D</span>Vue latérale parallax</h2>
+      <div class="sub">Side scrolling, décor défile</div>
+      <div class="verdict">
+        <div class="pros">+ Lisibilité MAX, sensation de vitesse, éprouvé</div>
+        <div class="cons">− Casse "voir le stade entier"</div>
+      </div>
+    </div>
+  </a>
+
+  <a href="E-third-person.html" class="card">
+    <iframe src="E-third-person.html" loading="lazy"></iframe>
+    <div class="card-body">
+      <h2><span class="tag-letter">E</span>3rd person broadcast</h2>
+      <div class="sub">Caméra derrière le perso, Temple Run-style</div>
+      <div class="verdict">
+        <div class="pros">+ Immersif, anims visibles, ambiance match</div>
+        <div class="cons">− Plus complexe, perso bloque la vue</div>
+      </div>
+    </div>
+  </a>
+
+  <a href="../" class="card" style="border-color:#a89880">
+    <iframe src="../" loading="lazy"></iframe>
+    <div class="card-body">
+      <h2><span class="tag-letter current-tag">NOW</span>État actuel (3D top-down)</h2>
+      <div class="sub">Version actuelle du jeu sur main</div>
+      <div class="verdict">
+        <div class="pros">+ Riche, beaucoup de détails, anim course</div>
+        <div class="cons">− "On stagne", pas le wow attendu</div>
+      </div>
+    </div>
+  </a>
+</div>
+
+</body></html>

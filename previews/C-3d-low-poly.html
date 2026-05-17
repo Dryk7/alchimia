@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Preview C — 3D low-poly assets</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#1a1814;color:#fff;font-family:Nunito,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px}
+h1{font-size:18px;margin:0 0 6px}
+.tag{font-size:12px;color:#a89880;margin-bottom:14px}
+.frame{width:360px;aspect-ratio:1/1;background:#94c4e8;border-radius:22px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+canvas{display:block;width:100%;height:100%}
+.desc{margin-top:18px;max-width:360px;font-size:13px;color:#c8b8a0;line-height:1.5}
+.desc b{color:#fff}
+.note{margin-top:10px;font-size:11px;color:#7898c8;font-style:italic}
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head><body>
+<h1>C · 3D low-poly assets (style Kenney / Quaternius)</h1>
+<div class="tag">Modèles glTF gratuits CC0 importés depuis Kenney.nl, palette propre</div>
+<div class="frame"><canvas id="cv"></canvas></div>
+<div class="desc"><b>+</b> Vraiment pro, look "AAA mobile" atteignable, communauté énorme d'assets CC0 gratuits. Modèles consistants.<br><b>−</b> Casse le single-HTML : faut downloader des .glb (~500KB chacun). Plus complexe à charger/maintenir.</div>
+<div class="note">↑ Mockup en placeholder primitives (vraie demo prendrait des assets externes)</div>
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+const cv = document.getElementById('cv');
+const renderer = new THREE.WebGLRenderer({canvas:cv, antialias:true});
+renderer.setPixelRatio(2);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+function resize(){ const w = cv.parentElement.clientWidth; const h = cv.parentElement.clientHeight; renderer.setSize(w, h, false); }
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#94c4e8');
+scene.fog = new THREE.Fog('#94c4e8', 18, 40);
+
+const camera = new THREE.PerspectiveCamera(45, 1, .1, 100);
+camera.position.set(0, 6, 12);
+camera.lookAt(0, 1, 0);
+
+const amb = new THREE.AmbientLight(0xffffff, .55); scene.add(amb);
+const dir = new THREE.DirectionalLight(0xffffff, 1.1);
+dir.position.set(5, 12, 7); dir.castShadow = true;
+dir.shadow.mapSize.set(1024, 1024);
+dir.shadow.camera.left = -15; dir.shadow.camera.right = 15;
+dir.shadow.camera.top = 15; dir.shadow.camera.bottom = -15;
+scene.add(dir);
+scene.add(new THREE.HemisphereLight(0xffe8c0, 0x4a6028, .4));
+
+function rb(w,h,d,r=.08){ return new RoundedBoxGeometry(w,h,d,2,Math.min(r,w/2-.001,h/2-.001,d/2-.001)); }
+function mat(c, opts={}){ return new THREE.MeshStandardMaterial({color:c, roughness:opts.r||.85, metalness:opts.m||.05}); }
+
+// Sol vert vif (style Kenney)
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(50, 50), mat('#7ec43c'));
+ground.rotation.x = -Math.PI/2; ground.receiveShadow = true; scene.add(ground);
+
+// Piste tartan (anneau)
+const trackShape = new THREE.Shape();
+trackShape.absellipse(0, 0, 8, 5, 0, Math.PI*2, false, 0);
+const trackHole = new THREE.Path();
+trackHole.absellipse(0, 0, 5, 3, 0, Math.PI*2, false, 0);
+trackShape.holes.push(trackHole);
+const trackGeo = new THREE.ExtrudeGeometry(trackShape, {depth:.15, bevelEnabled:false});
+const track = new THREE.Mesh(trackGeo, mat('#e85040'));
+track.rotation.x = -Math.PI/2; track.position.y = .05; track.receiveShadow = true;
+scene.add(track);
+
+// Lane lines
+const laneMat = mat('#fff', {r:.3});
+[7, 6.3, 5.6].forEach(r => {
+  const lane = new THREE.Mesh(new THREE.RingGeometry(r-.04, r+.04, 64), laneMat);
+  lane.rotation.x = -Math.PI/2; lane.position.y = .22;
+  scene.add(lane);
+});
+
+// Gazon central
+const grass = new THREE.Mesh(new THREE.CircleGeometry(4.8, 32).scale(1, 1, .65), mat('#5ca830'));
+const grassShape = new THREE.Shape();
+grassShape.absellipse(0, 0, 4.8, 2.85, 0, Math.PI*2, false, 0);
+const grassMesh = new THREE.Mesh(new THREE.ShapeGeometry(grassShape, 32), mat('#6cb830'));
+grassMesh.rotation.x = -Math.PI/2; grassMesh.position.y = .1;
+scene.add(grassMesh);
+
+// Stade tribune en blocs (style Kenney)
+function makeTribuneBlock(angle, dist){
+  const x = Math.cos(angle) * dist;
+  const z = Math.sin(angle) * dist;
+  const block = new THREE.Mesh(rb(2.5, 1.5 + Math.random() * .8, 1.5), mat(['#e0a060','#d89050','#c88040','#e8b070'][Math.floor(Math.random()*4)]));
+  block.position.set(x, .75, z);
+  block.lookAt(0, .75, 0);
+  block.castShadow = true; block.receiveShadow = true;
+  return block;
+}
+for(let i = 0; i < 32; i++){
+  const a = (i / 32) * Math.PI * 2;
+  scene.add(makeTribuneBlock(a, 11));
+}
+
+// Coureur low-poly (placeholder pour modèle glTF)
+function makeRunner(c, hair){
+  const g = new THREE.Group();
+  // Ombre
+  const s = new THREE.Mesh(new THREE.CircleGeometry(.45, 12), new THREE.MeshBasicMaterial({color:'#000', transparent:true, opacity:.3}));
+  s.rotation.x = -Math.PI/2; s.position.y = .02; g.add(s);
+  // Jambes
+  const legMat = mat('#3a3a50');
+  const lL = new THREE.Mesh(rb(.18, .7, .18, .04), legMat); lL.position.set(-.12, .4, 0); lL.castShadow=true; g.add(lL);
+  const lR = new THREE.Mesh(rb(.18, .7, .18, .04), legMat); lR.position.set(.12, .4, 0); lR.castShadow=true; g.add(lR);
+  // Corps
+  const body = new THREE.Mesh(rb(.55, .6, .35, .08), mat(c));
+  body.position.set(0, 1.1, 0); body.castShadow=true; g.add(body);
+  // Bras
+  const armMat = mat('#f0c890');
+  const aL = new THREE.Mesh(rb(.14, .55, .14, .04), armMat); aL.position.set(-.32, 1.1, 0); aL.castShadow=true; g.add(aL);
+  const aR = new THREE.Mesh(rb(.14, .55, .14, .04), armMat); aR.position.set(.32, 1.1, 0); aR.castShadow=true; g.add(aR);
+  // Tête
+  const head = new THREE.Mesh(new THREE.SphereGeometry(.32, 14, 12), mat('#f0c890'));
+  head.position.set(0, 1.75, 0); head.castShadow=true; g.add(head);
+  // Cheveux
+  const h = new THREE.Mesh(new THREE.SphereGeometry(.34, 14, 12, 0, Math.PI*2, 0, Math.PI/2.2), mat(hair, {r:.95}));
+  h.position.set(0, 1.75, 0); g.add(h);
+  // Yeux
+  const eyeMat = new THREE.MeshBasicMaterial({color:'#1a1010'});
+  const eL = new THREE.Mesh(new THREE.SphereGeometry(.045, 8, 6), eyeMat); eL.position.set(-.1, 1.78, .28); g.add(eL);
+  const eR = new THREE.Mesh(new THREE.SphereGeometry(.045, 8, 6), eyeMat); eR.position.set(.1, 1.78, .28); g.add(eR);
+  return g;
+}
+const player = makeRunner('#e85040', '#7a5838');
+player.position.set(0, 0, -4.2);
+scene.add(player);
+const npc1 = makeRunner('#4a9fd9', '#3a2818'); npc1.position.set(-5, 0, -3); npc1.rotation.y = -1; scene.add(npc1);
+const npc2 = makeRunner('#ffd060', '#c0c0c0'); npc2.position.set(5, 0, -3); npc2.rotation.y = 1; scene.add(npc2);
+
+// Arbres
+function makeTree(x, z){
+  const t = new THREE.Group();
+  const trunk = new THREE.Mesh(rb(.3, 1.2, .3, .04), mat('#7a5838'));
+  trunk.position.y = .6; trunk.castShadow=true; t.add(trunk);
+  const leaves = new THREE.Mesh(new THREE.SphereGeometry(1.1, 12, 8), mat('#5cab38'));
+  leaves.position.y = 1.8; leaves.castShadow=true; t.add(leaves);
+  t.position.set(x, 0, z);
+  return t;
+}
+[[-9, 5], [9, 5], [-12, -2], [12, -2]].forEach(([x,z]) => scene.add(makeTree(x, z)));
+
+function tick(now){
+  resize();
+  const aspect = cv.parentElement.clientWidth / cv.parentElement.clientHeight;
+  camera.aspect = aspect; camera.updateProjectionMatrix();
+  // Anim subtle
+  player.position.y = Math.sin(now * .003) * .05;
+  renderer.render(scene, camera);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+</script>
+</body></html>

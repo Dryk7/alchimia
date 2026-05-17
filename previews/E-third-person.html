@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Preview E — 3rd person broadcast</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#1a1814;color:#fff;font-family:Nunito,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px}
+h1{font-size:18px;margin:0 0 6px}
+.tag{font-size:12px;color:#a89880;margin-bottom:14px}
+.frame{width:360px;aspect-ratio:9/16;background:#94c4e8;border-radius:22px;overflow:hidden;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+canvas{display:block;width:100%;height:100%}
+.desc{margin-top:18px;max-width:360px;font-size:13px;color:#c8b8a0;line-height:1.5}
+.desc b{color:#fff}
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head><body>
+<h1>E · 3rd person broadcast (Temple Run-style)</h1>
+<div class="tag">Caméra derrière le perso, voit le dos + piste devant + tribune autour</div>
+<div class="frame"><canvas id="cv"></canvas></div>
+<div class="desc"><b>+</b> Immersif, sensation de course intense, on voit toutes les anims du perso de dos (mouvement clair), foule en flou autour = ambiance match.<br><b>−</b> Plus complexe à coder, demande plus de polish pour ne pas faire amateur. Le perso bloque une partie de la vue.</div>
+<script type="module">
+import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+
+const cv = document.getElementById('cv');
+const renderer = new THREE.WebGLRenderer({canvas:cv, antialias:true});
+renderer.setPixelRatio(2);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color('#94c4e8');
+scene.fog = new THREE.Fog('#94c4e8', 14, 40);
+
+// Caméra perspective derrière le perso, légèrement haut
+const camera = new THREE.PerspectiveCamera(55, 1, .1, 100);
+
+const amb = new THREE.AmbientLight(0xffffff, .55); scene.add(amb);
+const dir = new THREE.DirectionalLight(0xffffff, 1.1);
+dir.position.set(5, 12, 7); dir.castShadow = true;
+dir.shadow.mapSize.set(1024, 1024);
+scene.add(dir);
+scene.add(new THREE.HemisphereLight(0xffe8c0, 0x4a6028, .4));
+
+function rb(w,h,d,r=.08){ return new RoundedBoxGeometry(w,h,d,2,Math.min(r,w/2-.001,h/2-.001,d/2-.001)); }
+function mat(c, opts={}){ return new THREE.MeshStandardMaterial({color:c, roughness:opts.r||.85, metalness:opts.m||.05}); }
+
+// Sol gazon
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), mat('#7ec43c'));
+ground.rotation.x = -Math.PI/2; ground.receiveShadow = true; scene.add(ground);
+
+// Piste rouge ovale GRANDE (le perso court dessus)
+const trackShape = new THREE.Shape();
+trackShape.absellipse(0, 0, 10, 6.5, 0, Math.PI*2, false, 0);
+const trackHole = new THREE.Path();
+trackHole.absellipse(0, 0, 6.5, 4, 0, Math.PI*2, false, 0);
+trackShape.holes.push(trackHole);
+const trackGeo = new THREE.ExtrudeGeometry(trackShape, {depth:.15, bevelEnabled:false});
+const track = new THREE.Mesh(trackGeo, mat('#e85040'));
+track.rotation.x = -Math.PI/2; track.position.y = .05; track.receiveShadow = true;
+scene.add(track);
+
+// Lane lines blanches
+[9, 8.3, 7.6, 6.9].forEach(r => {
+  const ring = new THREE.RingGeometry(r-.05, r+.05, 80, 1, 0, Math.PI*2);
+  const lane = new THREE.Mesh(ring, mat('#fff', {r:.3}));
+  lane.rotation.x = -Math.PI/2; lane.position.y = .22;
+  scene.add(lane);
+});
+
+// Gazon central
+const grassShape = new THREE.Shape();
+grassShape.absellipse(0, 0, 6.3, 3.8, 0, Math.PI*2, false, 0);
+const grassMesh = new THREE.Mesh(new THREE.ShapeGeometry(grassShape, 32), mat('#6cb830'));
+grassMesh.rotation.x = -Math.PI/2; grassMesh.position.y = .1;
+scene.add(grassMesh);
+
+// TRIBUNE massive autour (anneau)
+const tribuneShape = new THREE.Shape();
+tribuneShape.absellipse(0, 0, 16, 10, 0, Math.PI*2, false, 0);
+const tribuneHole = new THREE.Path();
+tribuneHole.absellipse(0, 0, 10, 6.5, 0, Math.PI*2, false, 0);
+tribuneShape.holes.push(tribuneHole);
+const tribuneGeo = new THREE.ExtrudeGeometry(tribuneShape, {depth:2.5, bevelEnabled:true, bevelSize:.2, bevelThickness:.2, curveSegments:48});
+const tribune = new THREE.Mesh(tribuneGeo, mat('#d88040'));
+tribune.rotation.x = -Math.PI/2; tribune.position.y = .5; tribune.receiveShadow = true; tribune.castShadow = true;
+scene.add(tribune);
+
+// Foule dense sur la tribune
+const crowdGroup = new THREE.Group();
+const N = 120;
+for(let i = 0; i < N; i++){
+  const angle = (i / N) * Math.PI * 2;
+  const r = 11 + (i % 4) * .8;
+  const rz = 7 + (i % 4) * .5;
+  const x = Math.cos(angle) * r;
+  const z = Math.sin(angle) * rz;
+  const colors = ['#e85040','#4a9fd9','#7ec46a','#ffd060','#e890b0'];
+  const c = colors[i % colors.length];
+  const body = new THREE.Mesh(rb(.35, .5, .35, .08), mat(c));
+  body.position.set(x, 2.3 + Math.random() * .3, z);
+  crowdGroup.add(body);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(.22, 10, 8), mat('#f0d4b0'));
+  head.position.set(x, 2.85 + Math.random() * .3, z);
+  crowdGroup.add(head);
+}
+scene.add(crowdGroup);
+
+// Coureur PRINCIPAL (player)
+function makeRunner(c, hair){
+  const g = new THREE.Group();
+  const legMat = mat('#3a3a50');
+  const lL = new THREE.Group(); lL.position.set(-.13, .82, 0);
+  const lLM = new THREE.Mesh(rb(.2, .65, .2, .07), mat('#f0d4b0')); lLM.position.y = -.35; lLM.castShadow=true; lL.add(lLM);
+  const shoeL = new THREE.Mesh(rb(.26, .15, .35, .05), mat(c)); shoeL.position.set(0, -.7, .07); lL.add(shoeL);
+  g.add(lL);
+  const lR = new THREE.Group(); lR.position.set(.13, .82, 0);
+  const lRM = new THREE.Mesh(rb(.2, .65, .2, .07), mat('#f0d4b0')); lRM.position.y = -.35; lRM.castShadow=true; lR.add(lRM);
+  const shoeR = new THREE.Mesh(rb(.26, .15, .35, .05), mat(c)); shoeR.position.set(0, -.7, .07); lR.add(shoeR);
+  g.add(lR);
+  const short = new THREE.Mesh(rb(.56, .28, .4, .1), mat('#fff'));
+  short.position.set(0, .86, 0); short.castShadow=true; g.add(short);
+  const body = new THREE.Mesh(rb(.65, .6, .42, .15), mat(c));
+  body.position.set(0, 1.25, 0); body.castShadow=true; g.add(body);
+  // Numéro sur le dos
+  const numCanvas = document.createElement('canvas');
+  numCanvas.width = 128; numCanvas.height = 128;
+  const nctx = numCanvas.getContext('2d');
+  nctx.fillStyle = c; nctx.fillRect(0, 0, 128, 128);
+  nctx.fillStyle = '#fff'; nctx.beginPath(); nctx.arc(64, 70, 36, 0, Math.PI*2); nctx.fill();
+  nctx.fillStyle = c; nctx.font = 'bold 56px Nunito';
+  nctx.textAlign = 'center'; nctx.textBaseline = 'middle';
+  nctx.fillText('7', 64, 74);
+  const numTex = new THREE.CanvasTexture(numCanvas);
+  body.material.map = numTex; body.material.needsUpdate = true;
+  // Bras
+  const aL = new THREE.Group(); aL.position.set(-.37, 1.5, 0);
+  const aLM = new THREE.Mesh(rb(.16, .55, .16, .05), mat('#f0d4b0')); aLM.position.y = -.28; aLM.castShadow=true; aL.add(aLM);
+  g.add(aL);
+  const aR = new THREE.Group(); aR.position.set(.37, 1.5, 0);
+  const aRM = new THREE.Mesh(rb(.16, .55, .16, .05), mat('#f0d4b0')); aRM.position.y = -.28; aRM.castShadow=true; aR.add(aRM);
+  g.add(aR);
+  // Tête
+  const head = new THREE.Mesh(new THREE.SphereGeometry(.36, 14, 12), mat('#f0d4b0'));
+  head.position.set(0, 1.95, 0); head.castShadow=true; g.add(head);
+  // Cheveux derrière (visible de dos !)
+  const h = new THREE.Mesh(new THREE.SphereGeometry(.38, 14, 12, 0, Math.PI*2, 0, Math.PI/2.2), mat(hair, {r:.95}));
+  h.position.set(0, 1.95, 0); g.add(h);
+  g.userData = { legL: lL, legR: lR, armL: aL, armR: aR };
+  return g;
+}
+const player = makeRunner('#e85040', '#7a5838');
+scene.add(player);
+
+// 3 autres coureurs sur la piste
+const otherRunners = [
+  { c:'#4a9fd9', hair:'#3a2818', progress:0.05 },
+  { c:'#ffd060', hair:'#c0c0c0', progress:-.08 },
+  { c:'#7ec46a', hair:'#8a6848', progress:-.18 },
+];
+otherRunners.forEach(o => {
+  o.runner = makeRunner(o.c, o.hair);
+  scene.add(o.runner);
+});
+
+// Track radius pour positionner
+const trackRx = 8.3, trackRz = 5.3;
+function updateRunner(r, progress, isPlayer=false){
+  const t = ((progress % 1) + 1) % 1;
+  const angle = t * Math.PI * 2 - Math.PI/2;
+  const x = Math.cos(angle) * trackRx;
+  const z = Math.sin(angle) * trackRz;
+  r.position.x = x;
+  r.position.z = z;
+  // Orientation : tangente
+  const dx = -Math.sin(angle) * trackRx;
+  const dz = Math.cos(angle) * trackRz;
+  r.rotation.y = Math.atan2(dx, dz);
+  return { x, z, angle };
+}
+
+function animate(r, time){
+  const parts = r.userData;
+  const phase = time * .012;
+  const swing = Math.sin(phase);
+  parts.legL.rotation.x = swing * .4;
+  parts.legR.rotation.x = -swing * .4;
+  parts.armL.rotation.x = -swing * .45;
+  parts.armR.rotation.x = swing * .45;
+  r.position.y = Math.abs(Math.cos(phase)) * .05;
+}
+
+let pProgress = 0;
+function tick(now){
+  cv.width = cv.clientWidth * 2;
+  cv.height = cv.clientHeight * 2;
+  renderer.setSize(cv.clientWidth, cv.clientHeight, false);
+  camera.aspect = cv.clientWidth / cv.clientHeight;
+  camera.updateProjectionMatrix();
+
+  // Player avance
+  pProgress += .0009;
+  const pPos = updateRunner(player, pProgress, true);
+  animate(player, now);
+
+  // Camera DERRIÈRE le player en 3rd person
+  const camDist = 4;
+  const camHeight = 2.5;
+  const behindAngle = pProgress * Math.PI * 2 - Math.PI/2 - Math.PI; // derrière
+  const camX = pPos.x + Math.cos(behindAngle) * camDist;
+  const camZ = pPos.z + Math.sin(behindAngle) * camDist * (trackRz/trackRx);
+  // Tangente derrière
+  const tdx = -Math.sin(behindAngle) * trackRx;
+  const tdz = Math.cos(behindAngle) * trackRz;
+  // Repositionne légèrement
+  const camAhead = 0;
+  camera.position.set(camX, camHeight, camZ);
+  // LookAt point devant le joueur
+  const lookAheadAngle = pProgress * Math.PI * 2 - Math.PI/2 + .1;
+  const lx = Math.cos(lookAheadAngle) * trackRx;
+  const lz = Math.sin(lookAheadAngle) * trackRz;
+  camera.lookAt(lx, 1.5, lz);
+
+  // Autres coureurs
+  otherRunners.forEach(o => {
+    updateRunner(o.runner, pProgress + o.progress);
+    animate(o.runner, now + o.progress * 1000);
+  });
+
+  renderer.render(scene, camera);
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+</script>
+</body></html>

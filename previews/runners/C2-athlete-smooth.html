@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Runner C2 — Athlète smooth</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0e0d12;color:#fff;font-family:Nunito,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px}
+h1{font-size:16px;margin:0 0 4px}
+.tag{font-size:11px;color:#a89880;margin-bottom:10px}
+.frame{width:360px;aspect-ratio:9/16;border-radius:18px;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.5);background:#e85040}
+canvas{display:block;width:100%;height:100%}
+.desc{margin-top:10px;max-width:340px;font-size:12px;color:#c8b8a0;line-height:1.4}
+</style></head><body>
+<h1>C2 · Athlète SMOOTH (cycle lissé + cheveux qui flottent + speedlines)</h1>
+<div class="tag">Transitions douces + détails dynamiques (cheveux, sueur, lignes vitesse)</div>
+<div class="frame"><canvas id="cv" width="360" height="640"></canvas></div>
+<div class="desc">Cycle de pas biomécanique (4 clés : toe-off → mid-flight → heel-strike → stance). Cheveux qui ondulent derrière, speedlines aux pieds, sueur occasionnelle.</div>
+<script src="_shared.js"></script>
+<script>
+// Cycle de course biomécanique 4 phases
+function legPose(phase, side){ // side : 'L' ou 'R'
+  // side R = phase, side L = phase + PI (opposé)
+  const p = side === 'L' ? (phase + Math.PI) % (Math.PI * 2) : phase % (Math.PI * 2);
+  // Normalise 0..1
+  const t01 = p / (Math.PI * 2);
+  // Hanche → genou → cheville (positions relatives, ~12px chaque segment)
+  // 0% : toe-off (jambe extended derrière, foot bas et arrière)
+  // 25% : mid-flight (genou plié vers le haut, foot sous genou)
+  // 50% : heel-strike (foot étendue devant, genou presque tendu)
+  // 75% : stance (foot sous corps, supporting weight)
+  // Knee height : max au mid-flight (25%)
+  let kneeUp, footX, footY;
+  if(t01 < 0.5){
+    // First half : recoil + lift + extend
+    const u = t01 * 2; // 0..1
+    // Foot from back-low to front-high to front-strike
+    footX = -1 + u * 2; // -1 (back) → +1 (front)
+    // Knee bent during mid-flight (u=.5)
+    kneeUp = Math.sin(u * Math.PI) * 1.0;
+    footY = u < .5 ? -kneeUp * 0.7 : 0; // up during lift, drops at strike
+  } else {
+    // Second half : push back + extend
+    const u = (t01 - 0.5) * 2; // 0..1
+    footX = 1 - u * 2; // +1 (front) → -1 (back)
+    // Knee mostly straight during push
+    kneeUp = Math.max(0, .3 - u * .3);
+    footY = u * .1; // slightly down (planted)
+  }
+  return { footX, footY, kneeUp };
+}
+
+RUNNER_SCENE(document.getElementById('cv'), function drawRunner(ctx, x, y, scale, phase, jersey, hair, skin){
+  const s = scale;
+  const cyclePhase = phase % (Math.PI * 2);
+  // Hop : 2 envols par cycle (max à 25% et 75%)
+  const hopT = (cyclePhase / (Math.PI * 2)) * 4; // 0..4 sur 1 cycle
+  const hopFrac = hopT % 1;
+  const hop = Math.sin(hopFrac * Math.PI) * 8 * s * (hopT % 2 < 1 ? 1 : .85);
+  const bodyY = y - hop;
+  const lean = .22;
+  // Ombre
+  ctx.fillStyle = 'rgba(0,0,0,.35)';
+  ctx.beginPath(); ctx.ellipse(x, y + 28 * s, 18 * s * (1 - hop/(8*s)*.4), 4 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Calcul positions jambes
+  const legL = legPose(cyclePhase, 'L');
+  const legR = legPose(cyclePhase, 'R');
+  const legLen = 16 * s;
+  function drawLeg(hipX, hipY, pose){
+    const footX = hipX + pose.footX * 10 * s;
+    const footY = hipY + legLen + pose.footY * 5 * s;
+    const kneeX = (hipX + footX) / 2;
+    const kneeY = (hipY + footY) / 2 - pose.kneeUp * 6 * s;
+    ctx.strokeStyle = skin; ctx.lineWidth = 6 * s; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(hipX, hipY); ctx.lineTo(kneeX, kneeY); ctx.lineTo(footX, footY); ctx.stroke();
+    return { footX, footY };
+  }
+  const footL = drawLeg(x - 4 * s, bodyY + 5 * s, legL);
+  const footR = drawLeg(x + 4 * s, bodyY + 5 * s, legR);
+  // Chaussures
+  ctx.fillStyle = jersey;
+  ctx.beginPath(); ctx.ellipse(footL.footX, footL.footY, 6.5 * s, 3.5 * s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(footR.footX, footR.footY, 6.5 * s, 3.5 * s, 0, 0, Math.PI*2); ctx.fill();
+  // Speedlines derrière le pied qui se pose en arrière
+  const fastFootX = legR.footX > legL.footX ? footL.footX : footR.footX;
+  const fastFootY = legR.footX > legL.footX ? footL.footY : footR.footY;
+  ctx.strokeStyle = `rgba(255,255,255,.5)`;
+  ctx.lineWidth = 1.5 * s; ctx.lineCap = 'round';
+  for(let i = 0; i < 3; i++){
+    const sx = fastFootX - (8 + i * 6) * s;
+    const sy = fastFootY - 1 * s + i * 2 * s;
+    ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx - 5 * s, sy); ctx.stroke();
+  }
+  // Body
+  ctx.save();
+  ctx.translate(x, bodyY - 6 * s);
+  ctx.rotate(lean);
+  ctx.fillStyle = '#fff'; ctx.fillRect(-11 * s, 4 * s, 22 * s, 9 * s);
+  ctx.fillStyle = jersey;
+  const r = 5 * s;
+  ctx.beginPath();
+  ctx.moveTo(-12 * s + r, -16 * s); ctx.lineTo(12 * s - r, -16 * s);
+  ctx.quadraticCurveTo(12 * s, -16 * s, 12 * s, -16 * s + r);
+  ctx.lineTo(12 * s, 6 * s); ctx.quadraticCurveTo(12 * s, 6 * s, 12 * s - r, 6 * s);
+  ctx.lineTo(-12 * s + r, 6 * s); ctx.quadraticCurveTo(-12 * s, 6 * s, -12 * s, 6 * s - r);
+  ctx.lineTo(-12 * s, -16 * s + r); ctx.quadraticCurveTo(-12 * s, -16 * s, -12 * s + r, -16 * s);
+  ctx.fill();
+  ctx.fillStyle = '#ffd060'; ctx.fillRect(-12 * s, -16 * s, 24 * s, 3.5 * s);
+  // Bras pliés à 90° qui pompent (cycle de course)
+  // Bras alterné avec les jambes : bras D avant quand jambe D arrière
+  const armSwing = Math.sin(cyclePhase);
+  // Upper arm angle (rotation à l'épaule)
+  const upperL = -armSwing * .9 - .3;  // -1.2 à +0.6
+  const upperR = armSwing * .9 - .3;
+  // Tous les coudes pliés à ~90°
+  function drawArm(shX, shY, upperAngle){
+    const upperLen = 8 * s;
+    const lowerLen = 7 * s;
+    const elbX = shX + Math.sin(upperAngle) * upperLen;
+    const elbY = shY + Math.cos(upperAngle) * upperLen;
+    // Avant-bras : 90° vers l'avant
+    const lowerAngle = upperAngle + Math.PI * .55;
+    const handX = elbX + Math.sin(lowerAngle) * lowerLen;
+    const handY = elbY + Math.cos(lowerAngle) * lowerLen;
+    ctx.strokeStyle = skin; ctx.lineWidth = 5 * s; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(shX, shY); ctx.lineTo(elbX, elbY); ctx.lineTo(handX, handY); ctx.stroke();
+  }
+  drawArm(-10 * s, -10 * s, upperL);
+  drawArm(10 * s, -10 * s, upperR);
+  ctx.restore();
+  // Tête (suit le hop)
+  const headY = bodyY - 27 * s;
+  const headX = x + Math.sin(lean) * 8 * s;
+  ctx.fillStyle = skin; ctx.beginPath(); ctx.arc(headX, headY, 12 * s, 0, Math.PI*2); ctx.fill();
+  // Cheveux qui FLOTTENT vers l'arrière (effet vitesse)
+  ctx.fillStyle = hair;
+  ctx.beginPath();
+  ctx.arc(headX, headY - 3 * s, 12 * s, Math.PI, 0);
+  ctx.lineTo(headX + 10 * s, headY + 2 * s);
+  // Mèche flottante derrière
+  ctx.lineTo(headX - 13 * s, headY + 1 * s + Math.sin(cyclePhase * 2) * 1.5 * s);
+  ctx.lineTo(headX - 15 * s, headY - 2 * s);
+  ctx.lineTo(headX - 11 * s, headY - 4 * s);
+  ctx.closePath();
+  ctx.fill();
+  // Yeux concentrés
+  ctx.fillStyle = '#1a1010';
+  ctx.beginPath(); ctx.arc(headX + 2 * s, headY + 1 * s, 1.4 * s, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(headX + 8 * s, headY + 1 * s, 1.4 * s, 0, Math.PI*2); ctx.fill();
+  // Sueur occasionnelle (toutes les ~3 cycles)
+  if(Math.sin(cyclePhase * 0.31) > 0.85){
+    ctx.fillStyle = '#7ec8ff';
+    ctx.globalAlpha = 0.8;
+    ctx.beginPath(); ctx.arc(headX - 8 * s, headY - 5 * s, 1.5 * s, 0, Math.PI*2); ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+});
+</script>
+</body></html>

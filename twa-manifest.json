@@ -1,0 +1,49 @@
+{
+  "packageId": "fr.foulee.game",
+  "host": "REPLACE_WITH_YOUR_DOMAIN.com",
+  "name": "FOULÉE",
+  "launcherName": "FOULÉE",
+  "display": "fullscreen",
+  "themeColor": "#c87020",
+  "navigationColor": "#c87020",
+  "navigationColorDark": "#5a2010",
+  "backgroundColor": "#7ec4e8",
+  "enableNotifications": true,
+  "startUrl": "/",
+  "iconUrl": "https://REPLACE_WITH_YOUR_DOMAIN.com/assets/icon-512.png",
+  "maskableIconUrl": "https://REPLACE_WITH_YOUR_DOMAIN.com/assets/icon-maskable-512.png",
+  "appVersionName": "1.0.0",
+  "appVersionCode": 1,
+  "shortcuts": [],
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "android"
+  },
+  "splashScreenFadeOutDuration": 300,
+  "fallbackType": "customtabs",
+  "features": {
+    "playBilling": {
+      "enabled": true
+    }
+  },
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "orientation": "portrait",
+  "fingerprints": [],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "1.0.0",
+  "minSdkVersion": 23,
+  "shareTarget": {
+    "action": "/share",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}

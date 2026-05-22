@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>D — Borne kilométrique</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0e0d12;color:#fff;font-family:Nunito,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px}
+h1{font-size:16px;margin:0 0 4px}
+.tag{font-size:11px;color:#a89880;margin-bottom:10px}
+.frame{width:540px;aspect-ratio:9/6;border-radius:18px;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.5)}
+canvas{display:block;width:100%;height:100%}
+.desc{margin-top:10px;max-width:520px;font-size:12px;color:#c8b8a0;line-height:1.4}
+</style></head><body>
+<h1>D · Borne kilométrique</h1>
+<div class="tag">Borne routière française au sol (béton blanc + chapeau rouge)</div>
+<div class="frame"><canvas id="cv" width="540" height="360"></canvas></div>
+<div class="desc">Référence officielle borne route N (RN). Cube béton blanc, chapeau arrondi rouge, chiffres gravés noirs. 100m/500m = mini-bornes même style. Lecture instantanée, n'obstrue rien.</div>
+<script src="_shared.js"></script>
+<script>
+function drawBorne(ctx, x, gy, w, h, topColor, text, fontSize){
+  // Ombre portée
+  ctx.fillStyle = 'rgba(0,0,0,.4)';
+  ctx.beginPath();
+  ctx.ellipse(x, gy + 1, w * 0.7, 2.5, 0, 0, Math.PI*2);
+  ctx.fill();
+  // Corps borne (blanc cassé avec dégradé)
+  const grad = ctx.createLinearGradient(x - w/2, 0, x + w/2, 0);
+  grad.addColorStop(0, '#f4ede0');
+  grad.addColorStop(.4, '#fff');
+  grad.addColorStop(1, '#d8d0c0');
+  ctx.fillStyle = grad;
+  ctx.fillRect(x - w/2, gy - h, w, h);
+  // Chapeau arrondi rouge
+  const capH = w * 0.4;
+  ctx.fillStyle = topColor;
+  ctx.beginPath();
+  ctx.moveTo(x - w/2, gy - h);
+  ctx.lineTo(x - w/2, gy - h - capH * 0.3);
+  ctx.quadraticCurveTo(x, gy - h - capH, x + w/2, gy - h - capH * 0.3);
+  ctx.lineTo(x + w/2, gy - h);
+  ctx.closePath(); ctx.fill();
+  // Border noir
+  ctx.strokeStyle = 'rgba(0,0,0,.4)';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(x - w/2 + .5, gy - h + .5, w - 1, h - 1);
+  // Texte gravé
+  ctx.fillStyle = 'rgba(0,0,0,.2)';
+  ctx.font = 'bold ' + fontSize + 'px Nunito';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, x + 0.5, gy - h/2 + 0.5);
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fillText(text, x, gy - h/2);
+  ctx.textBaseline = 'alphabetic';
+  // Highlight gauche
+  ctx.fillStyle = 'rgba(255,255,255,.3)';
+  ctx.fillRect(x - w/2 + 1, gy - h + 1, 2, h - 2);
+}
+function drawKm(ctx, x, gy, km, t){
+  drawBorne(ctx, x, gy, 40, 50, '#c84030', km + 'KM', 14);
+}
+function drawHm(ctx, x, gy, m, t){
+  const w = m === 500 ? 28 : 22;
+  const h = m === 500 ? 30 : 22;
+  const fs = m === 500 ? 9 : 8;
+  drawBorne(ctx, x, gy, w, h, m === 500 ? '#ffd060' : '#888', m + 'm', fs);
+}
+MILESTONES_SCENE(document.getElementById('cv'), drawKm, drawHm);
+</script>
+</body></html>

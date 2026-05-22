@@ -1,0 +1,629 @@
+{
+  "aria": {
+    "buttonsTotal": 47,
+    "buttonsWithAria": 13,
+    "buttonsWithText": 43,
+    "buttonsWithoutAccessibleName": 1,
+    "sampleNoName": [
+      "skill-btn ready"
+    ],
+    "modalsTotal": 25,
+    "modalsWithRoleDialog": 0,
+    "modalsLabelled": 0,
+    "ariaLiveRegions": 0,
+    "visibleFocusable": 19
+  },
+  "touch": [
+    {
+      "sel": "#menu-toggle",
+      "w": 32,
+      "h": 32,
+      "passGoogle48": false,
+      "passAppleHIG44": false
+    },
+    {
+      "sel": ".modal-close",
+      "w": 31,
+      "h": 31,
+      "passGoogle48": false,
+      "passAppleHIG44": false
+    },
+    {
+      "sel": "#jump-btn",
+      "w": 84,
+      "h": 84,
+      "passGoogle48": true,
+      "passAppleHIG44": true
+    },
+    {
+      "sel": "#daily-btn",
+      "w": 46,
+      "h": 46,
+      "passGoogle48": false,
+      "passAppleHIG44": true
+    },
+    {
+      "sel": ".tab-btn",
+      "w": 378,
+      "h": 51,
+      "passGoogle48": true,
+      "passAppleHIG44": true
+    },
+    {
+      "sel": ".skill-btn",
+      "w": 50,
+      "h": 50,
+      "passGoogle48": true,
+      "passAppleHIG44": true
+    },
+    {
+      "sel": ".menu-item",
+      "w": 301,
+      "h": 58,
+      "passGoogle48": true,
+      "passAppleHIG44": true
+    },
+    {
+      "sel": "#stat-gold",
+      "w": 81,
+      "h": 36,
+      "passGoogle48": false,
+      "passAppleHIG44": false
+    },
+    {
+      "sel": "#runner-avatar",
+      "w": 30,
+      "h": 30,
+      "passGoogle48": false,
+      "passAppleHIG44": false
+    }
+  ],
+  "contrast_baseline": [
+    {
+      "desc": "HUD Gouttes value",
+      "sel": "#gold-val",
+      "found": true,
+      "color": "rgb(26, 26, 26)",
+      "bg": "rgb(255,255,255)",
+      "fontSize": "15px",
+      "fontWeight": "900",
+      "ratio": 17.4,
+      "requiredAA": 3,
+      "passAA": true,
+      "passAAA": true
+    },
+    {
+      "desc": "HUD Stars value",
+      "sel": "#stars-val",
+      "found": true,
+      "color": "rgb(26, 26, 26)",
+      "bg": "rgb(255,255,255)",
+      "fontSize": "15px",
+      "fontWeight": "900",
+      "ratio": 17.4,
+      "requiredAA": 3,
+      "passAA": true,
+      "passAAA": true
+    },
+    {
+      "desc": "HUD label (8-9px)",
+      "sel": ".stat-lbl",
+      "found": true,
+      "color": "rgb(232, 168, 48)",
+      "bg": "rgb(255,255,255)",
+      "fontSize": "8px",
+      "fontWeight": "800",
+      "ratio": 2.08,
+      "requiredAA": 4.5,
+      "passAA": false,
+      "passAAA": false
+    },
+    {
+      "desc": "Runner pace number",
+      "sel": "#runner-pace",
+      "found": true,
+      "color": "rgb(200, 64, 48)",
+      "bg": "rgb(255,255,255)",
+      "fontSize": "11px",
+      "fontWeight": "900",
+      "ratio": 4.96,
+      "requiredAA": 4.5,
+      "passAA": true,
+      "passAAA": false
+    },
+    {
+      "desc": "Tab button (inactive)",
+      "sel": ".tab-btn",
+      "found": true,
+      "color": "rgb(26, 26, 26)",
+      "bg": "rgb(255,255,255)",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "ratio": 17.4,
+      "requiredAA": 4.5,
+      "passAA": true,
+      "passAAA": true
+    },
+    {
+      "sel": ".tab-btn.active",
+      "desc": "Tab button (active)",
+      "found": false
+    },
+    {
+      "desc": "Jump btn label SAUT",
+      "sel": ".jump-btn-float span",
+      "found": true,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgb(224,228,224)",
+      "fontSize": "13px",
+      "fontWeight": "900",
+      "ratio": 1.28,
+      "requiredAA": 4.5,
+      "passAA": false,
+      "passAAA": false
+    },
+    {
+      "desc": "Modal close X",
+      "sel": ".modal-close",
+      "found": true,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgb(200,64,48)",
+      "fontSize": "20px",
+      "fontWeight": "900",
+      "ratio": 4.96,
+      "requiredAA": 3,
+      "passAA": true,
+      "passAAA": true
+    },
+    {
+      "desc": "Upgrade button name",
+      "sel": ".upg-name",
+      "found": true,
+      "color": "rgb(26, 26, 26)",
+      "bg": "rgb(255,255,255)",
+      "fontSize": "12.5px",
+      "fontWeight": "900",
+      "ratio": 17.4,
+      "requiredAA": 4.5,
+      "passAA": true,
+      "passAAA": true
+    },
+    {
+      "desc": "Upgrade cost label",
+      "sel": ".upg-cost",
+      "found": true,
+      "color": "rgb(232, 64, 48)",
+      "bg": "rgb(255,255,255)",
+      "fontSize": "11px",
+      "fontWeight": "800",
+      "ratio": 4.03,
+      "requiredAA": 4.5,
+      "passAA": false,
+      "passAAA": false
+    },
+    {
+      "desc": "Skill btn label (7px)",
+      "sel": ".skill-btn::after",
+      "found": true,
+      "color": "rgb(200, 64, 48)",
+      "bg": "rgb(255,255,255)",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "ratio": 4.96,
+      "requiredAA": 4.5,
+      "passAA": true,
+      "passAAA": false
+    },
+    {
+      "sel": ".skill-btn.cooldown",
+      "desc": "Skill cooldown state",
+      "cdState": true,
+      "found": false
+    }
+  ],
+  "tab_order": {
+    "total": 20,
+    "first25": [
+      {
+        "idx": 1,
+        "tag": "BUTTON",
+        "id": "menu-toggle",
+        "cls": "",
+        "aria": "Menu",
+        "x": 12,
+        "y": 10,
+        "w": 32,
+        "h": 32
+      },
+      {
+        "idx": 2,
+        "tag": "BUTTON",
+        "id": "giga-back",
+        "cls": "giga-back-btn",
+        "aria": "",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "idx": 3,
+        "tag": "BUTTON",
+        "id": "giga-next",
+        "cls": "giga-next-btn",
+        "aria": "",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "idx": 4,
+        "tag": "BUTTON",
+        "id": "giga-skip",
+        "cls": "giga-skip-btn",
+        "aria": "",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "idx": 5,
+        "tag": "DIV",
+        "id": "runner-avatar",
+        "cls": "runner-avatar",
+        "aria": "Profil du coureur",
+        "x": 12,
+        "y": 48,
+        "w": 30,
+        "h": 30
+      },
+      {
+        "idx": 6,
+        "tag": "BUTTON",
+        "id": "jump-btn",
+        "cls": "jump-btn-float",
+        "aria": "Jump over the hurdle",
+        "x": 286,
+        "y": 650,
+        "w": 84,
+        "h": 84
+      },
+      {
+        "idx": 7,
+        "tag": "BUTTON",
+        "id": "daily-btn",
+        "cls": "daily-btn-float",
+        "aria": "Récompense quotidienne",
+        "x": 10,
+        "y": 718,
+        "w": 46,
+        "h": 46
+      },
+      {
+        "idx": 8,
+        "tag": "BUTTON",
+        "id": "",
+        "cls": "skill-btn ready",
+        "aria": "",
+        "x": 330,
+        "y": 98,
+        "w": 50,
+        "h": 50
+      },
+      {
+        "idx": 9,
+        "tag": "BUTTON",
+        "id": "",
+        "cls": "tab-btn",
+        "aria": "",
+        "x": 6,
+        "y": 783,
+        "w": 378,
+        "h": 51
+      },
+      {
+        "idx": 10,
+        "tag": "BUTTON",
+        "id": "",
+        "cls": "rc-buy",
+        "aria": "",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "idx": 11,
+        "tag": "BUTTON",
+        "id": "",
+        "cls": "upg-btn upg-power locked",
+        "aria": "Puissance",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "idx": 12,
+        "tag": "BUTTON",
+        "id": "",
+        "cls": "upg-btn upg-luck",
+        "aria": "Chance critique",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "idx": 13,
+        "tag": "BUTTON",
+        "id": "",
+        "cls": "upg-btn upg-auto locked",
+        "aria": "Auto-pilote",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "idx": 14,
+        "tag": "BUTTON",
+        "id": "",
+        "cls": "upg-btn upg-trophy locked",
+        "aria": "Trophée",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "idx": 15,
+        "tag": "BUTTON",
+        "id": "",
+        "cls": "upg-btn upg-breath",
+        "aria": "Souffle",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "idx": 16,
+        "tag": "BUTTON",
+        "id": "",
+        "cls": "upg-btn upg-speed",
+        "aria": "Vitesse",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "idx": 17,
+        "tag": "BUTTON",
+        "id": "",
+        "cls": "upg-btn upg-eagle",
+        "aria": "Vision d'Aigle",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "idx": 18,
+        "tag": "BUTTON",
+        "id": "",
+        "cls": "upg-btn upg-cruise",
+        "aria": "Pilote automatique",
+        "x": 0,
+        "y": 0,
+        "w": 0,
+        "h": 0
+      },
+      {
+        "idx": 19,
+        "tag": "BUTTON",
+        "id": "help-toggle",
+        "cls": "intro-pulse",
+        "aria": "Ouvrir le guide",
+        "x": 352,
+        "y": 6,
+        "w": 30,
+        "h": 30
+      },
+      {
+        "idx": 20,
+        "tag": "BUTTON",
+        "id": "start-btn",
+        "cls": "start",
+        "aria": "",
+        "x": 59,
+        "y": 736,
+        "w": 273,
+        "h": 60
+      }
+    ]
+  },
+  "motion": {
+    "animationsRunning": 60,
+    "uniqueAnimations": 31,
+    "sample": [
+      "legAlt",
+      "rgFadeIn",
+      "rgTapPulse",
+      "gSecFadeIn",
+      "storyFadeIn",
+      "storyCardPop",
+      "gigaStepIn",
+      "ascensionFlash",
+      "comboRaysSpin",
+      "dailyPulse",
+      "tierBannerIn",
+      "tileBreath",
+      "cdReady",
+      "skillReadyPulse",
+      "sprintFlame"
+    ]
+  },
+  "contrast_dark": [
+    {
+      "desc": "HUD Gouttes value",
+      "sel": "#gold-val",
+      "found": true,
+      "color": "rgb(26, 26, 26)",
+      "bg": "rgb(255,255,255)",
+      "fontSize": "15px",
+      "fontWeight": "900",
+      "ratio": 17.4,
+      "requiredAA": 3,
+      "passAA": true,
+      "passAAA": true
+    },
+    {
+      "desc": "HUD Stars value",
+      "sel": "#stars-val",
+      "found": true,
+      "color": "rgb(26, 26, 26)",
+      "bg": "rgb(255,255,255)",
+      "fontSize": "15px",
+      "fontWeight": "900",
+      "ratio": 17.4,
+      "requiredAA": 3,
+      "passAA": true,
+      "passAAA": true
+    },
+    {
+      "desc": "HUD label (8-9px)",
+      "sel": ".stat-lbl",
+      "found": true,
+      "color": "rgb(232, 168, 48)",
+      "bg": "rgb(255,255,255)",
+      "fontSize": "8px",
+      "fontWeight": "800",
+      "ratio": 2.08,
+      "requiredAA": 4.5,
+      "passAA": false,
+      "passAAA": false
+    },
+    {
+      "desc": "Runner pace number",
+      "sel": "#runner-pace",
+      "found": true,
+      "color": "rgb(200, 64, 48)",
+      "bg": "rgb(255,255,255)",
+      "fontSize": "11px",
+      "fontWeight": "900",
+      "ratio": 4.96,
+      "requiredAA": 4.5,
+      "passAA": true,
+      "passAAA": false
+    },
+    {
+      "desc": "Tab button (inactive)",
+      "sel": ".tab-btn",
+      "found": true,
+      "color": "rgb(26, 26, 26)",
+      "bg": "rgb(255,255,255)",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "ratio": 17.4,
+      "requiredAA": 4.5,
+      "passAA": true,
+      "passAAA": true
+    },
+    {
+      "sel": ".tab-btn.active",
+      "desc": "Tab button (active)",
+      "found": false
+    },
+    {
+      "desc": "Jump btn label SAUT",
+      "sel": ".jump-btn-float span",
+      "found": true,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgb(224,228,224)",
+      "fontSize": "13px",
+      "fontWeight": "900",
+      "ratio": 1.28,
+      "requiredAA": 4.5,
+      "passAA": false,
+      "passAAA": false
+    },
+    {
+      "desc": "Modal close X",
+      "sel": ".modal-close",
+      "found": true,
+      "color": "rgb(255, 255, 255)",
+      "bg": "rgb(200,64,48)",
+      "fontSize": "20px",
+      "fontWeight": "900",
+      "ratio": 4.96,
+      "requiredAA": 3,
+      "passAA": true,
+      "passAAA": true
+    },
+    {
+      "desc": "Upgrade button name",
+      "sel": ".upg-name",
+      "found": true,
+      "color": "rgb(26, 26, 26)",
+      "bg": "rgb(255,255,255)",
+      "fontSize": "12.5px",
+      "fontWeight": "900",
+      "ratio": 17.4,
+      "requiredAA": 4.5,
+      "passAA": true,
+      "passAAA": true
+    },
+    {
+      "desc": "Upgrade cost label",
+      "sel": ".upg-cost",
+      "found": true,
+      "color": "rgb(232, 64, 48)",
+      "bg": "rgb(255,255,255)",
+      "fontSize": "11px",
+      "fontWeight": "800",
+      "ratio": 4.03,
+      "requiredAA": 4.5,
+      "passAA": false,
+      "passAAA": false
+    },
+    {
+      "desc": "Skill btn label (7px)",
+      "sel": ".skill-btn::after",
+      "found": true,
+      "color": "rgb(200, 64, 48)",
+      "bg": "rgb(255,255,255)",
+      "fontSize": "13.3333px",
+      "fontWeight": "400",
+      "ratio": 4.96,
+      "requiredAA": 4.5,
+      "passAA": true,
+      "passAAA": false
+    },
+    {
+      "sel": ".skill-btn.cooldown",
+      "desc": "Skill cooldown state",
+      "cdState": true,
+      "found": false
+    }
+  ],
+  "escape_closes_modal": {
+    "before": true,
+    "after": true,
+    "works": false
+  },
+  "tab_first_focus": {
+    "tag": "BUTTON",
+    "id": "menu-toggle",
+    "cls": "",
+    "aria": "Menu"
+  },
+  "focus_visible_style": {
+    "outline": "rgb(16, 16, 16) auto 1px",
+    "outlineWidth": "1px",
+    "boxShadow": "none"
+  }
+}

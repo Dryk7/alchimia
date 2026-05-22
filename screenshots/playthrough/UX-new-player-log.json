@@ -1,0 +1,189 @@
+{
+  "errors_count": 0,
+  "errors": [],
+  "log": [
+    {
+      "t": 18.5,
+      "tag": "00-FIRST-LOAD",
+      "msg": "Page chargée, localStorage clean"
+    },
+    {
+      "t": 18.69,
+      "tag": "00-OBS",
+      "msg": "Overlays visibles: ['tuto_msg', 'stat_gold', '_state', '_tutoOverlayVisible', '_bodyHasActiveTuto']"
+    },
+    {
+      "t": 19.98,
+      "tag": "01-CINE-1.5s",
+      "msg": "Overlays: ['tuto_msg', 'stat_gold']"
+    },
+    {
+      "t": 20.18,
+      "tag": "01-CINE-3s",
+      "msg": "Overlays: ['tuto_msg', 'stat_gold']"
+    },
+    {
+      "t": 20.37,
+      "tag": "01-CINE-5s",
+      "msg": "Overlays: ['tuto_msg', 'stat_gold']"
+    },
+    {
+      "t": 21.49,
+      "tag": "02-START-BTN",
+      "msg": "Texte: \"PRENDRE LE DÉPART\""
+    },
+    {
+      "t": 23.12,
+      "tag": "02-CLICK-START",
+      "msg": "Clicked #start-btn"
+    },
+    {
+      "t": 24.98,
+      "tag": "03-GIGA-step0",
+      "msg": "Contenu: \"BIENVENUE FOULÉE Tu es un coureur seul. Quelque part entre le chantier et le mythe.\""
+    },
+    {
+      "t": 27.5,
+      "tag": "03-GIGA-step1",
+      "msg": "Contenu: \"LE BUT 100 KM Atteindre le stade olympique. Allumer la vasque. Devenir une légende. 🏁 100 km 5 biomes · 20 pal...\""
+    },
+    {
+      "t": 29.76,
+      "tag": "03-GIGA-step2",
+      "msg": "Contenu: \"COMMENT JOUER TAPE L'ÉCRAN Chaque tap = une foulée. Ton coureur avance grâce à toi.\""
+    },
+    {
+      "t": 32.2,
+      "tag": "03-GIGA-step3",
+      "msg": "Contenu: \"LA MONNAIE LES GOUTTES Chaque foulée te fait gagner 1 goutte (sueur + ravito). Cumule-les pour acheter des upg...\""
+    },
+    {
+      "t": 34.55,
+      "tag": "03-GIGA-step4",
+      "msg": "Contenu: \"LE RYTHME COMBO ×5 Tape vite et régulier → ton combo monte. ×5 = chaque tap rapporte 5 gouttes. ×1.5 ×2 ×3 ×5\""
+    },
+    {
+      "t": 36.83,
+      "tag": "03-GIGA-step5",
+      "msg": "Contenu: \"KM 3 — UNLOCK AUTO-COURSE Au km 3, ton coureur avance tout seul. Tu tapes pour booster et passer les haies. → ...\""
+    },
+    {
+      "t": 39.19,
+      "tag": "03-GIGA-step6",
+      "msg": "Contenu: \"L'AVENTURE 5 BIOMES Tu traverses des paysages qui changent. Le stade apparaît au km 70. 0–10 km · Chantier 10–...\""
+    },
+    {
+      "t": 41.52,
+      "tag": "03-GIGA-step7",
+      "msg": "Contenu: \"KM 100 — FIN ASCENSION Au km 100, tu peux renaître. Garde des ★ étoiles permanentes pour devenir plus fort à c...\""
+    },
+    {
+      "t": 45.22,
+      "tag": "03-GIGA-END",
+      "msg": "Giga-tuto terminé, ActiveTuto devrait démarrer"
+    },
+    {
+      "t": 45.25,
+      "tag": "04-ACTIVE-TUTO-1",
+      "msg": "Bulle: \"BIENVENUE Salut champion ! Je vais te montrer comment jouer. Ça prend 2 minutes. Passer COMMENCER\"",
+      "friction": "Encore un tuto APRES les 8 cartes giga"
+    },
+    {
+      "t": 46.17,
+      "tag": "04-CLICK-COMMENCER",
+      "msg": "#tuto-next clické: True"
+    },
+    {
+      "t": 46.94,
+      "tag": "05-ACTIVE-TUTO-2",
+      "msg": "Bulle: \"ÉTAPE 1 — TAP Tape sur la piste pour faire avancer ton coureur. Vas-y, essaye ! Passer le tuto\""
+    },
+    {
+      "t": 48.61,
+      "tag": "06-FIRST-TAP",
+      "msg": "totalTaps=0 gold=0 bulleVisible=True"
+    },
+    {
+      "t": 49.49,
+      "tag": "06-FEEDBACK-1TAP",
+      "msg": "Bulle après 1 tap: \"ÉTAPE 1 — TAP Tape sur la piste pour faire avancer ton coureur. Vas-y, essaye ! Passer le tuto\""
+    },
+    {
+      "t": 51.36,
+      "tag": "06-AFTER-6TAPS",
+      "msg": "Bulle: \"ÉTAPE 1 — TAP Tape sur la piste pour faire avancer ton coureur. Vas-y, essaye ! Passer le tuto\""
+    },
+    {
+      "t": 53.24,
+      "tag": "07-KM1",
+      "msg": "lapsRun=1, bulle=\"ÉTAPE 1 — TAP Tape sur la piste pour faire avancer ton coureur. Vas-y, essaye ! Passer le tuto\" hint=\"\""
+    },
+    {
+      "t": 56.21,
+      "tag": "08-KM3-UNLOCK",
+      "msg": "Auto-course unlock — overlays: ['active_tuto_bubble', 'active_tuto_eyebrow', 'active_tuto_text', 'tuto_msg', 'stat_gold']"
+    },
+    {
+      "t": 57.18,
+      "tag": "08-CELEBRATION",
+      "msg": "Cinematic visible: False",
+      "friction": "Pas de cinematic visible au déblocage auto-course"
+    },
+    {
+      "t": 61.44,
+      "tag": "09-KM5-CHEST",
+      "msg": "lapsRun=5, chestsOwned=5, bulle=\"ÉTAPE 1 — TAP Tape sur la piste pour faire avancer ton coureur. Vas-y, essaye ! Passer le tuto\""
+    },
+    {
+      "t": 62.35,
+      "tag": "09-CHEST-MENU",
+      "msg": "Menu coffres: {'found': True, 'visible': False, 'unlockKm': '15'}",
+      "friction": "Menu Coffres caché jusqu'à km 15 mais 1er coffre droppé à km 5"
+    },
+    {
+      "t": 63.3,
+      "tag": "10-KM8",
+      "msg": "lapsRun=8, hint=\"\""
+    },
+    {
+      "t": 64.16,
+      "tag": "10-EAGLE-EYE",
+      "msg": "Vision Aigle bouton: {'found': True, 'visible': True, 'disabled': False}"
+    },
+    {
+      "t": 64.94,
+      "tag": "11-OPEN-UPGRADES",
+      "msg": "Onglet upgrades: {'found': True}"
+    },
+    {
+      "t": 66.37,
+      "tag": "11-BUY-PUISSANCE",
+      "msg": "Achat: {'found': True, 'before': 0, 'after': 1, 'gold': 1120}"
+    },
+    {
+      "t": 68.23,
+      "tag": "12-OPEN-CHEST-MODAL",
+      "msg": "{'modalOpened': True}"
+    },
+    {
+      "t": 69.37,
+      "tag": "12-CHEST-MODAL-CONTENT",
+      "msg": "\"Coffre Bronze\n×0\nOUVRIR\nCoffre Argent\n×0\nOUVRIR\nCoffre Or\n×1\nOUVRIR\nCoffre Légendaire\n×0\nOUVRIR\nTu reçois 1 coffre à chaque km bouclé. Plus la rareté du coffre est haute, meilleurs sont les items à l'...\""
+    },
+    {
+      "t": 70.97,
+      "tag": "12-CLICK-CHEST-OPEN",
+      "msg": "{'found': True, 'label': 'OUVRIR'}"
+    },
+    {
+      "t": 72.67,
+      "tag": "13-SKILLS",
+      "msg": "Skills disponibles: [{'skill': 'sprint', 'ready': True, 'visible': True}, {'skill': 'tailwind', 'ready': True, 'visible': True}]"
+    },
+    {
+      "t": 73.46,
+      "tag": "13-USE-SKILL",
+      "msg": "{'found': True, 'skill': 'sprint'}"
+    }
+  ]
+}

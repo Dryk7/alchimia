@@ -1,0 +1,205 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>FOULÉE icon</title>
+<style>body{margin:0;padding:0;background:#222}canvas{display:block}</style>
+</head><body>
+<canvas id="c" width="1024" height="1024"></canvas>
+<script>
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+const SIZE = 1024;
+
+function drawIcon(maskable){
+  // === FOND ===
+  // Maskable : safe area = inner 80% (les angles peuvent être croppés)
+  // Normal : utilise full canvas
+  ctx.clearRect(0, 0, SIZE, SIZE);
+
+  // Gradient ciel → tribune
+  const skyG = ctx.createLinearGradient(0, 0, 0, SIZE);
+  skyG.addColorStop(0, '#5fb8e8');
+  skyG.addColorStop(0.55, '#a4d8f0');
+  skyG.addColorStop(0.58, '#7a3818');
+  skyG.addColorStop(0.65, '#e85040');
+  skyG.addColorStop(1, '#c84030');
+  ctx.fillStyle = skyG;
+  if(maskable){
+    // Fill complet
+    ctx.fillRect(0, 0, SIZE, SIZE);
+  } else {
+    // Rounded square pour icon normal
+    const r = SIZE * 0.18;
+    ctx.beginPath();
+    ctx.moveTo(r, 0);
+    ctx.lineTo(SIZE - r, 0); ctx.quadraticCurveTo(SIZE, 0, SIZE, r);
+    ctx.lineTo(SIZE, SIZE - r); ctx.quadraticCurveTo(SIZE, SIZE, SIZE - r, SIZE);
+    ctx.lineTo(r, SIZE); ctx.quadraticCurveTo(0, SIZE, 0, SIZE - r);
+    ctx.lineTo(0, r); ctx.quadraticCurveTo(0, 0, r, 0);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // Soleil rayonnant
+  ctx.save();
+  ctx.translate(SIZE * 0.82, SIZE * 0.20);
+  ctx.fillStyle = 'rgba(255,240,150,.40)';
+  for(let i = 0; i < 12; i++){
+    ctx.save();
+    ctx.rotate(i * Math.PI / 6);
+    ctx.beginPath();
+    ctx.moveTo(0, -SIZE * 0.20); ctx.lineTo(SIZE * 0.015, -SIZE * 0.14); ctx.lineTo(-SIZE * 0.015, -SIZE * 0.14); ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+  // Halo
+  const halo = ctx.createRadialGradient(0, 0, 0, 0, 0, SIZE * 0.18);
+  halo.addColorStop(0, 'rgba(255,250,200,.6)');
+  halo.addColorStop(1, 'rgba(255,250,200,0)');
+  ctx.fillStyle = halo;
+  ctx.beginPath(); ctx.arc(0, 0, SIZE * 0.18, 0, Math.PI*2); ctx.fill();
+  // Disque
+  ctx.fillStyle = '#fff5b0';
+  ctx.beginPath(); ctx.arc(0, 0, SIZE * 0.095, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#ffd060';
+  ctx.beginPath(); ctx.arc(0, 0, SIZE * 0.075, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  // Tribune
+  const tribY = SIZE * 0.52;
+  const tribH = SIZE * 0.08;
+  ctx.fillStyle = '#5a2810';
+  ctx.fillRect(0, tribY, SIZE, tribH);
+  ctx.fillStyle = '#7a3818';
+  ctx.fillRect(0, tribY, SIZE, 6);
+  // Foule colorée
+  const colors = ['#e85040', '#4a9fd9', '#7ec46a', '#ffd060', '#c89af0', '#f08040', '#e060a0', '#60c0e0'];
+  for(let i = 0; i < 32; i++){
+    const x = (i / 32) * SIZE;
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.fillRect(x + 4, tribY + 18, 22, 22);
+    ctx.fillStyle = '#f0d4b0';
+    ctx.fillRect(x + 4, tribY + 4, 22, 12);
+  }
+
+  // === HÉROS au centre, plus gros ===
+  const heroX = SIZE * 0.40;
+  const heroY = SIZE * 0.78;
+  const s = SIZE * 0.0058; // scale factor
+  const bodyY = heroY;
+
+  // Ombre
+  ctx.fillStyle = 'rgba(0,0,0,.40)';
+  ctx.beginPath(); ctx.ellipse(heroX, heroY + 22 * s, 18 * s, 4 * s, 0, 0, Math.PI*2); ctx.fill();
+
+  // Jambes en pleine course (jambe avant haute)
+  ctx.strokeStyle = '#f0d4b0'; ctx.lineWidth = 7 * s; ctx.lineCap = 'round';
+  // Jambe arrière étendue
+  ctx.beginPath();
+  ctx.moveTo(heroX - 4 * s, bodyY + 5 * s);
+  ctx.lineTo(heroX - 14 * s, bodyY + 24 * s);
+  ctx.stroke();
+  // Jambe avant haute (knee up)
+  ctx.beginPath();
+  ctx.moveTo(heroX + 4 * s, bodyY + 5 * s);
+  ctx.lineTo(heroX + 14 * s, bodyY + 2 * s);
+  ctx.lineTo(heroX + 22 * s, bodyY - 4 * s);
+  ctx.stroke();
+
+  // Chaussures rouges
+  ctx.fillStyle = '#e85040';
+  ctx.beginPath(); ctx.ellipse(heroX - 14 * s, bodyY + 24 * s, 8 * s, 4 * s, 0, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(heroX + 22 * s, bodyY - 4 * s, 8 * s, 4 * s, 0.2, 0, Math.PI*2); ctx.fill();
+
+  // Short blanc
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(heroX - 11 * s, bodyY - 1 * s, 22 * s, 11 * s);
+
+  // Corps maillot rouge
+  ctx.fillStyle = '#e85040';
+  const r = 6 * s;
+  ctx.beginPath();
+  ctx.moveTo(heroX - 12 * s + r, bodyY - 22 * s); ctx.lineTo(heroX + 12 * s - r, bodyY - 22 * s);
+  ctx.quadraticCurveTo(heroX + 12 * s, bodyY - 22 * s, heroX + 12 * s, bodyY - 22 * s + r);
+  ctx.lineTo(heroX + 12 * s, bodyY); ctx.quadraticCurveTo(heroX + 12 * s, bodyY, heroX + 12 * s - r, bodyY);
+  ctx.lineTo(heroX - 12 * s + r, bodyY); ctx.quadraticCurveTo(heroX - 12 * s, bodyY, heroX - 12 * s, bodyY - r);
+  ctx.lineTo(heroX - 12 * s, bodyY - 22 * s + r); ctx.quadraticCurveTo(heroX - 12 * s, bodyY - 22 * s, heroX - 12 * s + r, bodyY - 22 * s);
+  ctx.fill();
+  // Bandeau or
+  ctx.fillStyle = '#ffd060'; ctx.fillRect(heroX - 12 * s, bodyY - 22 * s, 24 * s, 4 * s);
+  // Dossard #1
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(heroX, bodyY - 11 * s, 7 * s, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#e85040';
+  ctx.font = `bold ${10 * s}px Nunito, sans-serif`;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('1', heroX, bodyY - 11 * s);
+
+  // Bras (un en l'air, un en arrière — pose course)
+  ctx.strokeStyle = '#f0d4b0'; ctx.lineWidth = 6 * s;
+  // Bras avant levé (poignet vers le haut)
+  ctx.beginPath();
+  ctx.moveTo(heroX + 12 * s, bodyY - 14 * s);
+  ctx.lineTo(heroX + 20 * s, bodyY - 22 * s);
+  ctx.stroke();
+  // Bras arrière en bas
+  ctx.beginPath();
+  ctx.moveTo(heroX - 12 * s, bodyY - 14 * s);
+  ctx.lineTo(heroX - 20 * s, bodyY - 4 * s);
+  ctx.stroke();
+
+  // Tête
+  ctx.fillStyle = '#f0d4b0';
+  ctx.beginPath(); ctx.arc(heroX + 2 * s, bodyY - 34 * s, 13 * s, 0, Math.PI*2); ctx.fill();
+  // Cheveux dôme brun
+  ctx.fillStyle = '#7a5838';
+  ctx.beginPath();
+  ctx.arc(heroX + 2 * s, bodyY - 37 * s, 13 * s, Math.PI, 0);
+  ctx.lineTo(heroX + 13 * s, bodyY - 32 * s); ctx.lineTo(heroX - 9 * s, bodyY - 32 * s);
+  ctx.fill();
+  // Yeux focus
+  ctx.fillStyle = '#1a1010';
+  ctx.beginPath(); ctx.arc(heroX, bodyY - 33 * s, 2 * s, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(heroX + 6 * s, bodyY - 33 * s, 2 * s, 0, Math.PI*2); ctx.fill();
+  // Bouche focus
+  ctx.strokeStyle = '#3a2818'; ctx.lineWidth = 1.5 * s;
+  ctx.beginPath();
+  ctx.moveTo(heroX, bodyY - 28 * s); ctx.lineTo(heroX + 5 * s, bodyY - 28 * s);
+  ctx.stroke();
+
+  // Speedlines derrière
+  ctx.strokeStyle = 'rgba(255,255,255,.6)';
+  ctx.lineWidth = 4 * s;
+  for(let i = 0; i < 4; i++){
+    const sx = heroX - 30 * s - i * 12 * s;
+    const sy = heroY - 8 * s + (i - 1.5) * 8 * s;
+    ctx.beginPath();
+    ctx.moveTo(sx, sy);
+    ctx.lineTo(sx - 30 * s, sy);
+    ctx.stroke();
+  }
+
+  // === Texte "FOULÉE" en bas (subtil) ===
+  if(!maskable){
+    ctx.fillStyle = 'rgba(255,255,255,.0)'; // pas de texte en mode normal pour rester lisible
+  }
+}
+
+// Render initial pour visualiser
+drawIcon(false);
+
+// Export helpers
+window.__renderIcon = (maskable) => {
+  drawIcon(maskable);
+  return cv.toDataURL('image/png');
+};
+window.__renderSize = (px, maskable) => {
+  // Redimensionne le canvas pour export
+  const tmp = document.createElement('canvas');
+  tmp.width = px; tmp.height = px;
+  const tctx = tmp.getContext('2d');
+  // Re-render at 1024 puis scale down
+  drawIcon(maskable);
+  tctx.drawImage(cv, 0, 0, px, px);
+  return tmp.toDataURL('image/png');
+};
+</script>
+</body></html>

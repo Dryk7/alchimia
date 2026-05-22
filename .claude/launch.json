@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "foulee",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8775", "--directory", "D:/alchimia"],
+      "port": 8775,
+      "autoPort": true
+    }
+  ]
+}

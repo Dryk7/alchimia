@@ -1,13 +1,12 @@
-// Service Worker — FOULÉE (anciennement Alchimia)
-const CACHE = 'foulee-v3';
+// Service Worker — FOULÉE (idle-tap mobile)
+// v5 : retrait MP3 ambient (-19 MB, ProcBGM gère la BGM réelle)
+const CACHE = 'foulee-v5';
 const ASSETS = [
   './',
   './index.html',
   './manifest.json',
-  './assets/audio/ambient.mp3',
-  './assets/audio/ambient_mid.mp3',
-  './assets/audio/ambient_cosmic.mp3',
   './assets/icon-192.png',
+  './assets/icon-192-maskable.png',
   './assets/icon-512.png',
   './assets/icon-maskable-512.png',
 ];

@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>B — Arche bannière</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0e0d12;color:#fff;font-family:Nunito,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px}
+h1{font-size:16px;margin:0 0 4px}
+.tag{font-size:11px;color:#a89880;margin-bottom:10px}
+.frame{width:540px;aspect-ratio:9/6;border-radius:18px;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.5)}
+canvas{display:block;width:100%;height:100%}
+.desc{margin-top:10px;max-width:520px;font-size:12px;color:#c8b8a0;line-height:1.4}
+</style></head><body>
+<h1>B · Arche bannière</h1>
+<div class="tag">Banderole traversant la piste avec deux mâts latéraux</div>
+<div class="frame"><canvas id="cv" width="540" height="360"></canvas></div>
+<div class="desc">Style Tour de France / marathon. Banderole rouge XL au-dessus de la piste, héros passe DESSOUS = effet de franchissement satisfaisant. 100m = ligne au sol blanche. 500m = banderole moitié taille.</div>
+<script src="_shared.js"></script>
+<script>
+function drawKm(ctx, x, gy, km, t){
+  const sway = Math.sin(t * 1.5 + x * 0.005) * 1.5;
+  // Mâts latéraux
+  ctx.fillStyle = '#5a4830';
+  ctx.fillRect(x - 35, gy - 100, 4, 100);
+  ctx.fillRect(x + 31, gy - 100, 4, 100);
+  // Embases béton
+  ctx.fillStyle = '#888';
+  ctx.fillRect(x - 38, gy - 6, 10, 6);
+  ctx.fillRect(x + 28, gy - 6, 10, 6);
+  // Banderole rouge (avec léger sag)
+  ctx.fillStyle = '#c84030';
+  ctx.beginPath();
+  ctx.moveTo(x - 33, gy - 96);
+  ctx.lineTo(x + 33, gy - 96);
+  ctx.lineTo(x + 33, gy - 72 + sway);
+  ctx.quadraticCurveTo(x, gy - 68 + sway, x - 33, gy - 72 + sway);
+  ctx.closePath(); ctx.fill();
+  // Border
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  // Texte KM grand
+  ctx.fillStyle = 'rgba(0,0,0,.45)';
+  ctx.font = 'bold 22px Nunito';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(km + ' KM', x + 1, gy - 83 + sway + 1);
+  ctx.fillStyle = '#fff';
+  ctx.fillText(km + ' KM', x, gy - 83 + sway);
+  ctx.textBaseline = 'alphabetic';
+  // Drapelets décoratifs
+  for(let i=0;i<5;i++){
+    const fx = x - 28 + i * 14;
+    ctx.fillStyle = i % 2 === 0 ? '#ffd060' : '#fff';
+    ctx.beginPath();
+    ctx.moveTo(fx, gy - 70 + sway);
+    ctx.lineTo(fx + 4, gy - 60 + sway);
+    ctx.lineTo(fx + 8, gy - 70 + sway);
+    ctx.closePath(); ctx.fill();
+  }
+}
+function drawHm(ctx, x, gy, m, t){
+  if(m === 500){
+    // Arche mini
+    ctx.fillStyle = '#5a4830';
+    ctx.fillRect(x - 22, gy - 60, 3, 60);
+    ctx.fillRect(x + 19, gy - 60, 3, 60);
+    ctx.fillStyle = '#ffd060';
+    ctx.fillRect(x - 20, gy - 58, 40, 12);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 10px Nunito';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('500m', x, gy - 52);
+    ctx.textBaseline = 'alphabetic';
+  } else {
+    // 100m = ligne blanche au sol + petit chevet
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(x - 14, gy + 4, 28, 3);
+    ctx.fillStyle = 'rgba(0,0,0,.5)';
+    ctx.fillRect(x - 12, gy - 10, 24, 10);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 8px Nunito';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('100m', x, gy - 5);
+    ctx.textBaseline = 'alphabetic';
+  }
+}
+MILESTONES_SCENE(document.getElementById('cv'), drawKm, drawHm);
+</script>
+</body></html>

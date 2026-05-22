@@ -1,0 +1,1472 @@
+{
+  "km00": {
+    "applied": true,
+    "overlaps": [
+      {
+        "a": "button#menu-toggle",
+        "b": "div.runner-hud",
+        "area": 1024,
+        "pct": 100,
+        "a_rect": {
+          "x": 12,
+          "y": 10,
+          "w": 32,
+          "h": 32
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "button#menu-toggle",
+        "b": "div#runner-avatar.runner-avatar",
+        "area": 894,
+        "pct": 99,
+        "a_rect": {
+          "x": 12,
+          "y": 10,
+          "w": 32,
+          "h": 32
+        },
+        "b_rect": {
+          "x": 12,
+          "y": 12,
+          "w": 30,
+          "h": 30
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "svg",
+        "b": "div.runner-hud",
+        "area": 576,
+        "pct": 100,
+        "a_rect": {
+          "x": 16,
+          "y": 14,
+          "w": 24,
+          "h": 24
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "svg",
+        "b": "div#runner-avatar.runner-avatar",
+        "area": 576,
+        "pct": 100,
+        "a_rect": {
+          "x": 16,
+          "y": 14,
+          "w": 24,
+          "h": 24
+        },
+        "b_rect": {
+          "x": 12,
+          "y": 12,
+          "w": 30,
+          "h": 30
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "button#menu-toggle",
+        "b": "svg",
+        "area": 547,
+        "pct": 100,
+        "a_rect": {
+          "x": 12,
+          "y": 10,
+          "w": 32,
+          "h": 32
+        },
+        "b_rect": {
+          "x": 15,
+          "y": 15,
+          "w": 23,
+          "h": 23
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "div.brand",
+        "b": "div.runner-hud",
+        "area": 520,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 26,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "FOULÉE",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "div.brand",
+        "b": "div.runner-hud-info",
+        "area": 520,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 26,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 30
+        },
+        "a_text": "FOULÉE",
+        "b_text": "NIV 1"
+      },
+      {
+        "a": "svg",
+        "b": "svg",
+        "area": 511,
+        "pct": 93,
+        "a_rect": {
+          "x": 16,
+          "y": 14,
+          "w": 24,
+          "h": 24
+        },
+        "b_rect": {
+          "x": 15,
+          "y": 15,
+          "w": 23,
+          "h": 23
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "div.brand",
+        "b": "span#runner-lvl.runner-lvl",
+        "area": 400,
+        "pct": 77,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 26,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 19
+        },
+        "a_text": "FOULÉE",
+        "b_text": "NIV 1"
+      },
+      {
+        "a": "svg",
+        "b": "div.runner-hud",
+        "area": 400,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 20,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "svg",
+        "b": "div.runner-hud-info",
+        "area": 400,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 20,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 30
+        },
+        "a_text": "",
+        "b_text": "NIV 1"
+      },
+      {
+        "a": "svg",
+        "b": "span#runner-lvl.runner-lvl",
+        "area": 308,
+        "pct": 77,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 20,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 19
+        },
+        "a_text": "",
+        "b_text": "NIV 1"
+      }
+    ]
+  },
+  "km03": {
+    "applied": true,
+    "overlaps": [
+      {
+        "a": "button#menu-toggle",
+        "b": "div.runner-hud",
+        "area": 1024,
+        "pct": 100,
+        "a_rect": {
+          "x": 12,
+          "y": 10,
+          "w": 32,
+          "h": 32
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "button#menu-toggle",
+        "b": "div#runner-avatar.runner-avatar",
+        "area": 894,
+        "pct": 99,
+        "a_rect": {
+          "x": 12,
+          "y": 10,
+          "w": 32,
+          "h": 32
+        },
+        "b_rect": {
+          "x": 12,
+          "y": 12,
+          "w": 30,
+          "h": 30
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "svg",
+        "b": "div.runner-hud",
+        "area": 576,
+        "pct": 100,
+        "a_rect": {
+          "x": 16,
+          "y": 14,
+          "w": 24,
+          "h": 24
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "svg",
+        "b": "div#runner-avatar.runner-avatar",
+        "area": 576,
+        "pct": 100,
+        "a_rect": {
+          "x": 16,
+          "y": 14,
+          "w": 24,
+          "h": 24
+        },
+        "b_rect": {
+          "x": 12,
+          "y": 12,
+          "w": 30,
+          "h": 30
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "button#menu-toggle",
+        "b": "svg",
+        "area": 547,
+        "pct": 100,
+        "a_rect": {
+          "x": 12,
+          "y": 10,
+          "w": 32,
+          "h": 32
+        },
+        "b_rect": {
+          "x": 15,
+          "y": 15,
+          "w": 23,
+          "h": 23
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "div.brand",
+        "b": "div.runner-hud",
+        "area": 520,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 26,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "FOULÉE",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "div.brand",
+        "b": "div.runner-hud-info",
+        "area": 520,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 26,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 30
+        },
+        "a_text": "FOULÉE",
+        "b_text": "NIV 1"
+      },
+      {
+        "a": "svg",
+        "b": "svg",
+        "area": 511,
+        "pct": 93,
+        "a_rect": {
+          "x": 16,
+          "y": 14,
+          "w": 24,
+          "h": 24
+        },
+        "b_rect": {
+          "x": 15,
+          "y": 15,
+          "w": 23,
+          "h": 23
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "div.brand",
+        "b": "span#runner-lvl.runner-lvl",
+        "area": 400,
+        "pct": 77,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 26,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 19
+        },
+        "a_text": "FOULÉE",
+        "b_text": "NIV 1"
+      },
+      {
+        "a": "svg",
+        "b": "div.runner-hud",
+        "area": 400,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 20,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "svg",
+        "b": "div.runner-hud-info",
+        "area": 400,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 20,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 30
+        },
+        "a_text": "",
+        "b_text": "NIV 1"
+      },
+      {
+        "a": "svg",
+        "b": "span#runner-lvl.runner-lvl",
+        "area": 308,
+        "pct": 77,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 20,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 19
+        },
+        "a_text": "",
+        "b_text": "NIV 1"
+      }
+    ]
+  },
+  "km10": {
+    "applied": true,
+    "overlaps": [
+      {
+        "a": "button#menu-toggle",
+        "b": "div.runner-hud",
+        "area": 1024,
+        "pct": 100,
+        "a_rect": {
+          "x": 12,
+          "y": 10,
+          "w": 32,
+          "h": 32
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "button#menu-toggle",
+        "b": "div#runner-avatar.runner-avatar",
+        "area": 894,
+        "pct": 99,
+        "a_rect": {
+          "x": 12,
+          "y": 10,
+          "w": 32,
+          "h": 32
+        },
+        "b_rect": {
+          "x": 12,
+          "y": 12,
+          "w": 30,
+          "h": 30
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "svg",
+        "b": "div.runner-hud",
+        "area": 576,
+        "pct": 100,
+        "a_rect": {
+          "x": 16,
+          "y": 14,
+          "w": 24,
+          "h": 24
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "svg",
+        "b": "div#runner-avatar.runner-avatar",
+        "area": 576,
+        "pct": 100,
+        "a_rect": {
+          "x": 16,
+          "y": 14,
+          "w": 24,
+          "h": 24
+        },
+        "b_rect": {
+          "x": 12,
+          "y": 12,
+          "w": 30,
+          "h": 30
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "button#menu-toggle",
+        "b": "svg",
+        "area": 547,
+        "pct": 100,
+        "a_rect": {
+          "x": 12,
+          "y": 10,
+          "w": 32,
+          "h": 32
+        },
+        "b_rect": {
+          "x": 15,
+          "y": 15,
+          "w": 23,
+          "h": 23
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "div.brand",
+        "b": "div.runner-hud",
+        "area": 520,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 26,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "FOULÉE",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "div.brand",
+        "b": "div.runner-hud-info",
+        "area": 520,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 26,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 30
+        },
+        "a_text": "FOULÉE",
+        "b_text": "NIV 1"
+      },
+      {
+        "a": "svg",
+        "b": "svg",
+        "area": 511,
+        "pct": 93,
+        "a_rect": {
+          "x": 16,
+          "y": 14,
+          "w": 24,
+          "h": 24
+        },
+        "b_rect": {
+          "x": 15,
+          "y": 15,
+          "w": 23,
+          "h": 23
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "div.brand",
+        "b": "span#runner-lvl.runner-lvl",
+        "area": 400,
+        "pct": 77,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 26,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 19
+        },
+        "a_text": "FOULÉE",
+        "b_text": "NIV 1"
+      },
+      {
+        "a": "svg",
+        "b": "div.runner-hud",
+        "area": 400,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 20,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "svg",
+        "b": "div.runner-hud-info",
+        "area": 400,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 20,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 30
+        },
+        "a_text": "",
+        "b_text": "NIV 1"
+      },
+      {
+        "a": "svg",
+        "b": "span#runner-lvl.runner-lvl",
+        "area": 308,
+        "pct": 77,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 20,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 19
+        },
+        "a_text": "",
+        "b_text": "NIV 1"
+      }
+    ]
+  },
+  "km30": {
+    "applied": true,
+    "overlaps": [
+      {
+        "a": "button#menu-toggle",
+        "b": "div.runner-hud",
+        "area": 1024,
+        "pct": 100,
+        "a_rect": {
+          "x": 12,
+          "y": 10,
+          "w": 32,
+          "h": 32
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "button#menu-toggle",
+        "b": "div#runner-avatar.runner-avatar",
+        "area": 894,
+        "pct": 99,
+        "a_rect": {
+          "x": 12,
+          "y": 10,
+          "w": 32,
+          "h": 32
+        },
+        "b_rect": {
+          "x": 12,
+          "y": 12,
+          "w": 30,
+          "h": 30
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "svg",
+        "b": "div.runner-hud",
+        "area": 576,
+        "pct": 100,
+        "a_rect": {
+          "x": 16,
+          "y": 14,
+          "w": 24,
+          "h": 24
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "svg",
+        "b": "div#runner-avatar.runner-avatar",
+        "area": 576,
+        "pct": 100,
+        "a_rect": {
+          "x": 16,
+          "y": 14,
+          "w": 24,
+          "h": 24
+        },
+        "b_rect": {
+          "x": 12,
+          "y": 12,
+          "w": 30,
+          "h": 30
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "button#menu-toggle",
+        "b": "svg",
+        "area": 547,
+        "pct": 100,
+        "a_rect": {
+          "x": 12,
+          "y": 10,
+          "w": 32,
+          "h": 32
+        },
+        "b_rect": {
+          "x": 15,
+          "y": 15,
+          "w": 23,
+          "h": 23
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "div.brand",
+        "b": "div.runner-hud",
+        "area": 520,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 26,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "FOULÉE",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "div.brand",
+        "b": "div.runner-hud-info",
+        "area": 520,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 26,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 30
+        },
+        "a_text": "FOULÉE",
+        "b_text": "NIV 1"
+      },
+      {
+        "a": "svg",
+        "b": "svg",
+        "area": 511,
+        "pct": 93,
+        "a_rect": {
+          "x": 16,
+          "y": 14,
+          "w": 24,
+          "h": 24
+        },
+        "b_rect": {
+          "x": 15,
+          "y": 15,
+          "w": 23,
+          "h": 23
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "div.brand",
+        "b": "span#runner-lvl.runner-lvl",
+        "area": 400,
+        "pct": 77,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 26,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 19
+        },
+        "a_text": "FOULÉE",
+        "b_text": "NIV 1"
+      },
+      {
+        "a": "svg",
+        "b": "div.runner-hud",
+        "area": 400,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 20,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "svg",
+        "b": "div.runner-hud-info",
+        "area": 400,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 20,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 30
+        },
+        "a_text": "",
+        "b_text": "NIV 1"
+      },
+      {
+        "a": "svg",
+        "b": "span#runner-lvl.runner-lvl",
+        "area": 308,
+        "pct": 77,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 20,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 19
+        },
+        "a_text": "",
+        "b_text": "NIV 1"
+      }
+    ]
+  },
+  "km70": {
+    "applied": true,
+    "overlaps": [
+      {
+        "a": "button#menu-toggle",
+        "b": "div.runner-hud",
+        "area": 1024,
+        "pct": 100,
+        "a_rect": {
+          "x": 12,
+          "y": 10,
+          "w": 32,
+          "h": 32
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "button#menu-toggle",
+        "b": "div#runner-avatar.runner-avatar",
+        "area": 894,
+        "pct": 99,
+        "a_rect": {
+          "x": 12,
+          "y": 10,
+          "w": 32,
+          "h": 32
+        },
+        "b_rect": {
+          "x": 12,
+          "y": 12,
+          "w": 30,
+          "h": 30
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "svg",
+        "b": "div.runner-hud",
+        "area": 576,
+        "pct": 100,
+        "a_rect": {
+          "x": 16,
+          "y": 14,
+          "w": 24,
+          "h": 24
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "svg",
+        "b": "div#runner-avatar.runner-avatar",
+        "area": 576,
+        "pct": 100,
+        "a_rect": {
+          "x": 16,
+          "y": 14,
+          "w": 24,
+          "h": 24
+        },
+        "b_rect": {
+          "x": 12,
+          "y": 12,
+          "w": 30,
+          "h": 30
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "button#menu-toggle",
+        "b": "svg",
+        "area": 547,
+        "pct": 100,
+        "a_rect": {
+          "x": 12,
+          "y": 10,
+          "w": 32,
+          "h": 32
+        },
+        "b_rect": {
+          "x": 15,
+          "y": 15,
+          "w": 23,
+          "h": 23
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "div.brand",
+        "b": "div.runner-hud",
+        "area": 520,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 26,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "FOULÉE",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "div.brand",
+        "b": "div.runner-hud-info",
+        "area": 520,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 26,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 30
+        },
+        "a_text": "FOULÉE",
+        "b_text": "NIV 1"
+      },
+      {
+        "a": "svg",
+        "b": "svg",
+        "area": 511,
+        "pct": 93,
+        "a_rect": {
+          "x": 16,
+          "y": 14,
+          "w": 24,
+          "h": 24
+        },
+        "b_rect": {
+          "x": 15,
+          "y": 15,
+          "w": 23,
+          "h": 23
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "div.brand",
+        "b": "span#runner-lvl.runner-lvl",
+        "area": 400,
+        "pct": 77,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 26,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 19
+        },
+        "a_text": "FOULÉE",
+        "b_text": "NIV 1"
+      },
+      {
+        "a": "svg",
+        "b": "div.runner-hud",
+        "area": 400,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 20,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "svg",
+        "b": "div.runner-hud-info",
+        "area": 400,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 20,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 30
+        },
+        "a_text": "",
+        "b_text": "NIV 1"
+      },
+      {
+        "a": "svg",
+        "b": "span#runner-lvl.runner-lvl",
+        "area": 308,
+        "pct": 77,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 20,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 19
+        },
+        "a_text": "",
+        "b_text": "NIV 1"
+      }
+    ]
+  },
+  "km105_lunar": {
+    "applied": true,
+    "overlaps": [
+      {
+        "a": "button#menu-toggle",
+        "b": "div.runner-hud",
+        "area": 1024,
+        "pct": 100,
+        "a_rect": {
+          "x": 12,
+          "y": 10,
+          "w": 32,
+          "h": 32
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "button#menu-toggle",
+        "b": "div#runner-avatar.runner-avatar",
+        "area": 894,
+        "pct": 99,
+        "a_rect": {
+          "x": 12,
+          "y": 10,
+          "w": 32,
+          "h": 32
+        },
+        "b_rect": {
+          "x": 12,
+          "y": 12,
+          "w": 30,
+          "h": 30
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "div#tier-banner.tier-banner",
+        "b": "button#jump-btn.jump-btn-float",
+        "area": 875,
+        "pct": 12,
+        "a_rect": {
+          "x": 90,
+          "y": 743,
+          "w": 232,
+          "h": 82
+        },
+        "b_rect": {
+          "x": 308,
+          "y": 721,
+          "w": 84,
+          "h": 84
+        },
+        "a_text": "ASCENSION IMMINENTE — tape pou",
+        "b_text": "SAUT"
+      },
+      {
+        "a": "svg",
+        "b": "div.runner-hud",
+        "area": 576,
+        "pct": 100,
+        "a_rect": {
+          "x": 16,
+          "y": 14,
+          "w": 24,
+          "h": 24
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "svg",
+        "b": "div#runner-avatar.runner-avatar",
+        "area": 576,
+        "pct": 100,
+        "a_rect": {
+          "x": 16,
+          "y": 14,
+          "w": 24,
+          "h": 24
+        },
+        "b_rect": {
+          "x": 12,
+          "y": 12,
+          "w": 30,
+          "h": 30
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "button#menu-toggle",
+        "b": "svg",
+        "area": 547,
+        "pct": 100,
+        "a_rect": {
+          "x": 12,
+          "y": 10,
+          "w": 32,
+          "h": 32
+        },
+        "b_rect": {
+          "x": 15,
+          "y": 15,
+          "w": 23,
+          "h": 23
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "div.brand",
+        "b": "div.runner-hud",
+        "area": 520,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 26,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "FOULÉE",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "div.brand",
+        "b": "div.runner-hud-info",
+        "area": 520,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 26,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 30
+        },
+        "a_text": "FOULÉE",
+        "b_text": "NIV 1"
+      },
+      {
+        "a": "svg",
+        "b": "svg",
+        "area": 511,
+        "pct": 93,
+        "a_rect": {
+          "x": 16,
+          "y": 14,
+          "w": 24,
+          "h": 24
+        },
+        "b_rect": {
+          "x": 15,
+          "y": 15,
+          "w": 23,
+          "h": 23
+        },
+        "a_text": "",
+        "b_text": ""
+      },
+      {
+        "a": "div.brand",
+        "b": "span#runner-lvl.runner-lvl",
+        "area": 400,
+        "pct": 77,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 26,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 19
+        },
+        "a_text": "FOULÉE",
+        "b_text": "NIV 1"
+      },
+      {
+        "a": "svg",
+        "b": "div.runner-hud",
+        "area": 400,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 20,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 8,
+          "y": 8,
+          "w": 99,
+          "h": 38
+        },
+        "a_text": "",
+        "b_text": "NIV 1\n            \n          \n"
+      },
+      {
+        "a": "svg",
+        "b": "div.runner-hud-info",
+        "area": 400,
+        "pct": 100,
+        "a_rect": {
+          "x": 50,
+          "y": 16,
+          "w": 20,
+          "h": 20
+        },
+        "b_rect": {
+          "x": 49,
+          "y": 12,
+          "w": 48,
+          "h": 30
+        },
+        "a_text": "",
+        "b_text": "NIV 1"
+      }
+    ]
+  }
+}

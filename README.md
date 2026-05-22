@@ -1,66 +1,124 @@
-# ALCHIMIA — Le Cabinet des Trois Voies
+<div align="center">
 
-Idle / merge gothique-alchimique. Single HTML file, mobile-first.
+# FOULÉE
 
-**Joue en ligne :** [dryk7.github.io/alchimia](https://dryk7.github.io/alchimia/)
+**Du chantier au stade olympique**
+
+*Idle-tap mobile : tape pour courir, saute les haies, deviens une légende.*
+
+![FOULÉE Logo](assets/icon-512.png)
+
+[![PWA](https://img.shields.io/badge/PWA-installable-c84030?style=flat-square)]()
+[![Play Store](https://img.shields.io/badge/Play_Store-bient%C3%B4t-c84030?style=flat-square)]()
+[![Single HTML](https://img.shields.io/badge/single-HTML-c84030?style=flat-square)]()
+[![License](https://img.shields.io/badge/license-proprietary-555?style=flat-square)]()
+
+</div>
 
 ---
 
-## Les Trois Voies
+## Pitch
 
-Chaque voie monte en 8 paliers (T0 → T7). Fusionne deux items identiques pour atteindre le palier supérieur.
+FOULÉE est un jeu idle-tap mobile-first où tu pars du chantier (km 0, wasteland) pour finir dans le stade olympique (km 100). Tape pour faire courir ton héros, saute les haies au bon moment, dépasse les rivals, traverse 5 biomes vivants (chantier → banlieue → ville → stade → lune), équipe des coffres, débloque 6 coureurs idle dans ton équipe, et utilise 4 skills actifs façon Clicker Heroes. À 100 km, ascends et recommence avec des étoiles permanentes.
 
-| Voie | Plante (Vegetabilis) | Pierre (Mineralis) | Essence (Spiritualis) |
+---
+
+## Screenshots
+
+| Splash | Début de course | Stade olympique | Cosmic |
 |---|---|---|---|
-| I | Graine | Caillou | Brume |
-| II | Bourgeon | Quartz | Étincelle |
-| III | Mandragore | Améthyste | Flamme Bleue |
-| IV | Fleur Sépulcrale | Géode | Esprit |
-| V | Élixir d'Aube | Pierre Runique | Constellation |
-| VI | **Panacée** | **Pierre Philosophale** | **Quintessence** |
-| VII | Arbre-Monde | Étoile Polaire | Akasha |
-| VIII | **Yggdra** | **Eternium** | **Singularité** |
+| ![Splash](screenshots/01-splash.png) | ![Début 5km](screenshots/02-debut-5km.png) | ![Vasque 80km](screenshots/05-vasque-80km.png) | ![Cosmic](screenshots/08-cosmic.png) |
 
-Chaque palier ultime atteint pour la 1ère fois déclenche une cinématique « Grand Œuvre ».
+| Upgrades | Menu | Skill tree | Tribune |
+|---|---|---|---|
+| ![Upgrades](screenshots/09-upgrades.png) | ![Menu](screenshots/10-menu.png) | ![Skill tree](screenshots/skilltree.png) | ![Tribune VIP](screenshots/tribune-km12-estrade-vip.png) |
 
-## Systèmes
-
-- **Cabinet** — 5×6 grille, drag & drop pour fusionner
-- **Cauldrons** (×3) — un par voie, étincelle requise + cooldown
-- **Athanor** — 4ᵉ générateur (débloqué pour 500 couronnes), purification : 3 items → 1 palier supérieur
-- **Quêtes** — 28 quêtes par parcours (palier × voie + globales)
-- **Hauts Faits** — 34 achievements avec popup gold + onglet codex
-- **Évènements aléatoires** — 7 événements (Pluie d'Étoiles, Conjonction Astrale, Marée d'Esprit, Souffle d'Or, Comète, Nuit Profonde, Sourire de Lune)
-- **Transmutation** — prestige débloqué à T6 : reset contre Étoiles permanentes
-- **Sanctum** — boutique d'upgrades permanents (6 upgrades : Verbum Cordis, Lapis Mater, Mercurio, Sol Aurum, Fulmen, Anima Mundi)
-- **Codex** — 24 paliers + 34 hauts faits avec lore
-- **Idle/offline** — calcul de progression hors-ligne (cap 8h)
-- **Statistiques** — temps de jeu, totaux par voie, transmutations
-- **Tooltips long-press** — détail de chaque item
-
-## Stack
-
-- HTML / CSS / JS vanilla, single-file (~5000 lignes)
-- Sprites pixel art SVG 32×32 (24 items + 4 générateurs + ornements)
-- Canvas pour poussière flottante, bougies animées avec flicker, bulles de cauldron, FX (foudre de fusion, particules attractives, shockwave, cinématique)
-- Bande sonore adaptative (3 tracks qui se relaient avec crossfade selon le palier max atteint) :
-  - Phase 0–1 (early) : *Forgotten Tomb Ambience* par **kindland** ([CC0](https://creativecommons.org/publicdomain/zero/1.0/) — [opengameart.org](https://opengameart.org/content/forgoten-tomb-ambience))
-  - Phase 2–3 (mid–late) : *Long Note Three* par **Kevin MacLeod** ([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) — [incompetech.com](https://incompetech.com/music/royalty-free/index.html?isrc=USUAN1100424))
-  - Phase 4 (cosmic) : *Space Music* par **HitCtrl** ([CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) — [opengameart.org](https://opengameart.org/content/space-music-2))
-
-  SFX synthétisés via Web Audio (cloches harmoniques, sub-bass cinématique, reverb par convolution)
-- Vibration API mobile
-- LocalStorage save (auto toutes les 4s)
-
-## Direction artistique
-
-- Palette gothique alchimique : noir d'encre, or patiné, parchemin, vert absinthe, bleu cristal, pourpre astral, braise
-- Typographie : **Cinzel** (titres), **Cormorant Garamond** (italiques), **IM Fell English** (corps), **VT323** (chiffres)
-- Ornements : ouroboros animé (intro), fleurons SVG, cartouches baroques aux coins, symboles alchimiques (sulfur, mercure, sel, soleil, lune)
+---
 
 ## Lancer en local
 
 ```sh
 python -m http.server 8770 --directory D:/alchimia
-# → http://localhost:8770
+# Ouvre http://localhost:8770
 ```
+
+Mode debug (expose hooks dev sur `window.RUNNER_2D`) :
+
+```sh
+# Option A : URL
+http://localhost:8770/?debug=1
+
+# Option B : localStorage
+localStorage.setItem('fouleeDebug', '1')  # puis reload
+```
+
+---
+
+## Déploiement
+
+### PWA (GitHub Pages, Netlify, Vercel)
+
+Le projet est un single-HTML statique. Pousse `index.html`, `manifest.json`, `sw.js`, `assets/`, `screenshots/` (si besoin) sur n'importe quel hébergeur statique. Tout fonctionne offline-first via le service worker (`cache: foulee-v5`).
+
+### Play Store (TWA)
+
+Le projet est packagé en **Trusted Web Activity** via Bubblewrap. La config est dans `twa-manifest.json`. Voir `LAUNCH-CHECKLIST.md` pour l'état production complet (assets store, légal, screenshots HD).
+
+---
+
+## Stack technique
+
+- **HTML / CSS / JS vanilla** — zéro dépendance runtime, single-file 28 555 lignes
+- **Canvas2D** pour le rendu pixel-art (5 biomes, parallax side-scroll, sprites héros + 7 tiers de NPCs)
+- **Web Audio API** pour BGM procédurale (`ProcBGM` IIFE — kick/snare/hat/bass/pad/melody synthétisés en temps réel, 4 presets)
+- **localStorage** + **IndexedDB** (CloudSave lite redondant)
+- **Service Worker** offline-first (network-first HTML, cache-first assets)
+- **Web Share API** + clipboard fallback pour export saves
+- **Vibration API** mobile
+- **PWA** installable (manifest + maskable icons + theme-color)
+- **i18n** FR/EN avec auto-détection
+- **No build step** — édite, recharge, ça marche
+
+---
+
+## Architecture
+
+```
+D:/alchimia/
+├── index.html              ← 28k+ lignes : CSS + DOM + JS monolithique
+├── manifest.json           ← PWA manifeste
+├── sw.js                   ← Service worker (cache foulee-v5)
+├── twa-manifest.json       ← Config TWA (Trusted Web Activity)
+├── privacy-policy.html     ← RGPD / COPPA / Play Store
+├── terms.html              ← CGU FR
+├── CLAUDE.md               ← Guide codebase (agents IA)
+├── README.md               ← Ce fichier
+├── LAUNCH-CHECKLIST.md     ← État production Play Store
+├── docs/
+│   ├── ARCHITECTURE.md     ← Diagrammes + flows + patterns
+│   ├── STATE-SCHEMA.md     ← Toutes les props STATE.*
+│   └── FEATURES.md         ← Liste exhaustive features
+├── assets/                 ← Icônes 192/512/1024 + maskable + audio
+├── screenshots/            ← Captures gameplay + store
+├── previews/               ← Itérations DA / mockups
+└── marketing/              ← Assets feature graphic, description
+```
+
+---
+
+## Documentation développeur
+
+Si tu travailles sur le code, lis dans l'ordre :
+
+1. **[CLAUDE.md](CLAUDE.md)** — conventions, pitfalls, comment ajouter une feature
+2. **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — diagrammes ASCII des composants, flow d'un tap, flow du save, patterns récurrents
+3. **[docs/STATE-SCHEMA.md](docs/STATE-SCHEMA.md)** — exhaustif des 70+ propriétés `STATE.*`
+4. **[docs/FEATURES.md](docs/FEATURES.md)** — liste de toutes les features avec localisation lignes
+
+---
+
+## License
+
+Proprietary — © 2026 Florent Rouxel (Dryk). Tous droits réservés.
+
+Le code source n'est ni open-source ni redistribuable. Le repo Git local sert d'archive de développement.

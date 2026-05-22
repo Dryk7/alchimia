@@ -1,19 +1,30 @@
 {
-  "name": "FOULÉE — Le petit stade dans ta poche",
-  "short_name": "Foulée",
-  "description": "Idle merge cozy. Nourris ton coureur, boucle des tours, ascende.",
-  "start_url": "./",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#f7ecd2",
-  "theme_color": "#e07848",
+  "name": "FOULÉE — Du chantier au stade olympique",
+  "short_name": "FOULÉE",
+  "description": "Idle-tap mobile : tape pour courir, débloque des biomes, saute les haies, deviens une légende. 100 km de progression du wasteland au stade olympique.",
   "lang": "fr",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "id": "/foulee/",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#fff",
+  "theme_color": "#c84030",
+  "categories": ["games", "sports", "casual"],
   "icons": [
     {
       "src": "assets/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
+    },
+    {
+      "src": "assets/icon-192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
       "src": "assets/icon-512.png",
@@ -28,5 +39,35 @@
       "purpose": "maskable"
     }
   ],
-  "categories": ["games", "entertainment"]
+  "screenshots": [
+    {
+      "src": "assets/store/screenshot-1.png",
+      "sizes": "540x960",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Tape pour faire courir ton héros — du chantier au stade"
+    },
+    {
+      "src": "assets/store/screenshot-2.png",
+      "sizes": "540x960",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Saute par-dessus les haies au bon moment"
+    },
+    {
+      "src": "assets/store/screenshot-3.png",
+      "sizes": "540x960",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Dépasse les rivals — bonus médailles gros"
+    },
+    {
+      "src": "assets/store/screenshot-4.png",
+      "sizes": "540x960",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "100 km · 5 biomes · vrai sprint olympique"
+    }
+  ],
+  "prefer_related_applications": false
 }

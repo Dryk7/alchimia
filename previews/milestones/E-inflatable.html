@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>E — Arche gonflable marathon</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0e0d12;color:#fff;font-family:Nunito,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px}
+h1{font-size:16px;margin:0 0 4px}
+.tag{font-size:11px;color:#a89880;margin-bottom:10px}
+.frame{width:540px;aspect-ratio:9/6;border-radius:18px;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.5)}
+canvas{display:block;width:100%;height:100%}
+.desc{margin-top:10px;max-width:520px;font-size:12px;color:#c8b8a0;line-height:1.4}
+</style></head><body>
+<h1>E · Arche gonflable marathon</h1>
+<div class="tag">Arche gonflable colorée + ondulation légère</div>
+<div class="frame"><canvas id="cv" width="540" height="360"></canvas></div>
+<div class="desc">Style course populaire / 10km. Arche gonflable rouge/jaune au-dessus de la piste. Effet wobble subtle. Héros passe DESSOUS = sensation de franchissement. 100m = plot cône orange. 500m = petite arche.</div>
+<script src="_shared.js"></script>
+<script>
+function drawTube(ctx, x1, y1, x2, y2, radius, color){
+  const grad = ctx.createLinearGradient(x1, y1 - radius, x1, y1 + radius);
+  grad.addColorStop(0, '#fff');
+  grad.addColorStop(.3, color);
+  grad.addColorStop(1, '#3a1010');
+  ctx.fillStyle = grad;
+  ctx.strokeStyle = grad;
+  ctx.lineWidth = radius * 2;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+  ctx.lineTo(x2, y2);
+  ctx.stroke();
+}
+function drawKm(ctx, x, gy, km, t){
+  const wob = Math.sin(t * 2 + x * 0.005) * 1.2;
+  const topY = gy - 92 + wob;
+  // Pieds de l'arche (cylindres rouges au sol)
+  const grad1 = ctx.createLinearGradient(x - 50, 0, x - 30, 0);
+  grad1.addColorStop(0, '#fff');
+  grad1.addColorStop(.3, '#c84030');
+  grad1.addColorStop(1, '#3a1010');
+  ctx.fillStyle = grad1;
+  ctx.fillRect(x - 50, gy - 75, 12, 75);
+  ctx.fillStyle = ctx.createLinearGradient(0, 0, 1, 0); // reset
+  const grad2 = ctx.createLinearGradient(x + 30, 0, x + 50, 0);
+  grad2.addColorStop(0, '#fff');
+  grad2.addColorStop(.3, '#c84030');
+  grad2.addColorStop(1, '#3a1010');
+  ctx.fillStyle = grad2;
+  ctx.fillRect(x + 38, gy - 75, 12, 75);
+  // Embases plates
+  ctx.fillStyle = '#2a2030';
+  ctx.fillRect(x - 54, gy - 4, 20, 4);
+  ctx.fillRect(x + 34, gy - 4, 20, 4);
+  // Arche supérieure (tubes ondulants)
+  // Top tube rouge
+  ctx.strokeStyle = '#c84030';
+  ctx.lineWidth = 14;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(x - 44, gy - 75);
+  ctx.quadraticCurveTo(x, topY, x + 44, gy - 75);
+  ctx.stroke();
+  // Highlight (effet plastique)
+  ctx.strokeStyle = 'rgba(255,255,255,.4)';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(x - 40, gy - 78);
+  ctx.quadraticCurveTo(x, topY - 5, x + 40, gy - 78);
+  ctx.stroke();
+  // Bande jaune au milieu
+  ctx.strokeStyle = '#ffd060';
+  ctx.lineWidth = 4;
+  ctx.beginPath();
+  ctx.moveTo(x - 30, gy - 84 + wob * 0.5);
+  ctx.quadraticCurveTo(x, topY + 4, x + 30, gy - 84 + wob * 0.5);
+  ctx.stroke();
+  // Texte KM grand sur le centre
+  ctx.fillStyle = 'rgba(0,0,0,.5)';
+  ctx.font = 'bold 18px Nunito';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(km + ' KM', x + 1, topY + 5 + 1);
+  ctx.fillStyle = '#fff';
+  ctx.fillText(km + ' KM', x, topY + 5);
+  ctx.textBaseline = 'alphabetic';
+  // Cordages d'attache
+  ctx.strokeStyle = '#3a3028';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(x - 48, gy - 75); ctx.lineTo(x - 52, gy);
+  ctx.moveTo(x + 48, gy - 75); ctx.lineTo(x + 52, gy);
+  ctx.stroke();
+}
+function drawHm(ctx, x, gy, m, t){
+  if(m === 500){
+    // Mini arche gonflable
+    const wob = Math.sin(t * 3) * 0.8;
+    ctx.fillStyle = '#ffd060';
+    ctx.fillRect(x - 22, gy - 40, 5, 40);
+    ctx.fillRect(x + 17, gy - 40, 5, 40);
+    ctx.strokeStyle = '#ffd060';
+    ctx.lineWidth = 7;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(x - 19, gy - 40);
+    ctx.quadraticCurveTo(x, gy - 55 + wob, x + 19, gy - 40);
+    ctx.stroke();
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 9px Nunito';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('500m', x, gy - 48);
+    ctx.textBaseline = 'alphabetic';
+  } else {
+    // Plot cône orange
+    ctx.fillStyle = '#ff8030';
+    ctx.beginPath();
+    ctx.moveTo(x, gy - 20);
+    ctx.lineTo(x + 7, gy);
+    ctx.lineTo(x - 7, gy);
+    ctx.closePath();
+    ctx.fill();
+    // Bande blanche
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(x - 5, gy - 11, 10, 2.5);
+    // Petit texte
+    ctx.fillStyle = '#1a1a1a';
+    ctx.font = 'bold 6px Nunito';
+    ctx.textAlign = 'center';
+    ctx.fillText('100m', x, gy - 9);
+  }
+}
+MILESTONES_SCENE(document.getElementById('cv'), drawKm, drawHm);
+</script>
+</body></html>

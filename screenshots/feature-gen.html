@@ -1,0 +1,176 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>FOULÉE feature graphic</title>
+<style>body{margin:0;background:#000}canvas{display:block}</style>
+</head><body>
+<canvas id="c" width="1024" height="500"></canvas>
+<script>
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+const W = 1024, H = 500;
+
+// Fond gradient ciel → piste
+const skyG = ctx.createLinearGradient(0, 0, 0, H);
+skyG.addColorStop(0, '#5fb8e8');
+skyG.addColorStop(0.45, '#9ed6f0');
+skyG.addColorStop(0.55, '#7a3818');
+skyG.addColorStop(0.60, '#e85040');
+skyG.addColorStop(1, '#c84030');
+ctx.fillStyle = skyG;
+ctx.fillRect(0, 0, W, H);
+
+// Soleil
+ctx.save();
+ctx.translate(W * 0.85, H * 0.20);
+ctx.fillStyle = 'rgba(255,240,150,.40)';
+for(let i = 0; i < 12; i++){
+  ctx.save();
+  ctx.rotate(i * Math.PI / 6);
+  ctx.beginPath();
+  ctx.moveTo(0, -90); ctx.lineTo(8, -65); ctx.lineTo(-8, -65); ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+ctx.fillStyle = '#fff5b0'; ctx.beginPath(); ctx.arc(0, 0, 48, 0, Math.PI*2); ctx.fill();
+ctx.fillStyle = '#ffd060'; ctx.beginPath(); ctx.arc(0, 0, 38, 0, Math.PI*2); ctx.fill();
+ctx.restore();
+
+// Banderole "OPENING DAY" en arrière-plan
+ctx.save();
+ctx.translate(W * 0.45, H * 0.30);
+const g = ctx.createLinearGradient(-180, -25, 180, 25);
+g.addColorStop(0, '#f4b850');
+g.addColorStop(0.5, '#ffd070');
+g.addColorStop(1, '#f4b850');
+ctx.fillStyle = g;
+ctx.beginPath();
+ctx.moveTo(-180, -25); ctx.lineTo(180, -25);
+ctx.lineTo(180, 22); ctx.lineTo(170, 30); ctx.lineTo(-170, 30); ctx.lineTo(-180, 22);
+ctx.closePath();
+ctx.fill();
+ctx.strokeStyle = '#7a3818'; ctx.lineWidth = 3; ctx.stroke();
+ctx.fillStyle = '#7a3818';
+ctx.font = 'bold 32px Nunito, sans-serif';
+ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+ctx.fillText('OPENING DAY', 0, -3);
+ctx.font = 'bold 14px Nunito';
+ctx.fillText('★ STADE FOULÉE ★', 0, 18);
+ctx.restore();
+
+// Tribune
+const tribY = H * 0.50;
+const tribH = H * 0.10;
+ctx.fillStyle = '#5a2810'; ctx.fillRect(0, tribY, W, tribH);
+ctx.fillStyle = '#7a3818'; ctx.fillRect(0, tribY, W, 4);
+const colors = ['#e85040', '#4a9fd9', '#7ec46a', '#ffd060', '#c89af0', '#f08040', '#e060a0', '#60c0e0'];
+for(let i = 0; i < 70; i++){
+  const x = (i / 70) * W;
+  ctx.fillStyle = colors[i % colors.length];
+  ctx.fillRect(x + 2, tribY + 16, 11, 18);
+  ctx.fillStyle = '#f0d4b0';
+  ctx.fillRect(x + 2, tribY + 4, 11, 10);
+}
+
+// Piste avec couloirs
+const trackTop = tribY + tribH + 6;
+ctx.fillStyle = '#7c2810'; ctx.fillRect(0, trackTop, W, 4);
+ctx.fillStyle = '#e85040'; ctx.fillRect(0, trackTop + 4, W, H - trackTop - 4);
+const LANES_TOP = trackTop + 8;
+const LANE_H = (H - LANES_TOP - 20) / 5;
+ctx.fillStyle = '#fff';
+for(let lane = 0; lane <= 5; lane++){
+  ctx.fillRect(0, LANES_TOP + lane * LANE_H, W, 2);
+}
+
+// === HÉROS au centre, gros ===
+const heroX = W * 0.36;
+const heroY = LANES_TOP + LANE_H * 2.5;
+const s = 4; // grosse échelle pour visibilité
+
+ctx.fillStyle = 'rgba(0,0,0,.35)';
+ctx.beginPath(); ctx.ellipse(heroX, heroY + 22 * s, 18 * s, 4 * s, 0, 0, Math.PI*2); ctx.fill();
+
+// Jambes en pleine course
+ctx.strokeStyle = '#f0d4b0'; ctx.lineWidth = 7 * s; ctx.lineCap = 'round';
+ctx.beginPath(); ctx.moveTo(heroX - 4 * s, heroY + 5 * s); ctx.lineTo(heroX - 14 * s, heroY + 24 * s); ctx.stroke();
+ctx.beginPath(); ctx.moveTo(heroX + 4 * s, heroY + 5 * s); ctx.lineTo(heroX + 22 * s, heroY - 4 * s); ctx.stroke();
+
+ctx.fillStyle = '#e85040';
+ctx.beginPath(); ctx.ellipse(heroX - 14 * s, heroY + 24 * s, 8 * s, 4 * s, 0, 0, Math.PI*2); ctx.fill();
+ctx.beginPath(); ctx.ellipse(heroX + 22 * s, heroY - 4 * s, 8 * s, 4 * s, 0.2, 0, Math.PI*2); ctx.fill();
+
+ctx.fillStyle = '#fff'; ctx.fillRect(heroX - 11 * s, heroY - 1 * s, 22 * s, 11 * s);
+
+ctx.fillStyle = '#e85040';
+ctx.fillRect(heroX - 12 * s, heroY - 22 * s, 24 * s, 22 * s);
+ctx.fillStyle = '#ffd060'; ctx.fillRect(heroX - 12 * s, heroY - 22 * s, 24 * s, 4 * s);
+ctx.fillStyle = '#fff';
+ctx.beginPath(); ctx.arc(heroX, heroY - 11 * s, 7 * s, 0, Math.PI*2); ctx.fill();
+ctx.fillStyle = '#e85040';
+ctx.font = `bold ${10 * s}px Nunito, sans-serif`;
+ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+ctx.fillText('1', heroX, heroY - 11 * s);
+
+ctx.strokeStyle = '#f0d4b0'; ctx.lineWidth = 6 * s;
+ctx.beginPath(); ctx.moveTo(heroX + 12 * s, heroY - 14 * s); ctx.lineTo(heroX + 20 * s, heroY - 22 * s); ctx.stroke();
+ctx.beginPath(); ctx.moveTo(heroX - 12 * s, heroY - 14 * s); ctx.lineTo(heroX - 20 * s, heroY - 4 * s); ctx.stroke();
+
+ctx.fillStyle = '#f0d4b0';
+ctx.beginPath(); ctx.arc(heroX + 2 * s, heroY - 34 * s, 13 * s, 0, Math.PI*2); ctx.fill();
+ctx.fillStyle = '#7a5838';
+ctx.beginPath();
+ctx.arc(heroX + 2 * s, heroY - 37 * s, 13 * s, Math.PI, 0);
+ctx.lineTo(heroX + 13 * s, heroY - 32 * s); ctx.lineTo(heroX - 9 * s, heroY - 32 * s);
+ctx.fill();
+ctx.fillStyle = '#1a1010';
+ctx.beginPath(); ctx.arc(heroX, heroY - 33 * s, 2 * s, 0, Math.PI*2); ctx.fill();
+ctx.beginPath(); ctx.arc(heroX + 6 * s, heroY - 33 * s, 2 * s, 0, Math.PI*2); ctx.fill();
+
+// Speedlines
+ctx.strokeStyle = 'rgba(255,255,255,.7)';
+ctx.lineWidth = 5 * s;
+for(let i = 0; i < 5; i++){
+  const sx = heroX - 30 * s - i * 12 * s;
+  const sy = heroY - 8 * s + (i - 2) * 8 * s;
+  ctx.beginPath();
+  ctx.moveTo(sx, sy);
+  ctx.lineTo(sx - 40 * s, sy);
+  ctx.stroke();
+}
+
+// === LOGO "FOULÉE" gros à droite ===
+ctx.save();
+ctx.translate(W * 0.72, H * 0.40);
+// Ombre
+ctx.fillStyle = 'rgba(0,0,0,.45)';
+ctx.font = 'bold 96px Nunito, sans-serif';
+ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+ctx.fillText('FOULÉE', 4, 4);
+// Texte principal blanc + bordure rouge
+ctx.strokeStyle = '#c84030'; ctx.lineWidth = 10;
+ctx.strokeText('FOULÉE', 0, 0);
+ctx.fillStyle = '#fff';
+ctx.fillText('FOULÉE', 0, 0);
+// Tagline
+ctx.font = 'bold italic 22px Nunito';
+ctx.fillStyle = '#ffd060';
+ctx.strokeStyle = '#5a2010'; ctx.lineWidth = 4;
+ctx.strokeText('DU CHANTIER AU STADE OLYMPIQUE', 0, 60);
+ctx.fillText('DU CHANTIER AU STADE OLYMPIQUE', 0, 60);
+ctx.restore();
+
+// Confettis décoratifs en haut
+const confs = ['#e85040', '#4a9fd9', '#7ec46a', '#ffd060', '#fff'];
+for(let i = 0; i < 30; i++){
+  ctx.fillStyle = confs[i % confs.length];
+  const cx = (i * 73) % W;
+  const cy = (i * 31 + 20) % (H * 0.4);
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(i * 0.3);
+  ctx.fillRect(-4, -3, 8, 5);
+  ctx.restore();
+}
+
+window.__getDataUrl = () => cv.toDataURL('image/png');
+</script>
+</body></html>

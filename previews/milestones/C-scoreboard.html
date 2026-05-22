@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>C — Panneau LED stade</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0e0d12;color:#fff;font-family:Nunito,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px}
+h1{font-size:16px;margin:0 0 4px}
+.tag{font-size:11px;color:#a89880;margin-bottom:10px}
+.frame{width:540px;aspect-ratio:9/6;border-radius:18px;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.5)}
+canvas{display:block;width:100%;height:100%}
+.desc{margin-top:10px;max-width:520px;font-size:12px;color:#c8b8a0;line-height:1.4}
+</style></head><body>
+<h1>C · Panneau LED stade</h1>
+<div class="tag">Écran digital sur poteau (style stade pro)</div>
+<div class="frame"><canvas id="cv" width="540" height="360"></canvas></div>
+<div class="desc">Panneau électronique noir avec chiffres LED orange/rouge. Style coliseum / stade moderne. Pulse lumineux subtile = vivant. 100m/500m = mini-panneaux LED carrés.</div>
+<script src="_shared.js"></script>
+<script>
+function ledNumber(ctx, x, y, text, color, size){
+  ctx.font = 'bold ' + size + 'px monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  // Glow
+  ctx.fillStyle = color;
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 8;
+  ctx.fillText(text, x, y);
+  ctx.shadowBlur = 0;
+  ctx.textBaseline = 'alphabetic';
+}
+function drawKm(ctx, x, gy, km, t){
+  const pulse = 0.7 + Math.sin(t * 3) * 0.3;
+  // Poteau métallique
+  ctx.fillStyle = '#666';
+  ctx.fillRect(x - 2.5, gy - 70, 5, 70);
+  ctx.fillStyle = '#aaa';
+  ctx.fillRect(x - 2.5, gy - 70, 1.5, 70);
+  // Base béton
+  ctx.fillStyle = '#888';
+  ctx.fillRect(x - 8, gy - 4, 16, 4);
+  // Cadre panneau (silver/dark)
+  ctx.fillStyle = '#333';
+  ctx.fillRect(x - 36, gy - 100, 72, 32);
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fillRect(x - 34, gy - 98, 68, 28);
+  // Écran LED (noir profond)
+  ctx.fillStyle = '#0a0500';
+  ctx.fillRect(x - 32, gy - 96, 64, 24);
+  // Grille de points LED background
+  ctx.fillStyle = 'rgba(60,40,20,.4)';
+  for(let i=0;i<32;i++){
+    for(let j=0;j<12;j++){
+      ctx.fillRect(x - 32 + i * 2, gy - 96 + j * 2, 1, 1);
+    }
+  }
+  // Texte LED
+  ledNumber(ctx, x, gy - 84, km + ' KM', 'rgba(255,140,40,' + pulse + ')', 16);
+  // Highlight bordure haut
+  ctx.fillStyle = 'rgba(255,255,255,.15)';
+  ctx.fillRect(x - 34, gy - 98, 68, 1);
+  // Petit logo en haut du cadre
+  ctx.fillStyle = '#c84030';
+  ctx.fillRect(x - 4, gy - 102, 8, 3);
+}
+function drawHm(ctx, x, gy, m, t){
+  const pulse = 0.6 + Math.sin(t * 4) * 0.4;
+  const h = m === 500 ? 50 : 35;
+  const w = m === 500 ? 28 : 22;
+  // Poteau
+  ctx.fillStyle = '#666';
+  ctx.fillRect(x - 1.5, gy - h, 3, h);
+  // Mini écran
+  ctx.fillStyle = '#222';
+  ctx.fillRect(x - w/2 - 1, gy - h - 14, w + 2, 14);
+  ctx.fillStyle = '#0a0500';
+  ctx.fillRect(x - w/2, gy - h - 13, w, 12);
+  // Texte LED petit
+  ledNumber(ctx, x, gy - h - 7, m + '', 'rgba(255,140,40,' + pulse + ')', 8);
+}
+MILESTONES_SCENE(document.getElementById('cv'), drawKm, drawHm);
+</script>
+</body></html>

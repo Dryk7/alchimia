@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="fr"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A — Drapeau athlétisme</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#0e0d12;color:#fff;font-family:Nunito,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:18px}
+h1{font-size:16px;margin:0 0 4px}
+.tag{font-size:11px;color:#a89880;margin-bottom:10px}
+.frame{width:540px;aspect-ratio:9/6;border-radius:18px;overflow:hidden;box-shadow:0 6px 22px rgba(0,0,0,.5)}
+canvas{display:block;width:100%;height:100%}
+.desc{margin-top:10px;max-width:520px;font-size:12px;color:#c8b8a0;line-height:1.4}
+</style></head><body>
+<h1>A · Drapeau athlétisme</h1>
+<div class="tag">Mât latéral haut + drapeau triangulaire qui ondule</div>
+<div class="frame"><canvas id="cv" width="540" height="360"></canvas></div>
+<div class="desc">Style officiel meeting d'athlétisme. KM = grand drapeau pavillon rouge/or qui flotte. 100m = petit fanion. 500m = drapeau moyen blanc. Visible de loin, n'obstrue pas la piste.</div>
+<script src="_shared.js"></script>
+<script>
+function drawKm(ctx, x, gy, km, t){
+  const wave = Math.sin(t * 4 + x * 0.01);
+  // Mât (haut, côté piste)
+  ctx.fillStyle = '#d8c8a8';
+  ctx.fillRect(x - 1.5, gy - 90, 3, 90);
+  ctx.fillStyle = '#a89060';
+  ctx.fillRect(x - 1.5, gy - 90, 1, 90);
+  // Boule au sommet
+  ctx.fillStyle = '#ffd060';
+  ctx.beginPath(); ctx.arc(x, gy - 92, 3, 0, Math.PI*2); ctx.fill();
+  // Drapeau pavillon
+  ctx.save();
+  ctx.translate(x + 1.5, gy - 88);
+  for(let i=0;i<28;i++){
+    const wx = i;
+    const wy = Math.sin(i * 0.3 + t * 5) * 1.5;
+    const h = 22 - i * 0.15;
+    // Gradient rouge/or
+    const col = i < 14 ? '#c84030' : '#ffd060';
+    ctx.fillStyle = col;
+    ctx.fillRect(wx, wy, 1.2, h);
+  }
+  ctx.restore();
+  // Texte KM sur le drapeau
+  ctx.save();
+  ctx.translate(x + 16, gy - 78);
+  ctx.rotate(wave * 0.04);
+  ctx.fillStyle = 'rgba(0,0,0,.5)';
+  ctx.font = 'bold 14px Nunito';
+  ctx.textAlign = 'center';
+  ctx.fillText(km + ' KM', 1, 1);
+  ctx.fillStyle = '#fff';
+  ctx.fillText(km + ' KM', 0, 0);
+  ctx.restore();
+  // Base au sol (cône)
+  ctx.fillStyle = '#3a3028';
+  ctx.beginPath();
+  ctx.moveTo(x - 5, gy);
+  ctx.lineTo(x + 5, gy);
+  ctx.lineTo(x + 3, gy - 4);
+  ctx.lineTo(x - 3, gy - 4);
+  ctx.closePath(); ctx.fill();
+}
+function drawHm(ctx, x, gy, m, t){
+  const wave = Math.sin(t * 5 + x * 0.02);
+  // Petit mât
+  const h = m === 500 ? 50 : 35;
+  ctx.fillStyle = '#d8c8a8';
+  ctx.fillRect(x - 1, gy - h, 2, h);
+  // Petit fanion
+  ctx.save();
+  ctx.translate(x + 1, gy - h + 2);
+  ctx.fillStyle = m === 500 ? '#f0f0f0' : '#ffd060';
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(14, 4 + wave);
+  ctx.lineTo(0, 9);
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+  // Nombre
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 8px Nunito';
+  ctx.textAlign = 'center';
+  ctx.fillText(m + 'm', x, gy - h - 4);
+}
+MILESTONES_SCENE(document.getElementById('cv'), drawKm, drawHm);
+</script>
+</body></html>

@@ -8054,6 +8054,11 @@ body.shop-epic-flash::after{
             </div>
           </div>
         </div>
+        <!-- Pill ETOILES permanentes (prestige cross-runs) — affichee a cote -->
+        <div id="hud-stars" style="display:none;align-items:center;gap:4px;padding:5px 9px;background:linear-gradient(135deg,#ffd060,#ff9020);border-radius:14px;color:#1a1a2e;font-weight:700;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.10);pointer-events:none;font-family:Nunito,sans-serif;line-height:1;margin-left:6px" aria-label="Etoiles permanentes">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2 L14.4 8.4 L21 9.2 L16 13.6 L17.6 20.4 L12 16.8 L6.4 20.4 L8 13.6 L3 9.2 L9.6 8.4 z"/></svg>
+          <span id="hud-stars-val">0</span>
+        </div>
         <!-- Spacer droit (laisse la place au widget GOUTTES du header au-dessus) -->
         <div style="flex:1;min-width:90px"></div>
       </div>
@@ -12584,6 +12589,7 @@ const STATE = {
   // Prestige / Ascension
   stars: 0,            // monnaie permanente
   totalStars: 0,       // lifetime stars gagnées
+  totalStarsEarned: 0, // alias lifetime (compat refonte économie vague 16)
   ascensions: 0,   // nombre de ascensions effectuées
   upgrades: {},        // id -> niveau acheté (0 ou 1)
 
@@ -12600,6 +12606,11 @@ const STATE = {
   codexUnlocks: {}, // key "0_3" → timestamp première découverte (persiste à travers prestiges)
   selectedCodex: null,
 };
+// Buffs temporaires (Bougie 5min/+5%, Doping 30min/+20% avec 24h CD)
+STATE.buffs = STATE.buffs ?? { bougie: 0, doping: 0, dopingLastUsed: 0 };
+// bougie: timestamp expiration (0 = inactif)
+// doping: timestamp expiration
+// dopingLastUsed: timestamp dernière utilisation (cooldown 24h)
 // Expose STATE à window pour que le module 3D puisse lire lapProgress, lapsRun, etc.
 window.STATE = STATE;
 
@@ -15477,6 +15488,16 @@ function fmtNumber(n){
 function renderStats(){
   if($essence) $essence.textContent = Math.floor(STATE.essence) + "/" + STATE.essenceMax;
   if($stars) $stars.textContent = fmtNumber(STATE.stars || 0);
+  // === HUD pill etoiles permanentes (vague 16) : affiche si stars > 0 ou ascensions > 0
+  const _starsV = document.getElementById('hud-stars-val');
+  const _starsPill = document.getElementById('hud-stars');
+  if(_starsV){
+    _starsV.textContent = (STATE.stars || 0).toString();
+  }
+  if(_starsPill){
+    const _show = (STATE.stars || 0) > 0 || (STATE.ascensions || 0) > 0 || (STATE.totalStarsEarned || 0) > 0;
+    _starsPill.style.display = _show ? 'flex' : 'none';
+  }
   const $gems = document.getElementById('gems-val');
   if($gems) $gems.textContent = fmtNumber(STATE.gems || 0);
   // Pulse gold quand le valeur change + SPLASH FLOTTANT pour les gros gains
@@ -17034,7 +17055,11 @@ function tapBoost(e){
   }, TAP_COMBO_WINDOW + 50);
   updateComboDisplay();
   // Combo multiplier : 1× (1 tap), 1.5× (3+), 2× (6+), 3× (12+), 5× (25+)
-  const comboMul = _comboCount >= 25 ? 5 : _comboCount >= 12 ? 3 : _comboCount >= 6 ? 2 : _comboCount >= 3 ? 1.5 : 1;
+  // SOFT CAP V16: cap dur x5, bonus x6 si stamina >80% (récompense gestion endurance)
+  const _staminaR = STATE.staminaMax ? (STATE.stamina / STATE.staminaMax) : 1;
+  const _comboCap = _staminaR > 0.8 ? 6 : 5;
+  const _rawComboMul = _comboCount >= 25 ? 5 : _comboCount >= 12 ? 3 : _comboCount >= 6 ? 2 : _comboCount >= 3 ? 1.5 : 1;
+  const comboMul = Math.min(_comboCap, _rawComboMul);
   // Bump stamina = boost de vitesse temporaire
   if(typeof bumpStamina === 'function') bumpStamina(0.14 + _comboCount * 0.005);
   // Gouttes par tap : multipliers + équipement maillot + cartes star
@@ -17050,7 +17075,10 @@ function tapBoost(e){
   const bigBangBonus = (typeof deckBonus === 'function' && deckBonus('tapBig') > 0 && Math.random() < deckBonus('tapBig')) ? 100 : 1;
   // Modifier stade map (vélodrome / indoor / etc.)
   const mapTapMul = (typeof mapStadiumTapMul === 'function') ? mapStadiumTapMul() : 1;
-  const perTap = (1 + (STATE.upgradeTapValue||0) * 1.5) * comboMul * tapMul * shopMul * eTapMul * eGoldMul * skillTap * equipMul * cardTap * cardAll * bigBangBonus * mapTapMul * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
+  const _buffMul = (typeof getActiveBuffMul === 'function') ? getActiveBuffMul() : 1.0;
+  // === BONUS PRESTIGE VAGUE 16 : +5% gouttes par etoile permanente (cross-runs)
+  const starsBoost = 1 + (STATE.stars || 0) * 0.05;
+  const perTap = (1 + (STATE.upgradeTapValue||0) * 1.5) * comboMul * tapMul * shopMul * eTapMul * eGoldMul * skillTap * equipMul * cardTap * cardAll * bigBangBonus * mapTapMul * starsBoost * (typeof saisonGoldMul==='function'?saisonGoldMul():1) * _buffMul;
   // Crit chance plafonné à 60% + équipement + cartes
   const equipCrit = (typeof equipBonus === 'function') ? equipBonus('critRate') : 0;
   const cardCrit = (typeof deckBonus === 'function') ? deckBonus('crit') : 0;
@@ -17170,8 +17198,9 @@ function updateTapStrip(){
   const boostPerTap = document.getElementById('boost-per-tap');
   if(boostPerTap) boostPerTap.textContent = tapValue;
   if(perLap){
+    // Récolte gouttes logarithmique : km 1 = 5, km 10 = 16, km 50 = 35, km 100 = 50, km 200 = 71
     const lapBonus = Math.floor(Math.pow(STATE.upgradeLapBonus||0, 1.5) * 5);
-    const lapReward = 3 + (STATE.lapsRun||0) * 2 + lapBonus;
+    const lapReward = Math.floor(5 * Math.sqrt(((STATE.lapsRun||0) + 1))) + lapBonus;
     perLap.textContent = '+' + lapReward;
   }
   // Crit affiché : 5% base + 1% par niveau (cohérent avec le calcul réel rawCrit = 0.05 + lvl*0.01)
@@ -17235,28 +17264,28 @@ function updateComboDisplay(){
    Fin du mur inflationniste qui rendait AUTO inatteignable. */
 const UPGRADES_TAP = {
   tapValue: {
-    nameKey: 'upg_tapValue', base: 80, factor: 1.45,
+    nameKey: 'upg_tapValue', base: 80, factor: 1.55,
     state: 'upgradeTapValue',
     unlockLaps: 1,
   },
   critChance: {
-    nameKey: 'upg_critChance', base: 350, factor: 1.50,
+    nameKey: 'upg_critChance', base: 350, factor: 1.60,
     state: 'upgradeCritChance',
     maxLevel: 55, // crit cap 60% (5% base + 55%) — pas plus pour pas OP
     unlockLaps: 5,
   },
   lapBonus: {
-    nameKey: 'upg_lapBonus', base: 400, factor: 1.45,
+    nameKey: 'upg_lapBonus', base: 400, factor: 1.55,
     state: 'upgradeLapBonus',
     unlockLaps: 3,
   },
   autoTap: {
-    nameKey: 'upg_autoTap', base: 2500, factor: 1.55,
+    nameKey: 'upg_autoTap', base: 2500, factor: 1.65,
     state: 'upgradeAutoTap',
     unlockLaps: 18,
   },
   endurance: {
-    nameKey: 'upg_endurance', base: 800, factor: 1.50,
+    nameKey: 'upg_endurance', base: 800, factor: 1.60,
     state: 'upgradeEndurance',
     maxLevel: 20,
     unlockLaps: 12,
@@ -17265,13 +17294,13 @@ const UPGRADES_TAP = {
   // Chaque niveau augmente la distance d'apparition des warnings haies de 15%
   // Lvl 5 = ×1.75 (75% plus loin), Lvl 10 = ×2.50, Lvl 15 = ×3.25
   eagleEye: {
-    nameKey: 'upg_eagleEye', base: 1500, factor: 1.45,
+    nameKey: 'upg_eagleEye', base: 1500, factor: 1.55,
     state: 'upgradeEagleEye',
     maxLevel: 15,
     unlockLaps: 8, // visible à partir du km 8 (1ères haies)
   },
   baseSpeed: {
-    nameKey: 'upg_baseSpeed', base: 3000, factor: 1.55,
+    nameKey: 'upg_baseSpeed', base: 3000, factor: 1.65,
     state: 'upgradeBaseSpeed',
     maxLevel: 15,
     unlockLaps: 25,
@@ -17280,7 +17309,7 @@ const UPGRADES_TAP = {
   // Chaque niveau +5% au baseline tapBoost passif. Lvl 20 = 100% = auto-sprint complet.
   // Coût massif (500k → 1.8x/lvl) pour que ce soit une vraie quête long-terme.
   cruiseControl: {
-    nameKey: 'upg_cruiseControl', base: 50000, factor: 1.45,
+    nameKey: 'upg_cruiseControl', base: 50000, factor: 1.55,
     state: 'upgradeCruiseControl',
     maxLevel: 15,
     unlockLaps: 30, // visible uniquement à partir du km 30
@@ -17295,13 +17324,23 @@ function upgradeCost(id){
   const u = UPGRADES_TAP[id];
   if(!u) return Infinity;
   const lvl = STATE[u.state] || 0;
-  return Math.floor(u.base * Math.pow(u.factor, lvl));
+  let cost = u.base * Math.pow(u.factor, lvl);
+  // === SOFT CAP : x10 entre lvl 20-30, x100 après 30
+  if(lvl >= 30) cost *= 100;
+  else if(lvl >= 20) cost *= 10;
+  return Math.floor(cost);
 }
 function buyUpgrade(id){
   const u = UPGRADES_TAP[id];
   if(!u) return;
   // Cap au maxLevel si défini
   const currentLvl = STATE[u.state] || 0;
+  // === HARD CAP GLOBAL : 50 niveaux max sur toutes les upgrades (ascend pour reset)
+  if(currentLvl >= 50){
+    if(typeof sfxDeny === 'function') sfxDeny();
+    if(typeof showToast === 'function') showToast('Niveau hard cap atteint (50). Ascend pour reset.', 'warn');
+    return;
+  }
   if(u.maxLevel && currentLvl >= u.maxLevel){
     if(typeof sfxDeny === 'function') sfxDeny();
     return;
@@ -17882,10 +17921,16 @@ function doSaisonAscend(){
   // Fermer la modal d'ascension immédiatement (la cinématique prend le relai)
   document.getElementById('saison-modal')?.classList.remove('show');
 
+  // === GAIN ÉTOILES VAGUE 16 : 1 par ascension km 100 + bonus si km > 100 au moment ascend
+  // (en plus de pendingStars(), on garantit minimum 1 par ascension)
+  const bonusKmStars = 1 + Math.floor(Math.max(0, (STATE.lapsRun || 0) - 100) / 50);
+  const totalStarsEarned = earnedStars + bonusKmStars;
+  try { if(typeof showToast === 'function') showToast(`+${totalStarsEarned} etoile${totalStarsEarned>1?'s':''} permanente${totalStarsEarned>1?'s':''} !`, 'success', 5000); } catch(e){}
   // Lance la cinématique. Le reset se fait à la fin via le callback.
-  playAscensionCinematic(earnedStars, currentSaison, nextSaison, () => {
-    STATE.stars = (STATE.stars || 0) + earnedStars;
-    STATE.totalStars = (STATE.totalStars || 0) + earnedStars;
+  playAscensionCinematic(totalStarsEarned, currentSaison, nextSaison, () => {
+    STATE.stars = (STATE.stars || 0) + totalStarsEarned;
+    STATE.totalStars = (STATE.totalStars || 0) + totalStarsEarned;
+    STATE.totalStarsEarned = (STATE.totalStarsEarned || 0) + totalStarsEarned;
     STATE.ascensions = (STATE.ascensions || 0) + 1;
     STATE.saison = nextSaison;
     // Reset progression de saison
@@ -19688,7 +19733,8 @@ function updateUpgradesUI(){
    (passif, comme un employé qui tape pour toi) */
 let _autoTapAccumulator = 0;
 function tickAutoTap(dt){
-  const rate = (STATE.upgradeAutoTap || 0) * 1.5 + (typeof saisonAutoBase==='function'?saisonAutoBase():0);
+  // SOFT CAP V16: autoTap rate plafonné à 10 taps/sec (équivaut humain rapide)
+  const rate = Math.min(10, (STATE.upgradeAutoTap || 0) * 1.5 + (typeof saisonAutoBase==='function'?saisonAutoBase():0));
   if(rate <= 0) return;
   _autoTapAccumulator += dt * rate;
   while(_autoTapAccumulator >= 1){
@@ -21873,6 +21919,7 @@ function save(){
       mixeurUnlocked: STATE.generators[3]?.unlocked || false,
       activeEvents: STATE.activeEvents || {},
       stars:STATE.stars||0, totalStars:STATE.totalStars||0,
+      totalStarsEarned:STATE.totalStarsEarned||STATE.totalStars||0,
       ascensions:STATE.ascensions||0,
       upgrades:STATE.upgrades||{},
       bestCombo:STATE.bestCombo||0,
@@ -23088,6 +23135,7 @@ function load(){
     if(STATE.generators[3] && s.mixeurUnlocked) STATE.generators[3].unlocked = true;
     STATE.stars = s.stars ?? 0;
     STATE.totalStars = s.totalStars ?? 0;
+    STATE.totalStarsEarned = s.totalStarsEarned ?? s.totalStars ?? 0;
     STATE.ascensions = s.ascensions ?? 0;
     STATE.upgrades = s.upgrades ?? {};
     STATE.bestCombo = s.bestCombo ?? 0;
@@ -25790,7 +25838,8 @@ window.addEventListener('appinstalled', () => {
     const sinceLastTap = (performance.now() - lastTapTime) / 1000;
     if(sinceLastTap > 0.3){
       // ENDURANCE : chaque niveau réduit la décroissance de 10.5% boosté (cap 70% à L7)
-      const enduranceLvl = (window.STATE && window.STATE.upgradeEndurance) || 0;
+      // SOFT CAP V16: endurance plafonnée lvl 15 pour le decay combo/tap (au-delà aucun bénéfice)
+      const enduranceLvl = Math.min(15, (window.STATE && window.STATE.upgradeEndurance) || 0);
       const decayMul = Math.max(0.30, 1.0 - enduranceLvl * 0.105);
       // Decay réduit de 35/sec à 20/sec → permet au tap rate humain (~10/sec) de monter la jauge
       tapCount = Math.max(0, tapCount - dt * 20 * decayMul);
@@ -26046,6 +26095,11 @@ window.addEventListener('appinstalled', () => {
     const prevDisplayKmh = displayKmh;
     displayKmh = displayKmh * 0.70 + targetKmh * 0.30;
     displayKmh = Math.max(0, Math.min(35, displayKmh));
+    // === SOFT CAP V16 vitesse passive : 30 km/h sauf si skill Sprint actif (qui peut dépasser jusqu'à 35)
+    const _skillsActive = (window.STATE && window.STATE.skillSprintUntil && Date.now() < window.STATE.skillSprintUntil);
+    if(!_skillsActive){
+      displayKmh = Math.min(30, displayKmh);
+    }
 
     // === SCROLL DÉCOR PHYSIQUEMENT RÉALISTE (refactor v8) ===
     // Avant : decorScroll += speed * dtMul (unités arbitraires sans rapport avec la vraie km/h)

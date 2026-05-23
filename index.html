@@ -8411,6 +8411,12 @@ body.shop-epic-flash::after{
         </svg>
         <div class="mi-meta"><div class="mi-title">Ascension</div><div class="mi-sub">passer une saison · étoiles permanentes</div></div>
       </button>
+      <button class="menu-item" data-action="prestige" data-unlock-km="100">
+        <svg viewBox="0 0 24 24" fill="#ffd060" stroke="none">
+          <path d="M12 2 L14.4 8.4 L21 9.2 L16 13.6 L17.6 20.4 L12 16.8 L6.4 20.4 L8 13.6 L3 9.2 L9.6 8.4 z"/>
+        </svg>
+        <div class="mi-meta"><div class="mi-title">PRESTIGE</div><div class="mi-sub">investis tes étoiles permanentes</div></div>
+      </button>
       <button class="menu-item" data-action="map-stadiums" data-unlock-saison="2">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
           <path d="M3 6 L9 4 L15 6 L21 4 V18 L15 20 L9 18 L3 20 z"/>
@@ -8744,6 +8750,16 @@ body.shop-epic-flash::after{
       </svg>
     </div>
     <div class="stats-body" id="stats-body"></div>
+  </div>
+</div>
+
+<div class="modal" id="star-tree-modal">
+  <div class="modal-card" style="max-width:480px; max-height:80vh; overflow-y:auto;">
+    <button type="button" class="modal-close" data-close-modal="star-tree-modal" aria-label="Fermer">×</button>
+    <h2 style="display:flex; align-items:center; justify-content:center; gap:8px; margin:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="#ffd060"><path d="M12 2 L14.4 8.4 L21 9.2 L16 13.6 L17.6 20.4 L12 16.8 L6.4 20.4 L8 13.6 L3 9.2 L9.6 8.4 z"/></svg> PRESTIGE</h2>
+    <div class="modal-subtitle">— investis tes étoiles —</div>
+    <div style="text-align:center; color:#888; margin:6px 0 12px;">Étoiles : <strong id="star-tree-avail" style="color:#ffd060; font-size:18px;">0</strong></div>
+    <div id="star-tree-list" style="display:flex; flex-direction:column;"></div>
   </div>
 </div>
 
@@ -10614,90 +10630,90 @@ const sumProduced = s => s.totals.produced.reduce((a,b)=>a+b,0);
 /* 16 hauts faits — alignés sur la course, le tap, et la prestige. */
 const ACHIEVEMENTS = [
   // === ÉCONOMIE — gouttes cumulées ===
-  { id:"gold_500",     name:"Premières gouttes", desc:"Posséder 500 gouttes.",                       icon:"crown",   reward:50,    check:s => (s.gold||0)>=500 },
-  { id:"gold_5000",    name:"Trésor",              desc:"Posséder 5 000 gouttes.",                     icon:"crown",   reward:300,   check:s => (s.gold||0)>=5000 },
-  { id:"gold_50k",     name:"Magnat",              desc:"Posséder 50 000 gouttes.",                    icon:"crown",   reward:2000,  check:s => (s.gold||0)>=50000 },
-  { id:"gold_500k",    name:"Millionnaire",        desc:"Cumuler 500 000 gouttes à vie.",              icon:"crown",   reward:10000, check:s => (s.totalGoldEarned||0)>=500000 },
-  { id:"gold_1M",      name:"Mille Gouttes d'Or",desc:"Cumuler 1 million de gouttes à vie.",         icon:"crown",   reward:50000, check:s => (s.totalGoldEarned||0)>=1000000 },
+  { id:"gold_500",     name:"Premières gouttes", desc:"Posséder 500 gouttes.",                       icon:"crown",   reward:25,    check:s => (s.gold||0)>=500 },
+  { id:"gold_5000",    name:"Trésor",              desc:"Posséder 5 000 gouttes.",                     icon:"crown",   reward:150,   check:s => (s.gold||0)>=5000 },
+  { id:"gold_50k",     name:"Magnat",              desc:"Posséder 50 000 gouttes.",                    icon:"crown",   reward:400, gemReward:1, check:s => (s.gold||0)>=50000 },
+  { id:"gold_500k",    name:"Millionnaire",        desc:"Cumuler 500 000 gouttes à vie.",              icon:"crown",   reward:1000, gemReward:2, check:s => (s.totalGoldEarned||0)>=500000 },
+  { id:"gold_1M",      name:"Mille Gouttes d'Or",desc:"Cumuler 1 million de gouttes à vie.",         icon:"crown",   reward:5000, gemReward:2, check:s => (s.totalGoldEarned||0)>=1000000 },
 
   // === TAPS — endurance du pouce ===
-  { id:"tap_100",      name:"Tape Tape Tape",    desc:"100 taps cumulés.",                               icon:"fuse",    reward:50,    check:s => (s.totalTaps||0)>=100 },
-  { id:"tap_1000",     name:"Pouce Acier",       desc:"1 000 taps cumulés.",                             icon:"fuse",    reward:300,   check:s => (s.totalTaps||0)>=1000 },
-  { id:"tap_10000",    name:"Légende du Tap",    desc:"10 000 taps cumulés.",                            icon:"fuse",    reward:2000,  check:s => (s.totalTaps||0)>=10000 },
-  { id:"tap_100k",     name:"Marathonien du Doigt",desc:"100 000 taps cumulés.",                         icon:"fuse",    reward:15000, check:s => (s.totalTaps||0)>=100000 },
+  { id:"tap_100",      name:"Tape Tape Tape",    desc:"100 taps cumulés.",                               icon:"fuse",    reward:25,    check:s => (s.totalTaps||0)>=100 },
+  { id:"tap_1000",     name:"Pouce Acier",       desc:"1 000 taps cumulés.",                             icon:"fuse",    reward:150,   check:s => (s.totalTaps||0)>=1000 },
+  { id:"tap_10000",    name:"Légende du Tap",    desc:"10 000 taps cumulés.",                            icon:"fuse",    reward:400, gemReward:1, check:s => (s.totalTaps||0)>=10000 },
+  { id:"tap_100k",     name:"Marathonien du Doigt",desc:"100 000 taps cumulés.",                         icon:"fuse",    reward:1500, gemReward:2, check:s => (s.totalTaps||0)>=100000 },
 
   // === KM — distance parcourue ===
-  { id:"lap_1",        name:"Premier Km",        desc:"Boucler ton premier kilomètre.",                  icon:"crown",   reward:25,    check:s => (s.lapsRun||0)>=1 },
-  { id:"lap_3",        name:"Auto-Course",        desc:"Atteindre le km 3 et débloquer l'AUTO-COURSE.",  icon:"crown",   reward:100,   check:s => (s.lapsRun||0)>=3 },
-  { id:"lap_10",       name:"Premier Dossard",   desc:"Courir 10 km.",                                   icon:"crown",   reward:300,   check:s => (s.lapsRun||0)>=10 },
-  { id:"lap_25",       name:"Quart de Marathon", desc:"Courir 25 km.",                                   icon:"crown",   reward:800,   check:s => (s.lapsRun||0)>=25 },
-  { id:"lap_50",       name:"Coureur Confirmé",  desc:"Courir 50 km.",                                   icon:"crown",   reward:2000,  check:s => (s.lapsRun||0)>=50 },
-  { id:"lap_75",       name:"Vue sur l'Olympe",  desc:"Courir 75 km.",                                   icon:"crown",   reward:5000,  check:s => (s.lapsRun||0)>=75 },
-  { id:"lap_100",      name:"Légende Olympique", desc:"Courir 100 km (ASCENSION débloquée).",            icon:"crown",   reward:15000, check:s => (s.lapsRun||0)>=100 },
+  { id:"lap_1",        name:"Premier Km",        desc:"Boucler ton premier kilomètre.",                  icon:"crown",   reward:12,    check:s => (s.lapsRun||0)>=1 },
+  { id:"lap_3",        name:"Auto-Course",        desc:"Atteindre le km 3 et débloquer l'AUTO-COURSE.",  icon:"crown",   reward:50,   check:s => (s.lapsRun||0)>=3 },
+  { id:"lap_10",       name:"Premier Dossard",   desc:"Courir 10 km.",                                   icon:"crown",   reward:150,   check:s => (s.lapsRun||0)>=10 },
+  { id:"lap_25",       name:"Quart de Marathon", desc:"Courir 25 km.",                                   icon:"crown",   reward:400,   check:s => (s.lapsRun||0)>=25 },
+  { id:"lap_50",       name:"Coureur Confirmé",  desc:"Courir 50 km.",                                   icon:"crown",   reward:400, gemReward:1, check:s => (s.lapsRun||0)>=50 },
+  { id:"lap_75",       name:"Vue sur l'Olympe",  desc:"Courir 75 km.",                                   icon:"crown",   reward:500, gemReward:2, check:s => (s.lapsRun||0)>=75 },
+  { id:"lap_100",      name:"Légende Olympique", desc:"Courir 100 km (ASCENSION débloquée).",            icon:"crown",   reward:1500, gemReward:2, check:s => (s.lapsRun||0)>=100 },
 
   // === BIOMES — découverte du monde ===
-  { id:"biome_rural",  name:"Sortie du Chantier",desc:"Atteindre la banlieue (km 3+).",                   icon:"horn",    reward:100,   check:s => (s.lapsRun||0)>=3 },
-  { id:"biome_urban",  name:"Ville Lumière",     desc:"Atteindre la ville (km 10+).",                     icon:"horn",    reward:300,   check:s => (s.lapsRun||0)>=10 },
-  { id:"biome_stadium",name:"Stade Olympique",   desc:"Atteindre le grand stade (km 80+).",               icon:"horn",    reward:2500,  check:s => (s.lapsRun||0)>=80 },
-  { id:"biome_flame",  name:"Vasque Allumée",    desc:"Voir la vasque olympique (km 80+).",               icon:"horn",    reward:7500,  check:s => (s.lapsRun||0)>=80 },
+  { id:"biome_rural",  name:"Sortie du Chantier",desc:"Atteindre la banlieue (km 3+).",                   icon:"horn",    reward:50,   check:s => (s.lapsRun||0)>=3 },
+  { id:"biome_urban",  name:"Ville Lumière",     desc:"Atteindre la ville (km 10+).",                     icon:"horn",    reward:150,   check:s => (s.lapsRun||0)>=10 },
+  { id:"biome_stadium",name:"Stade Olympique",   desc:"Atteindre le grand stade (km 80+).",               icon:"horn",    reward:500, gemReward:1, check:s => (s.lapsRun||0)>=80 },
+  { id:"biome_flame",  name:"Vasque Allumée",    desc:"Voir la vasque olympique (km 80+).",               icon:"horn",    reward:750, gemReward:2, check:s => (s.lapsRun||0)>=80 },
 
   // === COMBO — synergie ===
-  { id:"combo_10",     name:"Cadence",           desc:"Combo de 10 sans pause.",                          icon:"fuse",    reward:50,    check:s => (s.bestCombo||0)>=10 },
-  { id:"combo_25",     name:"Rythme Parfait",    desc:"Combo de 25 = bonus ×5 maxé.",                     icon:"fuse",    reward:200,   check:s => (s.bestCombo||0)>=25 },
-  { id:"combo_50",     name:"Possession",        desc:"Combo de 50 sans break.",                          icon:"fuse",    reward:800,   check:s => (s.bestCombo||0)>=50 },
-  { id:"combo_100",    name:"Transe",            desc:"Combo de 100 — pouce en feu.",                     icon:"fuse",    reward:3000,  check:s => (s.bestCombo||0)>=100 },
+  { id:"combo_10",     name:"Cadence",           desc:"Combo de 10 sans pause.",                          icon:"fuse",    reward:25,    check:s => (s.bestCombo||0)>=10 },
+  { id:"combo_25",     name:"Rythme Parfait",    desc:"Combo de 25 = bonus ×5 maxé.",                     icon:"fuse",    reward:100,   check:s => (s.bestCombo||0)>=25 },
+  { id:"combo_50",     name:"Possession",        desc:"Combo de 50 sans break.",                          icon:"fuse",    reward:400,   check:s => (s.bestCombo||0)>=50 },
+  { id:"combo_100",    name:"Transe",            desc:"Combo de 100 — pouce en feu.",                     icon:"fuse",    reward:600, gemReward:1, check:s => (s.bestCombo||0)>=100 },
 
   // === VITESSE ===
-  { id:"speed_15",     name:"Footing",           desc:"Atteindre 15 km/h.",                               icon:"horn",    reward:50,    check:s => (s.bestKmh||0)>=15 },
-  { id:"speed_25",     name:"Course",            desc:"Atteindre 25 km/h.",                               icon:"horn",    reward:300,   check:s => (s.bestKmh||0)>=25 },
-  { id:"speed_33",     name:"Sprint",            desc:"Atteindre 33 km/h — niveau Bolt.",                 icon:"horn",    reward:2000,  check:s => (s.bestKmh||0)>=33 },
-  { id:"speed_35",     name:"Vitesse Maximale",  desc:"Atteindre 35 km/h — record du monde.",             icon:"horn",    reward:5000,  check:s => (s.bestKmh||0)>=35 },
+  { id:"speed_15",     name:"Footing",           desc:"Atteindre 15 km/h.",                               icon:"horn",    reward:25,    check:s => (s.bestKmh||0)>=15 },
+  { id:"speed_25",     name:"Course",            desc:"Atteindre 25 km/h.",                               icon:"horn",    reward:150,   check:s => (s.bestKmh||0)>=25 },
+  { id:"speed_33",     name:"Sprint",            desc:"Atteindre 33 km/h — niveau Bolt.",                 icon:"horn",    reward:400, gemReward:1, check:s => (s.bestKmh||0)>=33 },
+  { id:"speed_35",     name:"Vitesse Maximale",  desc:"Atteindre 35 km/h — record du monde.",             icon:"horn",    reward:500, gemReward:2, check:s => (s.bestKmh||0)>=35 },
 
   // === HAIES — skill ===
-  { id:"hurdle_10",    name:"Premier Saut",      desc:"Franchir 10 haies au total.",                      icon:"fuse",    reward:100,   check:s => (s.hurdlesCleared||0)>=10 },
-  { id:"hurdle_100",   name:"Sauteur Confirmé",  desc:"Franchir 100 haies.",                              icon:"fuse",    reward:500,   check:s => (s.hurdlesCleared||0)>=100 },
-  { id:"hurdle_500",   name:"Spécialiste Haies", desc:"Franchir 500 haies.",                              icon:"fuse",    reward:3000,  check:s => (s.hurdlesCleared||0)>=500 },
-  { id:"hurdle_chain_5", name:"Enchaînement",    desc:"5 haies franchies d'affilée sans rater.",          icon:"fuse",    reward:200,   check:s => (s.bestHurdleStreak||0)>=5 },
-  { id:"hurdle_chain_15",name:"Cadence Olympique",desc:"15 haies franchies d'affilée.",                   icon:"fuse",    reward:1500,  check:s => (s.bestHurdleStreak||0)>=15 },
-  { id:"hurdle_triple",name:"Triple Saut",       desc:"Réussir un pattern TRIPLE complet.",               icon:"fuse",    reward:300,   check:s => (s.triplesCleared||0)>=1 },
-  { id:"hurdle_tall",  name:"Haut Cadré",        desc:"Franchir une haie HAUTE.",                         icon:"fuse",    reward:200,   check:s => (s.tallsCleared||0)>=1 },
-  { id:"hurdle_wide",  name:"Bond Large",        desc:"Franchir une haie LARGE.",                         icon:"fuse",    reward:200,   check:s => (s.widesCleared||0)>=1 },
+  { id:"hurdle_10",    name:"Premier Saut",      desc:"Franchir 10 haies au total.",                      icon:"fuse",    reward:50,   check:s => (s.hurdlesCleared||0)>=10 },
+  { id:"hurdle_100",   name:"Sauteur Confirmé",  desc:"Franchir 100 haies.",                              icon:"fuse",    reward:250,   check:s => (s.hurdlesCleared||0)>=100 },
+  { id:"hurdle_500",   name:"Spécialiste Haies", desc:"Franchir 500 haies.",                              icon:"fuse",    reward:600, gemReward:1, check:s => (s.hurdlesCleared||0)>=500 },
+  { id:"hurdle_chain_5", name:"Enchaînement",    desc:"5 haies franchies d'affilée sans rater.",          icon:"fuse",    reward:100,   check:s => (s.bestHurdleStreak||0)>=5 },
+  { id:"hurdle_chain_15",name:"Cadence Olympique",desc:"15 haies franchies d'affilée.",                   icon:"fuse",    reward:300, gemReward:1, check:s => (s.bestHurdleStreak||0)>=15 },
+  { id:"hurdle_triple",name:"Triple Saut",       desc:"Réussir un pattern TRIPLE complet.",               icon:"fuse",    reward:150,   check:s => (s.triplesCleared||0)>=1 },
+  { id:"hurdle_tall",  name:"Haut Cadré",        desc:"Franchir une haie HAUTE.",                         icon:"fuse",    reward:100,   check:s => (s.tallsCleared||0)>=1 },
+  { id:"hurdle_wide",  name:"Bond Large",        desc:"Franchir une haie LARGE.",                         icon:"fuse",    reward:100,   check:s => (s.widesCleared||0)>=1 },
 
   // === RIVAUX — compétition ===
-  { id:"rival_first",  name:"Premier Duel",      desc:"Dépasser ton premier rival.",                      icon:"crown",   reward:150,   check:s => (s.rivalsWon||0)>=1 },
-  { id:"rival_10",     name:"Dominant",          desc:"Dépasser 10 rivals.",                              icon:"crown",   reward:800,   check:s => (s.rivalsWon||0)>=10 },
-  { id:"rival_50",     name:"Roi de la Piste",   desc:"Dépasser 50 rivals.",                              icon:"crown",   reward:5000,  check:s => (s.rivalsWon||0)>=50 },
-  { id:"rival_streak5",name:"Série Invaincue",   desc:"5 victoires consécutives sur les rivals.",         icon:"crown",   reward:1000,  check:s => (s.bestRivalStreak||0)>=5 },
+  { id:"rival_first",  name:"Premier Duel",      desc:"Dépasser ton premier rival.",                      icon:"crown",   reward:75,   check:s => (s.rivalsWon||0)>=1 },
+  { id:"rival_10",     name:"Dominant",          desc:"Dépasser 10 rivals.",                              icon:"crown",   reward:400,   check:s => (s.rivalsWon||0)>=10 },
+  { id:"rival_50",     name:"Roi de la Piste",   desc:"Dépasser 50 rivals.",                              icon:"crown",   reward:500, gemReward:2, check:s => (s.rivalsWon||0)>=50 },
+  { id:"rival_streak5",name:"Série Invaincue",   desc:"5 victoires consécutives sur les rivals.",         icon:"crown",   reward:200, gemReward:1, check:s => (s.bestRivalStreak||0)>=5 },
 
   // === ÉCONOMIE / UPGRADES ===
-  { id:"upg_first",    name:"Premier Achat",     desc:"Acheter ton premier upgrade.",                     icon:"horn",    reward:25,    check:s => (s.totalUpgradesBought||0)>=1 },
-  { id:"upg_10",       name:"Investisseur",      desc:"Acheter 10 upgrades cumulés.",                     icon:"horn",    reward:300,   check:s => (s.totalUpgradesBought||0)>=10 },
-  { id:"upg_50",       name:"Optimiseur",        desc:"Acheter 50 upgrades cumulés.",                     icon:"horn",    reward:2000,  check:s => (s.totalUpgradesBought||0)>=50 },
-  { id:"upg_tap_10",   name:"Pouce d'Or",        desc:"FOULÉE niveau 10.",                                icon:"horn",    reward:500,   check:s => (s.upgradeTapValue||0)>=10 },
-  { id:"upg_crit_max", name:"Toujours Critique", desc:"EXPLOSIVITÉ niveau max (55).",                     icon:"horn",    reward:5000,  check:s => (s.upgradeCritChance||0)>=55 },
-  { id:"upg_base_max", name:"Vitesse Maxée",     desc:"VITESSE DE BASE niveau max (15).",                 icon:"horn",    reward:5000,  check:s => (s.upgradeBaseSpeed||0)>=15 },
+  { id:"upg_first",    name:"Premier Achat",     desc:"Acheter ton premier upgrade.",                     icon:"horn",    reward:12,    check:s => (s.totalUpgradesBought||0)>=1 },
+  { id:"upg_10",       name:"Investisseur",      desc:"Acheter 10 upgrades cumulés.",                     icon:"horn",    reward:150,   check:s => (s.totalUpgradesBought||0)>=10 },
+  { id:"upg_50",       name:"Optimiseur",        desc:"Acheter 50 upgrades cumulés.",                     icon:"horn",    reward:400, gemReward:1, check:s => (s.totalUpgradesBought||0)>=50 },
+  { id:"upg_tap_10",   name:"Pouce d'Or",        desc:"FOULÉE niveau 10.",                                icon:"horn",    reward:250,   check:s => (s.upgradeTapValue||0)>=10 },
+  { id:"upg_crit_max", name:"Toujours Critique", desc:"EXPLOSIVITÉ niveau max (55).",                     icon:"horn",    reward:500, gemReward:2, check:s => (s.upgradeCritChance||0)>=55 },
+  { id:"upg_base_max", name:"Vitesse Maxée",     desc:"VITESSE DE BASE niveau max (15).",                 icon:"horn",    reward:500, gemReward:2, check:s => (s.upgradeBaseSpeed||0)>=15 },
 
   // === LEVEL / SAISON / DAILY (legacy) ===
-  { id:"lvl_10",       name:"Athlète Niveau 10", desc:"Atteindre le niveau 10.",                          icon:"horn",    reward:200,   check:s => (s.alchLevel||1)>=10 },
-  { id:"lvl_25",       name:"Compétiteur",       desc:"Atteindre le niveau 25.",                          icon:"horn",    reward:800,   check:s => (s.alchLevel||1)>=25 },
-  { id:"lvl_50",       name:"Élite",             desc:"Atteindre le niveau 50.",                          icon:"horn",    reward:5000,  check:s => (s.alchLevel||1)>=50 },
-  { id:"saison_2",     name:"Première Ascension",desc:"Compléter ta première saison.",                    icon:"trinity", reward:1000,  check:s => (s.saison||1)>=2 },
-  { id:"saison_5",     name:"Vétéran des Saisons",desc:"Atteindre la saison 5.",                          icon:"trinity", reward:5000,  check:s => (s.saison||1)>=5 },
-  { id:"saison_10",    name:"Ascensionniste",    desc:"Atteindre la saison 10.",                          icon:"trinity", reward:20000, check:s => (s.saison||1)>=10 },
-  { id:"daily_3",      name:"Habitué",           desc:"3 jours de récompense de suite.",                  icon:"crown",   reward:200,   check:s => (s.dailyStreak||0)>=3 },
-  { id:"daily_7",      name:"Fidèle de la Semaine",desc:"Compléter le calendrier 7 jours.",               icon:"crown",   reward:1500,  check:s => (s.dailyCycles||0)>=1 },
-  { id:"daily_30",     name:"Mois Complet",      desc:"30 jours de connexion consécutifs.",               icon:"crown",   reward:10000, check:s => (s.dailyStreak||0)>=30 },
+  { id:"lvl_10",       name:"Athlète Niveau 10", desc:"Atteindre le niveau 10.",                          icon:"horn",    reward:100,   check:s => (s.alchLevel||1)>=10 },
+  { id:"lvl_25",       name:"Compétiteur",       desc:"Atteindre le niveau 25.",                          icon:"horn",    reward:400,   check:s => (s.alchLevel||1)>=25 },
+  { id:"lvl_50",       name:"Élite",             desc:"Atteindre le niveau 50.",                          icon:"horn",    reward:500, gemReward:2, check:s => (s.alchLevel||1)>=50 },
+  { id:"saison_2",     name:"Première Ascension",desc:"Compléter ta première saison.",                    icon:"trinity", reward:200, gemReward:1, check:s => (s.saison||1)>=2 },
+  { id:"saison_5",     name:"Vétéran des Saisons",desc:"Atteindre la saison 5.",                          icon:"trinity", reward:500, gemReward:2, check:s => (s.saison||1)>=5 },
+  { id:"saison_10",    name:"Ascensionniste",    desc:"Atteindre la saison 10.",                          icon:"trinity", reward:2000, gemReward:2, check:s => (s.saison||1)>=10 },
+  { id:"daily_3",      name:"Habitué",           desc:"3 jours de récompense de suite.",                  icon:"crown",   reward:100,   check:s => (s.dailyStreak||0)>=3 },
+  { id:"daily_7",      name:"Fidèle de la Semaine",desc:"Compléter le calendrier 7 jours.",               icon:"crown",   reward:300, gemReward:1, check:s => (s.dailyCycles||0)>=1 },
+  { id:"daily_30",     name:"Mois Complet",      desc:"30 jours de connexion consécutifs.",               icon:"crown",   reward:1000, gemReward:2, check:s => (s.dailyStreak||0)>=30 },
 
   // === SECRETS ===
-  { id:"secret_rabbit",name:"Chasseur de Lapin", desc:"Attraper ton premier lapin doré.",                 icon:"trinity", reward:500,   check:s => (s.rabbitsCaught||0)>=1 },
-  { id:"secret_hare",  name:"Lièvre Capturé",    desc:"Attraper ton premier lièvre rapide.",              icon:"trinity", reward:1000,  check:s => (s.haresCaught||0)>=1 },
+  { id:"secret_rabbit",name:"Chasseur de Lapin", desc:"Attraper ton premier lapin doré.",                 icon:"trinity", reward:250,   check:s => (s.rabbitsCaught||0)>=1 },
+  { id:"secret_hare",  name:"Lièvre Capturé",    desc:"Attraper ton premier lièvre rapide.",              icon:"trinity", reward:200, gemReward:1, check:s => (s.haresCaught||0)>=1 },
 
   // === SIGNATURE FOULÉE — features uniques ===
-  { id:"sprint_first",   name:"Premier Sprint",      desc:"Atteindre 30 km/h pour la 1ère fois.",            icon:"flame",   reward:200,   check:s => (s.bestKmh||0) >= 30 },
-  { id:"npc_50",         name:"Coureur de Tête",     desc:"Dépasser 50 PNJ au total.",                       icon:"chevron", reward:500,   check:s => (s.npcOvertakeCount||0) >= 50 },
-  { id:"rabbit_run3",    name:"Maître du Lapin",     desc:"Attraper 3 lapins en une seule session.",         icon:"trinity", reward:1500,  check:s => (s.rabbitsCaughtThisRun||0) >= 3 },
-  { id:"t6_first",       name:"Vue d'Élite",         desc:"Apercevoir ton premier champion olympique (km 85+).", icon:"crown", reward:800,   check:s => (s.tier6Seen||0) >= 1 },
-  { id:"master_runner",  name:"Marathonien Vrai",    desc:"Boucler 3 km en mode AUTO sans rater une haie.",  icon:"trophy",  reward:2500,  check:s => (s.cleanAutoKm||0) >= 3 },
+  { id:"sprint_first",   name:"Premier Sprint",      desc:"Atteindre 30 km/h pour la 1ère fois.",            icon:"flame",   reward:100,   check:s => (s.bestKmh||0) >= 30 },
+  { id:"npc_50",         name:"Coureur de Tête",     desc:"Dépasser 50 PNJ au total.",                       icon:"chevron", reward:250,   check:s => (s.npcOvertakeCount||0) >= 50 },
+  { id:"rabbit_run3",    name:"Maître du Lapin",     desc:"Attraper 3 lapins en une seule session.",         icon:"trinity", reward:300, gemReward:1, check:s => (s.rabbitsCaughtThisRun||0) >= 3 },
+  { id:"t6_first",       name:"Vue d'Élite",         desc:"Apercevoir ton premier champion olympique (km 85+).", icon:"crown", reward:400,   check:s => (s.tier6Seen||0) >= 1 },
+  { id:"master_runner",  name:"Marathonien Vrai",    desc:"Boucler 3 km en mode AUTO sans rater une haie.",  icon:"trophy",  reward:500, gemReward:1, check:s => (s.cleanAutoKm||0) >= 3 },
 ];
 
 function checkAchievements(){
@@ -10708,6 +10724,11 @@ function checkAchievements(){
     if(a.check(STATE)){
       STATE.achievements[a.id] = Date.now();
       STATE.gold += a.reward;
+      if(a.gemReward || a.gem){
+        const gemAmt = a.gemReward || a.gem || 0;
+        STATE.gems = (STATE.gems || 0) + gemAmt;
+        try { if(typeof showToast === 'function') showToast(`💎 +${gemAmt} gemme${gemAmt>1?'s':''} !`, 'success'); } catch(e){}
+      }
       achievementToast(a);
       unlocked++;
     }
@@ -12605,6 +12626,10 @@ const STATE = {
   // Codex narratif : timestamps de découverte par (chain*8 + tier)
   codexUnlocks: {}, // key "0_3" → timestamp première découverte (persiste à travers prestiges)
   selectedCodex: null,
+  starTree: {
+    tapPower: 0, lapPower: 0, dropRate: 0, basePower: 0,
+    staminaPlus: 0, critPower: 0, cooldownNeg: 0, starsJackpot: 0
+  },
 };
 // Buffs temporaires (Bougie 5min/+5%, Doping 30min/+20% avec 24h CD)
 STATE.buffs = STATE.buffs ?? { bougie: 0, doping: 0, dopingLastUsed: 0 };
@@ -12613,6 +12638,74 @@ STATE.buffs = STATE.buffs ?? { bougie: 0, doping: 0, dopingLastUsed: 0 };
 // dopingLastUsed: timestamp dernière utilisation (cooldown 24h)
 // Expose STATE à window pour que le module 3D puisse lire lapProgress, lapsRun, etc.
 window.STATE = STATE;
+
+/* ================ STAR TREE (PRESTIGE) ================ */
+const STAR_TREE_NODES = [
+  { id:'tapPower',     label:'PUISSANCE TAP',   desc:'+10% gouttes par tap',         cost:[1,2,3,5,8] },
+  { id:'lapPower',     label:'MAÎTRE DU KM',    desc:'+15% gouttes par lap',         cost:[1,2,3,5,8] },
+  { id:'dropRate',     label:'CHANCEUX',        desc:'+20% drop rate items',         cost:[2,3,5,8,13] },
+  { id:'basePower',    label:'VITESSE NATIVE',  desc:'+10% vitesse passive',         cost:[2,3,5,8,13] },
+  { id:'staminaPlus',  label:'POUMONS',         desc:'+50 stamina max',              cost:[1,2,3,5] },
+  { id:'critPower',    label:'COUP CRITIQUE',   desc:'+10% chance crit',             cost:[2,3,5,8] },
+  { id:'cooldownNeg',  label:'RÉFLEXES',        desc:'-15% cooldown skills',         cost:[3,5,8] },
+  { id:'starsJackpot', label:'JACKPOT ÉTOILES', desc:'+1 étoile bonus / ascension',  cost:[5,10,20] }
+];
+function nextStarNodeCost(id){
+  const n = STAR_TREE_NODES.find(x => x.id === id);
+  if(!n) return Infinity;
+  const lvl = (STATE.starTree && STATE.starTree[id]) || 0;
+  if(lvl >= n.cost.length) return Infinity;
+  return n.cost[lvl];
+}
+function buyStarNode(id){
+  const cost = nextStarNodeCost(id);
+  if(!isFinite(cost)) return false;
+  if((STATE.stars || 0) < cost) return false;
+  STATE.stars -= cost;
+  if(!STATE.starTree) STATE.starTree = {};
+  STATE.starTree[id] = (STATE.starTree[id] || 0) + 1;
+  try {
+    if(typeof sfxAchievement === 'function') sfxAchievement();
+    else if(typeof sfxBuyScaled === 'function') sfxBuyScaled(1);
+    if(typeof renderStarTree === 'function') renderStarTree();
+    if(typeof saveNow === 'function') saveNow();
+    else if(typeof save === 'function') save();
+  } catch(e){}
+  return true;
+}
+function renderStarTree(){
+  const list = document.getElementById('star-tree-list');
+  const avail = document.getElementById('star-tree-avail');
+  if(!list || !avail) return;
+  avail.textContent = STATE.stars || 0;
+  list.innerHTML = STAR_TREE_NODES.map(n => {
+    const lvl = (STATE.starTree && STATE.starTree[n.id]) || 0;
+    const max = n.cost.length;
+    const cost = nextStarNodeCost(n.id);
+    const isMax = lvl >= max;
+    const canBuy = !isMax && (STATE.stars || 0) >= cost;
+    return '<div style="padding:10px 12px; background:rgba(255,212,96,0.08); border-radius:8px; border:1px solid rgba(255,212,96,0.22); margin-bottom:6px;">'
+      + '<div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">'
+      + '<div style="flex:1;"><div style="font-weight:700; font-size:13px; color:#1a1a2e;">' + n.label + '</div>'
+      + '<div style="color:#666; font-size:11px; margin-top:2px;">' + n.desc + '</div>'
+      + '<div style="color:#b08020; font-size:11px; margin-top:3px; font-weight:600;">Niv ' + lvl + ' / ' + max + '</div></div>'
+      + '<button class="star-buy-btn" data-node="' + n.id + '" ' + ((!canBuy || isMax) ? 'disabled' : '') + ' style="padding:8px 14px; background:' + (isMax ? '#888' : (canBuy ? 'linear-gradient(135deg,#ffd060,#ff9020)' : '#aaa')) + '; color:#1a1a2e; border:none; border-radius:8px; font-weight:700; font-size:12px; cursor:' + ((!canBuy || isMax) ? 'not-allowed' : 'pointer') + '; opacity:' + ((!canBuy || isMax) ? '0.5' : '1') + ';">'
+      + (isMax ? 'MAX' : cost + ' ⭐') + '</button></div></div>';
+  }).join('');
+  list.querySelectorAll('.star-buy-btn').forEach(btn => {
+    btn.onclick = () => { if(buyStarNode(btn.dataset.node)) renderStarTree(); };
+  });
+}
+function openStarTree(){
+  const m = document.getElementById('star-tree-modal');
+  if(!m) return;
+  m.classList.add('show');
+  renderStarTree();
+}
+window.STAR_TREE_NODES = STAR_TREE_NODES;
+window.buyStarNode = buyStarNode;
+window.renderStarTree = renderStarTree;
+window.openStarTree = openStarTree;
 
 /* ================ QUETES ================ */
 const QUEST_TEMPLATES = [
@@ -21994,6 +22087,8 @@ function save(){
       skills: STATE.skills || { unlocked: {}, pointsSpent: 0 },
       // === ULTIMATE : pilote automatique ===
       upgradeCruiseControl: STATE.upgradeCruiseControl || 0,
+      // === Prestige Star Tree ===
+      starTree: STATE.starTree || { tapPower:0, lapPower:0, dropRate:0, basePower:0, staminaPlus:0, critPower:0, cooldownNeg:0, starsJackpot:0 },
     };
     const json = JSON.stringify(s);
     localStorage.setItem("alchimia.save", json);
@@ -23218,6 +23313,8 @@ function load(){
     // Skill tree
     STATE.skills = s.skills || { unlocked: {}, pointsSpent: 0 };
     if(!STATE.skills.unlocked) STATE.skills.unlocked = {};
+    // Prestige Star Tree
+    STATE.starTree = s.starTree || { tapPower:0, lapPower:0, dropRate:0, basePower:0, staminaPlus:0, critPower:0, cooldownNeg:0, starsJackpot:0 };
     // Re-applique les effets passifs des nodes débloqués
     if(typeof SKILL_TREE !== 'undefined'){
       for(const nodeId in STATE.skills.unlocked){
@@ -23649,6 +23746,7 @@ function boot(){
         else if(action === 'quests-daily' && typeof openQuestsModal === 'function') openQuestsModal();
         else if(action === 'stadium' && typeof openStadiumPicker === 'function') openStadiumPicker();
         else if(action === 'stats'){ renderStatsBody(); openModal('stats-modal'); }
+        else if(action === 'prestige' && typeof openStarTree === 'function') openStarTree();
       }, 200);
     });
   });

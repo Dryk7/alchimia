@@ -8039,6 +8039,13 @@ body.shop-epic-flash::after{
           <span style="width:1px;height:11px;background:#d8d8d8;display:inline-block"></span>
           <b id="runner-pace" style="font-size:11px;color:#c84030;font-weight:900" aria-live="polite" aria-atomic="true">0.0</b>
           <span style="font-size:8px;color:#888;letter-spacing:.04em">km/h</span>
+          <span style="width:1px;height:11px;background:#d8d8d8;display:inline-block;margin-left:2px"></span>
+          <div id="hud-stamina" style="display:flex;align-items:center;gap:4px;pointer-events:none" aria-label="Stamina">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="#7ec46a" aria-hidden="true"><path d="M13 2L4 14h7v8l9-12h-7z"/></svg>
+            <div style="width:42px;height:5px;background:rgba(0,0,0,0.15);border-radius:3px;overflow:hidden">
+              <div id="hud-stamina-bar" style="height:100%;width:100%;background:linear-gradient(90deg,#7ec46a,#5aa84a);transition:width 0.2s, background 0.3s"></div>
+            </div>
+          </div>
         </div>
         <!-- Spacer droit (laisse la place au widget GOUTTES du header au-dessus) -->
         <div style="flex:1;min-width:90px"></div>
@@ -12553,6 +12560,10 @@ const STATE = {
   essenceMax: 60, essenceRegen: 1,
   // Coureur : stamina baseline = 1.5 (au-dessus de 1, vitesse ×1.0+)
   runnerStamina: 1.5,
+  // === ENERGY POOL : ressource active 0..staminaMax. Decay au tap, regen au repos. ===
+  stamina: 100,
+  staminaMax: 100,
+  _lastTapAt: 0,
   lapProgress: 0,
   lapsRun: 0,
   firstReached:[0,0,0], // par chaîne, palier max atteint pour la 1ère fois
@@ -16814,6 +16825,9 @@ function _comboBlip(n){
 function tapBoost(e){
   const now = Date.now();
   if(now - _lastTapAt < TAP_COOLDOWN_MS) return;
+  // === STAMINA decay : chaque tap consomme 2 points d'énergie
+  STATE.stamina = Math.max(0, (STATE.stamina ?? 100) - 2);
+  STATE._lastTapAt = performance.now();
   // Combo : si tap < COMBO_WINDOW depuis le précédent, +1, sinon reset
   const _prevCombo = _comboCount;
   if(now - _lastTapAt < TAP_COMBO_WINDOW && _lastTapAt > 0){
@@ -17705,6 +17719,10 @@ function doSaisonAscend(){
     STATE.upgradeBaseSpeed = 0;
     STATE.team = {};
     STATE.runnerStamina = (typeof STAMINA_MAX !== 'undefined') ? STAMINA_MAX : 100;
+    // === ENERGY POOL reset
+    STATE.staminaMax = 100 + (STATE.upgradeEndurance || 0) * 10;
+    STATE.stamina = STATE.staminaMax;
+    STATE._lastTapAt = 0;
     // Reset trackers per-run pour achievements signature (lapins de la session courante, clean km auto)
     STATE.rabbitsCaughtThisRun = 0;
     STATE.cleanAutoKm = 0;
@@ -21611,6 +21629,8 @@ function save(){
       alchXp:STATE.alchXp||0,
       alchLevel:STATE.alchLevel||1,
       runnerStamina:STATE.runnerStamina ?? 1,
+      stamina:STATE.stamina ?? 100,
+      staminaMax:STATE.staminaMax ?? 100,
       lapProgress:STATE.lapProgress ?? 0,
       lapsRun:STATE.lapsRun ?? 0,
       upgradeTapValue:STATE.upgradeTapValue ?? 0,
@@ -22807,6 +22827,10 @@ function load(){
     STATE.alchXp = s.alchXp ?? 0;
     STATE.alchLevel = s.alchLevel ?? 1;
     STATE.runnerStamina = s.runnerStamina ?? 1.5;
+    // === ENERGY POOL load (rétro-compat : si absent → max)
+    STATE.staminaMax = s.staminaMax ?? (100 + (s.upgradeEndurance || 0) * 10);
+    STATE.stamina = s.stamina ?? STATE.staminaMax;
+    STATE._lastTapAt = 0;
     STATE.lapProgress = s.lapProgress ?? 0;
     STATE.lapsRun = s.lapsRun ?? 0;
     STATE.upgradeTapValue = s.upgradeTapValue ?? 0;
@@ -25346,6 +25370,15 @@ window.addEventListener('appinstalled', () => {
     if(!lastFrameT) lastFrameT = now - 16.67;
     const dt = Math.min(.05, (now - lastFrameT) / 1000);
     lastFrameT = now;
+    // === STAMINA regen au repos (si dernier tap > 0.5s)
+    if(window.STATE){
+      const _sinceLastTap = (now - (window.STATE._lastTapAt || 0)) / 1000;
+      window.STATE.staminaMax = 100 + (window.STATE.upgradeEndurance || 0) * 10;
+      if(window.STATE.staminaMax > 300) window.STATE.staminaMax = 300;
+      if(_sinceLastTap > 0.5){
+        window.STATE.stamina = Math.min(window.STATE.staminaMax, (window.STATE.stamina ?? 0) + 8 * dt);
+      }
+    }
     const dtMul = dt * 60;
     t += dtMul;
     const W = cv._W || cv.width;
@@ -25656,15 +25689,20 @@ window.addEventListener('appinstalled', () => {
       // Mappe rb=0→0, rb=0.4→0.22 (marche très douce), rb=1.0→0.55, rb≥1.82→1.0
       visualBaseline = Math.max(0, Math.min(1.0, rb * 0.55));
     }
-    const speed = (visualBaseline + tapBoost * 0.8 * speedCapByLap) * cinemaSlowmo * hurdleFail * staminaMul;
-    const pace = (visualBaseline + tapBoost * 1.0 * speedCapByLap) * cinemaSlowmo * hurdleFail * staminaMul;
+    // === ENERGY POOL : pénalité vitesse selon le ratio stamina/staminaMax
+    const _staminaRatio = (window.STATE?.stamina ?? 100) / Math.max(1, window.STATE?.staminaMax ?? 100);
+    const _staminaMul = _staminaRatio < 0.10 ? 0.5 : (_staminaRatio < 0.30 ? 0.667 : 1.0);
+    const _staminaBonus = _staminaRatio > 0.80 ? 1.05 : 1.0;
+    const _staminaEnergy = _staminaMul * _staminaBonus;
+    const speed = (visualBaseline + tapBoost * 0.8 * speedCapByLap) * cinemaSlowmo * hurdleFail * staminaMul * _staminaEnergy;
+    const pace = (visualBaseline + tapBoost * 1.0 * speedCapByLap) * cinemaSlowmo * hurdleFail * staminaMul * _staminaEnergy;
 
     // === Compteur km/h : calculé AVANT decorScroll pour qu'il pilote la physique du défilement ===
     // Km 0 (cap 0.10) : 4 + 2*15.5*0.10 = 7.1 km/h max (marche rapide débutant)
     // Km 1 (cap 0.30) : 4 + 2*15.5*0.30 = 13.3 km/h (footing)
     // Km 2 (cap 0.60) : 4 + 2*15.5*0.60 = 22.6 km/h (course)
     // Km 3+ (cap 1.0) : 35 km/h (sprint élite)
-    const targetKmh = 4 * visualBaseline + tapBoost * 15.5 * speedCapByLap;
+    const targetKmh = (4 * visualBaseline + tapBoost * 15.5 * speedCapByLap) * _staminaEnergy;
     const prevDisplayKmh = displayKmh;
     displayKmh = displayKmh * 0.70 + targetKmh * 0.30;
     displayKmh = Math.max(0, Math.min(35, displayKmh));
@@ -25719,6 +25757,16 @@ window.addEventListener('appinstalled', () => {
     // Update HUD overlay HTML
     if(kmEl) kmEl.textContent = totalKm.toFixed(2);
     if(paceEl) paceEl.textContent = displayKmh.toFixed(1);
+    // === HUD stamina bar update
+    const _staminaBar = document.getElementById('hud-stamina-bar');
+    if(_staminaBar && window.STATE){
+      const _r = (window.STATE.stamina ?? 100) / Math.max(1, window.STATE.staminaMax ?? 100);
+      _staminaBar.style.width = (Math.max(0, Math.min(1, _r)) * 100).toFixed(0) + '%';
+      _staminaBar.style.background = _r < 0.10 ? 'linear-gradient(90deg,#e84030,#a82010)'
+                                  : _r < 0.30 ? 'linear-gradient(90deg,#e8a040,#a87010)'
+                                  : _r > 0.80 ? 'linear-gradient(90deg,#40c8a0,#208070)'
+                                  : 'linear-gradient(90deg,#7ec46a,#5aa84a)';
+    }
 
     const pal = currentPalette();
     // === TIER : niveau de richesse du décor (0=terrain vague → 5=stade pro) ===
@@ -30155,8 +30203,8 @@ window.addEventListener('appinstalled', () => {
     }
     // Drift + détection collision/passage
     if(!window._hurdleFailUntil) window._hurdleFailUntil = 0;
-    // ═══ VIBE CHILL : difficulté NE SCALE PLUS avec les km (jeu zen, pas compétitif) ═══
-    const kmDifficulty = 1.0;
+    // === DIFFICULTÉ PROGRESSIVE : +1% par km au-delà du km 5, cap à 2.5x (km 150)
+    const kmDifficulty = Math.min(2.5, 1 + Math.max(0, ((STATE.lapsRun || 0) - 5)) * 0.01);
     for(let i = hurdles.length - 1; i >= 0; i--){
       const h = hurdles[i];
       h.metersAhead -= ((speed - 0.3) * 0.15 + 0.6) * kmDifficulty * dtMul;
@@ -30234,8 +30282,8 @@ window.addEventListener('appinstalled', () => {
           if(typeof Analytics !== 'undefined'){
             Analytics.track('hurdle_failed', { kind: h.kind || 'single', streak: hurdleFailStreak, km: window.STATE?.lapsRun || 0 });
           }
-          // Pénalité ramassée : 1s standard, 1.8s en streak fail (était 3s = trop long, frustration)
-          const penaltyMs = isStreakFail ? 1800 : 1000;
+          // Pénalité ramassée : 2s standard, 3.6s en streak fail (durcissement x2)
+          const penaltyMs = isStreakFail ? 3600 : 2000;
           window._hurdleFailUntil = performance.now() + penaltyMs;
           // SFX raté — crash + sweep descendant
           if(typeof sfxHurdleFail === 'function') sfxHurdleFail();
@@ -30251,9 +30299,9 @@ window.addEventListener('appinstalled', () => {
             tier: 3,
             txt: (typeof t === 'function') ? (isStreakFail ? t('pop_hurdle_chain_failed') : t('pop_hurdle_missed')) : (isStreakFail ? 'ENCHAÎNEMENT RATÉ' : 'RATÉ'),
           });
-          // Pénalité gold si streak (perd 50 + 10/streak au-delà de 3)
+          // Pénalité gold si streak (perd 100 + 20/streak au-delà de 3, x2 durcissement)
           if(isStreakFail && window.STATE){
-            const penalty = Math.min(window.STATE.gold || 0, 50 + (hurdleFailStreak - 3) * 10);
+            const penalty = Math.min(window.STATE.gold || 0, 100 + (hurdleFailStreak - 3) * 20);
             window.STATE.gold = Math.max(0, (window.STATE.gold || 0) - penalty);
             if(penalty > 0){
               overtakePops.push({
@@ -30281,8 +30329,10 @@ window.addEventListener('appinstalled', () => {
         const laps = window.STATE.lapsRun || 0;
         const idx = Math.min(RIVAL_TYPES.length - 1, Math.floor(laps / 4));
         const r = RIVAL_TYPES[idx];
-        // Vitesse du rival : scale doux avec km, cap pour rester beatable
-        const speedScale = 1.0 + Math.min(0.8, laps * 0.015); // 1.0 à 1.8 max
+        // Vitesse du rival : scale doux + aggro x1.3 au km 50+, cap relevé à 2.4x
+        const aggroMul = laps >= 50 ? 1.3 : 1.0;
+        const baseScale = 1.0 + Math.min(0.8, laps * 0.015); // 1.0 à 1.8 max base
+        const speedScale = Math.min(2.4, baseScale * aggroMul);
         rival = {
           metersBehind: 30, // commence 30m derrière le héros
           paceRef: r.baseSpeed * speedScale,

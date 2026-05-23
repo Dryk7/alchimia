@@ -24325,7 +24325,7 @@ window.addEventListener('appinstalled', () => {
       // Phase 1 : recoil + lift + extend forward
       const u = t01 * 2; // 0..1
       footX = -1 + u * 2;
-      kneeUp = Math.sin(u * Math.PI) * 1.0;
+      kneeUp = Math.sin(u * Math.PI) * 1.3;
       footY = u < .5 ? -kneeUp * 0.7 : 0;
     } else {
       // Phase 2 : foot planted + push back
@@ -24371,10 +24371,10 @@ window.addEventListener('appinstalled', () => {
   function drawRunner(x, y, scale, spec, phase, isHero, effortLevel, airborneFrac){
     // === Builds (variations morpho) ===
     const BUILDS = {
-      normal: { bw: 12, bh: 22, hr: 12 },
-      thin:   { bw: 10, bh: 22, hr: 11 },
-      stocky: { bw: 14, bh: 21, hr: 13 },
-      small:  { bw: 11, bh: 19, hr: 11 },
+      normal: { bw: 14, bh: 24, hr: 14 },
+      thin:   { bw: 12, bh: 24, hr: 13 },
+      stocky: { bw: 16, bh: 23, hr: 15 },
+      small:  { bw: 13, bh: 21, hr: 13 },
     };
     const build = BUILDS[spec.build || 'normal'];
     const hairStyle = spec.hairStyle || 'dome';
@@ -24396,7 +24396,7 @@ window.addEventListener('appinstalled', () => {
     // Hop : 2 envols par cycle (max au mid-flight de chaque jambe) — désactivé en plein saut
     const hopT = (cyclePhase / (Math.PI * 2)) * 4;
     const hopFrac = hopT % 1;
-    const hop = isAirborne ? 0 : Math.sin(hopFrac * Math.PI) * 5 * s * (hopT % 2 < 1 ? 1 : .85);
+    const hop = isAirborne ? 0 : Math.sin(hopFrac * Math.PI) * 8 * s * (hopT % 2 < 1 ? 1 : .85);
     const bodyY = y - hop;
     // Body lean : forward au décollage, vertical à l'atterrissage
     const lean = isAirborne ? (0.18 + (airborneFrac < 0 ? 0.15 : -0.08)) : .18;
@@ -24405,7 +24405,7 @@ window.addEventListener('appinstalled', () => {
     // === OMBRE DYNAMIQUE PREMIUM (lumière haut-gauche → ombre bas-droite) ===
     // Squash : s'écrase au vol (hop) ET au saut (airborneFrac)
     const _airLift = isAirborne ? Math.max(0, 1 - Math.abs(airborneFrac)) : 1; // 0 à l'apex
-    const _hopSquash = 1 - (hop / (5 * s)) * 0.35;
+    const _hopSquash = 1 - (hop / (8 * s)) * 0.35;
     const shadowSquash = Math.max(0.45, _hopSquash * (isAirborne ? (0.55 + 0.45 * _airLift) : 1));
     const shadowOffsetX = 4 * s;
     const shadowAlpha = 0.35 * shadowSquash;
@@ -24438,15 +24438,36 @@ window.addEventListener('appinstalled', () => {
       ctx.fillStyle = haloGrad;
       ctx.beginPath(); ctx.arc(x, y + 27 * s, 22 * s, 0, Math.PI*2); ctx.fill();
       ctx.restore();
+      // Étincelles sous le pied au sprint (chaussures rares uniquement)
+      if(isHero && effort > 0.6){
+        const sparkCount = 4;
+        const sparkSeed = (phase * 17) | 0;
+        for(let i = 0; i < sparkCount; i++){
+          const sa = ((sparkSeed + i * 73) % 100) / 100;
+          const sx = x + (sa - 0.5) * 22 * s;
+          const sy = y + 26 * s + ((sparkSeed + i * 41) % 7) * s * 0.4;
+          const slife = ((sparkSeed + i * 29) % 10) / 10;
+          ctx.fillStyle = `rgba(255,220,120,${0.7 * (1 - slife) * effort})`;
+          ctx.beginPath();
+          ctx.arc(sx, sy, 0.9 * s, 0, Math.PI*2);
+          ctx.fill();
+        }
+      }
     }
 
     // === Hero aura ===
     if(isHero){
-      const auraGrad = ctx.createRadialGradient(x, y, 0, x, y, 50 * s);
-      auraGrad.addColorStop(0, 'rgba(255,232,138,.35)');
-      auraGrad.addColorStop(1, 'rgba(255,232,138,0)');
+      const heroPulse = 0.85 + Math.sin(phase * 0.8) * 0.15;
+      const auraGrad = ctx.createRadialGradient(x, y, 0, x, y, 52 * s);
+      auraGrad.addColorStop(0, `rgba(120,200,255,${0.32 * heroPulse})`);
+      auraGrad.addColorStop(0.6, `rgba(120,200,255,${0.14 * heroPulse})`);
+      auraGrad.addColorStop(1, 'rgba(120,200,255,0)');
       ctx.fillStyle = auraGrad;
-      ctx.beginPath(); ctx.arc(x, y + 5 * s, 50 * s, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x, y + 5 * s, 52 * s, 0, Math.PI*2); ctx.fill();
+      // Outline doré subtil héros (signature unique, jamais sur PNJ)
+      ctx.strokeStyle = `rgba(255,212,80,${0.22 * heroPulse})`;
+      ctx.lineWidth = 1.6 * s;
+      ctx.beginPath(); ctx.arc(x, y + 5 * s, 38 * s, 0, Math.PI*2); ctx.stroke();
     }
     // === Champion aura (Tier 6 olympique) : halo doré pulsant ===
     if(acc.championAura){
@@ -24473,7 +24494,7 @@ window.addEventListener('appinstalled', () => {
     // === Jambes : pose normale OU pose saut (overide quand airborne) ===
     const legL = isAirborne ? jumpLegPose(airborneFrac, false) : legPose(cyclePhase, false);
     const legR = isAirborne ? jumpLegPose(airborneFrac, true) : legPose(cyclePhase, true);
-    const legLen = 16 * s;
+    const legLen = 18 * s;
     function drawLeg(hipX, hipY, pose){
       const footX = hipX + pose.footX * 10 * s;
       const footY = hipY + legLen + pose.footY * 5 * s;
@@ -24500,6 +24521,10 @@ window.addEventListener('appinstalled', () => {
       ctx.fillRect(footL.footX - 5 * s, footL.footY - 0.5 * s, 10 * s, 1.2 * s);
       ctx.fillRect(footR.footX - 5 * s, footR.footY - 0.5 * s, 10 * s, 1.2 * s);
     }
+    // Semelle sombre (épaisseur réaliste)
+    ctx.fillStyle = 'rgba(30,30,40,0.85)';
+    ctx.beginPath(); ctx.ellipse(footL.footX, footL.footY + 1.5 * s, 6.8 * s, 1.4 * s, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(footR.footX, footR.footY + 1.5 * s, 6.8 * s, 1.4 * s, 0, 0, Math.PI*2); ctx.fill();
     // === LOGO "F" (marque "Foulée") sur les chaussures — hero + tier 3+ pour ne pas surcharger ===
     if(isHero || (spec.tier || 0) >= 3){
       ctx.save();
@@ -24512,6 +24537,18 @@ window.addEventListener('appinstalled', () => {
       ctx.restore();
     }
 
+    // === Onde de choc sol (effort > 0.75, héros)
+    if(isHero && effort > 0.75){
+      const shockPhase = (phase * 1.5) % (Math.PI * 2);
+      const shockR = (shockPhase / (Math.PI * 2)) * 18 * s;
+      const shockAlpha = 0.4 * (1 - shockPhase / (Math.PI * 2)) * (effort - 0.5);
+      ctx.strokeStyle = `rgba(255,255,255,${shockAlpha})`;
+      ctx.lineWidth = 1.4 * s;
+      const fastFootShock = legR.footX > legL.footX ? footL : footR;
+      ctx.beginPath();
+      ctx.ellipse(fastFootShock.footX - 6 * s, fastFootShock.footY + 2 * s, shockR, shockR * 0.35, 0, 0, Math.PI*2);
+      ctx.stroke();
+    }
     // === Speedlines derrière le pied qui pousse ===
     const fastFoot = legR.footX > legL.footX ? footL : footR;
     if(isHero || (spec.tier || 0) >= 3){
@@ -24543,11 +24580,16 @@ window.addEventListener('appinstalled', () => {
     ctx.rotate(lean);
     // Dimensions corps selon build
     const bw = build.bw * s;
+    const waist = bw * 0.82; // taille marquée pour silhouette athlétique
     const corpsTop = -16 * s;
     const corpsBot = 6 * s;
     // Short
     ctx.fillStyle = spec.short || '#fff';
     ctx.fillRect(-(bw - s), corpsBot - 2 * s, (bw - s) * 2, 9 * s);
+    // Bande latérale (style sport)
+    ctx.fillStyle = spec.accent || '#ffd060';
+    ctx.fillRect(bw - s - 1.2 * s, corpsBot - 2 * s, 0.9 * s, 9 * s);
+    ctx.fillRect(-(bw - s), corpsBot - 2 * s, 0.9 * s, 9 * s);
     // === Corps maillot — couleur du SKIN sélectionné OU rareté du maillot équipé ===
     const jerseyColor = (spec.equipped?.jersey?.color) || spec.jersey;
     ctx.fillStyle = jerseyColor;
@@ -24555,10 +24597,25 @@ window.addEventListener('appinstalled', () => {
     ctx.beginPath();
     ctx.moveTo(-bw + r, corpsTop); ctx.lineTo(bw - r, corpsTop);
     ctx.quadraticCurveTo(bw, corpsTop, bw, corpsTop + r);
-    ctx.lineTo(bw, corpsBot); ctx.quadraticCurveTo(bw, corpsBot, bw - r, corpsBot);
-    ctx.lineTo(-bw + r, corpsBot); ctx.quadraticCurveTo(-bw, corpsBot, -bw, corpsBot - r);
+    // Côté droit : épaule → taille (resserre vers le bas)
+    ctx.quadraticCurveTo(bw, (corpsTop + corpsBot) / 2, waist, corpsBot);
+    ctx.lineTo(-waist, corpsBot);
+    // Côté gauche : taille → épaule
+    ctx.quadraticCurveTo(-bw, (corpsTop + corpsBot) / 2, -bw, corpsTop + r);
     ctx.lineTo(-bw, corpsTop + r); ctx.quadraticCurveTo(-bw, corpsTop, -bw + r, corpsTop);
     ctx.fill();
+    // === COU visible (skin tone, raccord tête → torse)
+    ctx.fillStyle = spec.skin;
+    ctx.beginPath();
+    ctx.ellipse(0, corpsTop - 1.5 * s, 2.6 * s, 3.2 * s, 0, 0, Math.PI*2);
+    ctx.fill();
+    // === COL ROND (encolure visible)
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    ctx.beginPath();
+    ctx.arc(0, corpsTop + 0.5 * s, 4 * s, 0.15, Math.PI - 0.15);
+    ctx.lineWidth = 1.2 * s;
+    ctx.strokeStyle = 'rgba(0,0,0,0.22)';
+    ctx.stroke();
     // === OMBRE SOUS LE MENTON (transition col vers maillot) — sub 5 lignes pour effet 3D ===
     ctx.fillStyle = 'rgba(0,0,0,0.22)';
     ctx.beginPath();
@@ -24645,6 +24702,23 @@ window.addEventListener('appinstalled', () => {
     // Highlight sur le bandeau (effet "shiny premium")
     ctx.fillStyle = 'rgba(255,255,255,0.45)';
     ctx.fillRect(-bw, corpsTop, bw * 2, 1.2 * s);
+    // === Dossard signature HÉROS (gold, immuable, jamais sur les PNJ)
+    if(isHero){
+      ctx.save();
+      ctx.translate(0, (corpsTop + corpsBot) / 2);
+      // Cadre or
+      ctx.fillStyle = '#ffd060';
+      ctx.beginPath();
+      ctx.roundRect ? ctx.roundRect(-5 * s, -3.5 * s, 10 * s, 7 * s, 1.5 * s) : ctx.rect(-5 * s, -3.5 * s, 10 * s, 7 * s);
+      ctx.fill();
+      // Numéro 1
+      ctx.fillStyle = '#1a1a2e';
+      ctx.font = `bold ${5.5 * s}px Nunito`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('1', 0, 0);
+      ctx.restore();
+    }
     // Dossard
     const bibSize = acc.bib ? 6.5 : 5;
     ctx.fillStyle = '#fff';
@@ -24821,6 +24895,14 @@ window.addEventListener('appinstalled', () => {
       }
     }
 
+    // === BANDEAU HÉROS SIGNATURE (cyan blanc, exclusif) — sous les cheveux
+    if(isHero){
+      ctx.fillStyle = '#00d4ff';
+      ctx.fillRect(headX - hr + 0.5 * s, headY - hr * 0.65, (hr - 0.5 * s) * 2, 1.8 * s);
+      // Bande blanche centrale
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(headX - hr + 0.5 * s, headY - hr * 0.65 + 0.6 * s, (hr - 0.5 * s) * 2, 0.6 * s);
+    }
     // === Cheveux selon hairStyle (avec mèche qui ondule pour les styles longs) ===
     ctx.fillStyle = spec.hair;
     if(hairStyle === 'bald'){
@@ -24981,11 +25063,11 @@ window.addEventListener('appinstalled', () => {
     } else {
       // Yeux ronds (smile, focus, beard)
       ctx.fillStyle = '#1a1010';
-      ctx.beginPath(); ctx.arc(headX + 1 * s, headY + 1 * s, 1.5 * s, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(headX + 7 * s, headY + 1 * s, 1.5 * s, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(headX + 1 * s, headY + 1 * s, 2 * s, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(headX + 7 * s, headY + 1 * s, 2 * s, 0, Math.PI*2); ctx.fill();
       ctx.fillStyle = '#fff';
-      ctx.beginPath(); ctx.arc(headX + 1.6 * s, headY + .5 * s, .6 * s, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(headX + 7.6 * s, headY + .5 * s, .6 * s, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(headX + 1.6 * s, headY + .5 * s, .8 * s, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(headX + 7.6 * s, headY + .5 * s, .8 * s, 0, Math.PI*2); ctx.fill();
       // Sourcils froncés pour focus
       if(faceExpr === 'focus'){
         ctx.strokeStyle = spec.hair || '#3a2818'; ctx.lineWidth = 1.4 * s; ctx.lineCap = 'round';
@@ -25024,9 +25106,9 @@ window.addEventListener('appinstalled', () => {
       ctx.fillStyle = 'rgba(255,138,144,.55)';
       ctx.beginPath(); ctx.ellipse(headX - 5 * s, headY + 4 * s, 2.5 * s, 1.8 * s, 0, 0, Math.PI*2); ctx.fill();
       ctx.beginPath(); ctx.ellipse(headX + 10 * s, headY + 4 * s, 2.5 * s, 1.8 * s, 0, 0, Math.PI*2); ctx.fill();
-      // === JOUES ROUGIES au sprint (effort > 0.5) — superposition rouge intense ===
-      if(effort > 0.5){
-        const flushAlpha = (effort - 0.5) * 0.7;
+      // === JOUES ROUGIES au sprint (effort > 0.4) — superposition rouge intense ===
+      if(effort > 0.4){
+        const flushAlpha = (effort - 0.4) * 0.7;
         ctx.fillStyle = `rgba(255,90,75,${flushAlpha})`;
         ctx.beginPath(); ctx.ellipse(headX - 5 * s, headY + 4 * s, 2.8 * s, 2 * s, 0, 0, Math.PI*2); ctx.fill();
         ctx.beginPath(); ctx.ellipse(headX + 10 * s, headY + 4 * s, 2.8 * s, 2 * s, 0, 0, Math.PI*2); ctx.fill();
@@ -25049,6 +25131,16 @@ window.addEventListener('appinstalled', () => {
       ctx.lineTo(headX + 7 * s, headY + 5 * s);
       ctx.stroke();
     } else if(faceExpr === 'effort'){
+      // Sourcils EFFORT (convergents agressifs au centre)
+      ctx.strokeStyle = spec.hair;
+      ctx.lineWidth = 1.4 * s;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(headX - hr * 0.5, headY - hr * 0.35);
+      ctx.lineTo(headX - hr * 0.15, headY - hr * 0.15);
+      ctx.moveTo(headX + hr * 0.5, headY - hr * 0.35);
+      ctx.lineTo(headX + hr * 0.15, headY - hr * 0.15);
+      ctx.stroke();
       // EFFORT : bouche ovale ouverte (souffle) + langue + dents serrées
       ctx.fillStyle = '#3a1818';
       ctx.beginPath();
@@ -30452,12 +30544,12 @@ window.addEventListener('appinstalled', () => {
       _equippedHero[slot] = _equipWithColor(_rawEquip[slot]);
     }
     const heroSpec = {
-      jersey: _skin.jersey || '#e85040',
+      jersey: _skin.jersey || '#2080ff',
       skin: '#f0d4b0',
       hair: _skin.hair || '#7a5838',
       hairStyle:'dome', faceExpr:'focus', build:'normal',
       tenue:'plain', headExtra:null, bibNum:1,
-      accent: _skin.accent || '#ffd060',
+      accent: '#ffd060',
       skinSpecial: _skin.special || null,
       accessory: { bib: true },
       equipped: _equippedHero,

@@ -10713,7 +10713,7 @@ function processAchToastQueue(){
   const a = _achToastQueue.shift();
   // Plus de toast plein écran — le runner reçoit sa médaille via bulle + flash
   if(typeof showRunnerBubble === 'function'){
-    showRunnerBubble("★ " + a.name + " · +" + a.reward + " méd");
+    showRunnerBubble("★ " + a.name + " · +" + a.reward + " gouttes");
   }
   // Cheer du runner
   const body = document.querySelector('.rs-body');
@@ -13183,7 +13183,7 @@ function punchGoldCounter(){
   ], { duration:380, easing:'ease-out' });
 }
 
-/* Splash flottant "+X méd" qui sort du compteur HUD et flotte vers le bas */
+/* Splash flottant "+X gouttes" qui sort du compteur HUD et flotte vers le bas */
 let _goldSplashLast = 0;
 function spawnGoldSplash(amount){
   const goldEl = document.getElementById('gold-val');
@@ -16293,7 +16293,7 @@ function renderCardCollection(){
   // Sommaire bonus
   const stats = [
     ['speed','Vitesse'],['team','Team'],['tap','Tap'],
-    ['goldAll','Méd'],['lapGold','KM'],['crit','Crit'],
+    ['goldAll','Gouttes'],['lapGold','KM'],['crit','Crit'],
     ['xp','XP'],['cycle','Cycle (réduction)']
   ];
   const allMul = deckAllMul();
@@ -16578,7 +16578,7 @@ function openAllChests(chestId){
   STATE.chests[chestId] = 0;
   STATE.gold = (STATE.gold || 0) + gained;
   if(typeof showRunnerBubble === 'function'){
-    let msg = `${n} ${chest.name}s ouverts · +${fmtBigNumber(gained)} méd`;
+    let msg = `${n} ${chest.name}s ouverts · +${fmtBigNumber(gained)} gouttes`;
     if(bestItem) msg += ` · ${rarityDef(bestItem.rarityId).name} équipé`;
     showRunnerBubble(msg);
   }
@@ -17188,7 +17188,9 @@ function triggerEpicKm100(){
   // STEP 1 : Overlay principal avec godrays + texte stylisé
   const epic = document.createElement('div');
   epic.id = 'epic-km100';
-  epic.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(circle at 50% 40%, rgba(255,180,80,.45) 0%, rgba(200,64,48,.65) 35%, rgba(20,10,5,.96) 80%);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);pointer-events:none;animation:epicKmFadeIn .25s ease-out';
+  // PERF km 100 : backdrop-filter:blur retiré (très coûteux fullscreen → FPS chutait à 18).
+  // Le radial-gradient + opacité .96 du noir suffit à occulter le décor derrière.
+  epic.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(circle at 50% 40%, rgba(255,180,80,.55) 0%, rgba(200,64,48,.75) 35%, rgba(20,10,5,.98) 80%);pointer-events:none;animation:epicKmFadeIn .25s ease-out;will-change:opacity';
   epic.innerHTML = `
     <!-- GODRAYS : 6 rayons lumineux qui descendent du ciel -->
     <div class="epic-rays-wrap">
@@ -17200,13 +17202,13 @@ function triggerEpicKm100(){
       <div class="epic-ray" style="left:90%; --rot:9deg; --delay:.05s"></div>
     </div>
 
-    <!-- PARTICULES DORÉES (sparkles autour du 100) -->
+    <!-- PARTICULES DORÉES (sparkles autour du 100) — PERF km 100 : 24 → 12 -->
     <div class="epic-sparkles">
-      ${Array.from({length:24}, (_,i) => `
+      ${Array.from({length:12}, (_,i) => `
         <span class="epic-sparkle" style="
-          --sx:${Math.cos(i/24 * Math.PI * 2) * (30 + (i%4)*15)}px;
-          --sy:${Math.sin(i/24 * Math.PI * 2) * (30 + (i%4)*15)}px;
-          --d:${(i * 0.07) % 1.4}s;
+          --sx:${Math.cos(i/12 * Math.PI * 2) * (30 + (i%4)*15)}px;
+          --sy:${Math.sin(i/12 * Math.PI * 2) * (30 + (i%4)*15)}px;
+          --d:${(i * 0.10) % 1.4}s;
           --size:${2 + (i%3)}px;
         "></span>
       `).join('')}
@@ -17325,8 +17327,9 @@ function triggerEpicKm100(){
         -webkit-background-clip:text; background-clip:text;
         -webkit-text-fill-color:transparent;
         text-shadow:0 0 60px rgba(255,210,80,.55);
-        filter:drop-shadow(0 6px 18px rgba(200,64,48,.7)) drop-shadow(0 0 30px rgba(255,180,80,.5));
+        /* PERF km 100 : drop-shadow double retiré (très coûteux animé pulse). Gardé text-shadow seul. */
         position:relative;
+        will-change:transform;
       }
       .epic-num::after{
         content:""; position:absolute; inset:-10% -8%;
@@ -17448,12 +17451,17 @@ function triggerEpicKm100(){
   // STEP 5 : Vibration custom 9 pulses signature
   if(typeof vibrate === 'function') vibrate([100, 60, 100, 60, 100, 80, 250, 100, 350]);
 
-  // STEP 6 : Mega confetti — 250 particules
+  // STEP 6 : Mega confetti — cappé pour perf (FPS km 100 chutait à 18 fps)
+  // Réduit de 250+100+80=430 -> 80+40+30=150 (cap global aussi à 150 dans tick).
+  // L'effet visuel reste épique grâce aux sparkles DOM + godrays + flash.
+  window._epicActive = true;
   if(window.RUNNER_2D && typeof window.RUNNER_2D.spawnConfetti === 'function'){
-    window.RUNNER_2D.spawnConfetti(250);
-    setTimeout(() => window.RUNNER_2D.spawnConfetti(100), 800);
-    setTimeout(() => window.RUNNER_2D.spawnConfetti(80), 1600);
+    window.RUNNER_2D.spawnConfetti(80);
+    setTimeout(() => window.RUNNER_2D.spawnConfetti(40), 800);
+    setTimeout(() => window.RUNNER_2D.spawnConfetti(30), 1600);
   }
+  // Reset du flag après fin cinematic (cinematic dure ~6s)
+  setTimeout(() => { window._epicActive = false; }, 6500);
 
   // STEP 7 : Fade out — durée plus longue pour bien savourer
   setTimeout(() => {
@@ -18945,38 +18953,38 @@ function updateRunnerCard(r){
 /* ================ DAILY REWARDS — calendrier 7 jours ================ */
 const DAILY_REWARDS = [
   // SEMAINE 1 — onboarding
-  { day:1,  type:'gold',  amount:50,    label:'50 méd' },
-  { day:2,  type:'gold',  amount:150,   label:'150 méd' },
+  { day:1,  type:'gold',  amount:50,    label:'50 gouttes' },
+  { day:2,  type:'gold',  amount:150,   label:'150 gouttes' },
   { day:3,  type:'gems',  amount:3,     label:'3 gemmes' },
-  { day:4,  type:'gold',  amount:1000,  label:'1000 méd' },
-  { day:5,  type:'gold',  amount:2500,  label:'2.5k méd' },
+  { day:4,  type:'gold',  amount:1000,  label:'1000 gouttes' },
+  { day:5,  type:'gold',  amount:2500,  label:'2.5k gouttes' },
   { day:6,  type:'gems',  amount:10,    label:'10 gemmes' },
   { day:7,  type:'mega',  amount:0,     label:'15k gouttes + 5 ★ + 25 gemmes' },
   // SEMAINE 2 — fidélité
-  { day:8,  type:'gold',  amount:5000,  label:'5k méd' },
+  { day:8,  type:'gold',  amount:5000,  label:'5k gouttes' },
   { day:9,  type:'gems',  amount:8,     label:'8 gemmes' },
-  { day:10, type:'gold',  amount:10000, label:'10k méd' },
+  { day:10, type:'gold',  amount:10000, label:'10k gouttes' },
   { day:11, type:'boost', amount:0,     label:'×2 gouttes 24h' },
-  { day:12, type:'gold',  amount:20000, label:'20k méd' },
+  { day:12, type:'gold',  amount:20000, label:'20k gouttes' },
   { day:13, type:'gems',  amount:15,    label:'15 gemmes' },
   { day:14, type:'mega2', amount:0,     label:'Boost ×2 24h + 30 gemmes' },
   // SEMAINE 3 — engagement
-  { day:15, type:'gold',  amount:30000, label:'30k méd' },
+  { day:15, type:'gold',  amount:30000, label:'30k gouttes' },
   { day:16, type:'gems',  amount:20,    label:'20 gemmes' },
-  { day:17, type:'gold',  amount:50000, label:'50k méd' },
+  { day:17, type:'gold',  amount:50000, label:'50k gouttes' },
   { day:18, type:'gems',  amount:25,    label:'25 gemmes' },
-  { day:19, type:'gold',  amount:75000, label:'75k méd' },
+  { day:19, type:'gold',  amount:75000, label:'75k gouttes' },
   { day:20, type:'rabbit',amount:0,     label:'Lapin OR garanti' },
   { day:21, type:'mega3', amount:0,     label:'100k gouttes + 50 gemmes' },
   // SEMAINE 4 — récompense ultime
-  { day:22, type:'gold',  amount:100000, label:'100k méd' },
+  { day:22, type:'gold',  amount:100000, label:'100k gouttes' },
   { day:23, type:'gems',  amount:30,     label:'30 gemmes' },
-  { day:24, type:'gold',  amount:150000, label:'150k méd' },
+  { day:24, type:'gold',  amount:150000, label:'150k gouttes' },
   { day:25, type:'gems',  amount:40,     label:'40 gemmes' },
-  { day:26, type:'gold',  amount:200000, label:'200k méd' },
+  { day:26, type:'gold',  amount:200000, label:'200k gouttes' },
   { day:27, type:'gems',  amount:50,     label:'50 gemmes' },
   { day:28, type:'boost', amount:0,      label:'×2 gouttes 24h' },
-  { day:29, type:'gold',  amount:300000, label:'300k méd' },
+  { day:29, type:'gold',  amount:300000, label:'300k gouttes' },
   { day:30, type:'legendary',amount:0,   label:'★ TROPHÉE OR + 100 gemmes + boost 48h' },
 ];
 function _dayStamp(ts){
@@ -19043,7 +19051,7 @@ function claimDailyReward(){
     if(typeof showRunnerBubble === 'function') showRunnerBubble('Lapin OR débloqué !');
   } else if(rwd.type === 'legendary'){
     // RÉCOMPENSE DE JOUR 30 — la plus généreuse
-    STATE.gold = (STATE.gold || 0) + 500000; // 500k méd
+    STATE.gold = (STATE.gold || 0) + 500000; // 500k gouttes
     STATE.stars = (STATE.stars || 0) + 10;   // 10 étoiles
     if(typeof addGems === 'function') addGems(100); // 100 gemmes
     STATE.shopBoostX2Until = Math.max(Date.now(), STATE.shopBoostX2Until || 0) + 48*3600*1000; // boost 48h
@@ -19518,7 +19526,7 @@ function completeLap(){
     STATE.gold += milestoneBonus;
     _lapGoldEarned += milestoneBonus;
     if(typeof showRunnerBubble === 'function'){
-      showRunnerBubble(`✦ JALON ${lapNum} ! · +${milestoneBonus + totalReward} méd`);
+      showRunnerBubble(`✦ JALON ${lapNum} ! · +${milestoneBonus + totalReward} gouttes`);
     }
   }
   // Accumule UNE fois après tous les +gold de ce lap (lap reward + milestone bonus)
@@ -19536,7 +19544,7 @@ function completeLap(){
     if(typeof renderTile === 'function') renderTile(x, y);
   }
   if(typeof showRunnerBubble === 'function'){
-    showRunnerBubble("✦ KM " + lapNum + " · +" + totalReward + " méd");
+    showRunnerBubble("✦ KM " + lapNum + " · +" + totalReward + " gouttes");
   }
   const body = document.querySelector('.rs-body');
   if(body){ body.classList.remove('runner-cheer'); void body.offsetWidth; body.classList.add('runner-cheer'); setTimeout(()=>body.classList.remove('runner-cheer'), 720); }
@@ -22096,11 +22104,11 @@ const SKILL_TREE = {
     { id:'pw_root', branch:'power', x:38, y:88, cost:1, needs:[], name:'Tap puissant',
       desc:'+1 goutte/tap (gratuit en bonus)', effect:s => s.upgradeTapValue = (s.upgradeTapValue||0) + 1 },
     { id:'pw_1', branch:'power', x:36, y:70, cost:1, needs:['pw_root'], name:'Double impact',
-      desc:'Méd/tap +20%', effect:s => s._stTapMul = (s._stTapMul||1) + 0.20 },
+      desc:'Gouttes/tap +20%', effect:s => s._stTapMul = (s._stTapMul||1) + 0.20 },
     { id:'pw_2', branch:'power', x:38, y:52, cost:2, needs:['pw_1'], name:'Frappe explosive',
-      desc:'Méd/tap +30%', effect:s => s._stTapMul = (s._stTapMul||1) + 0.30 },
+      desc:'Gouttes/tap +30%', effect:s => s._stTapMul = (s._stTapMul||1) + 0.30 },
     { id:'pw_ult', branch:'power', x:38, y:30, cost:5, needs:['pw_2'], name:'★ MARTEAU',
-      desc:'Méd/tap ×2 (tous taps inclus les autos)', effect:s => s._stTapMul = (s._stTapMul||1) + 1.0 },
+      desc:'Gouttes/tap ×2 (tous taps inclus les autos)', effect:s => s._stTapMul = (s._stTapMul||1) + 1.0 },
 
     // === ENDURANCE BRANCH (centre, vert) ===
     { id:'en_root', branch:'endurance', x:50, y:80, cost:1, needs:[], name:'Endurance de base',
@@ -25304,6 +25312,36 @@ window.addEventListener('appinstalled', () => {
   // ═══ LOOP principal — setInterval pour garantir un timing stable ═══
   let lastFrameT = 0;
   function tick(){
+    // === PERF/BATTERIE : skip tout le tick si tab caché ===
+    // Le setInterval continue à tourner en background sinon, drain batterie sur mobile.
+    // Au resume, lastFrameT est reset pour éviter un dt monstrueux qui ferait progresser
+    // le jeu d'un coup (lapProgress, animations, etc.).
+    if(document.hidden){
+      lastFrameT = 0;
+      return;
+    }
+    // === PERF/FPS : frame-skip défensif si frame précédente trop lente (recovery) ===
+    // Si la frame précédente a pris > 40ms (FPS < 25), on saute 1 frame sur 2 pour récupérer.
+    // Crucial pendant la cinematic km 100 où DOM + canvas tournent en parallèle.
+    // NB: tick est un setInterval, donc on return juste — le prochain tick viendra au cycle suivant.
+    const _nowFS = performance.now();
+    if(window._lastFrameMs && (_nowFS - window._lastFrameMs) > 40){
+      if((window._frameSkipCounter = (window._frameSkipCounter||0) + 1) % 2 === 0){
+        window._lastFrameMs = _nowFS;
+        // Reset lastFrameT aussi pour éviter un dt cumulé absurde
+        lastFrameT = _nowFS - 16.67;
+        return;
+      }
+    }
+    window._lastFrameMs = _nowFS;
+    // === PERF/MÉMOIRE : cap particles globaux (defense fuite mémoire) ===
+    // Sans rendu actif, le push de confetti accumule sans fin. Cap à 150 → splice les plus vieux.
+    if(confetti && confetti.length > 150){
+      confetti.splice(0, confetti.length - 150);
+    }
+    if(ambientParticles && ambientParticles.length > 20){
+      ambientParticles.splice(0, ambientParticles.length - 20);
+    }
     const now = performance.now();
     if(!lastFrameT) lastFrameT = now - 16.67;
     const dt = Math.min(.05, (now - lastFrameT) / 1000);
@@ -25561,7 +25599,7 @@ window.addEventListener('appinstalled', () => {
             window.STATE.gold = (window.STATE.gold || 0) + th.gold;
             // VIBE CHILL : seul le 500m et 1000m ont un feedback visible (moins de spam)
             if(th.mask === 4 || th.mask === 8){
-              if(typeof showRunnerBubble === 'function') showRunnerBubble(`${th.msg} +${th.gold} méd`);
+              if(typeof showRunnerBubble === 'function') showRunnerBubble(`${th.msg} +${th.gold} gouttes`);
               if(typeof blip === 'function') blip(659, .25, 'sine', .10, .65); // sine doux long
               if(typeof vibrate === 'function') vibrate(8);
             }
@@ -25819,8 +25857,11 @@ window.addEventListener('appinstalled', () => {
     }
 
     // POLISH : ATMOSPHÈRE KM-BASED — golden hour entre km 70-100 pour effet "fin de marathon"
+    // SKIP si biome lunaire : ciel cosmique noir, pas de tint orangé/rose terrestre
     const _km = (window.STATE && window.STATE.lapsRun) || 0;
-    if(_km >= 65 && _km < 100){
+    if(_biomeName === 'lunar'){
+      // pas de tint atmosphérique terrestre sur la Lune
+    } else if(_km >= 65 && _km < 100){
       // Progressive : 0 à km65 → 1.0 à km95
       const goldenT = Math.min(1, (_km - 65) / 30);
       const goldenAlpha = goldenT * 0.32;
@@ -25841,7 +25882,8 @@ window.addEventListener('appinstalled', () => {
     }
 
     // POLISH : RAYONS DE LUMIÈRE — descendent du ciel à partir de km 95 (effet "approche de la légende")
-    if(_km >= 95){
+    // SKIP biome lunaire : pas de rayons orangés sur ciel cosmique noir
+    if(_km >= 95 && _biomeName !== 'lunar'){
       const rayIntensity = Math.min(1, (_km - 95) / 5);
       const rayPulse = 0.5 + Math.sin(t * 0.05) * 0.3;
       ctx.save();
@@ -27886,7 +27928,9 @@ window.addEventListener('appinstalled', () => {
         const confT = -(decorScroll * 0.05);
         ctx.save();
         const confCols = ['#ffe860', '#ffd040', '#ff7030', '#c84030', '#ff8040', '#3a5078'];
-        for(let ci = 0; ci < 36; ci++){
+        // PERF km 100 : pendant cinematic épique, on réduit 36 -> 18 (overlay DOM masque toute façon)
+        const _confN = window._epicActive ? 18 : 36;
+        for(let ci = 0; ci < _confN; ci++){
           // Pseudo-aléatoire stable par index ci
           const baseX = (ci * 73 + confT) % (W + 100);
           const cx = ((baseX) + (W + 100)) % (W + 100) - 50;
@@ -28653,8 +28697,9 @@ window.addEventListener('appinstalled', () => {
     }
 
     // ═══ Layer 3.5 : Projecteurs (0-3 selon stage) — faisceaux balayants ═══
+    // SKIP : biome lunaire utilise un fond cosmique dédié (pas de projecteurs terrestres)
     const projCountPreview = (typeof currentStage === 'function') ? currentStage().projectors : (tier >= 5 ? 2 : (tier >= 4 ? 1 : 0));
-    if(projCountPreview > 0){
+    if(projCountPreview > 0 && _biomeName !== 'lunar'){
       const projPositions = projCountPreview === 1 ? [.5] : projCountPreview === 2 ? [.15, .85] : [.15, .5, .85];
       for(let p = 0; p < projCountPreview; p++){
         const px = W * projPositions[p];
@@ -28706,8 +28751,11 @@ window.addEventListener('appinstalled', () => {
     }
 
     // ═══ Layer 4 : Tribune monumentale (20 paliers, étages dynamiques) ═══
+    // SKIP : biome lunaire utilise un fond cosmique dédié (pas de tribune/foule/drapeaux terrestres sur la lune)
     const stage = (typeof currentStage === 'function') ? currentStage() : { floors:Math.min(5,tier), crowd:[0,.2,.5,.75,.9,1][Math.min(5,tier)], flags:tier>=3?6:0, projectors:tier>=5?2:(tier>=4?1:0), extras:{} };
-    if(stage.floors === 0){
+    if(_biomeName === 'lunar'){
+      // pas de tribune sur la Lune
+    } else if(stage.floors === 0){
       // CHANTIER BRUT : palissade + pancarte
       ctx.fillStyle = '#a89890';
       ctx.fillRect(0, H * .55 - 30, W, 30);
@@ -29124,7 +29172,9 @@ window.addEventListener('appinstalled', () => {
       // FIX QA cohérence : pas de confetti en biome lunar (apothéose terrestre, pas spatiale)
       if(ex.confetti && stage.biome !== 'lunar'){
         const confPalette = ['#ff4030','#48a8e8','#ffd060','#48dc48','#ec90c0','#9080d0'];
-        for(let ci = 0; ci < 12; ci++){
+        // PERF km 100 : pendant cinematic épique, on réduit 12 -> 6 (overlay DOM masque toute façon)
+        const _confPermN = window._epicActive ? 6 : 12;
+        for(let ci = 0; ci < _confPermN; ci++){
           const cx = ((ci * 47 + t * 50) % (W + 20) + (W + 20)) % (W + 20);
           const cy = ((ci * 31 + t * 60) % (H * 0.55) + H * 0.55) % (H * 0.55);
           const rot = t * 3 + ci;
@@ -30993,11 +31043,11 @@ window.addEventListener('appinstalled', () => {
     ST.gold = (ST.gold || 0) + bonus;
     // Notif
     if(typeof showRunnerBubble === 'function'){
-      showRunnerBubble('LIÈVRE ! +' + bonus + ' méd');
+      showRunnerBubble('LIÈVRE ! +' + bonus + ' gouttes');
     } else {
       const pop = document.createElement('div');
       pop.style.cssText = 'position:fixed;top:30%;left:50%;transform:translateX(-50%);background:linear-gradient(180deg,#ff8030,#c84020);color:#fff;font-weight:900;padding:14px 24px;border-radius:18px;font-size:18px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:9999;font-family:Nunito,sans-serif;pointer-events:none;animation:rabbitPop 1.5s ease-out forwards';
-      pop.textContent = 'LIÈVRE +' + bonus + ' méd';
+      pop.textContent = 'LIÈVRE +' + bonus + ' gouttes';
       document.body.appendChild(pop);
       setTimeout(() => pop.remove(), 1500);
     }
@@ -31016,18 +31066,18 @@ window.addEventListener('appinstalled', () => {
   // BONUS LAPIN : burst de médailles + animation
   function onRabbitCaught(){
     const ST = window.STATE || {};
-    // Bonus : 5 secondes de production passive + 50 méd flat
+    // Bonus : 5 secondes de production passive + 50 gouttes flat
     const passive = (typeof totalPassiveGold === 'function') ? totalPassiveGold() : (ST.gold * .01);
     const bonus = Math.max(50, Math.floor(passive * 5));
     ST.gold = (ST.gold || 0) + bonus;
     // Notif visuelle
     if(typeof showRunnerBubble === 'function'){
-      showRunnerBubble('LAPIN ! +' + bonus + ' méd');
+      showRunnerBubble('LAPIN ! +' + bonus + ' gouttes');
     } else {
       // Fallback popup au centre
       const pop = document.createElement('div');
       pop.style.cssText = 'position:fixed;top:30%;left:50%;transform:translateX(-50%);background:linear-gradient(180deg,#ffd060,#e88830);color:#3a2010;font-weight:900;padding:14px 24px;border-radius:18px;font-size:18px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:9999;font-family:Nunito,sans-serif;pointer-events:none;animation:rabbitPop 1.5s ease-out forwards';
-      pop.textContent = 'LAPIN +' + bonus + ' méd';
+      pop.textContent = 'LAPIN +' + bonus + ' gouttes';
       document.body.appendChild(pop);
       setTimeout(() => pop.remove(), 1500);
     }
@@ -31046,6 +31096,17 @@ window.addEventListener('appinstalled', () => {
 
   // setInterval fixe ~60fps (16.67ms) pour timing stable cross-environment
   setInterval(tick, 1000 / 60);
+
+  // === Pause render quand tab inactif (économie batterie mobile) ===
+  // Le tick lui-même skip via document.hidden, ce listener garantit un reset propre
+  // de lastFrameT au resume pour éviter un dt cumulé absurde.
+  document.addEventListener('visibilitychange', () => {
+    if(!document.hidden){
+      // Au retour : reset le timing pour repartir proprement sans saut
+      lastFrameT = 0;
+    }
+  });
+
   window.RUNNER_2D = {
     resize, npcs, milestones,
     getRabbit:()=>rabbit, getHare:()=>hare,
@@ -31153,13 +31214,13 @@ window.addEventListener('appinstalled', () => {
     if(ST.firstKmRewarded) return;
     if((ST.lapsRun || 0) < 1) return;
     ST.firstKmRewarded = true;
-    // Bonus : +500 méd pour fêter le premier km
+    // Bonus : +500 gouttes pour fêter le premier km
     const bonus = 500;
     ST.gold = (ST.gold || 0) + bonus;
     // Toast au centre de l'écran
     const pop = document.createElement('div');
     pop.style.cssText = 'position:fixed;top:30%;left:50%;transform:translate(-50%,-50%) scale(.6);background:linear-gradient(180deg,#ffd060,#f08a48);color:#1a1010;font-family:Nunito,sans-serif;font-weight:900;padding:20px 32px;border-radius:22px;font-size:18px;box-shadow:0 12px 30px rgba(0,0,0,.5);z-index:9999;border:4px solid #fff;text-align:center;line-height:1.4;pointer-events:none;animation:firstKmPop 2.4s cubic-bezier(.2,.9,.2,1.4) forwards';
-    pop.innerHTML = '<b>PREMIER KILOMÈTRE !</b><br><span style="font-size:14px;color:#3a1a10">Tu y es ! +' + bonus + ' méd bonus</span>';
+    pop.innerHTML = '<b>PREMIER KILOMÈTRE !</b><br><span style="font-size:14px;color:#3a1a10">Tu y es ! +' + bonus + ' gouttes bonus</span>';
     document.body.appendChild(pop);
     setTimeout(() => pop.remove(), 2400);
     // SFX special
@@ -31217,7 +31278,7 @@ window.addEventListener('appinstalled', () => {
     updateHalo();
     // Premier km
     checkFirstKm();
-    // HUD live : MÉD + NIV + XP refresh continu (fix Bug #1)
+    // HUD live : GOUTTES + NIV + XP refresh continu (fix Bug #1)
     // → le compteur header ne reste plus figé après gain passif/reset
     if(typeof renderStats === 'function') renderStats();
     if(typeof updateRunnerHUD === 'function') updateRunnerHUD();

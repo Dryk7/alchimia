@@ -15941,6 +15941,98 @@ function equipItem(item){
   STATE.equipment[item.typeId] = item;
   if(typeof renderEquipment === 'function') renderEquipment();
 }
+/* === SYSTÈME D'UPGRADE ITEM PAR GOUTTES (vague 14c) ===
+   Bouton AMÉLIORER sur chaque slot équipé.
+   Coût : level actuel × baseCost (selon rareté).
+   Cap level 5, puis ASCENSION (3× coût) → rareté supérieure, level reset à 1. */
+const ITEM_UPGRADE_BASE_COST = {
+  common:    200,
+  uncommon:  500,
+  rare:      2000,
+  epic:      8000,
+  legendary: 30000
+};
+const ITEM_UPGRADE_NEXT_RARITY = {
+  common:    'uncommon',
+  uncommon:  'rare',
+  rare:      'epic',
+  epic:      'legendary',
+  legendary: null
+};
+const ITEM_LEVEL_CAP = 5;
+function getItemUpgradeCost(item){
+  if(!item) return Infinity;
+  const base = ITEM_UPGRADE_BASE_COST[item.rarityId] || 1000;
+  const lvl  = item.level || 1;
+  return Math.floor(base * lvl);
+}
+function getItemAscendCost(item){
+  if(!item) return Infinity;
+  return getItemUpgradeCost(item) * 3;
+}
+function canUpgradeItem(item){
+  if(!item) return false;
+  if((item.level || 1) >= ITEM_LEVEL_CAP) return false;
+  return (STATE.gold || 0) >= getItemUpgradeCost(item);
+}
+function canAscendItem(item){
+  if(!item) return false;
+  if((item.level || 1) < ITEM_LEVEL_CAP) return false;
+  if(!ITEM_UPGRADE_NEXT_RARITY[item.rarityId]) return false;
+  return (STATE.gold || 0) >= getItemAscendCost(item);
+}
+/* Recalcule item.bonus depuis baseBonus×mul×level. Aligne avec rollItem(). */
+function _recomputeItemBonus(item){
+  if(!item) return;
+  const t = itemDef(item.typeId);
+  const r = rarityDef(item.rarityId);
+  if(!t || !r) return;
+  item.bonus = +(t.baseBonus * r.mul * (item.level || 1)).toFixed(4);
+}
+function upgradeItem(slotId){
+  if(!STATE.equipment) return false;
+  const item = STATE.equipment[slotId];
+  if(!canUpgradeItem(item)) return false;
+  const cost = getItemUpgradeCost(item);
+  STATE.gold -= cost;
+  item.level = (item.level || 1) + 1;
+  _recomputeItemBonus(item);
+  try {
+    if(typeof sfxBuyScaled === 'function') sfxBuyScaled(Math.min(5, (item.level || 1)));
+    else if(typeof sfxClaim === 'function') sfxClaim();
+    if(typeof renderEquipment === 'function') renderEquipment();
+    if(typeof saveNow === 'function') saveNow();
+    else if(typeof save === 'function') save();
+  } catch(e){}
+  return true;
+}
+function ascendItem(slotId){
+  if(!STATE.equipment) return false;
+  const item = STATE.equipment[slotId];
+  if(!canAscendItem(item)) return false;
+  const cost = getItemAscendCost(item);
+  const nextRarity = ITEM_UPGRADE_NEXT_RARITY[item.rarityId];
+  STATE.gold -= cost;
+  item.rarityId = nextRarity;
+  item.level = 1;
+  _recomputeItemBonus(item);
+  try {
+    if(typeof sfxGrand === 'function') sfxGrand(5);
+    else if(typeof sfxBuyScaled === 'function') sfxBuyScaled(5);
+    if(typeof renderEquipment === 'function') renderEquipment();
+    if(typeof saveNow === 'function') saveNow();
+    else if(typeof save === 'function') save();
+  } catch(e){}
+  return true;
+}
+if(typeof window !== 'undefined'){
+  window.upgradeItem = upgradeItem;
+  window.ascendItem = ascendItem;
+  window.getItemUpgradeCost = getItemUpgradeCost;
+  window.getItemAscendCost = getItemAscendCost;
+  window.canUpgradeItem = canUpgradeItem;
+  window.canAscendItem = canAscendItem;
+}
 function scrapItem(item){
   const med = itemScrapMed(item);
   STATE.gold = (STATE.gold || 0) + med;
@@ -16697,6 +16789,7 @@ function renderEquipment(){
     setHTML += `<div class="es-row" style="color:#9b6cd0"><b>SET ÉLITE ×${legendaryCount+epicCount}</b> +10% global</div>`;
   }
   // Grid 5 slots
+  const fmtCost = (n) => (typeof fmtBigNumber === 'function') ? fmtBigNumber(n) : n.toLocaleString();
   const slots = ITEM_TYPES.map(type => {
     const item = STATE.equipment[type.id];
     if(!item){
@@ -16705,14 +16798,34 @@ function renderEquipment(){
         <div class="eq-name">${type.name}</div>
         <div class="eq-rarity" style="color:#999">— vide —</div>
         <div class="eq-bonus">Drop au prochain km</div>
+        <button class="item-upgrade-btn" data-action="upgrade" data-slot="${type.id}" disabled style="margin-top:6px;padding:6px 8px;background:#3a3a4a;border:none;border-radius:6px;color:#999;font-weight:700;font-size:10px;width:100%;opacity:.4;cursor:not-allowed;">— vide —</button>
       </div>`;
     }
     const rar = rarityDef(item.rarityId);
+    const lvl = item.level || 1;
+    // Bouton upgrade ou ascension
+    let btnHTML = '';
+    if(lvl >= ITEM_LEVEL_CAP){
+      const nextR = ITEM_UPGRADE_NEXT_RARITY[item.rarityId];
+      if(nextR){
+        const ascendCost = getItemAscendCost(item);
+        const canA = canAscendItem(item);
+        const nextRDef = rarityDef(nextR);
+        btnHTML = `<button class="item-upgrade-btn" data-action="ascend" data-slot="${type.id}"${canA?'':' disabled'} style="margin-top:6px;padding:6px 8px;background:${canA?'linear-gradient(135deg,#ffd060,#ff9020)':'#5a3a2a'};border:none;border-radius:6px;color:${canA?'#1a1a2e':'#aaa'};font-weight:800;font-size:10px;width:100%;cursor:${canA?'pointer':'not-allowed'};opacity:${canA?'1':'.55'};line-height:1.2;">ASCENSION → ${nextRDef?.name || nextR}<br><small style="font-weight:600;font-size:9px;">${fmtCost(ascendCost)} gouttes</small></button>`;
+      } else {
+        btnHTML = `<button class="item-upgrade-btn" data-action="maxed" data-slot="${type.id}" disabled style="margin-top:6px;padding:6px 8px;background:linear-gradient(135deg,#ffba30,#c84030);border:none;border-radius:6px;color:#fff;font-weight:800;font-size:10px;width:100%;opacity:.85;cursor:default;">NIVEAU MAX</button>`;
+      }
+    } else {
+      const cost = getItemUpgradeCost(item);
+      const canU = canUpgradeItem(item);
+      btnHTML = `<button class="item-upgrade-btn" data-action="upgrade" data-slot="${type.id}"${canU?'':' disabled'} style="margin-top:6px;padding:6px 8px;background:${canU?'linear-gradient(135deg,#60c0ff,#3060c0)':'#3a3a4a'};border:none;border-radius:6px;color:${canU?'#fff':'#888'};font-weight:800;font-size:10px;width:100%;cursor:${canU?'pointer':'not-allowed'};opacity:${canU?'1':'.55'};line-height:1.2;">NIV ${lvl} → ${lvl+1}<br><small style="font-weight:600;font-size:9px;">${fmtCost(cost)} gouttes</small></button>`;
+    }
     return `<div class="eq-slot filled rar-${item.rarityId}" data-slot="${type.id}" style="--eq-color:${rar.color}">
       <div class="eq-ico">${type.emoji}</div>
       <div class="eq-name">${type.name}</div>
-      <div class="eq-rarity" style="color:${rar.color}">${rar.name} · NIV ${item.level}</div>
+      <div class="eq-rarity" style="color:${rar.color}">${rar.name} · NIV ${lvl}</div>
       <div class="eq-bonus">+${(item.bonus*100).toFixed(1)}% ${type.desc}</div>
+      ${btnHTML}
     </div>`;
   }).join('');
   body.innerHTML = `
@@ -16721,8 +16834,19 @@ function renderEquipment(){
       <div class="es-list">${sumHTML || '<div class="es-empty">Aucun équipement — joue pour drop ton premier item !</div>'}${setHTML}</div>
     </div>
     <div class="eq-grid">${slots}</div>
-    <div class="eq-help">Chaque km bouclé fait drop 1 item. Si meilleur, il s'équipe auto. Sinon, scrap en gouttes. Set bonus: 3+ légendaires = +15% ; 5+ épiques = +10%.</div>
+    <div class="eq-help">Chaque km bouclé fait drop 1 item. AMÉLIORE tes items équipés avec des gouttes (cap NIV 5), puis ASCENSION pour passer en rareté supérieure. Set bonus: 3+ légendaires = +15% ; 5+ épiques = +10%.</div>
   `;
+  // Bind handlers upgrade/ascension (event delegation)
+  body.querySelectorAll('.item-upgrade-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if(btn.disabled) return;
+      const action = btn.getAttribute('data-action');
+      const slot   = btn.getAttribute('data-slot');
+      if(action === 'upgrade'){ upgradeItem(slot); }
+      else if(action === 'ascend'){ ascendItem(slot); }
+    });
+  });
 }
 
 /* v7 PIVOT GAMEFEEL : au début le coureur n'avance PAS du tout.

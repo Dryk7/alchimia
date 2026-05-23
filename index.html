@@ -8572,7 +8572,7 @@ body.shop-epic-flash::after{
         <h3>Récompenses Quotidiennes</h3>
         <p><strong>Calendrier 7 jours</strong> — connecte-toi chaque jour pour empiler les récompenses. Jour 7 = cadeau final ★.</p>
         <p><strong>3 objectifs / jour</strong> — courir X km, taper Y fois, ascender… Récompensés en gouttes + gemmes.</p>
-        <p><strong>Coffres</strong> — 1 coffre dropé à chaque km bouclé. Rareté variable, ouvre quand tu veux pour révéler les items.</p>
+        <p><strong>Coffres</strong> — 1 coffre OR au km 50 + 1 coffre LÉGENDAIRE au km 100 (par cycle d'ascension). Ouvre quand tu veux pour révéler les items.</p>
       </section>
       <section class="grim-sec">
         <h3>Conseil du Coach</h3>
@@ -15849,6 +15849,9 @@ const SLOT_SVG = {
   headband: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#c84030" stroke-width="2" stroke-linejoin="round"><circle cx="12" cy="13" r="6" fill="#fdcd76"/><rect x="5" y="8" width="14" height="3" rx="1.4" fill="#c84030" stroke="none"/><circle cx="10" cy="14" r=".8" fill="#5a3010"/><circle cx="14" cy="14" r=".8" fill="#5a3010"/></svg>',
   watch:    '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#c84030" stroke-width="2"><rect x="5" y="9" width="14" height="6" fill="#1a1a1a"/><path d="M9 9 L9 5 L15 5 L15 9 M9 15 L9 19 L15 19 L15 15" fill="#c84030"/><text x="12" y="13.5" text-anchor="middle" fill="#ffd060" font-size="3.5" font-family="Nunito" font-weight="900">12:00</text></svg>',
   wristband:'<svg viewBox="0 0 24 24" width="24" height="24" fill="#c84030" stroke="#5a2010" stroke-width="1.5" stroke-linejoin="round"><rect x="4" y="9" width="16" height="6" rx="2"/><circle cx="12" cy="12" r="1.5" fill="#fff" stroke="none"/></svg>',
+  cap:      '<svg viewBox="0 0 24 24" width="24" height="24" fill="#c84030" stroke="#5a2010" stroke-width="1.5" stroke-linejoin="round"><path d="M3 14 Q3 7 12 7 Q21 7 21 14 L21 16 L3 16 Z"/><path d="M11 7 Q11 4 13 4 Q15 4 15 6" fill="none"/><circle cx="12" cy="11" r="1.2" fill="#ffd060" stroke="none"/></svg>',
+  gloves:   '<svg viewBox="0 0 24 24" width="24" height="24" fill="#fff" stroke="#c84030" stroke-width="1.5" stroke-linejoin="round"><path d="M6 20 L6 11 Q6 9 8 9 L8 5 Q8 3 9.5 3 Q11 3 11 5 L11 9 L13 9 L13 5 Q13 3 14.5 3 Q16 3 16 5 L16 9 L18 9 Q19 9 19 11 L19 20 Z"/><path d="M6 16 L19 16" stroke="#c84030"/></svg>',
+  medal:    '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#c84030" stroke-width="1.5" stroke-linejoin="round"><path d="M8 3 L10 10 M16 3 L14 10" stroke="#c84030" stroke-width="2"/><circle cx="12" cy="16" r="6" fill="#ffd060" stroke="#c84030"/><circle cx="12" cy="16" r="2.5" fill="#c84030" stroke="none"/></svg>',
 };
 const ITEM_TYPES = [
   { id:'shoes',     emoji:'', icon:SLOT_SVG.shoes,     name:'Chaussures',     stat:'speed',     baseBonus:0.02, desc:'Vitesse de base' },
@@ -15856,6 +15859,9 @@ const ITEM_TYPES = [
   { id:'headband',  emoji:'', icon:SLOT_SVG.headband,  name:'Bandeau',        stat:'critRate',  baseBonus:0.005,desc:'+% crit chance' },
   { id:'watch',     emoji:'', icon:SLOT_SVG.watch,     name:'Chrono',         stat:'xpMul',     baseBonus:0.03, desc:'+% XP' },
   { id:'wristband', emoji:'', icon:SLOT_SVG.wristband, name:'Brassard',       stat:'staminaMul',baseBonus:0.04, desc:'+% endurance' },
+  { id:'cap',       emoji:'', icon:SLOT_SVG.cap,       name:'Casquette',      stat:'goldMul',   baseBonus:0.025,desc:'+% gouttes (bonus)' },
+  { id:'gloves',    emoji:'', icon:SLOT_SVG.gloves,    name:'Gants',          stat:'tapMul',    baseBonus:0.02, desc:'+% impact tap' },
+  { id:'medal',     emoji:'', icon:SLOT_SVG.medal,     name:'Médaille',       stat:'xpMul',     baseBonus:0.04, desc:'+% XP (bonus)' },
 ];
 const RARITIES = [
   { id:'common',    name:'Commun',     color:'#9b9b9b', weight:55, mul:1   },
@@ -15882,7 +15888,20 @@ function _rollItemLevel(){
 function rollItem(){
   const type = ITEM_TYPES[Math.floor(Math.random() * ITEM_TYPES.length)];
   const rarity = _rollRarity();
-  const level = _rollItemLevel();
+  const baseLevel = _rollItemLevel();
+  // Bonus de niveau selon rareté (rare/epic/legendary = items mieux roll)
+  let levelBoost = 0;
+  if(rarity.id === 'legendary'){
+    levelBoost = [3,3,4,4,4,5,5][(Math.random()*7)|0];
+  } else if(rarity.id === 'epic'){
+    levelBoost = [2,2,3,3,4][(Math.random()*5)|0];
+  } else if(rarity.id === 'rare'){
+    levelBoost = [1,2,2,3][(Math.random()*4)|0];
+  } else {
+    // common/uncommon : 95% level 1, 5% level 2
+    levelBoost = Math.random() < 0.05 ? 2 : 1;
+  }
+  const level = baseLevel + (levelBoost - 1); // baseLevel reste la base scaling, levelBoost ajoute variance
   return {
     typeId: type.id,
     rarityId: rarity.id,
@@ -15911,16 +15930,25 @@ function scrapItem(item){
   if(typeof showRunnerBubble === 'function') showRunnerBubble('+' + fmtBigNumber(med) + ' gouttes');
   if(A?.ctx) blip(660, .08, "triangle", .22, .45);
 }
-/* Bonus total équipement pour une stat donnée */
+/* Bonus total équipement pour une stat donnée + SET BONUS (synergie rareté) */
 function equipBonus(stat){
   if(!STATE.equipment) return 0;
   let sum = 0;
+  let legendaryCount = 0;
+  let epicCount = 0;
   for(const slot in STATE.equipment){
     const item = STATE.equipment[slot];
+    if(!item) continue;
     const t = itemDef(item.typeId);
     if(t && t.stat === stat) sum += item.bonus;
+    if(item.rarityId === 'legendary') legendaryCount++;
+    else if(item.rarityId === 'epic') epicCount++;
   }
-  return sum;
+  // Set bonus : 3+ légendaires équipés = +15% global ; 5+ epic+legendary = +10%
+  let setMul = 1;
+  if(legendaryCount >= 3) setMul *= 1.15;
+  if((legendaryCount + epicCount) >= 5) setMul *= 1.10;
+  return sum * setMul;
 }
 /* === Popup new-item : auto-équipe si meilleur, sinon scrap === */
 function _spawnDrop(item){
@@ -16372,15 +16400,15 @@ function maybeDropItem(reasonOverride){
     reason = reasonOverride.reason;
   } else {
     // Logique par défaut (appelée à chaque km bouclé)
-    if(km > 0 && (km === 25 || km === 50 || km === 75 || km === 100)){
+    if(km === 50){
+      chestId = 'gold';
+      reason = 'MI-PARCOURS ! Coffre OR mérité';
+    } else if(km === 100){
       chestId = 'legendary';
-      reason = 'Cap des ' + km + ' km franchi !';
-    } else if(km > 0 && km % 5 === 0){
-      chestId = 'iron';
-      reason = '5 km de plus dans les jambes';
+      reason = 'ASCENSION ! Coffre LÉGENDAIRE';
     } else {
-      chestId = 'wood';
-      reason = 'Km ' + km + ' bouclé';
+      // Coffres ne droppent qu'aux jalons 50 et 100 par cycle.
+      return; // ne donne rien aux autres km
     }
   }
   const chest = chestDef(chestId) || CHEST_TYPES[0];
@@ -16588,7 +16616,7 @@ function renderChestsModal(){
   body.innerHTML = `
     <div id="chest-stage"></div>
     <div class="chests-grid">${cards}</div>
-    <div class="chests-help">Tu reçois 1 coffre à chaque km bouclé. Plus la rareté du coffre est haute, meilleurs sont les items à l'intérieur.</div>
+    <div class="chests-help">Tu reçois 1 coffre OR au km 50 + 1 coffre LÉGENDAIRE au km 100 (par cycle d'ascension). Plus la rareté du coffre est haute, meilleurs sont les items à l'intérieur.</div>
   `;
   body.querySelectorAll('[data-open-chest]').forEach(btn => {
     btn.addEventListener('click', ()=>openChest(btn.dataset.openChest));
@@ -16629,12 +16657,28 @@ function renderEquipment(){
     ['critRate', 'Crit'],
     ['xpMul', 'XP'],
     ['staminaMul', 'Stamina'],
+    ['tapMul', 'Tap'],
   ];
   const sumHTML = summary.map(([stat, lbl]) => {
     const bonus = equipBonus(stat);
     if(bonus <= 0) return '';
     return `<div class="es-row">${lbl} <b>+${(bonus*100).toFixed(1)}%</b></div>`;
   }).join('');
+  // Set bonus indicator
+  let legendaryCount = 0, epicCount = 0;
+  for(const slot in STATE.equipment){
+    const it = STATE.equipment[slot];
+    if(!it) continue;
+    if(it.rarityId === 'legendary') legendaryCount++;
+    else if(it.rarityId === 'epic') epicCount++;
+  }
+  let setHTML = '';
+  if(legendaryCount >= 3){
+    setHTML += `<div class="es-row" style="color:#ffba30"><b>SET LÉGENDAIRE ×${legendaryCount}</b> +15% global</div>`;
+  }
+  if((legendaryCount + epicCount) >= 5){
+    setHTML += `<div class="es-row" style="color:#9b6cd0"><b>SET ÉLITE ×${legendaryCount+epicCount}</b> +10% global</div>`;
+  }
   // Grid 5 slots
   const slots = ITEM_TYPES.map(type => {
     const item = STATE.equipment[type.id];
@@ -16657,10 +16701,10 @@ function renderEquipment(){
   body.innerHTML = `
     <div class="eq-summary">
       <h3>BONUS ACTIFS</h3>
-      <div class="es-list">${sumHTML || '<div class="es-empty">Aucun équipement — joue pour drop ton premier item !</div>'}</div>
+      <div class="es-list">${sumHTML || '<div class="es-empty">Aucun équipement — joue pour drop ton premier item !</div>'}${setHTML}</div>
     </div>
     <div class="eq-grid">${slots}</div>
-    <div class="eq-help">Chaque km bouclé fait drop 1 item. Si meilleur, il s'équipe auto. Sinon, scrap en gouttes.</div>
+    <div class="eq-help">Chaque km bouclé fait drop 1 item. Si meilleur, il s'équipe auto. Sinon, scrap en gouttes. Set bonus: 3+ légendaires = +15% ; 5+ épiques = +10%.</div>
   `;
 }
 
@@ -17631,6 +17675,8 @@ function doSaisonAscend(){
     STATE.gold = 0;
     STATE.lapsRun = 0;
     STATE.lapProgress = 0;
+    // Reset coffres : 2 garantis par cycle (km 50 + 100)
+    STATE.chests = { wood:0, iron:0, gold:0, legendary:0 };
     STATE.upgradeTapValue = 0;
     STATE.upgradeCritChance = 0;
     STATE.upgradeLapBonus = 0;
@@ -18334,9 +18380,11 @@ function shouldShowStarterPack(){
   return true;
 }
 function maybeShowStarterPack(){
-  // FIX P0 : ne JAMAIS afficher daily reward tant que ActiveTuto n'est pas terminé
+  // FIX P0 : ne JAMAIS afficher tant que ActiveTuto en cours
   if(typeof ActiveTuto !== 'undefined' && typeof ActiveTuto.isActive === 'function' && ActiveTuto.isActive()) return;
-  if(typeof ActiveTuto !== 'undefined' && typeof ActiveTuto.isDone === 'function' && !ActiveTuto.isDone()) return;
+  // Fallback robuste : si tuto pas fait, on tolère après km 2 pour ne pas bloquer le starter pack
+  // (cascade du bug 1 où ActiveTuto.start() peut ne jamais être appelé)
+  if(typeof ActiveTuto !== 'undefined' && typeof ActiveTuto.isDone === 'function' && !ActiveTuto.isDone() && (STATE.lapsRun || 0) < 2) return;
   if(!shouldShowStarterPack()) return;
   if(document.querySelectorAll('.modal.show').length > 0) return;
   // Aussi : pas par-dessus un chest reveal en cours
@@ -19442,6 +19490,8 @@ function completeLap(){
   const stamBonus = Math.floor(baseReward * Math.max(0, (STATE.runnerStamina||1) - 1) * 0.5);
   const totalReward = baseReward + stamBonus;
   STATE.gold += totalReward;
+  // FIX bug 4 : track le gold cumulé à vie (manquait sur le lap reward + milestone)
+  let _lapGoldEarned = totalReward;
   STATE.runnerStamina = STAMINA_MAX;
   // Pulse animation sur le compteur de gouttes ET de km après lap reward
   if(typeof _flashStatChange === 'function'){
@@ -19454,10 +19504,13 @@ function completeLap(){
     const bonusMul = isMilestone === 'mega' ? 10 : isMilestone === 'big' ? 5 : isMilestone === 'mid' ? 3 : 2;
     const milestoneBonus = baseReward * bonusMul;
     STATE.gold += milestoneBonus;
+    _lapGoldEarned += milestoneBonus;
     if(typeof showRunnerBubble === 'function'){
       showRunnerBubble(`✦ JALON ${lapNum} ! · +${milestoneBonus + totalReward} méd`);
     }
   }
+  // Accumule UNE fois après tous les +gold de ce lap (lap reward + milestone bonus)
+  STATE.totalGoldEarned = (STATE.totalGoldEarned || 0) + _lapGoldEarned;
   // Spawn 2 items random T1-T2 en bonus
   const empties = (typeof findEmpty === 'function') ? findEmpty() : [];
   for(let i=0; i<2 && empties.length; i++){
@@ -23183,6 +23236,20 @@ function boot(){
       if(A?.ctx) blip(660, .08, "triangle", .18, .4);
     });
   });
+  // Drawer upgrades ouvert par défaut au démarrage (sinon novice perdu, ne voit aucun bouton upgrade)
+  // Force l'onglet UPGRADES actif + ouvre le drawer pour le nouveau joueur.
+  try {
+    const tc = document.querySelector('.tabs-content');
+    if(tc && !tc.classList.contains('open')){
+      const upBtn = document.querySelector('.tab-btn[data-tab="upgrades"]');
+      if(upBtn){
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b === upBtn));
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.toggle('active', p.dataset.pane === 'upgrades'));
+      }
+      tc.classList.add('open');
+      document.body.classList.add('tab-drawer-open');
+    }
+  } catch(e){ /* silent */ }
   // Click sur le stade en dehors des panels → close
   document.getElementById('runner-stadium')?.addEventListener('click', (e)=>{
     if(e.target.closest('button')) return;
@@ -23441,6 +23508,18 @@ function boot(){
         showRunnerBubble(isReturning ? t('bubble_return') : t('bubble_first'));
       }
     }, isReturning ? 1100 : 2500); // léger délai si story intro
+
+    // === Fallback : assure que le tuto actif démarre même si le storySeen est déjà true
+    // Cas pathologique : nouveau joueur qui a vu storyIntro mais finishGiga jamais appelé,
+    // ou STORY_KEY set manuellement → ActiveTuto resterait inactif sans ce filet.
+    setTimeout(() => {
+      try {
+        if(window.ActiveTuto && !ActiveTuto.isActive() && !ActiveTuto.isDone()){
+          // Force démarrage si modals stuck
+          ActiveTuto.start();
+        }
+      } catch(e){ /* silent */ }
+    }, 5000);
   });
 
   // boucle principale — résistante aux erreurs (chaque tick est try/catch isolé)

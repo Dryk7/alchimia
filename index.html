@@ -1102,6 +1102,7 @@ header .stats #stat-stars.hud-show{ display:flex; }
 @keyframes rgFadeIn{ 0%{opacity:0} 100%{opacity:1} }
 .rhythm-game.closing{ animation:rgFadeOut .4s ease-in forwards; }
 @keyframes rgFadeOut{ 0%{opacity:1} 100%{opacity:0} }
+@keyframes idleReminderPulse {0%,100% {transform:translateX(-50%) scale(1);} 50% {transform:translateX(-50%) scale(1.05);}}
 .rg-bg{
   position:absolute; inset:0;
   background:
@@ -10625,8 +10626,8 @@ const ACHIEVEMENTS = [
 
   // === BIOMES — découverte du monde ===
   { id:"biome_rural",  name:"Sortie du Chantier",desc:"Atteindre la banlieue (km 3+).",                   icon:"horn",    reward:100,   check:s => (s.lapsRun||0)>=3 },
-  { id:"biome_urban",  name:"Ville Lumière",     desc:"Atteindre la ville (km 8+).",                      icon:"horn",    reward:300,   check:s => (s.lapsRun||0)>=8 },
-  { id:"biome_stadium",name:"Stade Olympique",   desc:"Atteindre le grand stade (km 45+).",               icon:"horn",    reward:2500,  check:s => (s.lapsRun||0)>=45 },
+  { id:"biome_urban",  name:"Ville Lumière",     desc:"Atteindre la ville (km 10+).",                     icon:"horn",    reward:300,   check:s => (s.lapsRun||0)>=10 },
+  { id:"biome_stadium",name:"Stade Olympique",   desc:"Atteindre le grand stade (km 80+).",               icon:"horn",    reward:2500,  check:s => (s.lapsRun||0)>=80 },
   { id:"biome_flame",  name:"Vasque Allumée",    desc:"Voir la vasque olympique (km 80+).",               icon:"horn",    reward:7500,  check:s => (s.lapsRun||0)>=80 },
 
   // === COMBO — synergie ===
@@ -13183,6 +13184,37 @@ function sfxBuyScaled(mag){
   }
 }
 
+/* SFX différencié par rareté pour l'upgrade/ascend d'item (vague 14c) */
+function sfxItemUpgrade(rarity){
+  if(typeof A === 'undefined' || !A.ctx) return;
+  const notes = {
+    uncommon: [[523, 0.08]],
+    rare: [[523, 0.06], [659, 0.10]],
+    epic: [[523, 0.05], [659, 0.05], [784, 0.12]],
+    legendary: [[523, 0.04], [659, 0.04], [784, 0.04], [1047, 0.18]]
+  }[rarity] || [[523, 0.08]];
+  let delay = 0;
+  notes.forEach(([f, d], i) => {
+    setTimeout(() => {
+      try {
+        if(typeof blip === 'function') blip(f, d, 'triangle', 0.15, 0.4);
+        else {
+          const o = A.ctx.createOscillator();
+          const g = A.ctx.createGain();
+          o.connect(g); g.connect(A.master || A.ctx.destination);
+          o.frequency.value = f;
+          o.type = 'triangle';
+          g.gain.setValueAtTime(0.15, A.ctx.currentTime);
+          g.gain.exponentialRampToValueAtTime(0.01, A.ctx.currentTime + d);
+          o.start(); o.stop(A.ctx.currentTime + d);
+        }
+      } catch(e){}
+    }, delay * 1000);
+    delay += d * 0.7;
+  });
+}
+if(typeof window !== 'undefined') window.sfxItemUpgrade = sfxItemUpgrade;
+
 function punchGoldCounter(){
   const el = document.getElementById('gold-val');
   if(!el) return;
@@ -14408,6 +14440,8 @@ const ProcBGM = (() => {
   let _step = 0;
   let _preset = null;
   let _stepDur = 0; // sec per step
+  let _baseVol = 0.22; // vague 15 : snapshot volume pour setIntensity
+  let _baseStepDur = null; // vague 15 : snapshot stepDur pour setTempo
 
   function _makeMasterGain(volume){
     if(!A.ctx) return null;
@@ -14857,7 +14891,9 @@ const ProcBGM = (() => {
     if(!_preset) return;
     _loopingPreset = presetName;
     _stepDur = (60 / _preset.bpm) / 4; // 1 step = 1/16e note
-    _masterGain = _makeMasterGain(typeof volume === 'number' ? volume : 0.22);
+    _baseStepDur = _stepDur; // vague 15 : snapshot pour setTempo
+    _baseVol = typeof volume === 'number' ? volume : 0.22; // vague 15 : snapshot pour setIntensity
+    _masterGain = _makeMasterGain(_baseVol);
     _nextStepAt = A.ctx.currentTime + 0.05;
     _step = 0;
     // Loop scheduler — schedule batch + replanifie
@@ -14899,8 +14935,19 @@ const ProcBGM = (() => {
   function isPlaying(){ return !!_loopingPreset; }
   function currentPreset(){ return _loopingPreset; }
   function setVolume(v){ if(_masterGain) _masterGain.gain.setTargetAtTime(v, A.ctx.currentTime, 0.1); }
+  // === VAGUE 15 : adapt musique au stamina ratio ===
+  function setIntensity(mul){
+    if(_masterGain && A.ctx){
+      try { _masterGain.gain.setTargetAtTime(_baseVol * mul, A.ctx.currentTime, 0.5); } catch(e){}
+    }
+  }
+  function setTempo(mul){
+    if(!_preset) return;
+    if(_baseStepDur == null) _baseStepDur = (60 / _preset.bpm) / 4;
+    _stepDur = _baseStepDur / Math.max(0.5, Math.min(2.0, mul));
+  }
 
-  return { play, stop, isPlaying, currentPreset, setVolume };
+  return { play, stop, isPlaying, currentPreset, setVolume, setIntensity, setTempo };
 })();
 if(typeof window !== 'undefined') window.ProcBGM = ProcBGM;
 
@@ -15998,7 +16045,8 @@ function upgradeItem(slotId){
   item.level = (item.level || 1) + 1;
   _recomputeItemBonus(item);
   try {
-    if(typeof sfxBuyScaled === 'function') sfxBuyScaled(Math.min(5, (item.level || 1)));
+    if(typeof sfxItemUpgrade === 'function') sfxItemUpgrade(item.rarityId);
+    else if(typeof sfxBuyScaled === 'function') sfxBuyScaled(Math.min(5, (item.level || 1)));
     else if(typeof sfxClaim === 'function') sfxClaim();
     if(typeof renderEquipment === 'function') renderEquipment();
     if(typeof saveNow === 'function') saveNow();
@@ -16017,7 +16065,8 @@ function ascendItem(slotId){
   item.level = 1;
   _recomputeItemBonus(item);
   try {
-    if(typeof sfxGrand === 'function') sfxGrand(5);
+    if(typeof sfxItemUpgrade === 'function') sfxItemUpgrade(nextRarity);
+    else if(typeof sfxGrand === 'function') sfxGrand(5);
     else if(typeof sfxBuyScaled === 'function') sfxBuyScaled(5);
     if(typeof renderEquipment === 'function') renderEquipment();
     if(typeof saveNow === 'function') saveNow();
@@ -16515,8 +16564,12 @@ function maybeDropItem(reasonOverride){
     } else if(km === 100){
       chestId = 'legendary';
       reason = 'ASCENSION ! Coffre LÉGENDAIRE';
+    } else if(km > 100 && km % 25 === 0){
+      // Post-100 endgame : coffre légendaire tous les 25 km (125, 150, 175, 200, ...)
+      chestId = 'legendary';
+      reason = 'ENDGAME ! Coffre LÉGENDAIRE (km ' + km + ')';
     } else {
-      // Coffres ne droppent qu'aux jalons 50 et 100 par cycle.
+      // Coffres ne droppent qu'aux jalons définis.
       return; // ne donne rien aux autres km
     }
   }
@@ -24153,6 +24206,24 @@ window.addEventListener('appinstalled', () => {
         ['#018e44','#ffd200','#018e44'], // BRA : vert-jaune-vert
       ],
     },
+    // Tier 7 — BOSS RUNNER (menace agressive, spawn aléatoire km 60+)
+    // Coureur intimidant en jersey noir/rouge avec halo rouge inquiétant, vitesse boostée x1.5
+    {
+      label:'BOSS RUNNER', baseSpeed:1.5, speedVar:.05,
+      jerseys:['#1a1a2e','#0f0f1f','#1a1a2e','#15152a'], // noir profond
+      hairs:['#2a2a3a','#1a1a1a','#2a2a3a'],
+      hairStyles: ['mohawk','buzz','mohawk'],
+      faceExprs: ['effort','effort','effort'], // toujours menaçant
+      builds: ['thin','normal','thin'],
+      tenues: ['striped','vbar','striped'],
+      skins:['#d0a880','#a8804a','#88684a','#684830'],
+      shorts:['#000','#0a0a0a','#1a1a1a'],
+      headExtras:[null,'visor',null],
+      accent: '#e84030', // rouge agressif
+      // Accessoires BOSS : glasses sombres + armband rouge + bossAura (halo rouge pulsant)
+      accessory: { glasses: true, armband: true, bossAura: true },
+      tier: 7,
+    },
   ];
   function pickTierForPlayer(){
     // === DISTRIBUTION PNJ PAR KM : narrative visuelle progressive ===
@@ -24163,6 +24234,11 @@ window.addEventListener('appinstalled', () => {
     // Au stade (km 70+) : tu cours avec des semi-pros et des pros olympiques
     // Lunar (km 100+) : champions cosmic uniquement (T5)
     const km = (window.STATE && window.STATE.lapsRun) || 0;
+    // === BOSS RUNNER (Tier 7) : menace agressive aléatoire km 60+ ===
+    // 5% chance km 60-99, 10% chance km 100+ → spawn rare mais marquant
+    if(km >= 60 && Math.random() < (km >= 100 ? 0.10 : 0.05)){
+      return 7; // Boss runner
+    }
     // Table de distributions cumulative par tranche de km
     // Chaque entrée = [P_T0, P_T1, P_T2, P_T3, P_T4, P_T5, P_T6] (somme = 1.0)
     // T6 = Champion olympique (médaille + drapeau pays + tenue dorée), réservé km 85+
@@ -24640,6 +24716,11 @@ window.addEventListener('appinstalled', () => {
       else if(effort >= 0.35) faceExpr = 'focus'; // sourcils froncés
       else faceExpr = 'smile';                  // sourire mignon
     }
+    // === Haletant : si stamina basse, force expression effort + bouche ouverte qui pulse
+    if(isHero && STATE.stamina !== undefined && STATE.staminaMax){
+      const sRatio = STATE.stamina / STATE.staminaMax;
+      if(sRatio < 0.30) faceExpr = 'effort';
+    }
     const tenue = spec.tenue || 'plain';
     const headExtra = spec.headExtra || null;
     const s = scale;
@@ -24732,8 +24813,18 @@ window.addEventListener('appinstalled', () => {
       ctx.fillStyle = champGrad;
       ctx.beginPath(); ctx.arc(x, y + 2 * s, 42 * s, 0, Math.PI*2); ctx.fill();
     }
-    // === PNJ "PRO" highlight (tier 4-5, pas hero ni champion T6) : halo argent/bleu subtil ===
-    if(!isHero && !acc.championAura && (spec.tier || 0) >= 4){
+    // === BOSS aura (Tier 7 BOSS RUNNER) : halo rouge inquiétant pulsant rapide ===
+    if(acc.bossAura){
+      const bossPulse = 0.55 + Math.sin(phase * 2.4) * 0.30; // pulse plus rapide + intense que champion
+      const bossGrad = ctx.createRadialGradient(x, y, 0, x, y, 46 * s);
+      bossGrad.addColorStop(0, `rgba(232,64,48,${0.50 * bossPulse})`);
+      bossGrad.addColorStop(0.5, `rgba(200,40,30,${0.22 * bossPulse})`);
+      bossGrad.addColorStop(1, 'rgba(200,40,30,0)');
+      ctx.fillStyle = bossGrad;
+      ctx.beginPath(); ctx.arc(x, y + 2 * s, 46 * s, 0, Math.PI*2); ctx.fill();
+    }
+    // === PNJ "PRO" highlight (tier 4-5, pas hero ni champion T6 ni boss T7) : halo argent/bleu subtil ===
+    if(!isHero && !acc.championAura && !acc.bossAura && (spec.tier || 0) >= 4){
       const proPulse = 0.4 + Math.sin(phase * 1.2) * 0.15;
       const proGrad = ctx.createRadialGradient(x, y, 0, x, y, 32 * s);
       const proCol = (spec.tier === 5) ? '180,220,255' : '200,210,225'; // bleu pour T5, argent pour T4
@@ -24805,7 +24896,9 @@ window.addEventListener('appinstalled', () => {
     // === Speedlines derrière le pied qui pousse ===
     const fastFoot = legR.footX > legL.footX ? footL : footR;
     if(isHero || (spec.tier || 0) >= 3){
-      ctx.strokeStyle = 'rgba(255,255,255,.45)';
+      // Couleur trail selon vitesse : blanc froid → orange → rouge
+      const trailHue = effort > 0.8 ? '255,100,80' : effort > 0.5 ? '255,200,100' : '255,255,255';
+      ctx.strokeStyle = `rgba(${trailHue},${0.35 + effort*0.3})`;
       ctx.lineWidth = 1.5 * s; ctx.lineCap = 'round';
       for(let i = 0; i < 3; i++){
         const sx = fastFoot.footX - (8 + i * 6) * s;
@@ -25501,6 +25594,35 @@ window.addEventListener('appinstalled', () => {
       if(window.STATE.staminaMax > 300) window.STATE.staminaMax = 300;
       if(_sinceLastTap > 0.5){
         window.STATE.stamina = Math.min(window.STATE.staminaMax, (window.STATE.stamina ?? 0) + 8 * dt);
+      }
+    }
+    // === Music intensity adapt stamina (vague 15)
+    if(typeof ProcBGM !== 'undefined' && window.STATE && window.STATE.stamina !== undefined && window.STATE.staminaMax){
+      if(!window._lastMusicAdapt || performance.now() - window._lastMusicAdapt > 500){
+        window._lastMusicAdapt = performance.now();
+        const sRatio = window.STATE.stamina / Math.max(1, window.STATE.staminaMax);
+        const mIntensity = sRatio > 0.8 ? 1.2 : sRatio < 0.3 ? 0.7 : 1.0;
+        const mTempo = sRatio < 0.3 ? 0.85 : sRatio > 0.8 ? 1.10 : 1.0;
+        try {
+          if(typeof ProcBGM.setIntensity === 'function') ProcBGM.setIntensity(mIntensity);
+          if(typeof ProcBGM.setTempo === 'function') ProcBGM.setTempo(mTempo);
+        } catch(e){}
+      }
+    }
+    // === Idle reminder : si pas de tap depuis 30s, encourager
+    if(STATE._lastTapAt && performance.now() - STATE._lastTapAt > 30000){
+      if(!window._idleReminderShown){
+        window._idleReminderShown = true;
+        const n = document.createElement('div');
+        n.id = 'idle-reminder';
+        n.innerHTML = '🏃 Toujours là ? Tape pour continuer ta course !';
+        n.style.cssText = 'position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:rgba(26,26,46,0.92);color:#fff;padding:14px 22px;border-radius:24px;font-weight:700;font-size:14px;z-index:9999;box-shadow:0 6px 20px rgba(0,0,0,0.4);animation:idleReminderPulse 1.5s ease infinite;';
+        document.body.appendChild(n);
+        // Auto-remove après 8s
+        setTimeout(() => { n.remove(); }, 8000);
+        // Reset on next tap
+        const resetOnce = () => { window._idleReminderShown = false; n.remove(); document.removeEventListener('pointerdown', resetOnce); };
+        document.addEventListener('pointerdown', resetOnce, { once: true });
       }
     }
     const dtMul = dt * 60;
@@ -31159,6 +31281,46 @@ window.addEventListener('appinstalled', () => {
           ctx.stroke();
         }
       }
+    }
+
+    // ═══ PARTICULES AMBIANTES PAR BIOME (v15 a8) ═══
+    // Spawn lent + filter/render dans un seul pass. _biomeName est en scope.
+    if(_biomeName){
+      window._biomeParticles = window._biomeParticles || [];
+      const _bpMax = 12;
+      if(window._biomeParticles.length < _bpMax && Math.random() < 0.03){
+        const _bpCfg = ({
+          wasteland: { color: 'rgba(220,180,100,0.5)', size: 2,   vy: -0.3, vx: 0.5 },
+          rural:     { color: 'rgba(120,180,80,0.7)',  size: 3,   vy:  0.8, vx: -0.3 },
+          urban:     { color: 'rgba(200,200,210,0.45)', size: 2.5, vy: 0.4, vx: 0.2 },
+          stadium:   { color: ['#e84030','#ffd060','#4080ff','#7ec46a'][Math.floor(Math.random()*4)], size: 3, vy: 0.6, vx: (Math.random()-0.5)*1.5 },
+          lunar:     { color: 'rgba(220,220,255,0.7)', size: 1.5, vy: -0.2, vx: 0.3 }
+        })[_biomeName];
+        if(_bpCfg){
+          window._biomeParticles.push({
+            x: Math.random() * W,
+            y: Math.random() * H * 0.7,
+            vx: _bpCfg.vx + (Math.random()-0.5) * 0.5,
+            vy: _bpCfg.vy + (Math.random()-0.5) * 0.3,
+            size: _bpCfg.size,
+            color: _bpCfg.color,
+            life: 4 + Math.random() * 3
+          });
+        }
+      }
+      window._biomeParticles = window._biomeParticles.filter(p => {
+        p.life -= 0.016;
+        p.x += p.vx;
+        p.y += p.vy;
+        if(p.life <= 0 || p.x < -20 || p.x > W + 20 || p.y > H + 20) return false;
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = Math.min(1, p.life / 2);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        return true;
+      });
     }
 
     // Fin du ctx.save() camera shake (reconstitué après truncation v6)

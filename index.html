@@ -1103,6 +1103,12 @@ header .stats #stat-stars.hud-show{ display:flex; }
 .rhythm-game.closing{ animation:rgFadeOut .4s ease-in forwards; }
 @keyframes rgFadeOut{ 0%{opacity:1} 100%{opacity:0} }
 @keyframes idleReminderPulse {0%,100% {transform:translateX(-50%) scale(1);} 50% {transform:translateX(-50%) scale(1.05);}}
+@keyframes unlockFadeInOut {
+  0%{opacity:0;transform:translate(-50%,-10px);}
+  15%{opacity:1;transform:translate(-50%,0);}
+  80%{opacity:1;transform:translate(-50%,0);}
+  100%{opacity:0;transform:translate(-50%,-10px);}
+}
 .rg-bg{
   position:absolute; inset:0;
   background:
@@ -19145,42 +19151,42 @@ function updateRunnerCard(r){
   }
 }
 
-/* ================ DAILY REWARDS — calendrier 7 jours ================ */
+/* ================ DAILY REWARDS — calendrier 30 jours alléchant ================ */
 const DAILY_REWARDS = [
-  // SEMAINE 1 — onboarding
-  { day:1,  type:'gold',  amount:50,    label:'50 gouttes' },
-  { day:2,  type:'gold',  amount:150,   label:'150 gouttes' },
-  { day:3,  type:'gems',  amount:3,     label:'3 gemmes' },
-  { day:4,  type:'gold',  amount:1000,  label:'1000 gouttes' },
-  { day:5,  type:'gold',  amount:2500,  label:'2.5k gouttes' },
-  { day:6,  type:'gems',  amount:10,    label:'10 gemmes' },
-  { day:7,  type:'mega',  amount:0,     label:'15k gouttes + 5 ★ + 25 gemmes' },
-  // SEMAINE 2 — fidélité
-  { day:8,  type:'gold',  amount:5000,  label:'5k gouttes' },
-  { day:9,  type:'gems',  amount:8,     label:'8 gemmes' },
-  { day:10, type:'gold',  amount:10000, label:'10k gouttes' },
-  { day:11, type:'boost', amount:0,     label:'×2 gouttes 24h' },
-  { day:12, type:'gold',  amount:20000, label:'20k gouttes' },
-  { day:13, type:'gems',  amount:15,    label:'15 gemmes' },
-  { day:14, type:'mega2', amount:0,     label:'Boost ×2 24h + 30 gemmes' },
-  // SEMAINE 3 — engagement
-  { day:15, type:'gold',  amount:30000, label:'30k gouttes' },
-  { day:16, type:'gems',  amount:20,    label:'20 gemmes' },
-  { day:17, type:'gold',  amount:50000, label:'50k gouttes' },
-  { day:18, type:'gems',  amount:25,    label:'25 gemmes' },
-  { day:19, type:'gold',  amount:75000, label:'75k gouttes' },
-  { day:20, type:'rabbit',amount:0,     label:'Lapin OR garanti' },
-  { day:21, type:'mega3', amount:0,     label:'100k gouttes + 50 gemmes' },
-  // SEMAINE 4 — récompense ultime
-  { day:22, type:'gold',  amount:100000, label:'100k gouttes' },
-  { day:23, type:'gems',  amount:30,     label:'30 gemmes' },
-  { day:24, type:'gold',  amount:150000, label:'150k gouttes' },
-  { day:25, type:'gems',  amount:40,     label:'40 gemmes' },
-  { day:26, type:'gold',  amount:200000, label:'200k gouttes' },
-  { day:27, type:'gems',  amount:50,     label:'50 gemmes' },
-  { day:28, type:'boost', amount:0,      label:'×2 gouttes 24h' },
-  { day:29, type:'gold',  amount:300000, label:'300k gouttes' },
-  { day:30, type:'legendary',amount:0,   label:'★ TROPHÉE OR + 100 gemmes + boost 48h' },
+  // SEMAINE 1 — onboarding + 1ère vraie surprise
+  { day:1,  type:'gold',     amount:1000,  label:'1k gouttes' },
+  { day:2,  type:'gold',     amount:300,   label:'300 gouttes' },
+  { day:3,  type:'cooldown', amount:0,     label:'Cooldown reset' },
+  { day:4,  type:'gold',     amount:800,   label:'800 gouttes' },
+  { day:5,  type:'item',     rarity:'rare',amount:0, label:'Item Rare' },
+  { day:6,  type:'gold',     amount:1500,  label:'1.5k gouttes' },
+  { day:7,  type:'item',     rarity:'epic',amount:0, label:'Item Epic' },
+  // SEMAINE 2 — montée en charge
+  { day:8,  type:'gold',     amount:5000,  label:'5k gouttes' },
+  { day:9,  type:'gold',     amount:2500,  label:'2.5k gouttes' },
+  { day:10, type:'cooldown', amount:0,     label:'Cooldown reset' },
+  { day:11, type:'gold',     amount:3500,  label:'3.5k gouttes' },
+  { day:12, type:'item',     rarity:'rare',amount:0, label:'Item Rare' },
+  { day:13, type:'gold',     amount:5000,  label:'5k gouttes' },
+  { day:14, type:'item',     rarity:'epic',amount:0, label:'Item Epic' },
+  // SEMAINE 3 — engagement renforcé
+  { day:15, type:'gold',     amount:15000, label:'15k gouttes' },
+  { day:16, type:'gold',     amount:7500,  label:'7.5k gouttes' },
+  { day:17, type:'cooldown', amount:0,     label:'Cooldown reset' },
+  { day:18, type:'gold',     amount:10000, label:'10k gouttes' },
+  { day:19, type:'item',     rarity:'rare',amount:0, label:'Item Rare' },
+  { day:20, type:'gold',     amount:15000, label:'15k gouttes' },
+  { day:21, type:'item',     rarity:'epic',amount:0, label:'Item Epic' },
+  // SEMAINE 4 — sprint final
+  { day:22, type:'gold',     amount:30000, label:'30k gouttes' },
+  { day:23, type:'gold',     amount:20000, label:'20k gouttes' },
+  { day:24, type:'cooldown', amount:0,     label:'Cooldown reset' },
+  { day:25, type:'gold',     amount:30000, label:'30k gouttes' },
+  { day:26, type:'item',     rarity:'rare',amount:0, label:'Item Rare' },
+  { day:27, type:'gold',     amount:40000, label:'40k gouttes' },
+  { day:28, type:'item',     rarity:'epic',amount:0, label:'Item Epic' },
+  { day:29, type:'gold',     amount:60000, label:'60k gouttes' },
+  { day:30, type:'mega3',    amount:0,     label:'JACKPOT : Item Légendaire + 50k gouttes + 100 gemmes' },
 ];
 function _dayStamp(ts){
   const d = new Date(ts);
@@ -19221,6 +19227,32 @@ function claimDailyReward(){
   } else if(rwd.type === 'gems'){
     if(typeof addGems === 'function') addGems(rwd.amount);
     if(typeof showRunnerBubble === 'function') showRunnerBubble('+' + rwd.amount + ' gemmes');
+  } else if(rwd.type === 'cooldown'){
+    // Reset tous les cooldowns de skills
+    STATE.skillsLastUsed = {};
+    if(typeof showRunnerBubble === 'function') showRunnerBubble('Cooldowns réinitialisés !');
+  } else if(rwd.type === 'item'){
+    // Force rareté souhaitée en surchargeant temporairement _rollRarity
+    let item = null;
+    if(typeof rollItem === 'function' && typeof RARITIES !== 'undefined'){
+      const targetRarity = RARITIES.find(x => x.id === rwd.rarity) || RARITIES[0];
+      const _origRoll = typeof _rollRarity === 'function' ? _rollRarity : null;
+      try {
+        if(_origRoll){ window._rollRarity = () => targetRarity; }
+        item = rollItem();
+        if(item) item.rarityId = rwd.rarity;
+      } finally {
+        if(_origRoll) window._rollRarity = _origRoll;
+      }
+    }
+    if(item && typeof equipItem === 'function'){
+      equipItem(item);
+      if(typeof showRunnerBubble === 'function') showRunnerBubble('Item ' + (rwd.rarity || '') + ' équipé !');
+    } else {
+      // Fallback : bonus de gouttes si système item indisponible
+      STATE.gold = (STATE.gold || 0) + (rwd.rarity === 'epic' ? 10000 : 3000);
+      if(typeof showRunnerBubble === 'function') showRunnerBubble('Récompense item convertie en gouttes');
+    }
   } else if(rwd.type === 'mega'){
     STATE.gold = (STATE.gold || 0) + 15000;
     STATE.stars = (STATE.stars || 0) + 5;
@@ -19236,9 +19268,25 @@ function claimDailyReward(){
     if(typeof addGems === 'function') addGems(30);
     if(typeof showRunnerBubble === 'function') showRunnerBubble('Boost ×2 24h + 30 !');
   } else if(rwd.type === 'mega3'){
-    STATE.gold = (STATE.gold || 0) + 100000;
-    if(typeof addGems === 'function') addGems(50);
-    if(typeof showRunnerBubble === 'function') showRunnerBubble('+100k gouttes + 50 !');
+    // JACKPOT J30 : item legendary + 50k gouttes + 100 gemmes
+    STATE.gold = (STATE.gold || 0) + 50000;
+    if(typeof addGems === 'function') addGems(100);
+    let legItem = null;
+    if(typeof rollItem === 'function' && typeof RARITIES !== 'undefined'){
+      const legRarity = RARITIES.find(x => x.id === 'legendary') || RARITIES[0];
+      const _origRoll = typeof _rollRarity === 'function' ? _rollRarity : null;
+      try {
+        if(_origRoll){ window._rollRarity = () => legRarity; }
+        legItem = rollItem();
+        if(legItem) legItem.rarityId = 'legendary';
+      } finally {
+        if(_origRoll) window._rollRarity = _origRoll;
+      }
+    }
+    if(legItem && typeof equipItem === 'function') equipItem(legItem);
+    STATE.dailyCycles = (STATE.dailyCycles || 0) + 1;
+    if(window.RUNNER_2D?.spawnConfetti) window.RUNNER_2D.spawnConfetti(60);
+    if(typeof showRunnerBubble === 'function') showRunnerBubble('JACKPOT ! Item LEG + 50k + 100 gemmes');
   } else if(rwd.type === 'rabbit'){
     // Force spawn d'un lapin doré au prochain tick
     if(window.RUNNER_2D?.spawnRabbit) window.RUNNER_2D.spawnRabbit();
@@ -19301,9 +19349,9 @@ function renderDailyModal(){
   }).join('');
   const nextText = available
     ? `<b style="color:#4a9fd9">Récompense disponible !</b>`
-    : `Reviens demain pour le jour ${day === 7 ? 1 : day + 1}`;
+    : `Reviens demain pour le jour ${day === 30 ? 1 : day + 1}`;
   body.innerHTML = `
-    <div class="daily-streak-info">JOUR ${day} / 7</div>
+    <div class="daily-streak-info">JOUR ${day} / 30</div>
     <div class="daily-intro">Connecte-toi chaque jour pour grimper le calendrier.</div>
     <div class="daily-grid">${cells}</div>
     <div class="daily-next">${nextText}</div>
@@ -19914,6 +19962,26 @@ function renderRecords(){
   const S = STATE;
   const ratio = (S.rivalsWon || 0) + (S.rivalsLost || 0);
   const rivalWinRate = ratio > 0 ? Math.round(100 * (S.rivalsWon || 0) / ratio) : 0;
+  // Stats progression & loot
+  const totalKm = (S.totalLifetimeKm ?? S.lapsRun ?? 0);
+  const ascensions = S.ascensions || S.transmutations || 0;
+  const chestsOpened = S.totalChestsOpened || 0;
+  const bossDodged = S.totalBossDodged || 0;
+  const hurdleFails = S.hurdlesFailed || 0;
+  const hurdleSuccess = S.hurdlesSuccess || S.hurdlesCleared || 0;
+  const hurdleTotal = hurdleSuccess + hurdleFails;
+  const hurdleRate = hurdleTotal > 0 ? Math.round(100 * hurdleSuccess / hurdleTotal) : 0;
+  // Plus grande rareté item équipé
+  const rarityOrder = ['common','uncommon','rare','epic','legendary'];
+  let bestRarity = '—';
+  let bestRarityIdx = -1;
+  if(S.equipment){
+    Object.values(S.equipment).forEach(it => {
+      if(!it) return;
+      const idx = rarityOrder.indexOf(it.rarityId || it.rarity);
+      if(idx > bestRarityIdx){ bestRarityIdx = idx; bestRarity = (it.rarityId || it.rarity); }
+    });
+  }
   body.innerHTML = `
     <div class="records-hero">
       <div class="records-emoji"></div>
@@ -19926,6 +19994,12 @@ function renderRecords(){
       <div class="records-row"><span>Saison max</span><b>${r.maxSaison}</b></div>
       <div class="records-row"><span>Gouttes à vie</span><b>${fmtBigNumber(S.totalGoldEarned||0)}</b></div>
 
+      <div class="records-section-title">LOOT &amp; PROGRESSION</div>
+      <div class="records-row"><span>Distance totale</span><b>${fmtBigNumber(totalKm)} km</b></div>
+      <div class="records-row"><span>Ascensions</span><b>${ascensions}</b></div>
+      <div class="records-row"><span>Coffres ouverts</span><b>${chestsOpened}</b></div>
+      <div class="records-row"><span>Meilleure rareté équipée</span><b>${bestRarity}</b></div>
+
       <div class="records-section-title">VITESSE &amp; RYTHME</div>
       <div class="records-row"><span>Meilleure vitesse</span><b>${(S.bestKmh||0).toFixed(1)} km/h</b></div>
       <div class="records-row"><span>Meilleur combo</span><b>×${r.maxCombo || 1}</b></div>
@@ -19933,16 +20007,19 @@ function renderRecords(){
 
       <div class="records-section-title">HAIES</div>
       <div class="records-row"><span>Haies franchies</span><b>${fmtBigNumber(S.hurdlesCleared||0)}</b></div>
+      <div class="records-row"><span>Haies ratées</span><b>${fmtBigNumber(hurdleFails)}</b></div>
+      <div class="records-row"><span>Taux de réussite haies</span><b>${hurdleRate}%</b></div>
       <div class="records-row"><span>Meilleure chaîne haies</span><b>×${S.bestHurdleStreak || 0}</b></div>
       <div class="records-row"><span>Triples réussis</span><b>${S.triplesCleared||0}</b></div>
       <div class="records-row"><span>Hautes réussies</span><b>${S.tallsCleared||0}</b></div>
       <div class="records-row"><span>Larges réussies</span><b>${S.widesCleared||0}</b></div>
 
-      <div class="records-section-title">RIVAUX</div>
+      <div class="records-section-title">RIVAUX &amp; BOSS</div>
       <div class="records-row"><span>Rivaux dépassés</span><b>${S.rivalsWon||0}</b></div>
       <div class="records-row"><span>Défaites</span><b>${S.rivalsLost||0}</b></div>
       <div class="records-row"><span>Taux de victoire</span><b>${rivalWinRate}%</b></div>
       <div class="records-row"><span>Meilleure série</span><b>×${S.bestRivalStreak||0}</b></div>
+      <div class="records-row"><span>Boss dépassés</span><b>${bossDodged}</b></div>
 
       <div class="records-section-title">BONUS</div>
       <div class="records-row"><span>Upgrades achetés</span><b>${S.totalUpgradesBought||0}</b></div>
@@ -21970,12 +22047,29 @@ window.addEventListener('DOMContentLoaded', async () => {
 function applyProgressiveDisclosure(){
   const laps = (STATE && STATE.lapsRun) || 0;
   const saison = (STATE && STATE.saison) || 1;
+  window._revealedUnlocks = window._revealedUnlocks || new Set();
   // Items du menu avec data-unlock-km ou data-unlock-saison
   document.querySelectorAll('[data-unlock-km], [data-unlock-saison]').forEach(el => {
     const needKm = parseInt(el.getAttribute('data-unlock-km') || '0', 10);
     const needSaison = parseInt(el.getAttribute('data-unlock-saison') || '0', 10);
     const locked = (laps < needKm) || (saison < needSaison);
     el.setAttribute('data-locked', locked ? '1' : '0');
+    // Toast notification on unlock transition
+    const id = el.getAttribute('data-upgrade') || el.getAttribute('data-action') || el.id || '';
+    const wasRevealed = window._revealedUnlocks.has(id);
+    if(!locked && !wasRevealed && id && laps > 0){
+      window._revealedUnlocks.add(id);
+      const label = el.getAttribute('aria-label') || el.querySelector('.upg-name')?.textContent || el.querySelector('.menu-label')?.textContent || id;
+      const n = document.createElement('div');
+      n.id = 'unlock-toast-' + Date.now();
+      n.innerHTML = '✨ NOUVEAU : ' + label + ' débloqué !';
+      n.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#ffd060,#ff9020);color:#1a1a2e;padding:12px 22px;border-radius:24px;font-weight:700;z-index:9999;box-shadow:0 6px 20px rgba(0,0,0,0.4);animation:unlockFadeInOut 4s ease forwards;';
+      document.body.appendChild(n);
+      setTimeout(() => { n.remove(); }, 4000);
+    } else if(locked && wasRevealed){
+      // Reset if locked again (e.g. NG+)
+      window._revealedUnlocks.delete(id);
+    }
   });
   // === HUD : cache aussi les stats gems/étoiles si pas encore gagnées ===
   const gems = STATE.gems || 0;
@@ -26012,6 +26106,22 @@ window.addEventListener('appinstalled', () => {
                                   : _r < 0.30 ? 'linear-gradient(90deg,#e8a040,#a87010)'
                                   : _r > 0.80 ? 'linear-gradient(90deg,#40c8a0,#208070)'
                                   : 'linear-gradient(90deg,#7ec46a,#5aa84a)';
+      // === Hint contextuel stamina basse (oneshot)
+      try {
+        if(_r < 0.30 && !window._staminaLowHintShown && localStorage.getItem('foulee.tutoStaminaSeen') !== '1' && (!window.ActiveTuto || !ActiveTuto.isActive())){
+          window._staminaLowHintShown = true;
+          const hint = document.getElementById('tuto-hint');
+          const msg = document.getElementById('tuto-msg');
+          if(hint && msg){
+            msg.textContent = '💧 Stamina basse ! Arrête de taper quelques secondes pour récupérer ton souffle.';
+            hint.style.background = 'linear-gradient(135deg,#e8a040,#a86010)';
+            hint.style.color = '#fff';
+            hint.classList.add('show');
+            setTimeout(() => { hint.classList.remove('show'); }, 6000);
+            try { localStorage.setItem('foulee.tutoStaminaSeen', '1'); } catch(e){}
+          }
+        }
+      } catch(e){}
     }
 
     const pal = currentPalette();

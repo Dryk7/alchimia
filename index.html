@@ -834,7 +834,8 @@ header .stats #stat-stars.hud-show{ display:flex; }
    PROGRESSIVE DISCLOSURE — masque les items menu non débloqués
    ════════════════════════════════════════════════════════════ */
 .menu-item[data-locked="1"],
-.menu-sec[data-locked="1"]{
+.menu-sec[data-locked="1"],
+.upg-btn[data-locked="1"]{
   display:none !important;
 }
 
@@ -8152,7 +8153,12 @@ body.shop-epic-flash::after{
           </div>
           <!-- v2 : 6 upgrades regroupés en 4 axes clairs avec icônes + couleurs distinctives -->
           <div class="tap-upgrades tap-upgrades-v2">
-            <button class="upg-btn upg-power" data-upgrade="tapValue" aria-label="Puissance">
+            <div class="upg-empty-msg" id="upg-empty-msg" style="display:none; text-align:center; padding:24px 16px; color:#888; font-size:14px; grid-column:1/-1;">
+              <div style="font-size:32px; margin-bottom:8px;">🏃</div>
+              <div style="font-weight:700; color:#1a1a2e;">Cours pour débloquer tes aides</div>
+              <div style="margin-top:6px; font-size:12px;">Ton premier upgrade arrive au km 1</div>
+            </div>
+            <button class="upg-btn upg-power" data-upgrade="tapValue" data-unlock-km="1" aria-label="Puissance">
               <div class="upg-icon-wrap">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 12 L7 6 L10 6 L10 4 L14 4 L14 6 L17 6 L17 12 L20 12 L17 18 L14 16 L14 20 L10 20 L10 16 L7 18 L4 12 z"/></svg>
               </div>
@@ -8167,7 +8173,7 @@ body.shop-epic-flash::after{
               </div>
             </button>
 
-            <button class="upg-btn upg-luck" data-upgrade="critChance" aria-label="Chance critique">
+            <button class="upg-btn upg-luck" data-upgrade="critChance" data-unlock-km="5" aria-label="Chance critique">
               <div class="upg-icon-wrap">
                 <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12,2 14.6,9 22,9 16,13.5 18.2,22 12,17 5.8,22 8,13.5 2,9 9.4,9"/></svg>
               </div>
@@ -8182,7 +8188,7 @@ body.shop-epic-flash::after{
               </div>
             </button>
 
-            <button class="upg-btn upg-auto" data-upgrade="autoTap" aria-label="Auto-pilote">
+            <button class="upg-btn upg-auto" data-upgrade="autoTap" data-unlock-km="18" aria-label="Auto-pilote">
               <div class="upg-icon-wrap">
                 <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 2 v4 M12 18 v4 M2 12 h4 M18 12 h4 M5 5 l3 3 M16 16 l3 3 M5 19 l3 -3 M16 8 l3 -3" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
               </div>
@@ -8197,7 +8203,7 @@ body.shop-epic-flash::after{
               </div>
             </button>
 
-            <button class="upg-btn upg-trophy" data-upgrade="lapBonus" aria-label="Trophée">
+            <button class="upg-btn upg-trophy" data-upgrade="lapBonus" data-unlock-km="3" aria-label="Trophée">
               <div class="upg-icon-wrap">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4 L17 4 L17 8 Q21 8 21 10 Q21 14 17 14 L17 15 Q17 17 14 17.5 L14 19 L17 21 L7 21 L10 19 L10 17.5 Q7 17 7 15 L7 14 Q3 14 3 10 Q3 8 7 8 z M5 10 Q5 12 7 12 L7 10 z M17 10 L17 12 Q19 12 19 10 z"/></svg>
               </div>
@@ -8213,7 +8219,7 @@ body.shop-epic-flash::after{
             </button>
 
             <!-- Upgrades secondaires (Souffle + Vitesse) accessibles via défilement après le 4 principaux -->
-            <button class="upg-btn upg-breath" data-upgrade="endurance" aria-label="Souffle">
+            <button class="upg-btn upg-breath" data-upgrade="endurance" data-unlock-km="12" aria-label="Souffle">
               <div class="upg-icon-wrap">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 Q8 6 8 10 Q8 13 11 14 L11 18 Q9 18 8 20 L16 20 Q15 18 13 18 L13 14 Q16 13 16 10 Q16 6 12 3 z"/></svg>
               </div>
@@ -8228,7 +8234,7 @@ body.shop-epic-flash::after{
               </div>
             </button>
 
-            <button class="upg-btn upg-speed" data-upgrade="baseSpeed" aria-label="Vitesse">
+            <button class="upg-btn upg-speed" data-upgrade="baseSpeed" data-unlock-km="25" aria-label="Vitesse">
               <div class="upg-icon-wrap">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 18 L8 13 L12 17 L21 8 L21 12 L23 10 L23 5 L18 5 L20 7 L12 15 L8 11 L1 18 z"/></svg>
               </div>
@@ -16739,7 +16745,7 @@ function runnerBaseSpeed(){
   // Maintenant : le boost multiplie aussi la vitesse perçue (HUD + parallax cohérents).
   const baseSpeedLvl = STATE.upgradeBaseSpeed || 0;
   if(baseSpeedLvl > 0 && base > 0){
-    base *= Math.pow(1.10, baseSpeedLvl); // +10%/niveau (max L15 ≈ ×4.18)
+    base *= Math.pow(1.15, baseSpeedLvl); // +15%/niveau boosté (max L15 ≈ ×8.14)
   }
   // CARTES STAR : multiplicateur sur la vitesse
   if(typeof deckBonus === 'function' && base > 0){
@@ -16847,7 +16853,7 @@ function tapBoost(e){
   const bigBangBonus = (typeof deckBonus === 'function' && deckBonus('tapBig') > 0 && Math.random() < deckBonus('tapBig')) ? 100 : 1;
   // Modifier stade map (vélodrome / indoor / etc.)
   const mapTapMul = (typeof mapStadiumTapMul === 'function') ? mapStadiumTapMul() : 1;
-  const perTap = (1 + (STATE.upgradeTapValue||0)) * comboMul * tapMul * shopMul * eTapMul * eGoldMul * skillTap * equipMul * cardTap * cardAll * bigBangBonus * mapTapMul * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
+  const perTap = (1 + (STATE.upgradeTapValue||0) * 1.5) * comboMul * tapMul * shopMul * eTapMul * eGoldMul * skillTap * equipMul * cardTap * cardAll * bigBangBonus * mapTapMul * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
   // Crit chance plafonné à 60% + équipement + cartes
   const equipCrit = (typeof equipBonus === 'function') ? equipBonus('critRate') : 0;
   const cardCrit = (typeof deckBonus === 'function') ? deckBonus('crit') : 0;
@@ -16961,13 +16967,13 @@ function updateTapStrip(){
   const perTap = document.getElementById('tap-per-tap');
   const perLap = document.getElementById('tap-per-lap');
   const critRate = document.getElementById('tap-crit-rate');
-  const tapValue = 1 + (STATE.upgradeTapValue||0);
+  const tapValue = 1 + (STATE.upgradeTapValue||0) * 1.5;
   if(perTap) perTap.textContent = '+' + tapValue;
   // Affiche le gain par tap dans le bouton principal
   const boostPerTap = document.getElementById('boost-per-tap');
   if(boostPerTap) boostPerTap.textContent = tapValue;
   if(perLap){
-    const lapBonus = Math.floor(Math.pow(STATE.upgradeLapBonus||0, 1.5) * 3);
+    const lapBonus = Math.floor(Math.pow(STATE.upgradeLapBonus||0, 1.5) * 5);
     const lapReward = 3 + (STATE.lapsRun||0) * 2 + lapBonus;
     perLap.textContent = '+' + lapReward;
   }
@@ -17034,24 +17040,29 @@ const UPGRADES_TAP = {
   tapValue: {
     nameKey: 'upg_tapValue', base: 80, factor: 1.45,
     state: 'upgradeTapValue',
+    unlockLaps: 1,
   },
   critChance: {
     nameKey: 'upg_critChance', base: 350, factor: 1.50,
     state: 'upgradeCritChance',
     maxLevel: 55, // crit cap 60% (5% base + 55%) — pas plus pour pas OP
+    unlockLaps: 5,
   },
   lapBonus: {
     nameKey: 'upg_lapBonus', base: 400, factor: 1.45,
     state: 'upgradeLapBonus',
+    unlockLaps: 3,
   },
   autoTap: {
     nameKey: 'upg_autoTap', base: 2500, factor: 1.55,
     state: 'upgradeAutoTap',
+    unlockLaps: 18,
   },
   endurance: {
     nameKey: 'upg_endurance', base: 800, factor: 1.50,
     state: 'upgradeEndurance',
     maxLevel: 20,
+    unlockLaps: 12,
   },
   // === VISION D'AIGLE : voir les haies plus tôt → vraie compétence gameplay ===
   // Chaque niveau augmente la distance d'apparition des warnings haies de 15%
@@ -17066,6 +17077,7 @@ const UPGRADES_TAP = {
     nameKey: 'upg_baseSpeed', base: 3000, factor: 1.55,
     state: 'upgradeBaseSpeed',
     maxLevel: 15,
+    unlockLaps: 25,
   },
   // === ULTIMATE : Pilote Automatique — débloque km 30 ===
   // Chaque niveau +5% au baseline tapBoost passif. Lvl 20 = 100% = auto-sprint complet.
@@ -19425,12 +19437,12 @@ function updateUpgradesUI(){
    (passif, comme un employé qui tape pour toi) */
 let _autoTapAccumulator = 0;
 function tickAutoTap(dt){
-  const rate = (STATE.upgradeAutoTap || 0) + (typeof saisonAutoBase==='function'?saisonAutoBase():0);
+  const rate = (STATE.upgradeAutoTap || 0) * 1.5 + (typeof saisonAutoBase==='function'?saisonAutoBase():0);
   if(rate <= 0) return;
   _autoTapAccumulator += dt * rate;
   while(_autoTapAccumulator >= 1){
     _autoTapAccumulator -= 1;
-    const perTap = (1 + (STATE.upgradeTapValue||0)) * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
+    const perTap = (1 + (STATE.upgradeTapValue||0) * 1.5) * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
     const rawCrit = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
     const critChance = Math.min(0.60, rawCrit);
     const isCrit = Math.random() < critChance;
@@ -19481,7 +19493,7 @@ function completeLap(){
   // ÉCO ULTRA-SIMPLIFIÉE : gains réduits encore ×2.5 (base 3 + km 2 + upgrade scale 1.5 par niveau)
   // Au km 100 : 3 + 200 + bonus ≈ 250 gouttes par km (vs 510 avant, 2700 il y a 3 push)
   // Rebalance lapBonus : scaling exponentiel doux pour rendre l'upgrade vraiment rentable
-  const upgradeBonus = Math.floor(Math.pow(STATE.upgradeLapBonus||0, 1.5) * 3);
+  const upgradeBonus = Math.floor(Math.pow(STATE.upgradeLapBonus||0, 1.5) * 5);
   let baseReward = 3 + lapNum * 2 + upgradeBonus;
   // Bonus carte "Champion National" → +30% lap gold
   if(typeof deckBonus === 'function') baseReward = Math.floor(baseReward * (1 + deckBonus('lapGold') + deckBonus('goldAll')));
@@ -21776,6 +21788,12 @@ function applyProgressiveDisclosure(){
   if(statsTab) statsTab.style.display = (laps >= 12) ? '' : 'none';
   // === SKILLS bar : cachée tant qu'aucun skill débloqué (le 1er est km 0 mais on attend km 1 pour pas saturer)
   // (Déjà géré par renderSkillsBar via skillUnlocked)
+  // === MESSAGE "Cours pour débloquer" si aucun upgrade visible ===
+  const visibleUpgs = document.querySelectorAll('.upg-btn:not([data-locked="1"])').length;
+  const emptyMsg = document.getElementById('upg-empty-msg');
+  if(emptyMsg){
+    emptyMsg.style.display = (visibleUpgs === 0) ? '' : 'none';
+  }
 }
 // Sync toutes les 2 sec
 setInterval(applyProgressiveDisclosure, 2000);
@@ -25360,9 +25378,9 @@ window.addEventListener('appinstalled', () => {
     // tapCount décroît UNIQUEMENT si pas tapé depuis 300ms (sinon plateau)
     const sinceLastTap = (performance.now() - lastTapTime) / 1000;
     if(sinceLastTap > 0.3){
-      // ENDURANCE : chaque niveau réduit la décroissance de 7% (cap 70% à L10)
+      // ENDURANCE : chaque niveau réduit la décroissance de 10.5% boosté (cap 70% à L7)
       const enduranceLvl = (window.STATE && window.STATE.upgradeEndurance) || 0;
-      const decayMul = Math.max(0.30, 1.0 - enduranceLvl * 0.07);
+      const decayMul = Math.max(0.30, 1.0 - enduranceLvl * 0.105);
       // Decay réduit de 35/sec à 20/sec → permet au tap rate humain (~10/sec) de monter la jauge
       tapCount = Math.max(0, tapCount - dt * 20 * decayMul);
     }
@@ -25494,7 +25512,7 @@ window.addEventListener('appinstalled', () => {
     // Chaque niveau de cruiseControl ajoute 5% au tapBoost de base (sans tap).
     // À lvl 20 = 100% = le héros sprint en permanence sans intervention.
     const cruiseLvl = (window.STATE && window.STATE.upgradeCruiseControl) || 0;
-    const cruiseFloor = Math.min(2, cruiseLvl * 0.10); // chaque lvl = 0.10 sur l'échelle tapBoost (max 2)
+    const cruiseFloor = Math.min(2, cruiseLvl * 0.15); // chaque lvl = 0.15 sur l'échelle tapBoost boosté (max 2)
     // Map tapCount (0..100) → tapBoost (0..2), AVEC plancher cruise control
     lastTapBoost = Math.max(cruiseFloor, (tapCount / 100) * 2);
     const tapBoost = lastTapBoost;
@@ -25515,7 +25533,7 @@ window.addEventListener('appinstalled', () => {
     if(window.STATE){
       const laps = window.STATE.lapsRun || 0;
       const baseSpeedLvl = window.STATE.upgradeBaseSpeed || 0;
-      const baseSpeedMul = Math.pow(1.10, baseSpeedLvl);
+      const baseSpeedMul = Math.pow(1.15, baseSpeedLvl);
       let idleProgressPerSec;
       if(laps < 3){
         // FULL TAP MODE : idle quasi nul → le héros n'avance qu'au tap

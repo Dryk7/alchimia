@@ -4087,6 +4087,35 @@ body.tab-drawer-open .tuto-hint{
   line-height:1.2;
   margin-top:1px;
 }
+/* V19 CLARTÉ : effet actuel → prochain niveau visible directement */
+.tap-upgrades-v2 .upg-effect {
+  font-size: 10.5px;
+  margin-top: 3px;
+  font-weight: 700;
+  color: #888;
+  letter-spacing: 0.2px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  line-height: 1.2;
+  flex-wrap: wrap;
+}
+.tap-upgrades-v2 .upg-effect .eff-cur {
+  color: #1a1a2e;
+}
+.tap-upgrades-v2 .upg-effect .eff-arrow {
+  color: #c84030;
+  font-weight: 900;
+}
+.tap-upgrades-v2 .upg-effect .eff-next {
+  color: #08a050;
+  font-weight: 900;
+}
+.tap-upgrades-v2 .upg-effect .eff-max {
+  color: #b08020;
+  font-weight: 900;
+  font-size: 11px;
+}
 .tap-upgrades-v2 .upg-bar{
   margin-top:3px;
   height:5px;
@@ -4199,6 +4228,22 @@ body.tab-drawer-open .tuto-hint{
   transition:transform .12s, box-shadow .12s, border-color .15s;
   position:relative;
 }
+@keyframes hintPointed {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,212,80,0); }
+  50% { box-shadow: 0 0 0 10px rgba(255,212,80,0.5); }
+}
+.hint-pointed {
+  animation: hintPointed 1.4s infinite;
+  z-index: 99;
+  position: relative;
+}
+@keyframes hintFadeIn {
+  0% { opacity: 0; transform: translateX(-50%) translateY(20px); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+.upg-first-hint {
+  animation: hintFadeIn 0.4s ease-out;
+}
 .upg-btn.affordable{
   border-color:#c84030;
   background:linear-gradient(180deg, #ffe0a0, #ffba60);
@@ -4276,6 +4321,7 @@ body.tab-drawer-open .tuto-hint{
   .tap-upgrades-v2 { grid-template-columns: 1fr; gap: 6px; }
   .tap-upgrades-v2 .upg-btn { padding: 6px 8px; }
   .tap-upgrades-v2 .upg-desc { display: none; }
+  .tap-upgrades-v2 .upg-effect { font-size: 9.5px; }
 }
 @media (min-width: 400px) and (max-width: 599px) {
   .tap-upgrades-v2 { grid-template-columns: repeat(2, 1fr); }
@@ -7854,18 +7900,66 @@ body.shop-epic-flash::after{
         </section>
 
         <section class="g-sec" data-section="upgrades">
-          <h3>Les upgrades</h3>
-          <p><b>6 upgrades</b> permanents qui amplifient ton coureur. Onglet UPGRADES en bas.</p>
-          <ul class="g-list">
-            <li><b>PUISSANCE</b> (rouge) — +1 goutte à chaque tap (linéaire)</li>
-            <li><b>CHANCE</b> (jaune) — +1% chance d'obtenir ×5 gouttes (cap 60%)</li>
-            <li><b>AUTO-PILOTE</b> (bleu) — +1 tap automatique / seconde</li>
-            <li><b>TROPHÉE</b> (orange) — +2 gouttes à chaque km bouclé</li>
-            <li><b>SOUFFLE</b> (vert) — le combo tient plus longtemps avant de retomber</li>
-            <li><b>VITESSE</b> (violet) — +10% de vitesse passive idle (cap niv 15)</li>
-            <li><b>PILOTE AUTO</b> (cyan, km 30+) — vitesse maintenue sans tap, +5% / niv (max 100%)</li>
+          <h3 style="color:#c84030; margin-top:14px;">Les 8 Upgrades</h3>
+          <p style="font-size:12px; color:#666; margin:4px 0 10px;">Chaque upgrade débloque à un km clé et booste un aspect du gameplay. Plus le niveau monte, plus l'effet est puissant.</p>
+
+          <div style="display:flex; flex-direction:column; gap:8px;">
+            <div class="codex-upg-row" style="background:rgba(232,80,64,0.08); border-left:4px solid #c84030; padding:8px 12px; border-radius:6px;">
+              <strong style="color:#c84030;">PUISSANCE</strong> — débloque km 1
+              <div style="font-size:12px; color:#444; margin-top:2px;">+1.5 goutte par tap par niveau. Cap : niveau ∞.</div>
+              <div style="font-size:11px; color:#888; margin-top:2px;">Niv 1 → +2.5 g/tap • Niv 5 → +8.5 g/tap • Niv 15 → +23.5 g/tap</div>
+            </div>
+
+            <div class="codex-upg-row" style="background:rgba(232,160,64,0.08); border-left:4px solid #e8a040; padding:8px 12px; border-radius:6px;">
+              <strong style="color:#e8a040;">TROPHÉE</strong> — débloque km 3
+              <div style="font-size:12px; color:#444; margin-top:2px;">+5 gouttes par km bouclé par niveau (courbe sqrt^1.5 — exponentielle douce).</div>
+              <div style="font-size:11px; color:#888; margin-top:2px;">Niv 1 → +5 g/km • Niv 5 → +56 g/km • Niv 15 → +290 g/km</div>
+            </div>
+
+            <div class="codex-upg-row" style="background:rgba(255,212,80,0.08); border-left:4px solid #ffd060; padding:8px 12px; border-radius:6px;">
+              <strong style="color:#b08020;">CHANCE CRITIQUE</strong> — débloque km 5
+              <div style="font-size:12px; color:#444; margin-top:2px;">+1% chance de crit par niveau. Cap : niveau 55 (60% total). Un crit = ×5 sur le tap.</div>
+              <div style="font-size:11px; color:#888; margin-top:2px;">Niv 0 → 5% • Niv 25 → 30% • Niv 55 → 60% (max)</div>
+            </div>
+
+            <div class="codex-upg-row" style="background:rgba(120,200,255,0.08); border-left:4px solid #78c8ff; padding:8px 12px; border-radius:6px;">
+              <strong style="color:#3070b0;">VISION D'AIGLE</strong> — débloque km 8
+              <div style="font-size:12px; color:#444; margin-top:2px;">Voir les haies plus loin = + de temps pour préparer le saut. Cap : niveau 15.</div>
+              <div style="font-size:11px; color:#888; margin-top:2px;">Niv 5 → ×1.75 distance vision • Niv 15 → ×3.25</div>
+            </div>
+
+            <div class="codex-upg-row" style="background:rgba(126,196,106,0.08); border-left:4px solid #7ec46a; padding:8px 12px; border-radius:6px;">
+              <strong style="color:#4a8a30;">SOUFFLE</strong> — débloque km 12
+              <div style="font-size:12px; color:#444; margin-top:2px;">+10 stamina max par niveau + combo qui tient plus longtemps. Cap : niveau 20.</div>
+              <div style="font-size:11px; color:#888; margin-top:2px;">Niv 0 → 100 stamina • Niv 20 → 300 stamina (max)</div>
+            </div>
+
+            <div class="codex-upg-row" style="background:rgba(120,200,255,0.08); border-left:4px solid #4a9fd9; padding:8px 12px; border-radius:6px;">
+              <strong style="color:#3070b0;">AUTO-PILOTE</strong> — débloque km 18
+              <div style="font-size:12px; color:#444; margin-top:2px;">+1.5 tap/sec automatique par niveau. Cap effectif : 10 taps/s (soft cap endgame).</div>
+              <div style="font-size:11px; color:#888; margin-top:2px;">Niv 5 → 7.5 tap/s • Niv 7 → 10 tap/s (cap)</div>
+            </div>
+
+            <div class="codex-upg-row" style="background:rgba(144,128,208,0.08); border-left:4px solid #9080d0; padding:8px 12px; border-radius:6px;">
+              <strong style="color:#604aa0;">VITESSE</strong> — débloque km 25
+              <div style="font-size:12px; color:#444; margin-top:2px;">×1.15 vitesse passive par niveau (multiplicatif). Cap : niveau 15.</div>
+              <div style="font-size:11px; color:#888; margin-top:2px;">Niv 5 → ×2.01 • Niv 10 → ×4.05 • Niv 15 → ×8.14</div>
+            </div>
+
+            <div class="codex-upg-row" style="background:rgba(64,200,160,0.08); border-left:4px solid #40c8a0; padding:8px 12px; border-radius:6px;">
+              <strong style="color:#208070;">PILOTE AUTOMATIQUE</strong> — débloque km 30 (ULTIMATE)
+              <div style="font-size:12px; color:#444; margin-top:2px;">+7.5% baseline tap passif par niveau. Au niveau 15 : auto-sprint complet. Cap : niveau 15.</div>
+              <div style="font-size:11px; color:#888; margin-top:2px;">Niv 5 → +37.5% • Niv 15 → +112.5% (auto pleine puissance)</div>
+            </div>
+          </div>
+
+          <h3 style="color:#c84030; margin-top:18px;">Stratégie de leveling</h3>
+          <ul style="font-size:12px; color:#444; padding-left:18px; line-height:1.6;">
+            <li><strong>Early (km 1-10)</strong> : focus PUISSANCE + TROPHÉE. C'est ton moteur de gouttes.</li>
+            <li><strong>Mid (km 10-30)</strong> : CHANCE CRITIQUE rentable, VISION + SOUFFLE pour les haies, AUTO-PILOTE pour idle.</li>
+            <li><strong>Late (km 30+)</strong> : VITESSE multiplicatif, PILOTE AUTO pour le endgame.</li>
+            <li>Les <strong>upgrades coûtent factor^lvl</strong>. Soft cap x10 à partir du niveau 20. Hard cap niveau 50.</li>
           </ul>
-          <p class="g-tip">Le coût grimpe ×1.45 à ×1.55 par niveau. Achète en priorité <b>PUISSANCE</b> au début.</p>
         </section>
 
         <section class="g-sec" data-section="team">
@@ -8270,6 +8364,7 @@ body.shop-epic-flash::after{
               <div class="upg-meta">
                 <div class="upg-name">PUISSANCE</div>
                 <div class="upg-desc">+1 goutte / tap</div>
+                <div class="upg-effect" id="upg-tap-effect"></div>
                 <div class="upg-bar"><div class="upg-bar-fill" id="upg-tap-bar"></div></div>
                 <div class="upg-bottom">
                   <span class="upg-lvl" id="upg-tap-lvl">Niv 0</span>
@@ -8285,6 +8380,7 @@ body.shop-epic-flash::after{
               <div class="upg-meta">
                 <div class="upg-name">CHANCE</div>
                 <div class="upg-desc">+1% chance ×5 gouttes</div>
+                <div class="upg-effect" id="upg-crit-effect"></div>
                 <div class="upg-bar"><div class="upg-bar-fill" id="upg-crit-bar"></div></div>
                 <div class="upg-bottom">
                   <span class="upg-lvl" id="upg-crit-lvl">Niv 0</span>
@@ -8300,6 +8396,7 @@ body.shop-epic-flash::after{
               <div class="upg-meta">
                 <div class="upg-name">AUTO-PILOTE</div>
                 <div class="upg-desc">+1 tap auto / seconde</div>
+                <div class="upg-effect" id="upg-auto-effect"></div>
                 <div class="upg-bar"><div class="upg-bar-fill" id="upg-auto-bar"></div></div>
                 <div class="upg-bottom">
                   <span class="upg-lvl" id="upg-auto-lvl">Niv 0</span>
@@ -8315,6 +8412,7 @@ body.shop-epic-flash::after{
               <div class="upg-meta">
                 <div class="upg-name">TROPHÉE</div>
                 <div class="upg-desc">+2 gouttes à chaque km</div>
+                <div class="upg-effect" id="upg-lap-effect"></div>
                 <div class="upg-bar"><div class="upg-bar-fill" id="upg-lap-bar"></div></div>
                 <div class="upg-bottom">
                   <span class="upg-lvl" id="upg-lap-lvl">Niv 0</span>
@@ -8331,6 +8429,7 @@ body.shop-epic-flash::after{
               <div class="upg-meta">
                 <div class="upg-name">SOUFFLE</div>
                 <div class="upg-desc">Combo tient + longtemps</div>
+                <div class="upg-effect" id="upg-endurance-effect"></div>
                 <div class="upg-bar"><div class="upg-bar-fill" id="upg-endurance-bar"></div></div>
                 <div class="upg-bottom">
                   <span class="upg-lvl" id="upg-endurance-lvl">Niv 0</span>
@@ -8346,6 +8445,7 @@ body.shop-epic-flash::after{
               <div class="upg-meta">
                 <div class="upg-name">VITESSE DE CROISIÈRE</div>
                 <div class="upg-desc">+10% vitesse passive</div>
+                <div class="upg-effect" id="upg-bspeed-effect"></div>
                 <div class="upg-bar"><div class="upg-bar-fill" id="upg-bspeed-bar"></div></div>
                 <div class="upg-bottom">
                   <span class="upg-lvl" id="upg-bspeed-lvl">Niv 0</span>
@@ -8362,6 +8462,7 @@ body.shop-epic-flash::after{
               <div class="upg-meta">
                 <div class="upg-name">VISION D'AIGLE</div>
                 <div class="upg-desc">Haies visibles 2× plus loin</div>
+                <div class="upg-effect" id="upg-eagle-effect"></div>
                 <div class="upg-bar"><div class="upg-bar-fill" id="upg-eagle-bar"></div></div>
                 <div class="upg-bottom">
                   <span class="upg-lvl" id="upg-eagle-lvl">Niv 0</span>
@@ -8378,6 +8479,7 @@ body.shop-epic-flash::after{
               <div class="upg-meta">
                 <div class="upg-name">PILOTE AUTO</div>
                 <div class="upg-desc">+5% vitesse maintenue sans tap</div>
+                <div class="upg-effect" id="upg-cruise-effect"></div>
                 <div class="upg-bar"><div class="upg-bar-fill" id="upg-cruise-bar"></div></div>
                 <div class="upg-bottom">
                   <span class="upg-lvl" id="upg-cruise-lvl">Niv 0</span>
@@ -20007,13 +20109,42 @@ function updateRunnerHUD(){
   }
 }
 
-const UPG_ID_SUFFIX = { tapValue:'tap', critChance:'crit', lapBonus:'lap', autoTap:'auto', endurance:'endurance', baseSpeed:'bspeed', cruiseControl:'cruise' };
+const UPG_ID_SUFFIX = { tapValue:'tap', critChance:'crit', lapBonus:'lap', autoTap:'auto', endurance:'endurance', baseSpeed:'bspeed', eagleEye:'eagle', cruiseControl:'cruise' };
 function fmtCost(n){
   if(n >= 1e9) return (n/1e9).toFixed(n>=1e10?0:1) + 'G';
   if(n >= 1e6) return (n/1e6).toFixed(n>=1e7?0:1) + 'M';
   if(n >= 1e3) return (n/1e3).toFixed(n>=1e4?0:1) + 'k';
   return Math.floor(n);
 }
+// Aperçu effet actuel vs prochain niveau : retourne { current, next, isMax, lvl, max }
+// Utilisé par la ligne .upg-effect sur chaque bouton upgrade (visible sans hold-tap)
+function _previewUpgradeEffect(id){
+  const u = UPGRADES_TAP[id]; if(!u) return null;
+  const lvl = STATE[u.state] || 0;
+  const fmt = (l) => {
+    switch(id){
+      case 'tapValue':     return '+' + (1 + l * 1.5).toFixed(1) + ' g/tap';
+      case 'critChance':   return (5 + l) + '% crit';
+      case 'lapBonus':     return '+' + Math.floor(Math.pow(l, 1.5) * 5) + ' g/km';
+      case 'autoTap':      return '+' + (l * 1.5).toFixed(1) + ' tap/s';
+      case 'endurance':    return '+' + (l * 10) + ' stamina';
+      case 'baseSpeed':    return '×' + Math.pow(1.15, l).toFixed(2) + ' vitesse';
+      case 'eagleEye':     return '×' + (1 + l * 0.15).toFixed(2) + ' vision';
+      case 'cruiseControl':return '+' + Math.floor(Math.min(2, l * 0.15) * 50) + '% auto-sprint';
+      default: return '+' + l;
+    }
+  };
+  const max = u.maxLevel || 99;
+  const atCap = lvl >= max;
+  return {
+    current: fmt(lvl),
+    next: atCap ? 'MAX' : fmt(lvl + 1),
+    isMax: atCap,
+    lvl,
+    max
+  };
+}
+try { window._previewUpgradeEffect = _previewUpgradeEffect; } catch(_){}
 // Hover preview : retourne le gain texte du prochain niveau pour data-bonus tooltip
 function _previewUpgradeBonus(id){
   const u = UPGRADES_TAP[id];
@@ -20046,6 +20177,16 @@ function updateUpgradesUI(){
       lvlEl.textContent = 'Niv ' + lvl + (u.maxLevel ? (' / ' + maxL) : '');
     }
     if(costEl) costEl.textContent = fmtCost(cost);
+    // V19 CLARTÉ : afficher effet actuel → prochain niveau directement sur le bouton
+    const effEl = document.getElementById('upg-' + sfx + '-effect');
+    if(effEl && typeof _previewUpgradeEffect === 'function'){
+      const eff = _previewUpgradeEffect(id);
+      if(eff){
+        effEl.innerHTML = eff.isMax
+          ? '<span class="eff-max">MAX — ' + eff.current + '</span>'
+          : '<span class="eff-cur">' + eff.current + '</span> <span class="eff-arrow">→</span> <span class="eff-next">' + eff.next + '</span>';
+      }
+    }
     // Barre de progression : visualise le niveau actuel (cap selon u.maxLevel, sinon 30)
     if(barEl){
       const maxForBar = u.maxLevel || 30;
@@ -22338,6 +22479,7 @@ function save(){
       upgradeCruiseControl: STATE.upgradeCruiseControl || 0,
       // === Prestige Star Tree ===
       starTree: STATE.starTree || { tapPower:0, lapPower:0, dropRate:0, basePower:0, staminaPlus:0, critPower:0, cooldownNeg:0, starsJackpot:0 },
+      _upgFirstHints: STATE._upgFirstHints || {},
     };
     const json = JSON.stringify(s);
     localStorage.setItem("alchimia.save", json);
@@ -22448,6 +22590,20 @@ const UNLOCK_LABELS = {
   'saison': 'Ascension',
   'map-stadiums': 'Carte des stades',
 };
+function getUpgradeFirstHint(id){
+  const hints = {
+    'tapValue': '🥇 PUISSANCE débloqué ! Chaque tap rapporte plus de gouttes. Effet net : +1.5 g/tap par niveau.',
+    'lapBonus': '🏃 TROPHÉE débloqué ! Boucler 1 km te rapporte des gouttes bonus. Courbe exponentielle douce — investis tôt.',
+    'critChance': '✨ CHANCE CRITIQUE débloquée ! +1% chance de crit (×5 sur ce tap). Cap 60%.',
+    'eagleEye': '👁️ VISION D\'AIGLE débloquée ! Tu vois les haies plus loin = + de temps pour le saut. Indispensable mid-game.',
+    'endurance': '🫁 SOUFFLE débloqué ! +10 stamina max par niveau + combo plus long. La stamina <30% te ralentit.',
+    'autoTap': '🤖 AUTO-PILOTE débloqué ! Ton coureur tape tout seul +1.5/sec par niveau. Idle puissant.',
+    'baseSpeed': '⚡ VITESSE DE CROISIÈRE débloquée ! ×1.15 vitesse passive par niveau (multiplicatif). ×8 au cap !',
+    'cruiseControl': '🚗 PILOTE AUTOMATIQUE débloqué ! Ultimate : +7.5% baseline tap par niveau. À 15 = auto-sprint complet.'
+  };
+  return hints[id] || null;
+}
+window.getUpgradeFirstHint = getUpgradeFirstHint;
 function applyProgressiveDisclosure(){
   const laps = (STATE && STATE.lapsRun) || 0;
   const saison = (STATE && STATE.saison) || 1;
@@ -22489,6 +22645,38 @@ function applyProgressiveDisclosure(){
         if(typeof sfxAchievement === 'function') sfxAchievement();
         else if(typeof sfxBuyScaled === 'function') sfxBuyScaled(1);
       } catch(e){}
+      // === Hint pédagogique 1ère fois jamais
+      const upgId = el.dataset ? el.dataset.upgrade : el.getAttribute('data-upgrade');
+      if(upgId){
+        STATE._upgFirstHints = STATE._upgFirstHints || {};
+        if(!STATE._upgFirstHints[upgId]){
+          STATE._upgFirstHints[upgId] = true;
+          const hintTxt = (typeof getUpgradeFirstHint === 'function') ? getUpgradeFirstHint(upgId) : null;
+          if(hintTxt){
+            // Délai 3s après toast pour laisser le joueur lire le toast d'abord
+            setTimeout(() => {
+              try {
+                // Méthode 1 : créer une bulle dédiée près du bouton
+                const targetBtn = document.querySelector('.upg-btn[data-upgrade="' + upgId + '"]');
+                if(targetBtn){
+                  const hint = document.createElement('div');
+                  hint.className = 'upg-first-hint';
+                  hint.style.cssText = 'position:fixed; bottom:90px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,#1a1a2e,#3a2a4a); color:#fff; padding:14px 18px; border-radius:12px; max-width:340px; font-size:12.5px; line-height:1.4; box-shadow:0 8px 24px rgba(0,0,0,0.4); z-index:9998; cursor:pointer; border:1px solid rgba(255,212,80,0.4);';
+                  hint.textContent = hintTxt;
+                  hint.onclick = () => hint.remove();
+                  document.body.appendChild(hint);
+                  setTimeout(() => { if(hint.parentNode) hint.remove(); }, 7000);
+                  // Flèche pulsante vers le bouton
+                  try {
+                    targetBtn.classList.add('hint-pointed');
+                    setTimeout(() => targetBtn.classList.remove('hint-pointed'), 7000);
+                  } catch(e){}
+                }
+              } catch(e){}
+            }, 3000);
+          }
+        }
+      }
     } else if(locked && wasRevealed){
       // Reset if locked again (e.g. NG+)
       window._revealedUnlocks.delete(id);
@@ -23604,6 +23792,7 @@ function load(){
     if(!STATE.skills.unlocked) STATE.skills.unlocked = {};
     // Prestige Star Tree
     STATE.starTree = s.starTree || { tapPower:0, lapPower:0, dropRate:0, basePower:0, staminaPlus:0, critPower:0, cooldownNeg:0, starsJackpot:0 };
+    STATE._upgFirstHints = s._upgFirstHints || {};
     // Re-applique les effets passifs des nodes débloqués
     if(typeof SKILL_TREE !== 'undefined'){
       for(const nodeId in STATE.skills.unlocked){

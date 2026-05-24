@@ -498,6 +498,23 @@ header .stats #stat-stars.hud-show{ display:flex; }
   font-size:14px;
   margin-top:2px;
 }
+/* STATS pane v18-A5 : nouvelles rangées label/valeur */
+.stats-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+}
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: rgba(255,255,255,0.55);
+  border-radius: 6px;
+  font-size: 12px;
+}
+.stat-row .stat-lbl { color: #666; }
+.stat-row .stat-val { font-weight: 800; color: #1a1a2e; font-size: 13px; }
 
 /* HUD du coureur : avatar + niveau + XP bar + bouton profil — compact v5 */
 .runner-hud{
@@ -1108,6 +1125,16 @@ header .stats #stat-stars.hud-show{ display:flex; }
   15%{opacity:1;transform:translate(-50%,0);}
   80%{opacity:1;transform:translate(-50%,0);}
   100%{opacity:0;transform:translate(-50%,-10px);}
+}
+@keyframes justUnlockGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,212,80,0); transform: scale(1); }
+  20% { box-shadow: 0 0 0 6px rgba(255,212,80,0.6); transform: scale(1.04); }
+  50% { box-shadow: 0 0 0 12px rgba(255,212,80,0.3); transform: scale(1.02); }
+}
+.just-unlocked {
+  animation: justUnlockGlow 2.2s ease-out;
+  position: relative;
+  z-index: 100;
 }
 .rg-bg{
   position:absolute; inset:0;
@@ -4063,16 +4090,18 @@ body.tab-drawer-open .tuto-hint{
 .tap-upgrades-v2 .upg-bar{
   margin-top:3px;
   height:5px;
-  background:#f0f0f0;
+  background:rgba(0,0,0,0.10);  /* rail toujours visible */
   border-radius:3px;
   overflow:hidden;
+  min-width:30px; /* assure une visibilité minimale */
 }
 .tap-upgrades-v2 .upg-bar-fill{
   height:100%;
   width:0%;
-  background:var(--upg-color, #c84030);
+  background:linear-gradient(90deg, #ffd060, #ff9020);
   border-radius:3px;
-  transition:width .3s ease-out;
+  transition:width .4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  min-width:2px; /* trace minimale même à 0 */
 }
 .tap-upgrades-v2 .upg-bottom{
   display:flex; justify-content:space-between; align-items:center;
@@ -4108,6 +4137,13 @@ body.tab-drawer-open .tuto-hint{
 }
 .tap-upgrades-v2 .upg-btn.locked{ opacity:.55; filter:grayscale(.5); }
 .tap-upgrades-v2 .upg-btn:active:not(.locked){ transform:translateY(1px) scale(.98); }
+
+/* === FOCUS-VISIBLE premium (a11y clavier) === */
+.upg-btn:focus-visible, .skill-btn:focus-visible {
+  outline: 3px solid #c84030;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px rgba(200,64,48,0.25);
+}
 
 /* IDENTITÉ COULEUR par axe d'upgrade */
 .tap-upgrades-v2 .upg-power   { --upg-color:#e84030; --upg-shadow:rgba(232,64,48,.40); --upg-glow:rgba(255,160,120,.45); }
@@ -4170,6 +4206,13 @@ body.tab-drawer-open .tuto-hint{
   animation:upgPulse 1.5s ease-in-out infinite;
 }
 .upg-btn.locked{ filter:grayscale(.5) brightness(.85); opacity:.7; cursor:not-allowed; }
+.upg-btn.unaffordable{
+  filter:grayscale(0.55) brightness(0.92);
+  opacity:0.72;
+}
+.upg-btn.unaffordable .upg-cost{
+  color:#7a3a10;
+}
 .upg-btn:active:not(.locked){ transform:translateY(2px) scale(.98); box-shadow:0 1px 3px rgba(80,40,20,.20), inset 0 1px 0 rgba(255,255,255,.55); }
 .upg-row1{ display:flex; align-items:center; justify-content:space-between; width:100%; padding:0 4px; }
 .upg-ico{ width:24px; height:24px; color:#c84030; filter:drop-shadow(0 1px 1px rgba(80,40,20,.20)); }
@@ -4227,6 +4270,19 @@ body.tab-drawer-open .tuto-hint{
   }
 }
 @keyframes tooltipFadeIn { from{opacity:0; transform:translateX(-50%) translateY(4px)} to{opacity:1; transform:translateX(-50%) translateY(0)} }
+
+/* === RESPONSIVE upgrades grid (smartphone XS → desktop) === */
+@media (max-width: 340px) {
+  .tap-upgrades-v2 { grid-template-columns: 1fr; gap: 6px; }
+  .tap-upgrades-v2 .upg-btn { padding: 6px 8px; }
+  .tap-upgrades-v2 .upg-desc { display: none; }
+}
+@media (min-width: 400px) and (max-width: 599px) {
+  .tap-upgrades-v2 { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 600px) {
+  .tap-upgrades-v2 { grid-template-columns: repeat(3, 1fr); }
+}
 
 /* ================ LE STADE ================ */
 /* Piste ovale + coureur qui accélère selon la progression. C'est la boucle
@@ -7517,6 +7573,32 @@ body.shop-epic-flash::after{
   #grid-frame{padding:14px}
   .gen{min-height:112px}
 }
+/* === Prestige menu pulse quand stars disponibles non investies === */
+@keyframes prestigePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,212,80,0); }
+  50% { box-shadow: 0 0 0 8px rgba(255,212,80,0.35); }
+}
+[data-action="prestige"].has-stars {
+  animation: prestigePulse 2s infinite;
+  position: relative;
+}
+[data-action="prestige"].has-stars::after {
+  content: '!';
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 18px;
+  height: 18px;
+  background: #e84030;
+  color: #fff;
+  border-radius: 50%;
+  font-weight: 900;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
 </style>
 </head>
 <body>
@@ -8055,7 +8137,7 @@ body.shop-epic-flash::after{
           </div>
         </div>
         <!-- Pill ETOILES permanentes (prestige cross-runs) — affichee a cote -->
-        <div id="hud-stars" style="display:none;align-items:center;gap:4px;padding:5px 9px;background:linear-gradient(135deg,#ffd060,#ff9020);border-radius:14px;color:#1a1a2e;font-weight:700;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.10);pointer-events:none;font-family:Nunito,sans-serif;line-height:1;margin-left:6px" aria-label="Etoiles permanentes">
+        <div id="hud-stars" style="display:none;align-items:center;gap:4px;padding:5px 9px;background:linear-gradient(135deg,#ffd060,#ff9020);border-radius:14px;color:#1a1a2e;font-weight:700;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.10);pointer-events:auto;cursor:pointer;font-family:Nunito,sans-serif;line-height:1;margin-left:6px" aria-label="Etoiles permanentes" title="Ouvrir Prestige" onclick="if(typeof openStarTree==='function') openStarTree();">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2 L14.4 8.4 L21 9.2 L16 13.6 L17.6 20.4 L12 16.8 L6.4 20.4 L8 13.6 L3 9.2 L9.6 8.4 z"/></svg>
           <span id="hud-stars-val">0</span>
         </div>
@@ -8304,7 +8386,16 @@ body.shop-epic-flash::after{
 
         <!-- TAB : STATS (chiffres clés) -->
         <div class="tab-pane" data-pane="stats">
-          <div class="stats-quick" id="stats-quick"></div>
+          <div class="stats-grid" id="stats-quick">
+            <div class="stat-row"><span class="stat-lbl">Distance</span><span class="stat-val" id="stq-dist">0 km</span></div>
+            <div class="stat-row"><span class="stat-lbl">Vitesse</span><span class="stat-val" id="stq-speed">0 km/h</span></div>
+            <div class="stat-row"><span class="stat-lbl">Combo max</span><span class="stat-val" id="stq-combo">0</span></div>
+            <div class="stat-row"><span class="stat-lbl">Gouttes/sec</span><span class="stat-val" id="stq-gps">0</span></div>
+            <div class="stat-row"><span class="stat-lbl">Coffres ouverts</span><span class="stat-val" id="stq-chests">0</span></div>
+            <div class="stat-row"><span class="stat-lbl">Haies réussies</span><span class="stat-val" id="stq-hurdles">0</span></div>
+            <div class="stat-row"><span class="stat-lbl">PNJ dépassés</span><span class="stat-val" id="stq-npcs">0</span></div>
+            <div class="stat-row"><span class="stat-lbl">Total gouttes</span><span class="stat-val" id="stq-totalg">0</span></div>
+          </div>
         </div>
       </div>
     </div>
@@ -8774,6 +8865,10 @@ body.shop-epic-flash::after{
     <h2 style="display:flex; align-items:center; justify-content:center; gap:8px; margin:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="#ffd060"><path d="M12 2 L14.4 8.4 L21 9.2 L16 13.6 L17.6 20.4 L12 16.8 L6.4 20.4 L8 13.6 L3 9.2 L9.6 8.4 z"/></svg> PRESTIGE</h2>
     <div class="modal-subtitle">— investis tes étoiles —</div>
     <div style="text-align:center; color:#888; margin:6px 0 12px;">Étoiles : <strong id="star-tree-avail" style="color:#ffd060; font-size:18px;">0</strong></div>
+    <div class="prestige-intro" style="padding:10px 14px; background:rgba(255,212,96,0.12); border-radius:10px; border:1px solid rgba(255,212,96,0.25); margin-bottom:12px; font-size:12px; line-height:1.5; color:#333;">
+      <strong style="color:#b08020;">Tes étoiles persistent à travers les ascensions.</strong>
+      Investis-les dans des bonus <em>permanents</em>. Chaque km 100 = +1 étoile. Investis sage : c'est définitif.
+    </div>
     <div id="star-tree-list" style="display:flex; flex-direction:column;"></div>
   </div>
 </div>
@@ -17530,6 +17625,26 @@ function buyUpgrade(id){
   if(STATE.gold < cost){ if(typeof sfxDeny === 'function') sfxDeny(); flashStat?.('gold-val'); return; }
   STATE.gold -= cost;
   STATE[u.state] = (STATE[u.state] || 0) + 1;
+  // === JUICE ACHAT upgrade : floating "+1 LVL" + particules attractives + flash HUD
+  try {
+    const _btnJuice = document.querySelector(`.upg-btn[data-upgrade="${id}"]`);
+    if(_btnJuice){
+      const _r = _btnJuice.getBoundingClientRect();
+      const _cx = _r.left + _r.width/2;
+      const _cy = _r.top + 10;
+      // Floating "+1 LVL" doré au-dessus du bouton (kind=gain : couleur or)
+      if(typeof floating === 'function') floating(_cx, _cy, '+1 LVL', 'gain');
+      // Particules attractives vers le HUD #tap-per-tap (sentiment "ça monte")
+      const _tgt = document.getElementById('tap-per-tap');
+      if(_tgt && typeof particles === 'function'){
+        const _tr = _tgt.getBoundingClientRect();
+        particles(_cx, _cy, '#ffd070', 10, _tr.left + _tr.width/2, _tr.top + _tr.height/2);
+      }
+    }
+    // Flash & pulse gold-val (gold descend) — feedback du coût payé
+    if(typeof punchGoldCounter === 'function') punchGoldCounter();
+    if(typeof flashStat === 'function') flashStat('gold-val');
+  } catch(e){}
   // === Feedback achat : flash visuel sur le bouton (animation v2) ===
   const btnFlash = document.querySelector(`.upg-btn[data-upgrade="${id}"]`);
   if(btnFlash){
@@ -18112,6 +18227,21 @@ function doSaisonAscend(){
     STATE.stars = (STATE.stars || 0) + totalStarsEarned;
     STATE.totalStars = (STATE.totalStars || 0) + totalStarsEarned;
     STATE.totalStarsEarned = (STATE.totalStarsEarned || 0) + totalStarsEarned;
+    // Toast premier gain d'étoile : explique le système prestige
+    if(STATE.totalStarsEarned === 1 && !STATE._firstStarToastShown){
+      STATE._firstStarToastShown = true;
+      setTimeout(() => {
+        try {
+          if(typeof showToast === 'function'){
+            showToast('⭐ ÉTOILE PERMANENTE GAGNÉE !\nMenu → PRESTIGE pour l\'investir.', 'success', 6000);
+          }
+          // Ouvre auto la modale Star Tree après 2.5s pour éducation
+          setTimeout(() => {
+            if(typeof openStarTree === 'function') openStarTree();
+          }, 2500);
+        } catch(e){}
+      }, 1500);
+    }
     STATE.ascensions = (STATE.ascensions || 0) + 1;
     STATE.saison = nextSaison;
     // Reset progression de saison
@@ -19153,31 +19283,24 @@ function updateTeamRate(){
   if(el) el.textContent = txt;
   if(tabEl) tabEl.textContent = txt;
 }
-function renderStatsQuick(){
-  const wrap = document.getElementById('stats-quick');
-  if(!wrap) return;
-  ensureRecords();
-  const r = STATE.records || {};
-  // Fix bug "Vitesse ×0.0" : afficher au moins x1.0 (footing passif)
-  const rawSpeed = (typeof runnerSpeedMultiplier === 'function') ? runnerSpeedMultiplier() : 1;
-  const dispSpeed = Math.max(1, rawSpeed).toFixed(1);
-  // Fix bug "Forme 219%" : normaliser stamina dans la plage [STAMINA_MIN, STAMINA_MAX] → 0-100%
-  const stam = STATE.runnerStamina || 1;
-  const sMin = (typeof STAMINA_MIN !== 'undefined') ? STAMINA_MIN : 0.3;
-  const sMax = (typeof STAMINA_MAX !== 'undefined') ? STAMINA_MAX : 2.2;
-  const formePct = Math.max(0, Math.min(100, Math.round((stam - sMin) / (sMax - sMin) * 100)));
-  // Fix bug "Best combo ×1" : si pas de vrai combo (≥3), afficher "—"
-  const bestCombo = r.maxCombo || 0;
-  const bestComboTxt = bestCombo >= 3 ? '×' + bestCombo : '—';
-  wrap.innerHTML = `
-    <div class="stats-quick-cell">KM bouclés <b>${fmtBigNumber(STATE.lapsRun||0)}</b></div>
-    <div class="stats-quick-cell">Saison <b>${STATE.saison||1}</b></div>
-    <div class="stats-quick-cell">Total taps <b>${fmtBigNumber(STATE.totalTaps||0)}</b></div>
-    <div class="stats-quick-cell">Best combo <b>${bestComboTxt}</b></div>
-    <div class="stats-quick-cell">Vitesse <b>×${dispSpeed}</b></div>
-    <div class="stats-quick-cell">Forme <b>${formePct}%</b></div>
-  `;
+function updateStatsQuickPane(){
+  try {
+    const setText = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
+    setText('stq-dist', (STATE.lapsRun || 0) + ' km');
+    const kmh = document.getElementById('runner-pace')?.textContent || '0';
+    setText('stq-speed', kmh + ' km/h');
+    setText('stq-combo', (STATE.maxComboReached || STATE.combo || 0));
+    const gps = document.getElementById('stat-gps')?.textContent || '0';
+    setText('stq-gps', gps);
+    setText('stq-chests', (STATE.totalChestsOpened || 0));
+    setText('stq-hurdles', (STATE.hurdlesSuccess || STATE.hurdlesCleared || 0));
+    setText('stq-npcs', (STATE.totalNpcOvertaken || 0));
+    setText('stq-totalg', Math.floor(STATE.totalGoldEarned || 0).toLocaleString('fr-FR'));
+  } catch(e){}
 }
+window.updateStatsQuickPane = updateStatsQuickPane;
+// Alias rétro-compat : tous les anciens call sites continuent de marcher
+function renderStatsQuick(){ updateStatsQuickPane(); }
 function updateUpgAffordableBadge(){
   const el = document.getElementById('tab-upg-affordable');
   if(!el) return;
@@ -19889,7 +20012,10 @@ function updateUpgradesUI(){
     const costEl = document.getElementById('upg-' + sfx + '-cost');
     const barEl = document.getElementById('upg-' + sfx + '-bar');
     const btn = document.querySelector(`.upg-btn[data-upgrade="${id}"]`);
-    if(lvlEl) lvlEl.textContent = 'Niv ' + lvl;
+    if(lvlEl){
+      const maxL = u.maxLevel || '∞';
+      lvlEl.textContent = 'Niv ' + lvl + (u.maxLevel ? (' / ' + maxL) : '');
+    }
     if(costEl) costEl.textContent = fmtCost(cost);
     // Barre de progression : visualise le niveau actuel (cap selon u.maxLevel, sinon 30)
     if(barEl){
@@ -19898,14 +20024,20 @@ function updateUpgradesUI(){
       barEl.style.width = pct + '%';
     }
     if(btn){
-      const affordable = STATE.gold >= cost;
+      const affordable = (STATE.gold || 0) >= cost;
       btn.classList.toggle('affordable', affordable);
+      btn.classList.toggle('unaffordable', !affordable);
       // .locked seulement si maxLevel atteint OU pas affordable et lvl 0 (jamais acheté)
       const atMax = u.maxLevel && lvl >= u.maxLevel;
       btn.classList.toggle('locked', atMax);
       // Hover preview : tooltip desktop avec gain du prochain niveau
-      const bonus = _previewUpgradeBonus(id);
+      const bonus = (typeof _previewUpgradeBonus === 'function') ? _previewUpgradeBonus(id) : '';
       if(bonus) btn.setAttribute('data-bonus', bonus);
+      // Tooltip mobile (hold-tap) via système window.Tooltips
+      const upgName = (typeof upgradeName === 'function') ? upgradeName(id) : id;
+      const maxTxt = u.maxLevel ? `Niv ${lvl} / ${u.maxLevel}` : `Niv ${lvl}`;
+      btn.setAttribute('data-tooltip-title', upgName);
+      btn.setAttribute('data-tooltip', `${maxTxt} — Prochain niveau : ${bonus || '—'}`);
     }
   }
 }
@@ -22274,6 +22406,19 @@ window.addEventListener('DOMContentLoaded', async () => {
 // ═══════════════════════════════════════════════════════════════════
 // PROGRESSIVE DISCLOSURE : montre/cache les items menu selon progression
 // ═══════════════════════════════════════════════════════════════════
+const UNLOCK_LABELS = {
+  'chests': 'Coffres',
+  'wardrobe': 'Vestiaire',
+  'cards': 'Cartes Star',
+  'equip': 'Équipement',
+  'buy-bougie': 'Bougie boost',
+  'buy-doping': 'Doping intense',
+  'quests-daily': 'Quêtes du jour',
+  'shop-premium': 'Boutique premium',
+  'prestige': 'Prestige',
+  'saison': 'Ascension',
+  'map-stadiums': 'Carte des stades',
+};
 function applyProgressiveDisclosure(){
   const laps = (STATE && STATE.lapsRun) || 0;
   const saison = (STATE && STATE.saison) || 1;
@@ -22289,13 +22434,32 @@ function applyProgressiveDisclosure(){
     const wasRevealed = window._revealedUnlocks.has(id);
     if(!locked && !wasRevealed && id && laps > 0){
       window._revealedUnlocks.add(id);
-      const label = el.getAttribute('aria-label') || el.querySelector('.upg-name')?.textContent || el.querySelector('.menu-label')?.textContent || id;
+      const rawLabel = el.getAttribute('data-action') || el.id || id;
+      const niceLabel = UNLOCK_LABELS[rawLabel]
+        || UNLOCK_LABELS[id]
+        || el.querySelector('.mi-title')?.textContent
+        || el.querySelector('.upg-name')?.textContent
+        || el.querySelector('.menu-label')?.textContent
+        || el.getAttribute('aria-label')
+        || rawLabel;
       const n = document.createElement('div');
+      n.className = 'unlock-toast';
       n.id = 'unlock-toast-' + Date.now();
-      n.innerHTML = '✨ NOUVEAU : ' + label + ' débloqué !';
-      n.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#ffd060,#ff9020);color:#1a1a2e;padding:12px 22px;border-radius:24px;font-weight:700;z-index:9999;box-shadow:0 6px 20px rgba(0,0,0,0.4);animation:unlockFadeInOut 4s ease forwards;';
+      n.innerHTML = '✨ NOUVEAU : ' + niceLabel + ' débloqué !';
+      // Empile verticalement si plusieurs toasts simultanés
+      const existingToasts = document.querySelectorAll('.unlock-toast').length;
+      const stackTop = 80 + existingToasts * 56;
+      n.style.cssText = 'position:fixed;top:' + stackTop + 'px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#ffd060,#ff9020);color:#1a1a2e;padding:12px 22px;border-radius:24px;font-weight:700;z-index:9999;box-shadow:0 6px 20px rgba(0,0,0,0.4);animation:unlockFadeInOut 4s ease forwards;';
       document.body.appendChild(n);
       setTimeout(() => { n.remove(); }, 4000);
+      // Highlight le bouton qui vient d'être débloqué (glow pulse 2s)
+      try {
+        el.classList.add('just-unlocked');
+        setTimeout(() => el.classList.remove('just-unlocked'), 2200);
+        // SFX victoire courte
+        if(typeof sfxAchievement === 'function') sfxAchievement();
+        else if(typeof sfxBuyScaled === 'function') sfxBuyScaled(1);
+      } catch(e){}
     } else if(locked && wasRevealed){
       // Reset if locked again (e.g. NG+)
       window._revealedUnlocks.delete(id);
@@ -22323,6 +22487,14 @@ function applyProgressiveDisclosure(){
   if(emptyMsg){
     emptyMsg.style.display = (visibleUpgs === 0) ? '' : 'none';
   }
+  // Pulse menu PRESTIGE si stars dispo et non investies récemment
+  try {
+    const prestigeBtn = document.querySelector('[data-action="prestige"]');
+    if(prestigeBtn){
+      const has = (STATE.stars || 0) > 0;
+      prestigeBtn.classList.toggle('has-stars', has);
+    }
+  } catch(e){}
 }
 // Sync toutes les 2 sec
 setInterval(applyProgressiveDisclosure, 2000);
@@ -23786,7 +23958,7 @@ function boot(){
       document.querySelectorAll('.tab-pane').forEach(p => p.classList.toggle('active', p.dataset.pane === tab));
       content?.classList.add('open');
       document.body.classList.add('tab-drawer-open');
-      if(tab === 'stats' && typeof renderStatsQuick === 'function') renderStatsQuick();
+      if(tab === 'stats' && typeof updateStatsQuickPane === 'function') updateStatsQuickPane();
       if(A?.ctx) blip(660, .08, "triangle", .18, .4);
     });
   });

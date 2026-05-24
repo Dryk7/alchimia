@@ -8992,6 +8992,26 @@ body.shop-epic-flash::after{
   </div>
 </div>
 
+<!-- VAGUE 20 — Quêtes Saisonnières (longues, reset à l'ascension) -->
+<div class="modal" id="season-quests-modal">
+  <div class="modal-card" style="max-width:480px; max-height:80vh; overflow-y:auto;">
+    <button class="modal-close" data-close-modal="season-quests-modal" aria-label="Fermer">×</button>
+    <h2 style="margin:0 0 4px;">🏆 Quêtes de Saison</h2>
+    <div class="modal-subtitle" style="color:#666; margin-bottom:12px;">Reset à chaque ascension. Récompense : +2⭐ +50k g par quête.</div>
+    <div id="season-quests-list" style="display:flex; flex-direction:column; gap:8px;"></div>
+  </div>
+</div>
+
+<div class="modal" id="progression-modal">
+  <div class="modal-card" style="max-width:480px; max-height:80vh; overflow-y:auto;">
+    <button class="modal-close" data-close-modal="progression-modal" aria-label="Fermer">×</button>
+    <h2 style="margin:0 0 4px;">📊 Progression</h2>
+    <div class="modal-subtitle" style="color:#666; margin-bottom:14px;">7 derniers jours + lifetime</div>
+    <div id="progression-graph"></div>
+    <div id="progression-lifetime" style="margin-top:14px;"></div>
+  </div>
+</div>
+
 <button class="side-toggle" id="codex-toggle" title="Codex">
   <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
     <rect x="4" y="3" width="16" height="18" rx="1"/>
@@ -12855,10 +12875,49 @@ const STATE = {
   // Codex narratif : timestamps de découverte par (chain*8 + tier)
   codexUnlocks: {}, // key "0_3" → timestamp première découverte (persiste à travers prestiges)
   selectedCodex: null,
+  // === VAGUE 20 — Météo dynamique (cycle ~3 km, seed déterministe) ===
+  weather: { type:'clear', startedAtKm:0, endsAtKm:3 },
+  // === VAGUE 20 — Quêtes saisonnières longues (5 quêtes profondes) ===
+  seasonQuests: {
+    marathonien: { id:'marathonien', name:'Marathonien', desc:'Atteindre km 100 sans Doping', target:100, done:false, claimed:false, progress:0 },
+    funambule:   { id:'funambule',   name:'Funambule',   desc:'50 haies d\'affilée sans rater', target:50,  done:false, claimed:false, progress:0 },
+    econome:     { id:'econome',     name:'Économe',     desc:'Tous les upgrades à Niv 5+ (40 levels)', target:40, done:false, claimed:false, progress:0 },
+    sprinter:    { id:'sprinter',    name:'Sprinter',    desc:'Atteindre 35 km/h instantané', target:35,  done:false, claimed:false, progress:0 },
+    collector:   { id:'collector',   name:'Collectionneur', desc:'Ouvrir 2 coffres dans la saison', target:2, done:false, claimed:false, progress:0 }
+  },
+  _seasonNoDoping: true,  // flag : passe à false dès qu'on utilise un Doping
+  _seasonHurdleStreak: 0, // streak haies sans rater
+  _seasonChestsOpened: 0, // coffres ouverts cette saison
+  // Rivaux persistants (vague 20)
+  rivals: {
+    nico:    { name:'Nico le Rapide',     color:'#e84030', firstKm:5,  beatCount:0, lossCount:0, lastSeenKm:0 },
+    marie:   { name:'Marie Marathon',     color:'#4a9fd9', firstKm:15, beatCount:0, lossCount:0, lastSeenKm:0 },
+    karim:   { name:'Karim Foudre',       color:'#ffd060', firstKm:30, beatCount:0, lossCount:0, lastSeenKm:0 },
+    lucia:   { name:'Lucia Vent',         color:'#7ec46a', firstKm:50, beatCount:0, lossCount:0, lastSeenKm:0 },
+    olympus: { name:'Olympus Champion',   color:'#9080d0', firstKm:80, beatCount:0, lossCount:0, lastSeenKm:0 }
+  },
+  bosses: {
+    draftbreaker: { name:'Draftbreaker',    spawnKm:60,  type:'stamina_drain',  defeated:false, lore:'Aspire l\'air autour de lui' },
+    shadowpace:   { name:'Shadow Pace',     spawnKm:80,  type:'mirror_speed',   defeated:false, lore:'Te copie pour mieux t\'écraser' },
+    stormsprint:  { name:'Storm Sprinter',  spawnKm:110, type:'rain_trigger',   defeated:false, lore:'Vient avec son propre orage' },
+    ironlung:     { name:'Iron Lung',       spawnKm:140, type:'no_regen',       defeated:false, lore:'Sa présence asphyxie' },
+    mirror:       { name:'Mirror Match',    spawnKm:170, type:'double_hero',    defeated:false, lore:'Reflet du futur, sombre' },
+    cosmic:       { name:'Cosmic Runner',   spawnKm:200, type:'teleport',       defeated:false, lore:'Foule les couloirs du cosmos' },
+    moonking:     { name:'King of the Moon',spawnKm:250, type:'all_effects',    defeated:false, lore:'Le ciel-roi des coureurs morts' }
+  },
   starTree: {
     tapPower: 0, lapPower: 0, dropRate: 0, basePower: 0,
     staminaPlus: 0, critPower: 0, cooldownNeg: 0, starsJackpot: 0
   },
+  starSpec: null,  // 'sprinter' | 'marathonien' | 'hybride' | null (pas encore choisi)
+  relics: { owned: [], equipped: [] }, // owned = ids possédés, equipped = max 3 ids actifs
+  dailyStats: {}, // { 'YYYY-MM-DD': { km:0, gold:0, taps:0, hurdles:0, npcs:0 } }
+  lifetimeStats: { totalKm:0, totalGold:0, totalTaps:0, totalHurdles:0, totalNpcs:0, totalChests:0 },
+  loadouts: [
+    { name:'Loadout 1', equipment:{}, active:false },
+    { name:'Loadout 2', equipment:{}, active:false },
+    { name:'Loadout 3', equipment:{}, active:false }
+  ],
 };
 // Buffs temporaires (Bougie 5min/+5%, Doping 30min/+20% avec 24h CD)
 STATE.buffs = STATE.buffs ?? { bougie: 0, doping: 0, dopingLastUsed: 0 };
@@ -12867,6 +12926,255 @@ STATE.buffs = STATE.buffs ?? { bougie: 0, doping: 0, dopingLastUsed: 0 };
 // dopingLastUsed: timestamp dernière utilisation (cooldown 24h)
 // Expose STATE à window pour que le module 3D puisse lire lapProgress, lapsRun, etc.
 window.STATE = STATE;
+
+// === VAGUE 20 — Progression tracking (daily + lifetime stats) ===
+function _todayKey(){
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function trackDailyStat(key, delta){
+  const k = _todayKey();
+  if(!STATE.dailyStats) STATE.dailyStats = {};
+  if(!STATE.dailyStats[k]) STATE.dailyStats[k] = { km:0, gold:0, taps:0, hurdles:0, npcs:0 };
+  STATE.dailyStats[k][key] = (STATE.dailyStats[k][key] || 0) + delta;
+  if(!STATE.lifetimeStats) STATE.lifetimeStats = { totalKm:0, totalGold:0, totalTaps:0, totalHurdles:0, totalNpcs:0, totalChests:0 };
+  const lifeKey = 'total' + key.charAt(0).toUpperCase() + key.slice(1);
+  STATE.lifetimeStats[lifeKey] = (STATE.lifetimeStats[lifeKey] || 0) + delta;
+  // Cleanup : garder max 30 jours
+  const keys = Object.keys(STATE.dailyStats).sort();
+  while(keys.length > 30){
+    delete STATE.dailyStats[keys.shift()];
+  }
+}
+function getRecentDailyStats(days){
+  days = days || 7;
+  const out = [];
+  const now = new Date();
+  for(let i = days - 1; i >= 0; i--){
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    const k = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    out.push({ date: k, stats: STATE.dailyStats?.[k] || { km:0, gold:0, taps:0, hurdles:0, npcs:0 } });
+  }
+  return out;
+}
+window.trackDailyStat = trackDailyStat;
+window.getRecentDailyStats = getRecentDailyStats;
+
+function renderProgression(){
+  const gEl = document.getElementById('progression-graph');
+  const lEl = document.getElementById('progression-lifetime');
+  if(!gEl || !lEl) return;
+  // Graph 7 jours (km par jour)
+  const data = getRecentDailyStats(7);
+  const maxKm = Math.max(1, ...data.map(d => d.stats.km || 0));
+  let html = '<h3 style="font-size:12px; color:#666; text-transform:uppercase; margin:0 0 8px;">KM / jour (7j)</h3>';
+  html += '<div style="display:flex; align-items:flex-end; gap:6px; height:80px; padding:4px 0;">';
+  data.forEach(d => {
+    const km = d.stats.km || 0;
+    const pct = Math.floor(80 * km / maxKm);
+    const labelDay = d.date.slice(-2); // JJ
+    html += '<div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:2px;">'
+          + '<div style="font-size:10px; color:#1a1a2e; font-weight:700;">' + km + '</div>'
+          + '<div style="width:100%; height:' + Math.max(2, pct) + 'px; background:linear-gradient(180deg,#ffd060,#ff9020); border-radius:3px 3px 0 0;"></div>'
+          + '<div style="font-size:10px; color:#888;">' + labelDay + '</div>'
+          + '</div>';
+  });
+  html += '</div>';
+  gEl.innerHTML = html;
+  // Lifetime
+  const lt = STATE.lifetimeStats || {};
+  lEl.innerHTML = '<h3 style="font-size:12px; color:#666; text-transform:uppercase; margin:14px 0 8px;">LIFETIME</h3>'
+                + '<div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">'
+                + ['Km parcourus|totalKm','Gouttes gagnées|totalGold','Taps totaux|totalTaps','Haies réussies|totalHurdles','PNJ dépassés|totalNpcs','Coffres ouverts|totalChests'].map(p => {
+                    const [lbl, key] = p.split('|');
+                    return '<div style="padding:8px 12px; background:rgba(255,255,255,0.5); border-radius:6px;"><div style="font-size:11px; color:#666;">' + lbl + '</div><div style="font-size:14px; font-weight:900; color:#1a1a2e;">' + Math.floor(lt[key] || 0).toLocaleString('fr-FR') + '</div></div>';
+                  }).join('')
+                + '</div>';
+}
+function openProgression(){
+  const m = document.getElementById('progression-modal'); if(!m) return;
+  renderProgression();
+  m.classList.add('show');
+}
+window.renderProgression = renderProgression;
+window.openProgression = openProgression;
+
+// === VAGUE 20 — Helpers Loadouts (3 presets switchables) ===
+function saveLoadoutToSlot(slotIdx){
+  if(slotIdx < 0 || slotIdx > 2) return false;
+  if(!STATE.loadouts) STATE.loadouts = [
+    { name:'Loadout 1', equipment:{}, active:false },
+    { name:'Loadout 2', equipment:{}, active:false },
+    { name:'Loadout 3', equipment:{}, active:false }
+  ];
+  // Deep clone equipment
+  STATE.loadouts[slotIdx].equipment = JSON.parse(JSON.stringify(STATE.equipment || {}));
+  STATE.loadouts.forEach((l, i) => l.active = (i === slotIdx));
+  if(typeof showToast === 'function') showToast('💾 Loadout "' + STATE.loadouts[slotIdx].name + '" sauvegardé', 'success', 3000);
+  if(typeof saveNow === 'function') saveNow();
+  return true;
+}
+function loadLoadoutFromSlot(slotIdx){
+  if(slotIdx < 0 || slotIdx > 2) return false;
+  if(!STATE.loadouts?.[slotIdx]) return false;
+  const ld = STATE.loadouts[slotIdx];
+  if(!ld.equipment || Object.keys(ld.equipment).length === 0){
+    if(typeof showToast === 'function') showToast('Loadout vide', 'warn');
+    return false;
+  }
+  STATE.equipment = JSON.parse(JSON.stringify(ld.equipment));
+  STATE.loadouts.forEach((l, i) => l.active = (i === slotIdx));
+  if(typeof showToast === 'function') showToast('📥 Loadout "' + ld.name + '" chargé', 'success', 3000);
+  // Refresh UI
+  try {
+    if(typeof renderEquipment === 'function') renderEquipment();
+    if(typeof refreshHUD === 'function') refreshHUD();
+  } catch(e){}
+  if(typeof saveNow === 'function') saveNow();
+  return true;
+}
+function renameLoadout(slotIdx, newName){
+  if(slotIdx < 0 || slotIdx > 2 || !STATE.loadouts?.[slotIdx]) return false;
+  STATE.loadouts[slotIdx].name = (newName || '').trim().slice(0, 20) || ('Loadout ' + (slotIdx+1));
+  if(typeof saveNow === 'function') saveNow();
+  return true;
+}
+window.saveLoadoutToSlot = saveLoadoutToSlot;
+window.loadLoadoutFromSlot = loadLoadoutFromSlot;
+window.renameLoadout = renameLoadout;
+
+// === VAGUE 20 — Helpers Quêtes Saisonnières ===
+function updateSeasonQuests(){
+  if(!STATE.seasonQuests) return;
+  const q = STATE.seasonQuests;
+  // marathonien : km >= 100 ET aucun doping utilisé
+  q.marathonien.progress = Math.min((STATE.lapsRun || 0), 100);
+  q.marathonien.done = (STATE.lapsRun || 0) >= 100 && STATE._seasonNoDoping === true;
+  // funambule : streak haies courante
+  q.funambule.progress = Math.min(STATE._seasonHurdleStreak || 0, 50);
+  q.funambule.done = (STATE._seasonHurdleStreak || 0) >= 50;
+  // econome : somme des niveaux des 8 upgrades (cappés à 5 chacun)
+  let totalLvl = 0;
+  ['upgradeTapValue','upgradeCritChance','upgradeLapBonus','upgradeAutoTap','upgradeEndurance','upgradeBaseSpeed','upgradeEagleEye','upgradeCruiseControl'].forEach(k => {
+    totalLvl += Math.min(5, STATE[k] || 0);
+  });
+  q.econome.progress = totalLvl;
+  q.econome.done = totalLvl >= 40;
+  // sprinter : kmh max atteint (lit le HUD)
+  const curKmh = parseFloat(document.getElementById('runner-pace')?.textContent || '0');
+  if(curKmh > q.sprinter.progress) q.sprinter.progress = curKmh;
+  q.sprinter.done = q.sprinter.progress >= 35;
+  // collector : chests ouverts cette saison
+  q.collector.progress = Math.min(STATE._seasonChestsOpened || 0, 2);
+  q.collector.done = (STATE._seasonChestsOpened || 0) >= 2;
+}
+function claimSeasonQuest(id){
+  const q = STATE.seasonQuests?.[id];
+  if(!q || !q.done || q.claimed) return false;
+  q.claimed = true;
+  STATE.gold = (STATE.gold || 0) + 50000;
+  STATE.stars = (STATE.stars || 0) + 2;
+  STATE.totalStarsEarned = (STATE.totalStarsEarned || 0) + 2;
+  if(typeof showToast === 'function') showToast('🏆 Quête : ' + q.name + ' — +2⭐ +50k g', 'success', 5000);
+  if(typeof sfxAchievement === 'function') sfxAchievement();
+  else if(typeof sfxBuyScaled === 'function') sfxBuyScaled(2);
+  if(typeof saveNow === 'function') saveNow();
+  return true;
+}
+function resetSeasonQuests(){
+  if(!STATE.seasonQuests) return;
+  for(const id in STATE.seasonQuests){
+    STATE.seasonQuests[id].progress = 0;
+    STATE.seasonQuests[id].done = false;
+    STATE.seasonQuests[id].claimed = false;
+  }
+  STATE._seasonNoDoping = true;
+  STATE._seasonHurdleStreak = 0;
+  STATE._seasonChestsOpened = 0;
+}
+window.updateSeasonQuests = updateSeasonQuests;
+window.claimSeasonQuest = claimSeasonQuest;
+window.resetSeasonQuests = resetSeasonQuests;
+function renderSeasonQuests(){
+  if(typeof updateSeasonQuests === 'function') updateSeasonQuests();
+  const list = document.getElementById('season-quests-list');
+  if(!list || !STATE.seasonQuests) return;
+  let html = '';
+  for(const id in STATE.seasonQuests){
+    const q = STATE.seasonQuests[id];
+    const pct = Math.min(100, Math.floor(100 * q.progress / q.target));
+    const status = q.claimed ? '✓ Récompensée' : (q.done ? 'À RÉCLAMER' : pct + '%');
+    const statusColor = q.claimed ? '#888' : (q.done ? '#ffd060' : '#666');
+    html += '<div style="padding:10px 14px; background:rgba(255,212,96,' + (q.done ? '0.18' : '0.06') + '); border-radius:10px; border:1px solid rgba(255,212,96,0.25);">'
+          + '<div style="display:flex; justify-content:space-between; align-items:flex-start;">'
+          + '<div style="flex:1;"><strong>' + q.name + '</strong><div style="font-size:11px; color:#666; margin-top:2px;">' + q.desc + '</div></div>'
+          + '<div style="font-weight:900; color:' + statusColor + ';">' + status + '</div></div>'
+          + '<div style="margin-top:6px; height:5px; background:rgba(0,0,0,0.1); border-radius:3px; overflow:hidden;"><div style="height:100%; width:' + pct + '%; background:linear-gradient(90deg,#ffd060,#ff9020); transition:width .4s;"></div></div>';
+    if(q.done && !q.claimed){
+      html += '<button data-claim-quest="' + id + '" style="margin-top:8px; padding:8px 14px; background:linear-gradient(135deg,#ffd060,#ff9020); border:none; border-radius:8px; font-weight:900; color:#1a1a2e; cursor:pointer; width:100%;">RÉCLAMER +2⭐ +50k g</button>';
+    }
+    html += '</div>';
+  }
+  list.innerHTML = html;
+  list.querySelectorAll('[data-claim-quest]').forEach(btn => {
+    btn.onclick = () => { if(claimSeasonQuest(btn.dataset.claimQuest)) renderSeasonQuests(); };
+  });
+}
+function openSeasonQuests(){
+  const m = document.getElementById('season-quests-modal'); if(!m) return;
+  renderSeasonQuests();
+  m.classList.add('show');
+}
+window.renderSeasonQuests = renderSeasonQuests;
+window.openSeasonQuests = openSeasonQuests;
+
+// === VAGUE 20 — Rivaux nommés & Boss déterministes ===
+function getActiveRival(){
+  // Retourne le rival actif au km courant (le dernier dont firstKm <= lapsRun)
+  const km = STATE.lapsRun || 0;
+  if(!STATE.rivals) return null;
+  let active = null;
+  for(const id in STATE.rivals){
+    const r = STATE.rivals[id];
+    if(r.firstKm <= km && (!active || r.firstKm > active.firstKm)){
+      active = { id, ...r };
+    }
+  }
+  return active;
+}
+function getActiveBoss(){
+  // Retourne le boss spawned (lapsRun = spawnKm ± 2)
+  const km = STATE.lapsRun || 0;
+  if(!STATE.bosses) return null;
+  for(const id in STATE.bosses){
+    const b = STATE.bosses[id];
+    if(Math.abs(km - b.spawnKm) <= 2 && !b.defeated){
+      return { id, ...b };
+    }
+  }
+  return null;
+}
+function recordRivalBeat(rivalId){
+  if(!STATE.rivals?.[rivalId]) return;
+  STATE.rivals[rivalId].beatCount = (STATE.rivals[rivalId].beatCount || 0) + 1;
+  STATE.rivals[rivalId].lastSeenKm = STATE.lapsRun || 0;
+  if(typeof saveNow === 'function') saveNow();
+}
+function defeatBoss(bossId){
+  if(!STATE.bosses?.[bossId]) return;
+  STATE.bosses[bossId].defeated = true;
+  // Reward : 1 étoile bonus + 10000 gouttes
+  STATE.gold = (STATE.gold || 0) + 10000;
+  STATE.stars = (STATE.stars || 0) + 1;
+  STATE.totalStarsEarned = (STATE.totalStarsEarned || 0) + 1;
+  if(typeof showToast === 'function') showToast('⚔️ BOSS VAINCU : ' + STATE.bosses[bossId].name + ' — +1 ⭐ +10k g', 'success', 6000);
+  if(typeof saveNow === 'function') saveNow();
+}
+window.getActiveRival = getActiveRival;
+window.getActiveBoss = getActiveBoss;
+window.recordRivalBeat = recordRivalBeat;
+window.defeatBoss = defeatBoss;
 
 // === BUFFS Bougie / Doping (sinks gouttes) ===
 function buyBougie(){
@@ -12905,6 +13213,8 @@ function buyDoping(){
   STATE.gold -= cost;
   STATE.buffs.doping = Date.now() + 30 * 60 * 1000;
   STATE.buffs.dopingLastUsed = Date.now();
+  // VAGUE 20 — Quête Marathonien : flag KO dès usage Doping
+  STATE._seasonNoDoping = false;
   try {
     if(typeof sfxAchievement === 'function') sfxAchievement();
     if(typeof showToast === 'function') showToast('💉 Doping actif : +20% boost 30 min', 'success');
@@ -12934,6 +13244,42 @@ const STAR_TREE_NODES = [
   { id:'cooldownNeg',  label:'RÉFLEXES',        desc:'-15% cooldown skills',         cost:[3,5,8] },
   { id:'starsJackpot', label:'JACKPOT ÉTOILES', desc:'+1 étoile bonus / ascension',  cost:[5,10,20] }
 ];
+const STAR_SPEC_DEFS = {
+  sprinter:    { name:'SPRINTER',     desc:'Offensif pur : tap puissant, crit critique, vitesse, cooldowns',  unlocked: ['tapPower','critPower','basePower','cooldownNeg'] },
+  marathonien: { name:'MARATHONIEN',  desc:'Endurance : km bonus, stamina infinie, drop rate, étoiles',     unlocked: ['lapPower','staminaPlus','dropRate','starsJackpot'] },
+  hybride:     { name:'HYBRIDE',      desc:'Équilibré : 4 nodes mais 1 niveau de moins par node max',        unlocked: ['tapPower','lapPower','staminaPlus','dropRate'] }
+};
+function chooseStarSpec(spec){
+  if(!STAR_SPEC_DEFS[spec]) return false;
+  STATE.starSpec = spec;
+  if(typeof showToast === 'function') showToast('🌟 Spécialisation : ' + STAR_SPEC_DEFS[spec].name, 'success', 5000);
+  if(typeof renderStarTree === 'function') renderStarTree();
+  if(typeof saveNow === 'function') saveNow();
+  return true;
+}
+function resetStarSpec(){
+  if((STATE.stars || 0) < 10) return false;
+  STATE.stars -= 10;
+  if(STATE.starTree){
+    let refund = 0;
+    for(const id in STATE.starTree){ refund += STATE.starTree[id] || 0; }
+    STATE.stars += refund;
+    STATE.starTree = { tapPower:0, lapPower:0, dropRate:0, basePower:0, staminaPlus:0, critPower:0, cooldownNeg:0, starsJackpot:0 };
+  }
+  STATE.starSpec = null;
+  if(typeof showToast === 'function') showToast('🔄 Spécialisation reset (refund ⭐)', 'success', 5000);
+  if(typeof renderStarTree === 'function') renderStarTree();
+  if(typeof saveNow === 'function') saveNow();
+  return true;
+}
+function isNodeUnlocked(nodeId){
+  if(!STATE.starSpec) return true;
+  return STAR_SPEC_DEFS[STATE.starSpec]?.unlocked?.includes(nodeId) || false;
+}
+window.STAR_SPEC_DEFS = STAR_SPEC_DEFS;
+window.chooseStarSpec = chooseStarSpec;
+window.resetStarSpec = resetStarSpec;
+window.isNodeUnlocked = isNodeUnlocked;
 function nextStarNodeCost(id){
   const n = STAR_TREE_NODES.find(x => x.id === id);
   if(!n) return Infinity;
@@ -12942,6 +13288,10 @@ function nextStarNodeCost(id){
   return n.cost[lvl];
 }
 function buyStarNode(id){
+  if(typeof isNodeUnlocked === 'function' && !isNodeUnlocked(id)){
+    if(typeof showToast === 'function') showToast('🔒 Ce node n\'est pas dans ta spécialisation', 'warn');
+    return false;
+  }
   const cost = nextStarNodeCost(id);
   if(!isFinite(cost)) return false;
   if((STATE.stars || 0) < cost) return false;
@@ -12962,20 +13312,37 @@ function renderStarTree(){
   const avail = document.getElementById('star-tree-avail');
   if(!list || !avail) return;
   avail.textContent = STATE.stars || 0;
+  // === Choix de spécialisation si pas encore fait
+  if(!STATE.starSpec){
+    list.innerHTML = '<div style="padding:14px; background:rgba(255,212,96,0.12); border-radius:10px; border:1px solid rgba(255,212,96,0.25); margin-bottom:12px;">'
+                  + '<h3 style="margin:0 0 6px; color:#b08020;">Choisis ta voie</h3>'
+                  + '<div style="font-size:12px; color:#444; margin-bottom:12px;">Verrouillage permanent. Reset possible plus tard (10 ⭐).</div>'
+                  + Object.entries(STAR_SPEC_DEFS).map(([id, s]) =>
+                      '<button onclick="chooseStarSpec(\'' + id + '\');" style="display:block; width:100%; margin:6px 0; padding:12px; background:linear-gradient(135deg,#ffd060,#ff9020); border:none; border-radius:8px; color:#1a1a2e; font-weight:900; cursor:pointer; text-align:left;">'
+                      + '<div style="font-size:14px;">' + s.name + '</div>'
+                      + '<div style="font-size:11px; font-weight:400; margin-top:4px; opacity:0.85;">' + s.desc + '</div>'
+                      + '</button>'
+                    ).join('')
+                  + '</div>';
+    return;
+  }
   list.innerHTML = STAR_TREE_NODES.map(n => {
+    const isUnl = isNodeUnlocked(n.id);
     const lvl = (STATE.starTree && STATE.starTree[n.id]) || 0;
     const max = n.cost.length;
     const cost = nextStarNodeCost(n.id);
     const isMax = lvl >= max;
-    const canBuy = !isMax && (STATE.stars || 0) >= cost;
-    return '<div style="padding:10px 12px; background:rgba(255,212,96,0.08); border-radius:8px; border:1px solid rgba(255,212,96,0.22); margin-bottom:6px;">'
+    const canBuy = isUnl && !isMax && (STATE.stars || 0) >= cost;
+    const disabled = !isUnl || !canBuy || isMax;
+    const btnLabel = !isUnl ? 'VERROUILLÉ' : (isMax ? 'MAX' : (cost + ' ⭐'));
+    return '<div style="padding:10px 12px; background:rgba(255,212,96,0.08); border-radius:8px; border:1px solid rgba(255,212,96,0.22); margin-bottom:6px; opacity:' + (isUnl ? '1' : '0.4') + ';">'
       + '<div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">'
-      + '<div style="flex:1;"><div style="font-weight:700; font-size:13px; color:#1a1a2e;">' + n.label + '</div>'
+      + '<div style="flex:1;"><div style="font-weight:700; font-size:13px; color:#1a1a2e;">' + n.label + (isUnl ? '' : ' 🔒') + '</div>'
       + '<div style="color:#666; font-size:11px; margin-top:2px;">' + n.desc + '</div>'
       + '<div style="color:#b08020; font-size:11px; margin-top:3px; font-weight:600;">Niv ' + lvl + ' / ' + max + '</div></div>'
-      + '<button class="star-buy-btn" data-node="' + n.id + '" ' + ((!canBuy || isMax) ? 'disabled' : '') + ' style="padding:8px 14px; background:' + (isMax ? '#888' : (canBuy ? 'linear-gradient(135deg,#ffd060,#ff9020)' : '#aaa')) + '; color:#1a1a2e; border:none; border-radius:8px; font-weight:700; font-size:12px; cursor:' + ((!canBuy || isMax) ? 'not-allowed' : 'pointer') + '; opacity:' + ((!canBuy || isMax) ? '0.5' : '1') + ';">'
-      + (isMax ? 'MAX' : cost + ' ⭐') + '</button></div></div>';
-  }).join('');
+      + '<button class="star-buy-btn" data-node="' + n.id + '" ' + (disabled ? 'disabled' : '') + ' style="padding:8px 14px; background:' + (!isUnl ? '#666' : (isMax ? '#888' : (canBuy ? 'linear-gradient(135deg,#ffd060,#ff9020)' : '#aaa'))) + '; color:' + (!isUnl ? '#ccc' : '#1a1a2e') + '; border:none; border-radius:8px; font-weight:700; font-size:11px; cursor:' + (disabled ? 'not-allowed' : 'pointer') + '; opacity:' + (disabled ? '0.5' : '1') + ';">'
+      + btnLabel + '</button></div></div>';
+  }).join('') + '<button onclick="resetStarSpec();" style="margin-top:14px; padding:10px; background:#888; color:#fff; border:none; border-radius:6px; cursor:pointer; width:100%; font-size:11px;">RESET SPÉCIALISATION (10 ⭐)</button>';
   list.querySelectorAll('.star-buy-btn').forEach(btn => {
     btn.onclick = () => { if(buyStarNode(btn.dataset.node)) renderStarTree(); };
   });
@@ -17061,6 +17428,8 @@ function openChest(chestId){
   if(!chest) return;
   // Clamp : ne descend jamais sous 0 (protection edge case)
   STATE.chests[chestId] = Math.max(0, (STATE.chests[chestId] || 0) - 1);
+  // VAGUE 20 — Quête Collectionneur : incrémente compteur saison
+  STATE._seasonChestsOpened = (STATE._seasonChestsOpened || 0) + 1;
   // Anim chest + reveal
   const modal = document.getElementById('chests-modal');
   const stage = document.getElementById('chest-stage');
@@ -17229,7 +17598,31 @@ function updateChestBadge(){
 function openEquip(){
   if(typeof renderEquipment === 'function') renderEquipment();
   document.getElementById('equip-modal')?.classList.add('show');
+  if(typeof renderLoadouts === 'function') renderLoadouts();
 }
+function renderLoadouts(){
+  let container = document.getElementById('loadouts-section');
+  if(!container){
+    const eqModal = document.querySelector('#equip-modal .modal-card, #wardrobe-modal .modal-card');
+    if(!eqModal) return;
+    container = document.createElement('div');
+    container.id = 'loadouts-section';
+    container.style.cssText = 'margin-top:16px; padding-top:12px; border-top:1px solid rgba(0,0,0,0.1);';
+    eqModal.appendChild(container);
+  }
+  if(!STATE.loadouts) return;
+  let html = '<h3 style="font-size:13px; color:#666; text-transform:uppercase; margin:0 0 8px;">📋 Loadouts</h3>';
+  STATE.loadouts.forEach((ld, idx) => {
+    const isEmpty = !ld.equipment || Object.keys(ld.equipment).length === 0;
+    html += '<div style="display:flex; gap:6px; padding:6px 10px; background:rgba(255,255,255,0.5); border:' + (ld.active ? '2px solid #ffd060' : '1px solid rgba(0,0,0,0.1)') + '; border-radius:8px; margin-bottom:6px; align-items:center;">'
+         + '<input type="text" value="' + ld.name.replace(/"/g, '&quot;') + '" onchange="renameLoadout(' + idx + ', this.value); renderLoadouts();" style="flex:1; padding:6px 8px; border:1px solid rgba(0,0,0,0.1); border-radius:6px; font-size:12px;">'
+         + '<button onclick="saveLoadoutToSlot(' + idx + '); renderLoadouts();" style="padding:6px 10px; background:#4a9fd9; color:#fff; border:none; border-radius:6px; cursor:pointer; font-size:11px;">💾 Save</button>'
+         + '<button ' + (isEmpty ? 'disabled' : '') + ' onclick="loadLoadoutFromSlot(' + idx + '); renderLoadouts();" style="padding:6px 10px; background:' + (isEmpty ? '#aaa' : '#7ec46a') + '; color:#fff; border:none; border-radius:6px; cursor:' + (isEmpty ? 'not-allowed' : 'pointer') + '; font-size:11px;">📥 Load</button>'
+         + '</div>';
+  });
+  container.innerHTML = html;
+}
+window.renderLoadouts = renderLoadouts;
 function renderEquipment(){
   const body = document.getElementById('equip-body');
   if(!body) return;
@@ -17424,6 +17817,7 @@ function _comboBlip(n){
 function tapBoost(e){
   const now = Date.now();
   if(now - _lastTapAt < TAP_COOLDOWN_MS) return;
+  if(typeof trackDailyStat === 'function') trackDailyStat('taps', 1);
   // === STAMINA decay : chaque tap consomme 2 points d'énergie
   STATE.stamina = Math.max(0, (STATE.stamina ?? 100) - 2);
   STATE._lastTapAt = performance.now();
@@ -18522,6 +18916,8 @@ function doSaisonAscend(){
     STATE.rabbitsCaughtThisRun = 0;
     STATE.cleanAutoKm = 0;
     STATE._hadHurdleFailThisKm = false;
+    // === VAGUE 20 — Reset des Quêtes Saisonnières ===
+    if(typeof resetSeasonQuests === 'function') resetSeasonQuests();
     // Reset les flags de stages annoncés pour qu'ils replay sur la nouvelle saison
     try { localStorage.removeItem('foulee.lastSeenStage'); } catch(e){}
     if(typeof showRunnerBubble === 'function'){
@@ -20378,6 +20774,7 @@ function tickRunnerLap(dt){
 function completeLap(){
   STATE.lapsRun = (STATE.lapsRun || 0) + 1;
   const lapNum = STATE.lapsRun;
+  if(typeof trackDailyStat === 'function') trackDailyStat('km', 1);
   // FIX : track km clean en mode AUTO pour achievement master_runner (3 km auto sans rater de haie)
   // AUTO-COURSE débloquée à partir du km 3 → on compte les km bouclés sans aucune haie ratée
   if(lapNum >= 3 && !STATE._hadHurdleFailThisKm){
@@ -20428,6 +20825,7 @@ function completeLap(){
   }
   // Accumule UNE fois après tous les +gold de ce lap (lap reward + milestone bonus)
   STATE.totalGoldEarned = (STATE.totalGoldEarned || 0) + _lapGoldEarned;
+  if(typeof trackDailyStat === 'function') trackDailyStat('gold', _lapGoldEarned);
   // Spawn 2 items random T1-T2 en bonus
   const empties = (typeof findEmpty === 'function') ? findEmpty() : [];
   for(let i=0; i<2 && empties.length; i++){
@@ -22574,6 +22972,7 @@ function save(){
       dailyQuests:STATE.dailyQuests || null,
       selectedStadiumId:STATE.selectedStadiumId || null,
       equipment:STATE.equipment || {},
+      loadouts:STATE.loadouts || null,
       chests:STATE.chests || {},
       cardsOwned:STATE.cardsOwned || [],
       cardsDeck:STATE.cardsDeck || [],
@@ -22604,7 +23003,18 @@ function save(){
       upgradeCruiseControl: STATE.upgradeCruiseControl || 0,
       // === Prestige Star Tree ===
       starTree: STATE.starTree || { tapPower:0, lapPower:0, dropRate:0, basePower:0, staminaPlus:0, critPower:0, cooldownNeg:0, starsJackpot:0 },
+      starSpec: STATE.starSpec || null,
       _upgFirstHints: STATE._upgFirstHints || {},
+      // === VAGUE 20 — Rivaux nommés & Boss déterministes ===
+      rivals: STATE.rivals,
+      bosses: STATE.bosses,
+      // === VAGUE 20 — Quêtes saisonnières ===
+      seasonQuests: STATE.seasonQuests,
+      _seasonNoDoping: STATE._seasonNoDoping,
+      _seasonHurdleStreak: STATE._seasonHurdleStreak,
+      _seasonChestsOpened: STATE._seasonChestsOpened,
+      dailyStats: STATE.dailyStats,
+      lifetimeStats: STATE.lifetimeStats,
     };
     const json = JSON.stringify(s);
     localStorage.setItem("alchimia.save", json);
@@ -23883,6 +24293,7 @@ function load(){
     STATE.dailyQuests = s.dailyQuests || null;
     STATE.selectedStadiumId = s.selectedStadiumId || null;
     STATE.equipment = s.equipment || {};
+    STATE.loadouts = s.loadouts || STATE.loadouts;
     STATE.chests = s.chests || {};
     // Clamp chests à >= 0 (protection edge case save corrompue / négatif)
     for(const k in STATE.chests){ STATE.chests[k] = Math.max(0, STATE.chests[k] || 0); }
@@ -23917,7 +24328,18 @@ function load(){
     if(!STATE.skills.unlocked) STATE.skills.unlocked = {};
     // Prestige Star Tree
     STATE.starTree = s.starTree || { tapPower:0, lapPower:0, dropRate:0, basePower:0, staminaPlus:0, critPower:0, cooldownNeg:0, starsJackpot:0 };
+    STATE.starSpec = s.starSpec || null;
     STATE._upgFirstHints = s._upgFirstHints || {};
+    // === VAGUE 20 — Rivaux nommés & Boss déterministes ===
+    if(s.rivals) STATE.rivals = Object.assign({}, STATE.rivals, s.rivals);
+    if(s.bosses) STATE.bosses = Object.assign({}, STATE.bosses, s.bosses);
+    // === VAGUE 20 — Quêtes saisonnières ===
+    if(s.seasonQuests) STATE.seasonQuests = Object.assign({}, STATE.seasonQuests, s.seasonQuests);
+    STATE._seasonNoDoping = (s._seasonNoDoping !== false);
+    STATE._seasonHurdleStreak = s._seasonHurdleStreak || 0;
+    STATE._seasonChestsOpened = s._seasonChestsOpened || 0;
+    STATE.dailyStats = s.dailyStats || {};
+    STATE.lifetimeStats = s.lifetimeStats || { totalKm:0, totalGold:0, totalTaps:0, totalHurdles:0, totalNpcs:0, totalChests:0 };
     // Re-applique les effets passifs des nodes débloqués
     if(typeof SKILL_TREE !== 'undefined'){
       for(const nodeId in STATE.skills.unlocked){
@@ -31175,6 +31597,11 @@ window.addEventListener('appinstalled', () => {
           window.STATE.gold = (window.STATE.gold || 0) + bonusAmount;
           window.STATE.npcOvertakeCount = (window.STATE.npcOvertakeCount || 0) + 1;
         }
+        if(typeof trackDailyStat === 'function') trackDailyStat('npcs', 1);
+        // Vague 20 : record défaite boss si c'est un boss spawn déterministe
+        if(npc.bossId && typeof defeatBoss === 'function'){
+          defeatBoss(npc.bossId);
+        }
         // Pop visuel "+X DÉPASSÉ !" au-dessus du NPC qui sort
         const popX = W / 2 - 30; // près du héros
         const laneFrac = npc.laneIdx / 4;
@@ -31329,6 +31756,7 @@ window.addEventListener('appinstalled', () => {
         if(heroJumpY < jumpReq){
           // RÉUSSI : héros suffisamment en l'air
           h.success = true;
+          if(typeof trackDailyStat === 'function') trackDailyStat('hurdles', 1);
           hurdleCombo = (hurdleCombo || 0) + 1;
           // Bonus selon difficulté : single=20, double/wide=30, triple=40, tall=50
           const baseBonus = { single:20, double:30, triple:40, wide:30, tall:50 }[hk] || 20;
@@ -31380,6 +31808,8 @@ window.addEventListener('appinstalled', () => {
             else if(hk === 'wide') window.STATE.widesCleared = (window.STATE.widesCleared || 0) + 1;
             // === Daily challenge : hurdle streak ===
             if(window.STATE.dailyChallenge) window.STATE.dailyChallenge.hurdleStreak = (window.STATE.dailyChallenge.hurdleStreak || 0) + 1;
+            // === VAGUE 20 — Quête Funambule : streak haies sans rater ===
+            window.STATE._seasonHurdleStreak = (window.STATE._seasonHurdleStreak || 0) + 1;
           }
         } else {
           // RATÉ : héros au sol
@@ -31390,6 +31820,8 @@ window.addEventListener('appinstalled', () => {
           if(window.STATE) window.STATE._hadHurdleFailThisKm = true;
           // === Daily challenge : reset hurdle streak ===
           if(window.STATE && window.STATE.dailyChallenge) window.STATE.dailyChallenge.hurdleStreak = 0;
+          // === VAGUE 20 — Quête Funambule : streak cassé ===
+          if(window.STATE) window.STATE._seasonHurdleStreak = 0;
           // === CHALLENGE : 3 fails d'affilée = sanction durcie ===
           const isStreakFail = hurdleFailStreak >= 3;
           if(typeof Analytics !== 'undefined'){

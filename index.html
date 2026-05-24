@@ -13027,6 +13027,20 @@ function isLoreUnlocked(entry){
   }
   return false;
 }
+function _loreUnlockLabel(cond){
+  if(cond.startsWith('km')) return 'Atteindre km ' + cond.slice(2);
+  if(cond.startsWith('boss_')){
+    const bossId = cond.slice(5);
+    const bossName = STATE.bosses?.[bossId]?.name || bossId;
+    return 'Vaincre ' + bossName;
+  }
+  if(cond.startsWith('ascend')){
+    const n = parseInt(cond.slice(6), 10);
+    return n + ' ascension' + (n>1?'s':'');
+  }
+  if(cond === 'final') return 'Vaincre Moon King + 10 saisons';
+  return cond;
+}
 function renderLore(){
   const list = document.getElementById('lore-list'); if(!list) return;
   let html = '';
@@ -13042,7 +13056,7 @@ function renderLore(){
     } else {
       html += '<div style="padding:12px 14px; background:rgba(0,0,0,0.04); border-radius:10px; border-left:4px solid #888; opacity:0.5;">'
             + '<strong style="color:#888;">— Verrouillé —</strong>'
-            + '<div style="font-size:11px; color:#999; margin-top:4px;">' + entry.unlock + '</div>'
+            + '<div style="font-size:11px; color:#999; margin-top:4px;">' + _loreUnlockLabel(entry.unlock) + '</div>'
             + '</div>';
     }
   });
@@ -13050,6 +13064,8 @@ function renderLore(){
   list.innerHTML = html;
 }
 function openLore(){
+  // Vague 23 : éviter empilement multiple
+  document.querySelectorAll('#lore-modal').forEach((m, i) => { if(i > 0) m.remove(); });
   const m = document.getElementById('lore-modal'); if(!m) return;
   renderLore();
   m.classList.add('show');
@@ -13136,6 +13152,8 @@ function renderRelics(){
   owEl.innerHTML = owHtml;
 }
 function openRelics(){
+  // Vague 23 : éviter empilement multiple
+  document.querySelectorAll('#relics-modal').forEach((m, i) => { if(i > 0) m.remove(); });
   const m = document.getElementById('relics-modal'); if(!m) return;
   renderRelics();
   m.classList.add('show');
@@ -13266,6 +13284,8 @@ function renderProgression(){
                 + '</div>';
 }
 function openProgression(){
+  // Vague 23 : éviter empilement multiple
+  document.querySelectorAll('#progression-modal').forEach((m, i) => { if(i > 0) m.remove(); });
   const m = document.getElementById('progression-modal'); if(!m) return;
   renderProgression();
   m.classList.add('show');
@@ -13276,6 +13296,11 @@ window.openProgression = openProgression;
 // === VAGUE 20 — Helpers Loadouts (3 presets switchables) ===
 function saveLoadoutToSlot(slotIdx){
   if(slotIdx < 0 || slotIdx > 2) return false;
+  // Vague 23 : refuser save d'un equipment vide (cohérence avec loadLoadoutFromSlot)
+  if(!STATE.equipment || Object.keys(STATE.equipment).length === 0){
+    if(typeof showToast === 'function') showToast('Équipe au moins 1 item avant de sauvegarder', 'warn');
+    return false;
+  }
   if(!STATE.loadouts) STATE.loadouts = [
     { name:'Loadout 1', equipment:{}, active:false },
     { name:'Loadout 2', equipment:{}, active:false },
@@ -13395,6 +13420,8 @@ function renderSeasonQuests(){
   });
 }
 function openSeasonQuests(){
+  // Vague 23 : éviter empilement multiple
+  document.querySelectorAll('#season-quests-modal').forEach((m, i) => { if(i > 0) m.remove(); });
   const m = document.getElementById('season-quests-modal'); if(!m) return;
   renderSeasonQuests();
   m.classList.add('show');
@@ -13554,14 +13581,25 @@ function chooseStarSpec(spec){
 function resetStarSpec(){
   if((STATE.stars || 0) < 10) return false;
   STATE.stars -= 10;
+  let refund = 0;
   if(STATE.starTree){
-    let refund = 0;
-    for(const id in STATE.starTree){ refund += STATE.starTree[id] || 0; }
+    for(const id in STATE.starTree){
+      const lvl = STATE.starTree[id] || 0;
+      if(lvl > 0){
+        const nodeDef = STAR_TREE_NODES.find(n => n.id === id);
+        if(nodeDef && nodeDef.cost){
+          // Somme des coûts des niveaux acquis (cost[0] à cost[lvl-1])
+          for(let i = 0; i < lvl && i < nodeDef.cost.length; i++){
+            refund += nodeDef.cost[i];
+          }
+        }
+      }
+    }
     STATE.stars += refund;
     STATE.starTree = { tapPower:0, lapPower:0, dropRate:0, basePower:0, staminaPlus:0, critPower:0, cooldownNeg:0, starsJackpot:0 };
   }
   STATE.starSpec = null;
-  if(typeof showToast === 'function') showToast('🔄 Spécialisation reset (refund ⭐)', 'success', 5000);
+  if(typeof showToast === 'function') showToast('🔄 Reset spé : +' + refund + ' ⭐ rendues (–10 coût)', 'success', 5000);
   if(typeof renderStarTree === 'function') renderStarTree();
   if(typeof saveNow === 'function') saveNow();
   return true;
@@ -13642,6 +13680,8 @@ function renderStarTree(){
   });
 }
 function openStarTree(){
+  // Vague 23 : éviter empilement multiple
+  document.querySelectorAll('#star-tree-modal').forEach((m, i) => { if(i > 0) m.remove(); });
   const m = document.getElementById('star-tree-modal');
   if(!m) return;
   m.classList.add('show');
@@ -17751,6 +17791,8 @@ function openChest(chestId){
   STATE.chests[chestId] = Math.max(0, (STATE.chests[chestId] || 0) - 1);
   // VAGUE 20 — Quête Collectionneur : incrémente compteur saison
   STATE._seasonChestsOpened = (STATE._seasonChestsOpened || 0) + 1;
+  // VAGUE 23 — track stat quotidienne coffres
+  if(typeof trackDailyStat === 'function') trackDailyStat('chests', 1);
   // Anim chest + reveal
   const modal = document.getElementById('chests-modal');
   const stage = document.getElementById('chest-stage');
@@ -17845,6 +17887,8 @@ function openAllChests(chestId){
   }
   STATE.chests[chestId] = 0;
   STATE.gold = (STATE.gold || 0) + gained;
+  // VAGUE 23 — track stat quotidienne coffres (batch)
+  if(typeof trackDailyStat === 'function') trackDailyStat('chests', n);
   if(typeof showRunnerBubble === 'function'){
     let msg = `${n} ${chest.name}s ouverts · +${fmtBigNumber(gained)} gouttes`;
     if(bestItem) msg += ` · ${rarityDef(bestItem.rarityId).name} équipé`;
@@ -18568,6 +18612,8 @@ function _upgradeEffectAtLvl(id, lvl){
   }
 }
 function showUpgradeDetail(id){
+  // Vague 23 : éviter empilement multiple
+  document.querySelectorAll('#upgrade-detail-modal').forEach((m, i) => { if(i > 0) m.remove(); });
   const u = UPGRADES_TAP[id]; if(!u) return;
   const m = document.getElementById('upgrade-detail-modal'); if(!m) return;
   const lvl = STATE[u.state] || 0;
@@ -18623,6 +18669,7 @@ function showUpgradeDetail(id){
   m.classList.add('show');
 }
 window.showUpgradeDetail = showUpgradeDetail;
+window.openUpgradeDetail = showUpgradeDetail; // alias cohérence API open*()
 
 // === Long-press sur upg-btn ouvre modal détail
 document.addEventListener('touchstart', e => {
@@ -21200,6 +21247,20 @@ function completeLap(){
   if(typeof progressQuest === 'function') progressQuest('laps', 1);
   // DROP D'ITEM ! Chaque lap = 1 drop (auto-équipe si meilleur, sinon scrap)
   if(typeof maybeDropItem === 'function') maybeDropItem();
+  // Vague 23 : check si un palier lore vient d'être débloqué
+  try {
+    if(typeof LORE_CODEX !== 'undefined' && typeof isLoreUnlocked === 'function'){
+      STATE._loreSeenIds = STATE._loreSeenIds || {};
+      LORE_CODEX.forEach(entry => {
+        if(!STATE._loreSeenIds[entry.id] && isLoreUnlocked(entry)){
+          STATE._loreSeenIds[entry.id] = true;
+          if(typeof showToast === 'function'){
+            showToast('📜 Codex débloqué : ' + entry.title, 'success', 4000);
+          }
+        }
+      });
+    }
+  } catch(e){}
 }
 
 /* Maillot du coureur — évolue selon le nombre d'ascensions */
@@ -23364,6 +23425,7 @@ function save(){
       _seasonChestsOpened: STATE._seasonChestsOpened,
       dailyStats: STATE.dailyStats,
       lifetimeStats: STATE.lifetimeStats,
+      _loreSeenIds: STATE._loreSeenIds,
       // === VAGUE 20 P4 — Reliques ===
       relics: STATE.relics,
     };
@@ -24691,6 +24753,7 @@ function load(){
     STATE._seasonChestsOpened = s._seasonChestsOpened || 0;
     STATE.dailyStats = s.dailyStats || {};
     STATE.lifetimeStats = s.lifetimeStats || { totalKm:0, totalGold:0, totalTaps:0, totalHurdles:0, totalNpcs:0, totalChests:0 };
+    STATE._loreSeenIds = s._loreSeenIds || {};
     // === VAGUE 20 P4 — Reliques ===
     STATE.relics = s.relics || { owned: [], equipped: [] };
     if(!STATE.relics.owned) STATE.relics.owned = [];
@@ -27631,8 +27694,9 @@ window.addEventListener('appinstalled', () => {
       const _phidRatio = _phidStamMax ? _phidStam / _phidStamMax : 1;
       if(_phidRatio > 0.80){
         displayKmh *= 1.50;
-        // Le cap absolu reste 35 km/h pour éviter de casser la physique
-        displayKmh = Math.min(35, displayKmh);
+        // Vague 23 : cap absolu relevé à 45 si Phidippide actif
+        const _phidCap = (typeof hasRelic === 'function' && hasRelic('phidippide')) ? 45 : 35;
+        displayKmh = Math.min(_phidCap, displayKmh);
       }
     }
 

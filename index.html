@@ -8229,6 +8229,11 @@ body.shop-epic-flash::after{
               <div id="hud-stamina-bar" style="height:100%;width:100%;background:linear-gradient(90deg,#7ec46a,#5aa84a);transition:width 0.2s, background 0.3s"></div>
             </div>
           </div>
+          <!-- Vague 20 P3 : slot météo dynamique -->
+          <div id="hud-weather" style="display:flex; align-items:center; gap:4px; margin-left:8px; font-size:11px;" aria-label="Météo">
+            <span style="font-size:14px;">☀️</span>
+            <span style="color:#888;">Beau temps</span>
+          </div>
         </div>
         <!-- Pill ETOILES permanentes (prestige cross-runs) — affichee a cote -->
         <div id="hud-stars" style="display:none;align-items:center;gap:4px;padding:5px 9px;background:linear-gradient(135deg,#ffd060,#ff9020);border-radius:14px;color:#1a1a2e;font-weight:700;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,.10);pointer-events:auto;cursor:pointer;font-family:Nunito,sans-serif;line-height:1;margin-left:6px" aria-label="Etoiles permanentes" title="Ouvrir Prestige" onclick="if(typeof openStarTree==='function') openStarTree();">
@@ -8976,6 +8981,26 @@ body.shop-epic-flash::after{
       Investis-les dans des bonus <em>permanents</em>. Chaque km 100 = +1 étoile. Investis sage : c'est définitif.
     </div>
     <div id="star-tree-list" style="display:flex; flex-direction:column;"></div>
+  </div>
+</div>
+
+<!-- VAGUE 20 P4 — Modale Reliques -->
+<div class="modal" id="relics-modal">
+  <div class="modal-card" style="max-width:480px; max-height:80vh; overflow-y:auto;">
+    <button class="modal-close" data-close-modal="relics-modal" aria-label="Fermer">×</button>
+    <h2 style="margin:0 0 4px;">💎 Reliques</h2>
+    <div class="modal-subtitle" style="color:#666; margin-bottom:10px;">Équipe jusqu'à 3 reliques. Drops 1% sur coffres legendary.</div>
+    <div id="relics-equipped"></div>
+    <div id="relics-owned"></div>
+  </div>
+</div>
+
+<div class="modal" id="lore-modal">
+  <div class="modal-card" style="max-width:520px; max-height:80vh; overflow-y:auto;">
+    <button class="modal-close" data-close-modal="lore-modal" aria-label="Fermer">×</button>
+    <h2 style="margin:0 0 4px;">📜 Codex narratif</h2>
+    <div class="modal-subtitle" style="color:#666; margin-bottom:14px;">Histoire de FOULÉE — débloquée par tes exploits</div>
+    <div id="lore-list" style="display:flex; flex-direction:column; gap:8px;"></div>
   </div>
 </div>
 
@@ -12926,6 +12951,219 @@ STATE.buffs = STATE.buffs ?? { bougie: 0, doping: 0, dopingLastUsed: 0 };
 // dopingLastUsed: timestamp dernière utilisation (cooldown 24h)
 // Expose STATE à window pour que le module 3D puisse lire lapProgress, lapsRun, etc.
 window.STATE = STATE;
+
+// === VAGUE 20 P7 — CODEX NARRATIF (20 entrées de lore) ===
+const LORE_CODEX = [
+  { id:'l01', title:'Le Premier Souffle', unlock:'km1',    text:'Tu avances d\'un pas. Puis d\'un autre. Le compteur grimpe. C\'est ton premier kilomètre. Personne ne te regarde. Personne ne juge. Il y a juste toi, et le tap qui rythme ton souffle.' },
+  { id:'l02', title:'L\'Asphalte',         unlock:'km5',   text:'Le bitume garde la mémoire de millions de foulées. Tu ajoutes la tienne. Quelque part, dans la trame, un coureur d\'il y a cent ans a pris exactement le même chemin.' },
+  { id:'l03', title:'Le Stade Municipal',  unlock:'km12',  text:'Tribunes vides, mais le silence chante. Chaque coin de cette piste résonne d\'applaudissements qui n\'auront jamais lieu — et c\'est très bien.' },
+  { id:'l04', title:'Le Champion',         unlock:'km20',  text:'Un coureur ne court jamais seul. Quelque part, à 30 mètres devant toi, quelqu\'un de mieux entraîné ralentit pour t\'attendre. C\'est ainsi qu\'on devient meilleur.' },
+  { id:'l05', title:'L\'Ombre du Doute',   unlock:'km30',  text:'La fatigue te chuchote d\'abandonner. Elle a toujours raison sur le court terme. Elle a toujours tort sur le long. Continue.' },
+  { id:'l06', title:'Iron Lung',           unlock:'boss_ironlung', text:'Sa présence asphyxie. On dit qu\'il aspire l\'air autour de lui pour priver ses adversaires de souffle. Tu l\'as dépassé. Tu respires mieux que jamais.' },
+  { id:'l07', title:'Le Marathon Ancien',  unlock:'km42',  text:'42 195 mètres. La distance que Phidippide a couvert pour annoncer la victoire à Athènes. Il est mort en arrivant. Toi, tu continues.' },
+  { id:'l08', title:'Les Anneaux',         unlock:'km50',  text:'Cinq cercles entrelacés. Cinq continents. Cinq raisons de continuer. Tu fais partie de cette ronde maintenant.' },
+  { id:'l09', title:'Champion Olympique',  unlock:'km60',  text:'Une médaille pèse moins qu\'un rêve. Mais elle scintille comme la promesse tenue d\'une dette envers soi-même.' },
+  { id:'l10', title:'La Brûlure',          unlock:'boss_stormsprint', text:'L\'orage est ton allié. Storm Sprinter croyait pouvoir t\'aveugler avec sa pluie. La pluie efface tes doutes, pas tes pas.' },
+  { id:'l11', title:'L\'Élixir',           unlock:'km75',  text:'On a perdu le secret en chemin. Les anciens savaient comment courir éternellement. Ils ont oublié. Toi, tu réinventes l\'art à chaque foulée.' },
+  { id:'l12', title:'La Foule',            unlock:'km80',  text:'Mille respirations soutiennent ta foulée. Quand tu cours, tu cours pour tous ceux qui n\'ont pas commencé encore.' },
+  { id:'l13', title:'L\'Espoir d\'Or',     unlock:'km90',  text:'Tu vois la ligne. Mais elle bouge. Plus tu cours, plus elle s\'éloigne. C\'est le secret : la ligne d\'arrivée s\'invente devant tes yeux.' },
+  { id:'l14', title:'La Frontière',        unlock:'km99',  text:'Un pas. C\'est tout. Un pas entre le coureur et le légendaire. Tu hésites. Tu ne hésites plus.' },
+  { id:'l15', title:'L\'Ascension',        unlock:'km100', text:'La gravité te lâche. Tu n\'as pas couru. Tu as percé. Au-dessus de toi, la Lune. Tu y vas.' },
+  { id:'l16', title:'Le Sol Lunaire',      unlock:'km110', text:'Chaque foulée enfonce la poussière millénaire. Pas un seul humain n\'a couru ici avant toi. Tu inventes le sport lunaire.' },
+  { id:'l17', title:'Cosmic Runner',       unlock:'boss_cosmic',   text:'Les couloirs du cosmos n\'ont pas de fin. Cosmic Runner connaissait des raccourcis. Tu en connais d\'autres. Le cosmos approuve.' },
+  { id:'l18', title:'La Couronne',         unlock:'ascend5',       text:'Tu n\'es plus un coureur. Tu es une légende dont les enfants te raconteront l\'histoire dans cent ans.' },
+  { id:'l19', title:'King of the Moon',    unlock:'boss_moonking', text:'Le roi-fou de la Lune t\'attendait depuis toujours. Il était toi, dans une vie antérieure. Tu l\'as vaincu en te pardonnant.' },
+  { id:'l20', title:'L\'Éternité du Pas',  unlock:'final',         text:'Tu cours encore. Et tu courras. Le compteur n\'a jamais été le but. Le but, c\'est le tap. Le tap, c\'est tout.' }
+];
+function isLoreUnlocked(entry){
+  const cond = entry.unlock;
+  const km = STATE.lapsRun || 0;
+  if(cond.startsWith('km')){
+    return km >= parseFloat(cond.slice(2));
+  }
+  if(cond.startsWith('boss_')){
+    return STATE.bosses?.[cond.slice(5)]?.defeated || false;
+  }
+  if(cond.startsWith('ascend')){
+    return (STATE.ascensions || 0) >= parseInt(cond.slice(6), 10);
+  }
+  if(cond === 'final'){
+    return (STATE.bosses?.moonking?.defeated || false) && (STATE.saison || 1) >= 10;
+  }
+  return false;
+}
+function renderLore(){
+  const list = document.getElementById('lore-list'); if(!list) return;
+  let html = '';
+  let unlockedCount = 0;
+  LORE_CODEX.forEach(entry => {
+    const unl = isLoreUnlocked(entry);
+    if(unl){
+      unlockedCount++;
+      html += '<div style="padding:12px 14px; background:rgba(255,212,96,0.10); border-radius:10px; border-left:4px solid #ffd060;">'
+            + '<strong style="color:#b08020;">' + entry.title + '</strong>'
+            + '<div style="font-size:12px; color:#444; margin-top:6px; line-height:1.5; font-style:italic;">' + entry.text + '</div>'
+            + '</div>';
+    } else {
+      html += '<div style="padding:12px 14px; background:rgba(0,0,0,0.04); border-radius:10px; border-left:4px solid #888; opacity:0.5;">'
+            + '<strong style="color:#888;">— Verrouillé —</strong>'
+            + '<div style="font-size:11px; color:#999; margin-top:4px;">' + entry.unlock + '</div>'
+            + '</div>';
+    }
+  });
+  html = '<div style="text-align:center; margin-bottom:10px; color:#666; font-size:12px;">Débloqué : ' + unlockedCount + ' / ' + LORE_CODEX.length + '</div>' + html;
+  list.innerHTML = html;
+}
+function openLore(){
+  const m = document.getElementById('lore-modal'); if(!m) return;
+  renderLore();
+  m.classList.add('show');
+}
+window.LORE_CODEX = LORE_CODEX;
+window.isLoreUnlocked = isLoreUnlocked;
+window.renderLore = renderLore;
+window.openLore = openLore;
+
+// === VAGUE 20 P4 — RELIQUES (drops 1% legendary, 3 slots, 12 reliques) ===
+const RELIC_DEFS = {
+  phidippide:  { name:'Soufflerie de Phidippide', desc:'+50% vitesse si stamina > 80%', icon:'💨', tier:'mythic' },
+  hermes:      { name:'Sandales d\'Hermès',       desc:'Ignore pénalités haies ratées', icon:'👟', tier:'mythic' },
+  couronne:    { name:'Couronne de Marathon',     desc:'+1 ⭐ tous les 25 km au-delà du 100', icon:'👑', tier:'mythic' },
+  chronoCasse: { name:'Chronomètre Cassé',         desc:'-50% cooldown skills, durée skills -30%', icon:'⏱️', tier:'rare' },
+  coeurMec:    { name:'Cœur de Mécanique',        desc:'Vitesse fixe 25 km/h, plus de stamina', icon:'⚙️', tier:'mythic' },
+  atalante:    { name:'Œil d\'Atalante',          desc:'Vision haies ×4, +10% crit chance', icon:'👁️', tier:'rare' },
+  medCasse:    { name:'Médaille Cassée',          desc:'×2 gouttes, mais wipe gouttes à l\'ascension', icon:'🥇', tier:'rare' },
+  pied:        { name:'Coup de Pied d\'Hermès',   desc:'+30% saut, sauts gratuits en stamina', icon:'🦵', tier:'rare' },
+  manteau:     { name:'Manteau du Phare',         desc:'Drop items ×3, coffres -50%', icon:'🌟', tier:'rare' },
+  bourrasque:  { name:'Bourrasque Olympienne',    desc:'Tous les 10 taps = sprint gratuit 1.5s', icon:'🌪️', tier:'rare' },
+  cendres:     { name:'Cendres du Stade',         desc:'-30% stamina max, +50% combo cap', icon:'🔥', tier:'rare' },
+  etoile:      { name:'Étoile du Voyageur',       desc:'+5% drop rate par étoile permanente', icon:'⭐', tier:'mythic' }
+};
+function rollRelicDrop(){
+  if(Math.random() > 0.01) return null;
+  const allIds = Object.keys(RELIC_DEFS);
+  const ownedIds = STATE.relics?.owned || [];
+  const candidates = allIds.filter(id => !ownedIds.includes(id));
+  if(candidates.length === 0) return null;
+  const newId = candidates[Math.floor(Math.random() * candidates.length)];
+  if(!STATE.relics) STATE.relics = { owned: [], equipped: [] };
+  STATE.relics.owned.push(newId);
+  if(typeof showToast === 'function') showToast('💎 RELIQUE : ' + RELIC_DEFS[newId].name + ' !', 'success', 8000);
+  if(typeof saveNow === 'function') saveNow();
+  return newId;
+}
+function equipRelic(id){
+  if(!STATE.relics) return false;
+  if(!STATE.relics.owned.includes(id)) return false;
+  if(STATE.relics.equipped.includes(id)) return false;
+  if(STATE.relics.equipped.length >= 3) return false;
+  STATE.relics.equipped.push(id);
+  if(typeof saveNow === 'function') saveNow();
+  return true;
+}
+function unequipRelic(id){
+  if(!STATE.relics) return false;
+  STATE.relics.equipped = STATE.relics.equipped.filter(x => x !== id);
+  if(typeof saveNow === 'function') saveNow();
+  return true;
+}
+function hasRelic(id){
+  return STATE.relics?.equipped?.includes(id) || false;
+}
+function renderRelics(){
+  const eqEl = document.getElementById('relics-equipped');
+  const owEl = document.getElementById('relics-owned');
+  if(!eqEl || !owEl || !STATE.relics) return;
+  const equipped = STATE.relics.equipped || [];
+  const owned = STATE.relics.owned || [];
+  let eqHtml = '<h3 style="font-size:12px; color:#666; text-transform:uppercase; margin:8px 0 6px;">Équipées (' + equipped.length + '/3)</h3>';
+  if(equipped.length === 0){
+    eqHtml += '<div style="color:#999; font-size:12px; padding:8px;">Aucune relique équipée</div>';
+  } else {
+    equipped.forEach(id => {
+      const r = RELIC_DEFS[id]; if(!r) return;
+      eqHtml += '<div style="display:flex; gap:10px; padding:8px 12px; background:rgba(255,212,96,0.18); border-radius:8px; margin-bottom:6px; align-items:center;">'
+              + '<span style="font-size:24px;">' + r.icon + '</span>'
+              + '<div style="flex:1;"><strong>' + r.name + '</strong><div style="font-size:11px; color:#666;">' + r.desc + '</div></div>'
+              + '<button onclick="unequipRelic(\'' + id + '\'); renderRelics();" style="padding:6px 10px; background:#e84030; color:#fff; border:none; border-radius:6px; cursor:pointer; font-size:11px;">Retirer</button></div>';
+    });
+  }
+  eqEl.innerHTML = eqHtml;
+  let owHtml = '<h3 style="font-size:12px; color:#666; text-transform:uppercase; margin:14px 0 6px;">Collection (' + owned.length + '/' + Object.keys(RELIC_DEFS).length + ')</h3>';
+  owned.filter(id => !equipped.includes(id)).forEach(id => {
+    const r = RELIC_DEFS[id]; if(!r) return;
+    const canEquip = equipped.length < 3;
+    owHtml += '<div style="display:flex; gap:10px; padding:8px 12px; background:rgba(255,255,255,0.5); border-radius:8px; margin-bottom:6px; align-items:center;">'
+            + '<span style="font-size:24px;">' + r.icon + '</span>'
+            + '<div style="flex:1;"><strong>' + r.name + '</strong><div style="font-size:11px; color:#666;">' + r.desc + '</div></div>'
+            + '<button ' + (canEquip ? '' : 'disabled') + ' onclick="equipRelic(\'' + id + '\'); renderRelics();" style="padding:6px 10px; background:' + (canEquip ? '#7ec46a' : '#aaa') + '; color:#fff; border:none; border-radius:6px; cursor:' + (canEquip ? 'pointer' : 'not-allowed') + '; font-size:11px;">Équiper</button></div>';
+  });
+  owEl.innerHTML = owHtml;
+}
+function openRelics(){
+  const m = document.getElementById('relics-modal'); if(!m) return;
+  renderRelics();
+  m.classList.add('show');
+}
+window.RELIC_DEFS = RELIC_DEFS;
+window.rollRelicDrop = rollRelicDrop;
+window.equipRelic = equipRelic;
+window.unequipRelic = unequipRelic;
+window.hasRelic = hasRelic;
+window.renderRelics = renderRelics;
+window.openRelics = openRelics;
+
+// === VAGUE 20 P3 — Météo dynamique (4 types, cycle 3km, seed déterministe) ===
+const WEATHER_TYPES = {
+  clear: { label:'Beau temps',   icon:'☀️', speedMul:1.00, staminaRegenMul:1.00, dropMul:1.00 },
+  rain:  { label:'Pluie',        icon:'🌧️', speedMul:0.90, staminaRegenMul:1.00, dropMul:1.20 },
+  wind:  { label:'Vent dos',     icon:'💨', speedMul:1.15, staminaRegenMul:0.90, dropMul:1.00 },
+  heat:  { label:'Canicule',     icon:'🔥', speedMul:1.00, staminaRegenMul:0.80, dropMul:1.10 }
+};
+function _weatherSeed(km){
+  const bucket = Math.floor(km / 3);
+  let h = bucket * 2654435761;
+  h = (h ^ (h >>> 16)) >>> 0;
+  return h;
+}
+function updateWeather(){
+  const km = STATE.lapsRun || 0;
+  if(!STATE.weather) STATE.weather = { type:'clear', startedAtKm:0, endsAtKm:3 };
+  if(km >= STATE.weather.endsAtKm){
+    const seed = _weatherSeed(km);
+    const r = (seed % 100) / 100;
+    let type = 'clear';
+    if(r < 0.50) type = 'clear';
+    else if(r < 0.70) type = 'rain';
+    else if(r < 0.88) type = 'wind';
+    else type = 'heat';
+    STATE.weather = { type, startedAtKm: km, endsAtKm: km + 3 };
+    try {
+      const wEl = document.getElementById('hud-weather');
+      if(wEl){
+        const w = WEATHER_TYPES[type];
+        wEl.innerHTML = '<span style="font-size:14px;">' + w.icon + '</span> <span style="font-size:11px; color:#888;">' + w.label + '</span>';
+      }
+    } catch(e){}
+  }
+}
+function getWeatherMul(key){
+  const w = WEATHER_TYPES[STATE.weather?.type || 'clear'];
+  return w?.[key] || 1.00;
+}
+function getEndlessScale(){
+  const km = STATE.lapsRun || 0;
+  if(km < 100) return { speed:1, drop:1, difficulty:1 };
+  return {
+    speed: 1 + (km - 100) / 200,
+    drop: 1 + (km - 100) / 500,
+    difficulty: 1 + (km - 100) / 100
+  };
+}
+window.WEATHER_TYPES = WEATHER_TYPES;
+window.updateWeather = updateWeather;
+window.getWeatherMul = getWeatherMul;
+window.getEndlessScale = getEndlessScale;
 
 // === VAGUE 20 — Progression tracking (daily + lifetime stats) ===
 function _todayKey(){
@@ -23015,6 +23253,8 @@ function save(){
       _seasonChestsOpened: STATE._seasonChestsOpened,
       dailyStats: STATE.dailyStats,
       lifetimeStats: STATE.lifetimeStats,
+      // === VAGUE 20 P4 — Reliques ===
+      relics: STATE.relics,
     };
     const json = JSON.stringify(s);
     localStorage.setItem("alchimia.save", json);
@@ -24340,6 +24580,10 @@ function load(){
     STATE._seasonChestsOpened = s._seasonChestsOpened || 0;
     STATE.dailyStats = s.dailyStats || {};
     STATE.lifetimeStats = s.lifetimeStats || { totalKm:0, totalGold:0, totalTaps:0, totalHurdles:0, totalNpcs:0, totalChests:0 };
+    // === VAGUE 20 P4 — Reliques ===
+    STATE.relics = s.relics || { owned: [], equipped: [] };
+    if(!STATE.relics.owned) STATE.relics.owned = [];
+    if(!STATE.relics.equipped) STATE.relics.equipped = [];
     // Re-applique les effets passifs des nodes débloqués
     if(typeof SKILL_TREE !== 'undefined'){
       for(const nodeId in STATE.skills.unlocked){
@@ -26911,6 +27155,11 @@ window.addEventListener('appinstalled', () => {
     const lapProgress = Math.max(0, Math.min(1, ST.lapProgress || 0));
     const totalKm = lapsRun + lapProgress;
     metersInCurrentKm = lapProgress * 1000;
+    // Vague 20 P3 : météo update (idempotent, throttle 1s)
+    if(typeof updateWeather === 'function' && (!ST._lastWeatherCheck || Date.now() - ST._lastWeatherCheck > 1000)){
+      ST._lastWeatherCheck = Date.now();
+      updateWeather();
+    }
     // Détection de passage de KM pour spawn milestone derrière
     if(lapsRun > lastKmInt){
       // Boost de 15 "taps virtuels" au passage d'un km

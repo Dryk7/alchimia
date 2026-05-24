@@ -8979,6 +8979,19 @@ body.shop-epic-flash::after{
   </div>
 </div>
 
+<div class="modal" id="upgrade-detail-modal">
+  <div class="modal-card" style="max-width:480px; max-height:80vh; overflow-y:auto;">
+    <button class="modal-close" data-close-modal="upgrade-detail-modal" aria-label="Fermer">×</button>
+    <h2 id="upg-detail-name" style="display:flex; align-items:center; gap:10px; margin:0 0 4px;">
+      <span id="upg-detail-icon" style="display:flex; width:32px; height:32px;"></span>
+      <span id="upg-detail-title">—</span>
+    </h2>
+    <div class="modal-subtitle" id="upg-detail-desc" style="color:#666; margin-bottom:10px;">—</div>
+    <div id="upg-detail-table" style="display:flex; flex-direction:column; gap:4px; max-height:50vh; overflow-y:auto; padding:4px;"></div>
+    <button id="upg-detail-buy" style="margin-top:12px; width:100%; padding:12px; background:linear-gradient(135deg,#ffd060,#ff9020); border:none; border-radius:10px; font-weight:900; font-size:14px; color:#1a1a2e; cursor:pointer;">ACHETER</button>
+  </div>
+</div>
+
 <button class="side-toggle" id="codex-toggle" title="Codex">
   <svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
     <rect x="4" y="3" width="16" height="18" rx="1"/>
@@ -17824,6 +17837,118 @@ function buyUpgrade(id){
   if(typeof renderStats === 'function') renderStats();
   updateTapStrip();
 }
+function _upgradeEffectAtLvl(id, lvl){
+  switch(id){
+    case 'tapValue':     return '+' + (1 + lvl * 1.5).toFixed(1) + ' g/tap';
+    case 'critChance':   return ((5 + lvl) | 0) + '% chance crit';
+    case 'lapBonus':     return '+' + Math.floor(Math.pow(lvl, 1.5) * 5) + ' g/km';
+    case 'autoTap':      return (lvl * 1.5).toFixed(1) + ' tap/s automatique';
+    case 'endurance':    return '+' + (lvl * 10) + ' stamina max';
+    case 'baseSpeed':    return '×' + Math.pow(1.15, lvl).toFixed(2) + ' vitesse passive';
+    case 'eagleEye':     return '×' + (1 + lvl * 0.15).toFixed(2) + ' vision haies';
+    case 'cruiseControl':return '+' + (lvl * 7.5).toFixed(0) + '% baseline tap passif';
+    default: return 'Niv ' + lvl;
+  }
+}
+function showUpgradeDetail(id){
+  const u = UPGRADES_TAP[id]; if(!u) return;
+  const m = document.getElementById('upgrade-detail-modal'); if(!m) return;
+  const lvl = STATE[u.state] || 0;
+  const max = u.maxLevel || 15;
+  const name = (typeof upgradeName === 'function') ? upgradeName(id) : id;
+  const srcBtn = document.querySelector('.upg-btn[data-upgrade="' + id + '"]');
+  const srcSvg = srcBtn?.querySelector('svg')?.outerHTML || '';
+  const iconEl = document.getElementById('upg-detail-icon');
+  if(iconEl) iconEl.innerHTML = srcSvg;
+  document.getElementById('upg-detail-title').textContent = name;
+  const desc = srcBtn?.querySelector('.upg-desc')?.textContent || '';
+  document.getElementById('upg-detail-desc').textContent = desc;
+  const tbl = document.getElementById('upg-detail-table');
+  if(tbl){
+    let html = '';
+    for(let i = 0; i <= max; i++){
+      const cur = (i === lvl);
+      const reached = (i <= lvl);
+      const effect = _upgradeEffectAtLvl(id, i);
+      const cost = i === 0 ? '—' : Math.floor(u.base * Math.pow(u.factor, i - 1)).toLocaleString('fr-FR');
+      const bg = cur ? 'rgba(255,212,96,0.25)' : (reached ? 'rgba(126,196,106,0.10)' : 'transparent');
+      const border = cur ? 'border:2px solid #ffd060;' : 'border:1px solid rgba(0,0,0,0.08);';
+      html += '<div style="display:grid; grid-template-columns:50px 1fr auto; gap:8px; padding:6px 10px; background:' + bg + '; ' + border + ' border-radius:6px; align-items:center; font-size:12px;">'
+            + '<div style="font-weight:900; color:' + (cur ? '#b08020' : (reached ? '#6a9a4a' : '#888')) + ';">Niv ' + i + (cur ? ' ●' : '') + '</div>'
+            + '<div style="color:#1a1a2e;">' + effect + '</div>'
+            + '<div style="font-size:11px; color:#888;">' + cost + (i > 0 ? ' g' : '') + '</div>'
+            + '</div>';
+    }
+    tbl.innerHTML = html;
+  }
+  const buyBtn = document.getElementById('upg-detail-buy');
+  if(buyBtn){
+    const atCap = lvl >= max;
+    const cost = (typeof upgradeCost === 'function') ? upgradeCost(id) : 0;
+    if(atCap){
+      buyBtn.textContent = 'NIVEAU MAX ATTEINT';
+      buyBtn.disabled = true;
+      buyBtn.style.opacity = '0.5';
+      buyBtn.style.cursor = 'not-allowed';
+    } else {
+      buyBtn.textContent = 'ACHETER NIV ' + (lvl + 1) + ' — ' + cost.toLocaleString('fr-FR') + ' g';
+      buyBtn.disabled = (STATE.gold || 0) < cost;
+      buyBtn.style.opacity = buyBtn.disabled ? '0.6' : '1';
+      buyBtn.style.cursor = buyBtn.disabled ? 'not-allowed' : 'pointer';
+      buyBtn.onclick = () => {
+        if(typeof buyUpgrade === 'function'){
+          buyUpgrade(id);
+          showUpgradeDetail(id);
+        }
+      };
+    }
+  }
+  m.classList.add('show');
+}
+window.showUpgradeDetail = showUpgradeDetail;
+
+// === Long-press sur upg-btn ouvre modal détail
+document.addEventListener('touchstart', e => {
+  const btn = e.target.closest('.upg-btn[data-upgrade]');
+  if(!btn) return;
+  btn._longPressTimer = setTimeout(() => {
+    if(typeof showUpgradeDetail === 'function'){
+      btn._longPressFired = true;
+      showUpgradeDetail(btn.dataset.upgrade);
+      if(navigator.vibrate) try { navigator.vibrate(50); } catch(e){}
+    }
+  }, 550);
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  const btn = e.target.closest('.upg-btn[data-upgrade]');
+  if(!btn) return;
+  clearTimeout(btn._longPressTimer);
+  if(btn._longPressFired){
+    e.preventDefault();
+    e.stopPropagation();
+    btn._longPressFired = false;
+  }
+}, { passive: false });
+document.addEventListener('mousedown', e => {
+  const btn = e.target.closest('.upg-btn[data-upgrade]');
+  if(!btn || e.button !== 0) return;
+  btn._longPressTimer = setTimeout(() => {
+    if(typeof showUpgradeDetail === 'function'){
+      btn._longPressFired = true;
+      showUpgradeDetail(btn.dataset.upgrade);
+    }
+  }, 550);
+});
+document.addEventListener('mouseup', e => {
+  const btn = e.target.closest('.upg-btn[data-upgrade]');
+  if(!btn) return;
+  clearTimeout(btn._longPressTimer);
+  if(btn._longPressFired){
+    e.preventDefault();
+    e.stopPropagation();
+    setTimeout(() => { btn._longPressFired = false; }, 50);
+  }
+});
 /* ================ SAISON / PRESTIGE — la couche infinie ================ */
 const SAISON_UNLOCK_LAPS = 100;
 const STARS_PER_10_LAPS = 1;

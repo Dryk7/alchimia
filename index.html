@@ -8244,6 +8244,10 @@ body.shop-epic-flash::after{
               <span class="tap-stat-val" id="tap-per-tap">+1</span>
             </div>
             <div class="tap-stat">
+              <span class="tap-stat-lbl">G/SEC</span>
+              <span class="tap-stat-val" id="stat-gps">0</span>
+            </div>
+            <div class="tap-stat">
               <span class="tap-stat-lbl">PROCHAIN KM</span>
               <span class="tap-stat-val" id="tap-per-lap">+100</span>
             </div>
@@ -17469,7 +17473,16 @@ function updateTapStrip(){
   const perLap = document.getElementById('tap-per-lap');
   const critRate = document.getElementById('tap-crit-rate');
   const tapValue = 1 + (STATE.upgradeTapValue||0) * 1.5;
-  if(perTap) perTap.textContent = '+' + tapValue;
+  if(perTap){
+    const oldTxt = perTap.textContent;
+    const newTxt = '+' + tapValue;
+    if(oldTxt !== newTxt){
+      perTap.textContent = newTxt;
+      perTap.classList.remove('val-pulse'); void perTap.offsetWidth;
+      perTap.classList.add('val-pulse');
+      setTimeout(() => perTap.classList.remove('val-pulse'), 600);
+    }
+  }
   // Affiche le gain par tap dans le bouton principal
   const boostPerTap = document.getElementById('boost-per-tap');
   if(boostPerTap) boostPerTap.textContent = tapValue;
@@ -17481,6 +17494,22 @@ function updateTapStrip(){
   }
   // Crit affiché : 5% base + 1% par niveau (cohérent avec le calcul réel rawCrit = 0.05 + lvl*0.01)
   if(critRate) critRate.textContent = Math.round((5 + (STATE.upgradeCritChance||0))) + '%';
+  // === Stat globale GOUTTES/SEC
+  const _gps = document.getElementById('stat-gps');
+  if(_gps){
+    const tapV = tapValue;
+    const autoR = Math.min(10, (STATE.upgradeAutoTap || 0) * 1.5);
+    const teamR = (typeof teamPassiveRate === 'function' ? teamPassiveRate() : 0);
+    const gps = Math.max(0, Math.round(tapV * autoR + teamR));
+    const oldGps = _gps.textContent;
+    const newGps = String(gps);
+    if(oldGps !== newGps){
+      _gps.textContent = newGps;
+      _gps.classList.remove('val-pulse'); void _gps.offsetWidth;
+      _gps.classList.add('val-pulse');
+      setTimeout(() => _gps.classList.remove('val-pulse'), 600);
+    }
+  }
   updateUpgradesUI();
 }
 

@@ -13416,6 +13416,27 @@ function getActiveRival(){
   }
   return active;
 }
+const BOSS_KM_MAP = {
+  60:  'draftbreaker',
+  80:  'shadowpace',
+  110: 'stormsprint',
+  140: 'ironlung',
+  170: 'mirror',
+  200: 'cosmic',
+  250: 'moonking'
+};
+function getBossIdForKm(km){
+  km = Math.floor(km);
+  for(const targetKm in BOSS_KM_MAP){
+    if(Math.abs(km - parseInt(targetKm,10)) <= 1){
+      const id = BOSS_KM_MAP[targetKm];
+      if(!STATE.bosses?.[id]?.defeated) return id;
+    }
+  }
+  return null;
+}
+window.BOSS_KM_MAP = BOSS_KM_MAP;
+window.getBossIdForKm = getBossIdForKm;
 function getActiveBoss(){
   // Retourne le boss spawned (lapsRun = spawnKm ± 2)
   const km = STATE.lapsRun || 0;
@@ -16577,6 +16598,24 @@ function renderStats(){
       _ind.textContent = (_bougieOn ? '🕯️' : '') + (_dopingOn ? '💉' : '');
     } else if(_ind){
       _ind.remove();
+    }
+  } catch(e){}
+  // Vague 21 : hint quête prête à claim
+  try {
+    if(typeof updateSeasonQuests === 'function') updateSeasonQuests();
+    const claimableCount = STATE.seasonQuests ? Object.values(STATE.seasonQuests).filter(q => q.done && !q.claimed).length : 0;
+    let hint = document.getElementById('hud-quest-hint');
+    if(claimableCount > 0){
+      if(!hint){
+        hint = document.createElement('div');
+        hint.id = 'hud-quest-hint';
+        hint.style.cssText = 'position:fixed; top:120px; right:10px; background:linear-gradient(135deg,#ffd060,#ff9020); color:#1a1a2e; padding:6px 12px; border-radius:14px; font-size:12px; font-weight:900; z-index:9000; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.3); animation:hintPulse 1.8s infinite;';
+        hint.onclick = () => { if(typeof openSeasonQuests === 'function') openSeasonQuests(); };
+        document.body.appendChild(hint);
+      }
+      hint.textContent = '🏆 ' + claimableCount + ' à réclamer';
+    } else if(hint){
+      hint.remove();
     }
   } catch(e){}
 }
@@ -21333,6 +21372,15 @@ function renderRecords(){
       if(idx > bestRarityIdx){ bestRarityIdx = idx; bestRarity = (it.rarityId || it.rarity); }
     });
   }
+  // Vague 21 : Lifetime stats
+  const lt = STATE.lifetimeStats || {};
+  const ltHTML = '<div class="records-section-title">LIFETIME (DEPUIS L\'INSTALL)</div>'
+    + '<div class="records-row"><span>Km totaux</span><b>' + (lt.totalKm || 0).toLocaleString('fr-FR') + '</b></div>'
+    + '<div class="records-row"><span>Gouttes totales</span><b>' + Math.floor(lt.totalGold || 0).toLocaleString('fr-FR') + '</b></div>'
+    + '<div class="records-row"><span>Taps totaux</span><b>' + (lt.totalTaps || 0).toLocaleString('fr-FR') + '</b></div>'
+    + '<div class="records-row"><span>Haies lifetime</span><b>' + (lt.totalHurdles || 0) + '</b></div>'
+    + '<div class="records-row"><span>PNJ lifetime</span><b>' + (lt.totalNpcs || 0) + '</b></div>'
+    + '<div class="records-row"><span>Coffres lifetime</span><b>' + (lt.totalChests || 0) + '</b></div>';
   body.innerHTML = `
     <div class="records-hero">
       <div class="records-emoji"></div>
@@ -21376,6 +21424,7 @@ function renderRecords(){
       <div class="records-row"><span>Upgrades achetés</span><b>${S.totalUpgradesBought||0}</b></div>
       <div class="records-row"><span>Lapins attrapés</span><b>${S.rabbitsCaught||0}</b></div>
       <div class="records-row"><span>Lièvres capturés</span><b>${S.haresCaught||0}</b></div>
+      ${ltHTML}
       ${endlessHtml}
     </div>
     <button id="records-share" class="records-share-btn">PARTAGER MES STATS</button>
@@ -25845,7 +25894,10 @@ window.addEventListener('appinstalled', () => {
     // opts.fromBehind = true → spawn DERRIÈRE le joueur, vitesse boostée (= il te double)
     // opts.forceTier = number → force ce tier (debug/test uniquement)
     opts = opts || {};
-    const tierIdx = (typeof opts.forceTier === 'number') ? opts.forceTier : pickTierForPlayer();
+    let tierIdx = (typeof opts.forceTier === 'number') ? opts.forceTier : pickTierForPlayer();
+    // Vague 21 : si on est à un km boss, force T6 minimum
+    const _bossIdForSpawn = (typeof getBossIdForKm === 'function') ? getBossIdForKm(STATE.lapsRun || 0) : null;
+    if(_bossIdForSpawn) tierIdx = Math.max(6, tierIdx);
     const tier = NPC_TIERS[tierIdx];
     const pick = arr => arr[Math.floor(Math.random() * arr.length)];
     let speed = tier.baseSpeed + (Math.random() - 0.5) * tier.speedVar;
@@ -25889,6 +25941,14 @@ window.addEventListener('appinstalled', () => {
       bobPhase: Math.random() * 6.28,
       fromBehind: !!opts.fromBehind, // marque pour effet visuel (audio "swoosh" quand il passe)
     });
+    // Vague 21 : attribuer bossId au dernier npc spawned
+    if(_bossIdForSpawn){
+      const _lastNpc = npcs[npcs.length - 1];
+      if(_lastNpc){
+        _lastNpc.bossId = _bossIdForSpawn;
+        _lastNpc.isBoss = true;
+      }
+    }
     // Vague 21 : attribuer rivalId si le km matche un rival qui n'a pas été vu cette saison
     if(window.STATE && window.STATE.rivals){
       const _npc = npcs[npcs.length - 1];

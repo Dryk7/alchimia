@@ -8619,6 +8619,41 @@ body.shop-epic-flash::after{
         </svg>
         <div class="mi-meta"><div class="mi-title">PRESTIGE</div><div class="mi-sub">investis tes étoiles permanentes</div></div>
       </button>
+      <button class="menu-item" data-action="lore" data-unlock-km="10">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#b08020"><path d="M4 2 L20 2 L20 22 L4 22 z M6 6 L18 6 M6 10 L18 10 M6 14 L14 14 M6 18 L12 18" stroke="#b08020" stroke-width="1.5" fill="none"/></svg>
+        <div class="mi-meta">
+          <div class="mi-title">CODEX NARRATIF</div>
+          <div class="mi-sub">Histoire de FOULÉE</div>
+        </div>
+      </button>
+      <button class="menu-item" data-action="season-quests" data-unlock-km="5">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#e85040"><path d="M7 4 L17 4 L17 8 Q21 8 21 10 Q21 14 17 14 L17 15 Q17 17 14 17.5 L14 19 L17 21 L7 21 L10 19 L10 17.5 Q7 17 7 15 L7 14 Q3 14 3 10 Q3 8 7 8 z"/></svg>
+        <div class="mi-meta">
+          <div class="mi-title">QUÊTES SAISON</div>
+          <div class="mi-sub">5 défis longs</div>
+        </div>
+      </button>
+      <button class="menu-item" data-action="relics" data-unlock-km="50">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#9080d0"><path d="M12 2 L18 7 L18 15 L12 22 L6 15 L6 7 z" stroke="#9080d0" stroke-width="1" fill="#9080d0"/></svg>
+        <div class="mi-meta">
+          <div class="mi-title">RELIQUES</div>
+          <div class="mi-sub">Objets passifs uniques</div>
+        </div>
+      </button>
+      <button class="menu-item" data-action="progression" data-unlock-km="3">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#4a9fd9"><path d="M3 20 L3 4 L21 4 L21 20 z M7 16 L7 10 M11 16 L11 7 M15 16 L15 12 M19 16 L19 8" stroke="#4a9fd9" stroke-width="2" stroke-linecap="round" fill="none"/></svg>
+        <div class="mi-meta">
+          <div class="mi-title">PROGRESSION</div>
+          <div class="mi-sub">Stats 7j + lifetime</div>
+        </div>
+      </button>
+      <button class="menu-item" data-action="loadouts" data-unlock-km="40">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#7ec46a"><rect x="3" y="4" width="18" height="6" rx="1"/><rect x="3" y="14" width="18" height="6" rx="1"/></svg>
+        <div class="mi-meta">
+          <div class="mi-title">LOADOUTS</div>
+          <div class="mi-sub">3 presets équipement</div>
+        </div>
+      </button>
       <div class="menu-sec" data-unlock-km="5">Boost rapide</div>
       <button class="menu-item" data-action="buy-bougie" data-unlock-km="5">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="#ff9020"><path d="M12 2 L13 6 L15 5 L14 7 L18 8 L14 9 L15 11 L13 10 L12 14 L11 10 L9 11 L10 9 L6 8 L10 7 L9 5 L11 6 z M9 14 L15 14 L15 20 L9 20 z"/></svg>
@@ -17601,7 +17636,16 @@ function maybeDropItem(reasonOverride){
     }
   }
   const chest = chestDef(chestId) || CHEST_TYPES[0];
-  STATE.chests[chest.id] = (STATE.chests[chest.id] || 0) + 1;
+  // Vague 21 : météo dropMul (bonus chest probabiliste basé sur la fraction du multiplicateur)
+  const _weatherDrop = (typeof getWeatherMul === 'function') ? getWeatherMul('dropMul') : 1;
+  // === Vague 21 : relique Étoile (+5% drop rate par étoile permanente) ===
+  const _etoileMul = (typeof hasRelic === 'function' && hasRelic('etoile'))
+    ? 1 + (STATE.totalStarsEarned || STATE.stars || 0) * 0.05
+    : 1;
+  const _totalDropMul = _weatherDrop * _etoileMul;
+  let _bonus = Math.floor(_totalDropMul - 1);
+  if(Math.random() < ((_totalDropMul - 1) - _bonus)) _bonus += 1;
+  STATE.chests[chest.id] = (STATE.chests[chest.id] || 0) + 1 + _bonus;
   _showChestDropToast(chest, reason);
   if(typeof updateChestBadge === 'function') updateChestBadge();
 }
@@ -18109,7 +18153,9 @@ function tapBoost(e){
   // Crit chance plafonné à 60% + équipement + cartes
   const equipCrit = (typeof equipBonus === 'function') ? equipBonus('critRate') : 0;
   const cardCrit = (typeof deckBonus === 'function') ? deckBonus('crit') : 0;
-  const rawCrit = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + equipCrit + cardCrit + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
+  // === Vague 21 : relique Atalante (+10% crit) ===
+  const _atalanteCrit = (typeof hasRelic === 'function' && hasRelic('atalante')) ? 0.10 : 0;
+  const rawCrit = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + equipCrit + cardCrit + _atalanteCrit + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
   const critChance = Math.min(0.60, rawCrit);
   const isCrit = Math.random() < critChance;
   const gain = Math.floor(isCrit ? perTap * 5 : perTap);
@@ -20982,7 +21028,9 @@ function tickAutoTap(dt){
   while(_autoTapAccumulator >= 1){
     _autoTapAccumulator -= 1;
     const perTap = (1 + (STATE.upgradeTapValue||0) * 1.5) * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
-    const rawCrit = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
+    // === Vague 21 : relique Atalante (+10% crit) ===
+    const _atalanteCritAuto = (typeof hasRelic === 'function' && hasRelic('atalante')) ? 0.10 : 0;
+    const rawCrit = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + _atalanteCritAuto + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
     const critChance = Math.min(0.60, rawCrit);
     const isCrit = Math.random() < critChance;
     const gain = Math.floor(isCrit ? perTap * 5 : perTap);
@@ -21261,6 +21309,19 @@ function renderRecords(){
   const hurdleSuccess = S.hurdlesSuccess || S.hurdlesCleared || 0;
   const hurdleTotal = hurdleSuccess + hurdleFails;
   const hurdleRate = hurdleTotal > 0 ? Math.round(100 * hurdleSuccess / hurdleTotal) : 0;
+  // Vague 21 : indicateur endless si km >= 100
+  let endlessHtml = '';
+  if((S.lapsRun || 0) >= 100){
+    const es = typeof getEndlessScale === 'function' ? getEndlessScale() : { speed:1, drop:1, difficulty:1 };
+    const sp = Math.round((es.speed - 1) * 100);
+    const dp = Math.round((es.drop - 1) * 100);
+    const df = Math.round((es.difficulty - 1) * 100);
+    endlessHtml = `
+      <div class="records-section-title">ENDLESS (KM 100+)</div>
+      <div class="records-row"><span>Vitesse rivaux</span><b>+${sp}%</b></div>
+      <div class="records-row"><span>Drop rate</span><b>+${dp}%</b></div>
+      <div class="records-row"><span>Difficulté</span><b>+${df}%</b></div>`;
+  }
   // Plus grande rareté item équipé
   const rarityOrder = ['common','uncommon','rare','epic','legendary'];
   let bestRarity = '—';
@@ -21315,6 +21376,7 @@ function renderRecords(){
       <div class="records-row"><span>Upgrades achetés</span><b>${S.totalUpgradesBought||0}</b></div>
       <div class="records-row"><span>Lapins attrapés</span><b>${S.rabbitsCaught||0}</b></div>
       <div class="records-row"><span>Lièvres capturés</span><b>${S.haresCaught||0}</b></div>
+      ${endlessHtml}
     </div>
     <button id="records-share" class="records-share-btn">PARTAGER MES STATS</button>
   `;
@@ -25016,6 +25078,11 @@ function boot(){
         else if(action === 'stadium' && typeof openStadiumPicker === 'function') openStadiumPicker();
         else if(action === 'stats'){ renderStatsBody(); openModal('stats-modal'); }
         else if(action === 'prestige' && typeof openStarTree === 'function') openStarTree();
+        else if(action === 'lore' && typeof openLore === 'function') openLore();
+        else if(action === 'season-quests' && typeof openSeasonQuests === 'function') openSeasonQuests();
+        else if(action === 'relics' && typeof openRelics === 'function') openRelics();
+        else if(action === 'progression' && typeof openProgression === 'function') openProgression();
+        else if(action === 'loadouts' && typeof openEquip === 'function') openEquip();
         else if(action === 'buy-bougie' && typeof buyBougie === 'function') buyBougie();
         else if(action === 'buy-doping' && typeof buyDoping === 'function') buyDoping();
       }, 200);
@@ -25822,6 +25889,23 @@ window.addEventListener('appinstalled', () => {
       bobPhase: Math.random() * 6.28,
       fromBehind: !!opts.fromBehind, // marque pour effet visuel (audio "swoosh" quand il passe)
     });
+    // Vague 21 : attribuer rivalId si le km matche un rival qui n'a pas été vu cette saison
+    if(window.STATE && window.STATE.rivals){
+      const _npc = npcs[npcs.length - 1];
+      const km = window.STATE.lapsRun || 0;
+      // Choisir un rival déjà débloqué qui n'a pas été vu récemment (lastSeenKm > 5 km ago)
+      const candidates = Object.entries(window.STATE.rivals).filter(([id, r]) =>
+        r.firstKm <= km && (km - (r.lastSeenKm || 0)) > 5
+      );
+      if(candidates.length > 0 && Math.random() < 0.20 && (_npc.tier || 0) >= 3){
+        // 20% chance d'être un rival si T3+ et un est dispo
+        const [rivalId, rival] = candidates[Math.floor(Math.random() * candidates.length)];
+        _npc.rivalId = rivalId;
+        _npc.rivalName = rival.name;
+        _npc.rivalColor = rival.color;
+        window.STATE.rivals[rivalId].lastSeenKm = km;
+      }
+    }
     // Achievement tracker : marque la 1ère apparition d'un Tier 6 (champion olympique, km 85+)
     if(tierIdx === 6 && window.STATE && !window.STATE.tier6Seen){
       window.STATE.tier6Seen = 1;
@@ -26217,6 +26301,11 @@ window.addEventListener('appinstalled', () => {
       small:  { bw: 13, bh: 21, hr: 13 },
     };
     const build = BUILDS[spec.build || 'normal'];
+    // Vague 21 : override jersey color si rival actif
+    if(spec.rivalColor){
+      spec.jersey = spec.rivalColor;
+      spec.accent = '#ffffff'; // contrast accent
+    }
     const hairStyle = spec.hairStyle || 'dome';
     // Expression DYNAMIQUE selon l'effort (override le faceExpr de spec)
     // effortLevel : 0 = repos, 0.5 = course active, 1 = sprint max
@@ -27104,7 +27193,8 @@ window.addEventListener('appinstalled', () => {
       window.STATE.staminaMax = 100 + (window.STATE.upgradeEndurance || 0) * 10;
       if(window.STATE.staminaMax > 300) window.STATE.staminaMax = 300;
       if(_sinceLastTap > 0.5){
-        window.STATE.stamina = Math.min(window.STATE.staminaMax, (window.STATE.stamina ?? 0) + 8 * dt);
+        const _weatherSReg = (typeof getWeatherMul === 'function') ? getWeatherMul('staminaRegenMul') : 1;
+        window.STATE.stamina = Math.min(window.STATE.staminaMax, (window.STATE.stamina ?? 0) + 8 * dt * _weatherSReg);
       }
     }
     // === Music intensity adapt stamina (vague 15)
@@ -27473,6 +27563,22 @@ window.addEventListener('appinstalled', () => {
     const _skillsActive = (window.STATE && window.STATE.skillSprintUntil && Date.now() < window.STATE.skillSprintUntil);
     if(!_skillsActive){
       displayKmh = Math.min(30, displayKmh);
+    }
+    // === Vague 21 : relique Phidippide (+50% si stamina > 80%) ===
+    if(typeof hasRelic === 'function' && hasRelic('phidippide')){
+      const _phidStamMax = window.STATE?.staminaMax || 100;
+      const _phidStam = window.STATE?.stamina ?? _phidStamMax;
+      const _phidRatio = _phidStamMax ? _phidStam / _phidStamMax : 1;
+      if(_phidRatio > 0.80){
+        displayKmh *= 1.50;
+        // Le cap absolu reste 35 km/h pour éviter de casser la physique
+        displayKmh = Math.min(35, displayKmh);
+      }
+    }
+
+    // Vague 21 : météo speedMul
+    if(typeof getWeatherMul === 'function'){
+      displayKmh *= getWeatherMul('speedMul');
     }
 
     // === SCROLL DÉCOR PHYSIQUEMENT RÉALISTE (refactor v8) ===
@@ -31851,6 +31957,14 @@ window.addEventListener('appinstalled', () => {
         if(npc.bossId && typeof defeatBoss === 'function'){
           defeatBoss(npc.bossId);
         }
+        // Vague 21 : record rival beat
+        if(npc.rivalId && typeof recordRivalBeat === 'function'){
+          recordRivalBeat(npc.rivalId);
+          // Toast subtil
+          if(typeof showToast === 'function' && npc.rivalName){
+            showToast('🏃‍♂️ Dépassé : ' + npc.rivalName, 'info', 2500);
+          }
+        }
         // Pop visuel "+X DÉPASSÉ !" au-dessus du NPC qui sort
         const popX = W / 2 - 30; // près du héros
         const laneFrac = npc.laneIdx / 4;
@@ -31993,7 +32107,9 @@ window.addEventListener('appinstalled', () => {
     // Drift + détection collision/passage
     if(!window._hurdleFailUntil) window._hurdleFailUntil = 0;
     // === DIFFICULTÉ PROGRESSIVE : +1% par km au-delà du km 5, cap à 2.5x (km 150)
-    const kmDifficulty = Math.min(2.5, 1 + Math.max(0, ((STATE.lapsRun || 0) - 5)) * 0.01);
+    // Vague 21 : kmDifficulty boostée endgame via endless (uncapped post-km 100)
+    const _esDiff = (typeof getEndlessScale === 'function') ? getEndlessScale() : { difficulty:1 };
+    const kmDifficulty = Math.min(2.5, 1 + Math.max(0, ((STATE.lapsRun || 0) - 5)) * 0.01) * _esDiff.difficulty;
     for(let i = hurdles.length - 1; i >= 0; i--){
       const h = hurdles[i];
       h.metersAhead -= ((speed - 0.3) * 0.15 + 0.6) * kmDifficulty * dtMul;
@@ -32077,8 +32193,12 @@ window.addEventListener('appinstalled', () => {
             Analytics.track('hurdle_failed', { kind: h.kind || 'single', streak: hurdleFailStreak, km: window.STATE?.lapsRun || 0 });
           }
           // Pénalité ramassée : 2s standard, 3.6s en streak fail (durcissement x2)
-          const penaltyMs = isStreakFail ? 3600 : 2000;
-          window._hurdleFailUntil = performance.now() + penaltyMs;
+          // === Vague 21 : relique Hermès (ignore pénalités haie ratée) ===
+          const _hermesActive = (typeof hasRelic === 'function' && hasRelic('hermes'));
+          const penaltyMs = _hermesActive ? 0 : (isStreakFail ? 3600 : 2000);
+          if(!_hermesActive){
+            window._hurdleFailUntil = performance.now() + penaltyMs;
+          }
           // SFX raté — crash + sweep descendant
           if(typeof sfxHurdleFail === 'function') sfxHurdleFail();
           else if(typeof blip === 'function') blip(180, .25, 'sawtooth', .3, .6);
@@ -32094,7 +32214,8 @@ window.addEventListener('appinstalled', () => {
             txt: (typeof t === 'function') ? (isStreakFail ? t('pop_hurdle_chain_failed') : t('pop_hurdle_missed')) : (isStreakFail ? 'ENCHAÎNEMENT RATÉ' : 'RATÉ'),
           });
           // Pénalité gold si streak (perd 100 + 20/streak au-delà de 3, x2 durcissement)
-          if(isStreakFail && window.STATE){
+          // === Vague 21 : Hermès annule aussi la pénalité gold ===
+          if(isStreakFail && window.STATE && !_hermesActive){
             const penalty = Math.min(window.STATE.gold || 0, 100 + (hurdleFailStreak - 3) * 20);
             window.STATE.gold = Math.max(0, (window.STATE.gold || 0) - penalty);
             if(penalty > 0){
@@ -32126,7 +32247,9 @@ window.addEventListener('appinstalled', () => {
         // Vitesse du rival : scale doux + aggro x1.3 au km 50+, cap relevé à 2.4x
         const aggroMul = laps >= 50 ? 1.3 : 1.0;
         const baseScale = 1.0 + Math.min(0.8, laps * 0.015); // 1.0 à 1.8 max base
-        const speedScale = Math.min(2.4, baseScale * aggroMul);
+        // Vague 21 : endless rival speed scaling (post-km 100)
+        const _es = (typeof getEndlessScale === 'function') ? getEndlessScale() : { speed:1 };
+        const speedScale = Math.min(2.4 * _es.speed, baseScale * aggroMul * _es.speed);
         rival = {
           metersBehind: 30, // commence 30m derrière le héros
           paceRef: r.baseSpeed * speedScale,

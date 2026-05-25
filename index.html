@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
@@ -393,6 +393,17 @@ header .stats #stat-stars.hud-show{ display:flex; }
   padding:14px 10px;
   overflow-y:auto;
   border-top:3px solid #c84030;
+}
+.tabs-content.open::after {
+  content:'';
+  position:sticky;
+  bottom:0;
+  left:0;
+  right:0;
+  height:24px;
+  background:linear-gradient(transparent, rgba(255,255,255,.95));
+  display:block;
+  pointer-events:none;
 }
 /* === TAB BTN v2 : couloir de piste avec numéro de lane === */
 .tabs-strip{
@@ -3272,7 +3283,7 @@ body.tab-drawer-open .tuto-hint{
 }
 .runner-card{
   display:grid;
-  grid-template-columns:48px 1fr auto;
+  grid-template-columns:44px 1fr auto;
   align-items:center;
   gap:12px;
   padding:10px 12px;
@@ -3512,9 +3523,9 @@ body.tab-drawer-open .tuto-hint{
 }
 .rc-buy:active, .rc-manager:active{ transform:scale(.96); }
 .runner-card.affordable .rc-buy{
-  background:linear-gradient(180deg, #5ab0ee, #3a8fc9);
+  background:linear-gradient(180deg, #e85040, #c84030);
   color:#fff;
-  box-shadow:0 2px 6px rgba(74,159,217,.4);
+  box-shadow:0 2px 6px rgba(200,64,48,.4);
 }
 .runner-card.unhired .rc-buy{
   background:linear-gradient(180deg, #ffd070, #f0a050);
@@ -3669,7 +3680,7 @@ body.tab-drawer-open .tuto-hint{
 .record-row b{ color:var(--ink); font-weight:900; font-size:14px; }
 .tap-strip{
   display:grid;
-  grid-template-columns:1fr 1fr 1fr;
+  grid-template-columns:1fr 1fr 1fr 1fr;
   gap:8px;
   padding:0 4px;
 }
@@ -5053,7 +5064,7 @@ body.frenzy-on #grid-frame{
 }
 #codex.drawer{ border-left:none; border-right:5px solid #c84030; }
 #codex.drawer{left:0; transform:translateX(-100%); box-shadow:8px 0 28px rgba(20,20,20,.12); border-radius:0 22px 22px 0}
-#quests.drawer{right:0; transform:translateX(100%); box-shadow:-8px 0 28px rgba(20,20,20,.12); border-radius:22px 0 0 22px}
+#quests.drawer{right:0; border-left:none; border-right:5px solid #c84030; transform:translateX(100%); box-shadow:-8px 0 28px rgba(20,20,20,.12); border-radius:22px 0 0 22px}
 #codex.drawer.open{transform:translateX(0)}
 #quests.drawer.open{transform:translateX(0)}
 
@@ -5111,7 +5122,7 @@ body.frenzy-on #grid-frame{
 }
 .drawer-body{flex:1; overflow-y:auto; padding-right:4px}
 .drawer-body::-webkit-scrollbar{width:4px}
-.drawer-body::-webkit-scrollbar-thumb{background:var(--gold-dark); border-radius:2px}
+.drawer-body::-webkit-scrollbar-thumb{background:#d0c8c0; border-radius:2px}
 
 /* QUETES */
 .claim-all-btn{
@@ -8231,7 +8242,7 @@ body.shop-epic-flash::after{
           </div>
           <!-- Vague 20 P3 : slot météo dynamique -->
           <div id="hud-weather" style="display:flex; align-items:center; gap:4px; margin-left:8px; font-size:11px;" aria-label="Météo">
-            <span style="font-size:14px;">☀️</span>
+            <svg id="hud-weather-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f0a030" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.22" y1="4.22" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/><line x1="4.22" y1="19.78" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.78" y2="4.22"/></svg>
             <span style="color:#888;">Beau temps</span>
           </div>
         </div>
@@ -8263,7 +8274,7 @@ body.shop-epic-flash::after{
       </button>
 
       <!-- Bouton DÉFI QUOTIDIEN : flottant rond -->
-      <button id="daily-challenge-btn" onclick="openDailyChallengeModal()" aria-label="Défi quotidien" style="position:fixed;bottom:calc(env(safe-area-inset-bottom, 0px) + 140px);left:10px;width:46px;height:46px;background:linear-gradient(180deg,#c84030,#a02818);border:2px solid #fff;border-radius:50%;color:#fff;font-size:18px;cursor:pointer;box-shadow:0 4px 12px rgba(200,64,48,.45);z-index:7;padding:0;display:flex;align-items:center;justify-content:center">🎯</button>
+      <button id="daily-challenge-btn" onclick="openDailyChallengeModal()" aria-label="Défi quotidien" style="position:absolute;bottom:calc(env(safe-area-inset-bottom, 0px) + 140px);left:10px;width:46px;height:46px;background:linear-gradient(180deg,#c84030,#a02818);border:2px solid #fff;border-radius:50%;color:#fff;font-size:18px;cursor:pointer;box-shadow:0 4px 12px rgba(200,64,48,.45);z-index:7;padding:0;display:flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></button>
 
       <!-- Bouton DAILY : flottant rond icône (en overlay du stadium) -->
       <button id="daily-btn" class="daily-btn-float" style="display:none" aria-label="Récompense quotidienne">
@@ -8936,7 +8947,7 @@ body.shop-epic-flash::after{
 <!-- CRÉDITS -->
 <div id="credits-modal" class="modal">
   <div class="modal-card">
-    <div class="modal-close" id="credits-close" aria-label="Fermer">×</div>
+    <button type="button" class="modal-close" id="credits-close" aria-label="Fermer">×</button>
     <h2>CRÉDITS</h2>
     <div class="modal-subtitle">— ceux qui ont prêté leurs jambes —</div>
     <div class="divider">
@@ -9007,7 +9018,7 @@ body.shop-epic-flash::after{
 
 <div class="modal" id="star-tree-modal">
   <div class="modal-card" style="max-width:480px; max-height:80vh; overflow-y:auto;">
-    <button type="button" class="modal-close" data-close-modal="star-tree-modal" aria-label="Fermer">×</button>
+    <button type="button" class="modal-close" data-close-modal="star-tree-modal" aria-label="Fermer" onclick="document.getElementById('star-tree-modal').style.display='none'">×</button>
     <h2 style="display:flex; align-items:center; justify-content:center; gap:8px; margin:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="#ffd060"><path d="M12 2 L14.4 8.4 L21 9.2 L16 13.6 L17.6 20.4 L12 16.8 L6.4 20.4 L8 13.6 L3 9.2 L9.6 8.4 z"/></svg> PRESTIGE</h2>
     <div class="modal-subtitle">— investis tes étoiles —</div>
     <div style="text-align:center; color:#888; margin:6px 0 12px;">Étoiles : <strong id="star-tree-avail" style="color:#ffd060; font-size:18px;">0</strong></div>
@@ -9022,7 +9033,7 @@ body.shop-epic-flash::after{
 <!-- VAGUE 20 P4 — Modale Reliques -->
 <div class="modal" id="relics-modal">
   <div class="modal-card" style="max-width:480px; max-height:80vh; overflow-y:auto;">
-    <button class="modal-close" data-close-modal="relics-modal" aria-label="Fermer">×</button>
+    <button class="modal-close" data-close-modal="relics-modal" aria-label="Fermer" onclick="document.getElementById('relics-modal').style.display='none'">×</button>
     <h2 style="margin:0 0 4px;">💎 Reliques</h2>
     <div class="modal-subtitle" style="color:#666; margin-bottom:10px;">Équipe jusqu'à 3 reliques. Drops 1% sur coffres legendary.</div>
     <div id="relics-equipped"></div>
@@ -9032,7 +9043,7 @@ body.shop-epic-flash::after{
 
 <div class="modal" id="lore-modal">
   <div class="modal-card" style="max-width:520px; max-height:80vh; overflow-y:auto;">
-    <button class="modal-close" data-close-modal="lore-modal" aria-label="Fermer">×</button>
+    <button class="modal-close" data-close-modal="lore-modal" aria-label="Fermer" onclick="document.getElementById('lore-modal').style.display='none'">×</button>
     <h2 style="margin:0 0 4px;">📜 Codex narratif</h2>
     <div class="modal-subtitle" style="color:#666; margin-bottom:14px;">Histoire de FOULÉE — débloquée par tes exploits</div>
     <div id="lore-list" style="display:flex; flex-direction:column; gap:8px;"></div>
@@ -9055,7 +9066,7 @@ body.shop-epic-flash::after{
 <!-- VAGUE 20 — Quêtes Saisonnières (longues, reset à l'ascension) -->
 <div class="modal" id="season-quests-modal">
   <div class="modal-card" style="max-width:480px; max-height:80vh; overflow-y:auto;">
-    <button class="modal-close" data-close-modal="season-quests-modal" aria-label="Fermer">×</button>
+    <button class="modal-close" data-close-modal="season-quests-modal" aria-label="Fermer" onclick="document.getElementById('season-quests-modal').style.display='none'">×</button>
     <h2 style="margin:0 0 4px;">🏆 Quêtes de Saison</h2>
     <div class="modal-subtitle" style="color:#666; margin-bottom:12px;">Reset à chaque ascension. Récompense : +2⭐ +50k g par quête.</div>
     <div id="season-quests-list" style="display:flex; flex-direction:column; gap:8px;"></div>
@@ -9063,10 +9074,10 @@ body.shop-epic-flash::after{
 </div>
 
 <div class="modal" id="progression-modal">
-  <div class="modal-card" style="max-width:480px; max-height:80vh; overflow-y:auto;">
+  <div class="modal-card">
     <button class="modal-close" data-close-modal="progression-modal" aria-label="Fermer">×</button>
-    <h2 style="margin:0 0 4px;">📊 Progression</h2>
-    <div class="modal-subtitle" style="color:#666; margin-bottom:14px;">7 derniers jours + lifetime</div>
+    <h2>Progression</h2>
+    <div class="modal-subtitle">7 derniers jours + lifetime</div>
     <div id="progression-graph"></div>
     <div id="progression-lifetime" style="margin-top:14px;"></div>
   </div>
@@ -10241,7 +10252,7 @@ if(document.readyState === 'loading'){
 <!-- RECORDS / TROPHÉES -->
 <div id="records-modal" class="modal">
   <div class="modal-card">
-    <div class="modal-close" id="records-close" aria-label="Fermer">×</div>
+    <button type="button" class="modal-close" id="records-close" aria-label="Fermer">×</button>
     <h2>RECORDS</h2>
     <div class="divider"></div>
     <div class="records-body" id="records-body"></div>
@@ -13168,10 +13179,10 @@ window.openRelics = openRelics;
 
 // === VAGUE 20 P3 — Météo dynamique (4 types, cycle 3km, seed déterministe) ===
 const WEATHER_TYPES = {
-  clear: { label:'Beau temps',   icon:'☀️', speedMul:1.00, staminaRegenMul:1.00, dropMul:1.00 },
-  rain:  { label:'Pluie',        icon:'🌧️', speedMul:0.90, staminaRegenMul:1.00, dropMul:1.20 },
-  wind:  { label:'Vent dos',     icon:'💨', speedMul:1.15, staminaRegenMul:0.90, dropMul:1.00 },
-  heat:  { label:'Canicule',     icon:'🔥', speedMul:1.00, staminaRegenMul:0.80, dropMul:1.10 }
+  clear: { label:'Beau temps',   icon:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f0a030" stroke-width="2"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.22" y1="4.22" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/><line x1="4.22" y1="19.78" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.78" y2="4.22"/></svg>', speedMul:1.00, staminaRegenMul:1.00, dropMul:1.00 },
+  rain:  { label:'Pluie',        icon:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5ab0ee" stroke-width="2"><path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"/><line x1="8" y1="19" x2="8" y2="21"/><line x1="12" y1="17" x2="12" y2="19"/><line x1="16" y1="19" x2="16" y2="21"/></svg>', speedMul:0.90, staminaRegenMul:1.00, dropMul:1.20 },
+  wind:  { label:'Vent dos',     icon:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#88b8d8" stroke-width="2"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg>', speedMul:1.15, staminaRegenMul:0.90, dropMul:1.00 },
+  heat:  { label:'Canicule',     icon:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#e84030" stroke-width="2"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/><circle cx="12" cy="12" r="5" fill="#e84030" opacity="0.2"/></svg>', speedMul:1.00, staminaRegenMul:0.80, dropMul:1.10 }
 };
 function _weatherSeed(km){
   const bucket = Math.floor(km / 3);
@@ -13195,7 +13206,7 @@ function updateWeather(){
       const wEl = document.getElementById('hud-weather');
       if(wEl){
         const w = WEATHER_TYPES[type];
-        wEl.innerHTML = '<span style="font-size:14px;">' + w.icon + '</span> <span style="font-size:11px; color:#888;">' + w.label + '</span>';
+        wEl.innerHTML = w.icon + ' <span style="font-size:11px; color:#888;">' + w.label + '</span>';
       }
     } catch(e){}
   }
@@ -20412,7 +20423,7 @@ function renderRunnerCard(r){
   const perSec = lvl > 0 ? (batchVal / r.cycleTime) : 0;
   return `<div class="runner-card ${lvl > 0 ? 'hired' : 'unhired'} ${cycleReady ? 'ready' : ''} ${hasMgr ? 'has-mgr' : ''} tier-${visualTier}"
        data-runner="${r.id}" style="--rc-color:${r.color};--rc-role-color:${r.roleColor||r.color}">
-    <div class="rc-emoji">${r.emoji}${tierBadge ? `<span class="rc-tier-badge">${tierBadge}</span>` : ''}</div>
+    <div class="rc-emoji">${r.emoji || '<svg width="28" height="36" viewBox="0 0 24 30" fill="currentColor" opacity="0.7"><circle cx="12" cy="4" r="3"/><path d="M9 8 Q12 7 15 8 L16 16 L14 24 L12 22 L10 24 L8 16 Z"/><path d="M8 16 L5 22 M16 16 L19 22"/></svg>'}${tierBadge ? `<span class="rc-tier-badge">${tierBadge}</span>` : ''}</div>
     <div class="rc-body">
       <div class="rc-head">
         <span class="rc-name">${r.name}</span>
@@ -21444,7 +21455,7 @@ function renderRecords(){
     + '<div class="records-row"><span>Coffres lifetime</span><b>' + (lt.totalChests || 0) + '</b></div>';
   body.innerHTML = `
     <div class="records-hero">
-      <div class="records-emoji"></div>
+      <div class="records-emoji"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#c84030" stroke-width="1.5"><path d="M6 4 H18 V9 Q18 16 12 18 Q6 16 6 9 Z"/><path d="M6 8 Q3 8 3 11 Q3 14 6 14"/><path d="M18 8 Q21 8 21 11 Q21 14 18 14"/><line x1="12" y1="18" x2="12" y2="21"/><line x1="8" y1="21" x2="16" y2="21"/></svg></div>
       <div class="records-title">TES MEILLEURS SCORES</div>
     </div>
     <div class="records-list">

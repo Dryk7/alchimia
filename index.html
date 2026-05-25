@@ -14942,7 +14942,7 @@ const EVENTS = [
     multipliers:{ teamMul:2 } },
   { id:"sprint", name:"Sprint Final", duration:30000,
     desc:"Tu déchaînes le tap. ×5 gouttes / clic pendant 30s.",
-    multipliers:{ tapMul:5 } },
+    multipliers:{ tapMul:5 }, weight:2 },
   { id:"tailwind", name:"Vent dans le Dos", duration:60000,
     desc:"Le vent souffle pour toi. Cycles ÷2 (deux fois plus rapides).",
     multipliers:{ cycleMul:0.5 } },
@@ -14974,24 +14974,24 @@ const EVENTS = [
     apply:()=>{
       if(typeof addGems === 'function') addGems(3);
       return '+3 gemmes';
-    }},
+    }, weight:1 },
   // === VAGUE 31 — 5 nouveaux events : variété + narration ===
   { id:"zone_fans", name:"Zone Fans !", duration:25000,
     desc:"La foule explose ! ×2 tap et ×1.5 gouttes pendant 25s.",
     multipliers:{ tapMul:2, goldMul:1.5 } },
   { id:"rival_flash", name:"Duel Éclair", duration:20000,
     desc:"Un rival surgit dans ton dos ! ×3 tap pendant 20s — lâche tout !",
-    multipliers:{ tapMul:3 } },
+    multipliers:{ tapMul:3 }, weight:2, minSaison:2 },
   { id:"storm", name:"Orage Soudain", duration:40000,
     desc:"La pluie tombe mais tu tiens ! Cycles +20% lents, gouttes ×2.",
-    multipliers:{ cycleMul:1.2, goldMul:2.0 } },
+    multipliers:{ cycleMul:1.2, goldMul:2.0 }, minSaison:3 },
   { id:"second_wind", name:"Second Souffle", duration:30000,
     desc:"Coup de fouet ! Stamina rechargée + cycles ×1.5 pendant 30s.",
-    multipliers:{ cycleMul:0.65 },
+    multipliers:{ cycleMul:0.65 }, weight:3,
     apply:()=>{ STATE.stamina = STATE.staminaMax || 100; return 'Stamina rechargée !'; }},
   { id:"media", name:"Passage Médias", duration:45000,
     desc:"Les caméras tournent ! ×2 gouttes + bonus immédiat.",
-    multipliers:{ goldMul:2.0 },
+    multipliers:{ goldMul:2.0 }, weight:3, minSaison:2,
     apply:()=>{ const b = 200 + (STATE.saison||1)*50; STATE.gold = (STATE.gold||0) + b; return '+'+b+' gouttes'; }},
 ];
 
@@ -15009,7 +15009,12 @@ function maybeFireEvent(now){
 }
 
 function fireEvent(){
-  const e = EVENTS[Math.floor(Math.random()*EVENTS.length)];
+  const _curSaison = STATE.saison || 1;
+  const _filtered = EVENTS.filter(ev => !ev.minSaison || ev.minSaison <= _curSaison);
+  const _pool = (_filtered.length > 0 ? _filtered : EVENTS).map(ev => ({ ev, w: ev.weight ?? 5 }));
+  const _totalW = _pool.reduce((s, x) => s + x.w, 0);
+  let _r = Math.random() * _totalW;
+  const e = _pool.find(x => { _r -= x.w; return _r <= 0; })?.ev || _pool[0].ev;
   STATE.lastEvent = e.id;
   let extra = "";
   if(e.apply) extra = e.apply();
@@ -15021,11 +15026,6 @@ function fireEvent(){
     };
   }
   eventNotification(e, extra);
-  if(A.ctx){
-    blip(330, .25, "triangle", .2, .6);
-    setTimeout(()=>blip(495, .3, "sine", .2, .6), 150);
-    setTimeout(()=>blip(660, .4, "triangle", .24, .7), 320);
-  }
   vibrate([22, 60, 22]);
   applyEventModifiers();
 }
@@ -18605,10 +18605,10 @@ function runnerBaseSpeed(){
   // === IMMOBILE TANT QUE LE JOUEUR N'A JAMAIS TAPÉ ===
   // L'expérience initiale doit être "le coureur attend ta première foulée"
   if((STATE.totalTaps || 0) === 0) return 0;
-  // === BASELINE "AUTO-COURSE" : SEULEMENT À PARTIR DU KM 3 (= ce que le tuto promet) ===
-  // Avant km 3 : base=0 → le tap est la SEULE façon d'avancer (full tap mode).
-  // Au km 3 : base=0.4 → vrai wow-moment de l'AUTO-COURSE qui s'enclenche.
-  // Le commentaire pivot disait "automation = wow moment tangible" → fix promesse non tenue.
+  // === BASELINE "AUTO-COURSE" : KM 3 + SOURCE D'AUTO-TAP (upgrade ou manager) ===
+  // Avant km 3 ou sans upgrade : base=0 → tap obligatoire pour avancer.
+  // Km 3+ ET auto-tap ≥ 1 : base=0.4 → wow-moment "la machine s'enclenche" via les upgrades.
+  // Sans amélioration → retombe bien à 0 km/h quand on arrête de taper (fix bug saison).
   // La base auto-course 0.4 s'active au km 3 UNIQUEMENT si une source d'auto-run existe.
   // Sans aucune amélioration → base = 0 → vitesse retombe bien à 0 quand on arrête de taper.
   // Fix bug : "sans aucune amélioration, ça ne retombe plus à 0 km/h"
@@ -19806,6 +19806,14 @@ function doSaisonAscend(){
     }
     STATE.ascensions = (STATE.ascensions || 0) + 1;
     STATE.saison = nextSaison;
+    // Auto-switch vers le meilleur stade débloqué par la nouvelle saison
+    STATE.selectedStadiumId = null; // reset pour que currentStadium() recalcule
+    if(typeof updateSky === 'function') updateSky();
+    // Bulle si un nouveau stade est disponible
+    if(typeof currentStadium === 'function' && typeof showRunnerBubble === 'function'){
+      const _newStadium = currentStadium();
+      if(_newStadium) showRunnerBubble(_newStadium.name + ' débloqué !');
+    }
     // Reset progression de saison
     STATE.gold = 0;
     STATE.lapsRun = 0;
@@ -19929,7 +19937,12 @@ function renderSaisonModal(){
   });
 }
 /* Multiplicateurs permanents dérivés des étoiles */
-function saisonGoldMul(){ return 1 + (STATE.perkGoldMul||0) * 0.05; }
+function saisonGoldMul(){
+  const base = 1 + (STATE.perkGoldMul||0) * 0.05;
+  const s = STATE.saison || 1;
+  const factor = s >= 8 ? 2.0 : s >= 5 ? 1.5 : 1.0;
+  return base * factor;
+}
 function saisonCritBonus(){ return (STATE.perkCritBase||0) * 0.005; }
 function saisonXpMul(){ return 1 + (STATE.perkXpMul||0) * 0.05; }
 function saisonAutoBase(){ return (STATE.perkAutoBase||0) * 0.2; }
@@ -23021,13 +23034,14 @@ function comboTick(){
 function comboMultiplier(){
   const c = STATE.comboCount || 1;
   const max = modComboMax(); // Foudre Bleue porte à 6
-  if(c >= 12) return Math.min(max, 4);
-  if(c >= 8) return Math.min(max, 3);
-  if(c >= 5) return Math.min(max, 2);
-  if(c >= 3) return Math.min(max, 1.5);
-  // Foudre Bleue : combo×2 dès 18+ rapides
-  if(max >= 6 && c >= 18) return 5;
+  // Foudre Bleue : seuils étendus (priorité haute car seuils > 12)
   if(max >= 6 && c >= 24) return 6;
+  if(max >= 6 && c >= 18) return 5;
+  const coliseum = (STATE.saison || 1) >= 3 ? 1.5 : 1;
+  if(c >= 12) return Math.min(max, 4 * coliseum);
+  if(c >= 8)  return Math.min(max, 3 * coliseum);
+  if(c >= 5)  return Math.min(max, 2 * coliseum);
+  if(c >= 3)  return Math.min(max, 1.5 * coliseum);
   return 1;
 }
 function triggerComboExplosion(cx, cy, chain, comboCount){
@@ -26552,9 +26566,14 @@ function _drawBirds(ctx, W, H, dt){
     // En urbain (km 10-29) : joggers sérieux + amateurs compétitifs
     // En approche stade (km 30-69) : niveau monte, amateurs + semi-pros se mélangent
     // Au stade (km 70+) : tu cours avec des semi-pros et des pros olympiques
-    // Lunar (km 100+) : champions cosmic uniquement (T5)
+    // km 100+ : champions olympiques + boss runners dominants (saison ≥ 2 : tier floor progressif)
     const km = (window.STATE && window.STATE.lapsRun) || 0;
     // === BOSS RUNNER (Tier 7) : menace agressive aléatoire km 60+ ===
+    // Saison 8+ (Stade Cosmique) : Boss Runners dès km 30, fréquence augmentée
+    const _saison = window.STATE?.saison || 1;
+    if(_saison >= 8 && km >= 30 && Math.random() < 0.20){
+      return 7;
+    }
     // 5% chance km 60-99, 10% chance km 100+ → spawn rare mais marquant
     if(km >= 60 && Math.random() < (km >= 100 ? 0.10 : 0.05)){
       return 7; // Boss runner

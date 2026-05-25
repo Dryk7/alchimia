@@ -3829,6 +3829,11 @@ body.tab-drawer-open #progress-map{
   text-shadow:0 2px 8px rgba(255,128,0,.9), 0 0 16px #fff, 0 0 24px rgba(255,200,80,.7);
   animation:tapPopCrit 1.2s cubic-bezier(.2,.9,.2,1.6) forwards;
 }
+.tap-pop.event-boost{
+  font-size:30px;
+  color:#ff9030;
+  text-shadow:0 2px 8px rgba(255,100,0,.8), 0 0 12px rgba(255,160,60,.5);
+}
 @keyframes tapPop{
   0%   { transform:translate(-50%, 0) scale(.5); opacity:0; }
   20%  { transform:translate(-50%, -10px) scale(1.2); opacity:1; }
@@ -14970,6 +14975,24 @@ const EVENTS = [
       if(typeof addGems === 'function') addGems(3);
       return '+3 gemmes';
     }},
+  // === VAGUE 31 — 5 nouveaux events : variété + narration ===
+  { id:"zone_fans", name:"Zone Fans !", duration:25000,
+    desc:"La foule explose ! ×2 tap et ×1.5 gouttes pendant 25s.",
+    multipliers:{ tapMul:2, goldMul:1.5 } },
+  { id:"rival_flash", name:"Duel Éclair", duration:20000,
+    desc:"Un rival surgit dans ton dos ! ×3 tap pendant 20s — lâche tout !",
+    multipliers:{ tapMul:3 } },
+  { id:"storm", name:"Orage Soudain", duration:40000,
+    desc:"La pluie tombe mais tu tiens ! Cycles +20% lents, gouttes ×2.",
+    multipliers:{ cycleMul:1.2, goldMul:2.0 } },
+  { id:"second_wind", name:"Second Souffle", duration:30000,
+    desc:"Coup de fouet ! Stamina rechargée + cycles ×1.5 pendant 30s.",
+    multipliers:{ cycleMul:0.65 },
+    apply:()=>{ STATE.stamina = STATE.staminaMax || 100; return 'Stamina rechargée !'; }},
+  { id:"media", name:"Passage Médias", duration:45000,
+    desc:"Les caméras tournent ! ×2 gouttes + bonus immédiat.",
+    multipliers:{ goldMul:2.0 },
+    apply:()=>{ const b = 200 + (STATE.saison||1)*50; STATE.gold = (STATE.gold||0) + b; return '+'+b+' gouttes'; }},
 ];
 
 const EVENT_INTERVAL_MIN = 110000;  // ~110s minimum entre 2 events
@@ -15008,12 +15031,24 @@ function fireEvent(){
 }
 
 function eventNotification(e, extra){
-  // Plus de toast plein écran — le runner annonce l'évènement
+  // Bulle coureur
   if(typeof showRunnerBubble === 'function'){
     const txt = extra ? `${e.name} — ${extra}` : e.name;
     showRunnerBubble(txt);
   }
-  // Le bandeau actif #active-events affiche déjà l'événement en cours, ça suffit
+  // Son distinctif : fanfare courte 3 notes montantes (était silencieux avant)
+  if(typeof blip === 'function'){
+    blip(660, .12, 'triangle', .08, .35);
+    setTimeout(()=>blip(880, .15, 'sine', .10, .45), 80);
+    setTimeout(()=>blip(1100, .20, 'sine', .12, .55), 170);
+  }
+  // Flash doré très bref sur l'écran
+  const _eFlash = document.createElement('div');
+  _eFlash.style.cssText = 'position:fixed;inset:0;background:rgba(255,210,60,0.14);pointer-events:none;z-index:998;opacity:1;transition:opacity 0.45s ease-out';
+  document.body.appendChild(_eFlash);
+  requestAnimationFrame(()=>{ setTimeout(()=>{ _eFlash.style.opacity='0'; setTimeout(()=>_eFlash.remove(), 460); }, 60); });
+  // Vibration courte
+  if(typeof vibrate === 'function') vibrate([15, 30, 15]);
 }
 
 function applyEventModifiers(){
@@ -18747,8 +18782,9 @@ function tapBoost(e){
   const evY = (typeof e === 'object' && e?.clientY) ? e.clientY : null;
   if(evX != null && evY != null){
     const pop = document.createElement('div');
-    pop.className = 'tap-pop' + (isCrit ? ' crit' : '');
-    pop.textContent = '+' + fmtBigNumber(gain) + (isCrit ? ' !' : '');
+    const _tapEventActive = !isCrit && (typeof eventTapMul === 'function') && eventTapMul() > 1;
+    pop.className = 'tap-pop' + (isCrit ? ' crit' : _tapEventActive ? ' event-boost' : '');
+    pop.textContent = '+' + fmtBigNumber(gain) + (isCrit ? ' !' : _tapEventActive ? ' ×' : '');
     pop.style.left = (evX + (Math.random()-.5)*20) + 'px';
     pop.style.top = evY + 'px';
     document.body.appendChild(pop);
@@ -19642,13 +19678,16 @@ function playAscensionCinematic(earnedStars, currentSaison, nextSaison, onComple
     void banner.offsetWidth;
     abTop.textContent = 'NOUVELLE SAISON';
     abMain.textContent = 'SAISON ' + nextSaison;
-    const teaserMsg = nextSaison >= 8 ? 'Le cosmos t\'attend.' :
-                       nextSaison >= 5 ? 'Le couchant éternel s\'ouvre.' :
-                       nextSaison >= 3 ? 'Le Coliseum t\'accueille.' :
-                       nextSaison >= 2 ? 'Le Stade Olympique débloqué.' :
-                       'Un nouveau stade t\'attend.';
+    const teaserMsg = nextSaison >= 8 ? 'Le cosmos t\'attend — Boss Runners Tier 7+.' :
+                       nextSaison >= 5 ? 'Biome Lunaire — rivaux immortels, drop ×1.5.' :
+                       nextSaison >= 3 ? 'Coliseum — foule déchaînée, bonus combo ×1.5.' :
+                       nextSaison >= 2 ? 'Stade Olympique — rivaux Tier 4+, haies fréquentes.' :
+                       'Un nouveau départ — bonne course !';
     abSub.textContent = teaserMsg;
-    abStars.style.display = 'none';
+    // Résumé de saison : km, étoiles, numéro d'ascension
+    const _recapKm = Math.min(999, Math.round(STATE.lapsRun || 0));
+    abStars.style.display = 'block';
+    abStars.innerHTML = `<span style="font-size:0.76em;opacity:0.70;letter-spacing:.05em;display:block;margin-top:10px">Saison ${currentSaison} terminée · ${_recapKm} km · ${earnedStars} ★ · Ascension #${(STATE.ascensions||0)+1}</span>`;
     banner.classList.add('teaser');
     banner.classList.add('show');
     if(typeof blip === 'function'){
@@ -26547,6 +26586,9 @@ function _drawBirds(ctx, W, H, dt){
     // Vague 21 : si on est à un km boss, force T6 minimum
     const _bossIdForSpawn = (typeof getBossIdForKm === 'function') ? getBossIdForKm(STATE.lapsRun || 0) : null;
     if(_bossIdForSpawn) tierIdx = Math.max(6, tierIdx);
+    // Saison 2+ : tier minimum progressif (S2=T1, S3=T2, S4+=T3) — plus de promeneurs du dimanche
+    const _saisonTierFloor = Math.min(3, (STATE.saison||1) - 1);
+    if(_saisonTierFloor > 0) tierIdx = Math.max(_saisonTierFloor, tierIdx);
     const tier = NPC_TIERS[tierIdx];
     const pick = arr => arr[Math.floor(Math.random() * arr.length)];
     let speed = tier.baseSpeed + (Math.random() - 0.5) * tier.speedVar;
@@ -26950,22 +26992,34 @@ function _drawBirds(ctx, W, H, dt){
   // ═══ Cycle biomécanique de course (4 phases) ═══
   // Retourne { footX, footY, kneeUp } normalisé pour une jambe à phase donnée
   function legPose(phase, sideRight){
-    // Décalage 180° entre jambe gauche et droite
+    // Cycle biomécanique 4 phases : toe-off → swing haut → heel-strike → stance/push
+    // P1 (0-18%)  : toe-off   — extension arrière, orteils quittent le sol
+    // P2 (18-50%) : swing     — genou monte haut, pied replié sous le corps (foulée ample)
+    // P3 (50-66%) : heel-strike — talon devant, jambe légèrement fléchie à l'impact
+    // P4 (66-100%): stance/push — pied planté, corps passe dessus, extension vers l'arrière
     const p = sideRight ? phase : (phase + Math.PI);
     const t01 = ((p % (Math.PI * 2)) / (Math.PI * 2));
     let kneeUp, footX, footY;
-    if(t01 < 0.5){
-      // Phase 1 : recoil + lift + extend forward
-      const u = t01 * 2; // 0..1
-      footX = -1 + u * 2;
-      kneeUp = Math.sin(u * Math.PI) * 1.3;
-      footY = u < .5 ? -kneeUp * 0.7 : 0;
+    if(t01 < 0.18){
+      const u = t01 / 0.18;
+      footX = 0.90 + u * 0.20;
+      kneeUp = 0.10 + u * 0.15;
+      footY = u * 0.12;
+    } else if(t01 < 0.50){
+      const u = (t01 - 0.18) / 0.32;
+      footX = 1.10 - u * 2.30;
+      kneeUp = 0.25 + Math.sin(u * Math.PI) * 1.55;
+      footY = -kneeUp * 0.50 + u * 0.18;
+    } else if(t01 < 0.66){
+      const u = (t01 - 0.50) / 0.16;
+      footX = -1.20 + u * 0.40;
+      kneeUp = 1.55 - u * 1.25;
+      footY = -0.35 + u * 0.35;
     } else {
-      // Phase 2 : foot planted + push back
-      const u = (t01 - 0.5) * 2;
-      footX = 1 - u * 2;
-      kneeUp = Math.max(0, .3 - u * .3);
-      footY = u * .1;
+      const u = (t01 - 0.66) / 0.34;
+      footX = -0.80 + u * 1.70;
+      kneeUp = Math.max(0, 0.30 - u * 0.20);
+      footY = u * 0.12;
     }
     return { footX, footY, kneeUp };
   }
@@ -26974,29 +27028,28 @@ function _drawBirds(ctx, W, H, dt){
   // airborneFrac : -1 (décollage) → 0 (apex) → +1 (atterrissage)
   // Front leg = jambe avant (côté droite, sens de course), back = arrière
   function jumpLegPose(airborneFrac, isFront){
-    // Takeoff (-1 → 0) : genou avant remonté très haut, jambe arrière en extension
-    // Apex (0)         : les deux jambes recroquevillées sous le corps
-    // Landing (0 → 1)  : jambe avant tendue vers l'avant pour amortir, jambe arrière fléchie sous le corps
+    // Takeoff (-1 → 0) : décollage explosif — genou avant propulsé poitrine, arrière tendu
+    // Apex (0)         : TUCK MAXIMAL — les deux genoux remontent très haut (clearance haie)
+    // Landing (0 → 1)  : jambe avant se tend pour amortir, arrière reste pliée pour repartir
     if(isFront){
       if(airborneFrac < 0){
-        // Décollage : genou avant remonte à la poitrine
+        // Décollage : genou avant monte à la poitrine de façon explosive
         const u = -airborneFrac; // 0 → 1
-        return { footX: 0.3 + u * 0.4, footY: -1.4 - u * 0.4, kneeUp: 2.4 + u * 0.4 };
+        return { footX: 0.15 + u * 0.55, footY: -1.0 - u * 0.85, kneeUp: 1.9 + u * 0.9 };
       } else {
-        // Atterrissage : jambe avant tendue à l'avant
+        // Apex (u=0 : kneeUp=2.8 très haut) → atterrissage (jambe tendue devant)
         const u = airborneFrac; // 0 → 1
-        return { footX: 0.8 + u * 0.6, footY: -1.2 + u * 1.8, kneeUp: 1.5 - u * 1.0 };
+        return { footX: 0.15 + u * 1.5, footY: -1.85 + u * 2.5, kneeUp: 2.8 - u * 2.2 };
       }
     } else {
-      // Back leg
       if(airborneFrac < 0){
-        // Décollage : jambe arrière toujours en train de pousser, étendue
+        // Décollage : jambe arrière presque tendue, pousse fort
         const u = -airborneFrac;
-        return { footX: -0.6 - u * 0.4, footY: -0.2 - u * 0.3, kneeUp: 0.6 - u * 0.3 };
+        return { footX: -0.45 - u * 0.55, footY: -0.10 - u * 0.45, kneeUp: 0.75 - u * 0.55 };
       } else {
-        // Atterrissage : jambe arrière repliée derrière
+        // Apex (u=0 : kneeUp=2.4, tuck serré) → atterrissage (jambe arrière se prépare au prochain appui)
         const u = airborneFrac;
-        return { footX: -0.5 + u * 0.3, footY: -1.0 + u * 0.5, kneeUp: 1.6 - u * 0.4 };
+        return { footX: -0.25 + u * 0.50, footY: -1.55 + u * 1.15, kneeUp: 2.4 - u * 1.85 };
       }
     }
   }
@@ -27004,10 +27057,10 @@ function _drawBirds(ctx, W, H, dt){
   function drawRunner(x, y, scale, spec, phase, isHero, effortLevel, airborneFrac){
     // === Builds (variations morpho) ===
     const BUILDS = {
-      normal: { bw: 14, bh: 24, hr: 14 },
-      thin:   { bw: 12, bh: 24, hr: 13 },
-      stocky: { bw: 16, bh: 23, hr: 15 },
-      small:  { bw: 13, bh: 21, hr: 13 },
+      normal: { bw: 13, bh: 17, hr: 19 },  // chibi : tête HR énorme vs corps court
+      thin:   { bw: 11, bh: 16, hr: 17 },
+      stocky: { bw: 14, bh: 17, hr: 20 },
+      small:  { bw: 12, bh: 14, hr: 17 },
     };
     const build = BUILDS[spec.build || 'normal'];
     // Vague 21 : override jersey color si rival actif
@@ -27156,20 +27209,56 @@ function _drawBirds(ctx, W, H, dt){
       ctx.beginPath(); ctx.arc(x, y + 4 * s, 32 * s, 0, Math.PI*2); ctx.fill();
     }
 
+    // === LIGNES DE VITESSE MANGA (héros uniquement, effort > 0.3) ===
+    // Horizontal streaks sweeping left — effet manga classique "vitesse"
+    if(isHero && effort > 0.3){
+      const _slIntensity = Math.min(1, (effort - 0.3) / 0.7);
+      const _slCount = 7;
+      const _slMaxLen = (55 + _slIntensity * 30) * s;
+      ctx.save();
+      for(let _sli = 0; _sli < _slCount; _sli++){
+        const _slY = bodyY - 20 * s + (_sli / (_slCount - 1) - 0.5) * 40 * s;
+        const _slLen = _slMaxLen * (0.65 + ((_sli * 37) % 10) / 10 * 0.35);
+        const _slAlpha = _slIntensity * (0.10 + ((_sli * 53) % 10) / 10 * 0.06);
+        const _slW = _sli % 2 === 0 ? 2.0 * s : 1.0 * s;
+        const _slGrad = ctx.createLinearGradient(x - 4 * s, _slY, x - _slLen - 4 * s, _slY);
+        _slGrad.addColorStop(0, `rgba(255,255,255,${_slAlpha})`);
+        _slGrad.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = _slGrad;
+        ctx.fillRect(x - _slLen - 4 * s, _slY - _slW / 2, _slLen, _slW);
+      }
+      ctx.restore();
+    }
+
     // === Jambes : pose normale OU pose saut (overide quand airborne) ===
     const legL = isAirborne ? jumpLegPose(airborneFrac, false) : legPose(cyclePhase, false);
     const legR = isAirborne ? jumpLegPose(airborneFrac, true) : legPose(cyclePhase, true);
-    const legLen = 18 * s;
+    const legLen = 12 * s;
     function drawLeg(hipX, hipY, pose){
       const footX = hipX + pose.footX * 10 * s;
       const footY = hipY + legLen + pose.footY * 5 * s;
       const kneeX = (hipX + footX) / 2;
       const kneeY = (hipY + footY) / 2 - pose.kneeUp * 6 * s;
-      ctx.strokeStyle = spec.skin; ctx.lineWidth = 6 * s; ctx.lineCap = 'round';
+      // Outline sombre chibi (silhouette jambe)
+      ctx.strokeStyle = 'rgba(40,22,10,0.50)'; ctx.lineWidth = 7.5 * s; ctx.lineCap = 'round';
       ctx.beginPath();
       ctx.moveTo(hipX, hipY);
       ctx.lineTo(kneeX, kneeY);
       ctx.lineTo(footX, footY);
+      ctx.stroke();
+      // Jambe principale
+      ctx.strokeStyle = spec.skin; ctx.lineWidth = 6.2 * s; ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(hipX, hipY);
+      ctx.lineTo(kneeX, kneeY);
+      ctx.lineTo(footX, footY);
+      ctx.stroke();
+      // Highlight intérieur (côté lumière) — effet volume 3D
+      ctx.strokeStyle = `rgba(255,255,255,0.22)`; ctx.lineWidth = 2.2 * s;
+      ctx.beginPath();
+      ctx.moveTo(hipX - 1.3*s, hipY - 0.5*s);
+      ctx.lineTo(kneeX - 1*s, kneeY - 0.5*s);
+      ctx.lineTo(footX - 0.5*s, footY);
       ctx.stroke();
       return { footX, footY };
     }
@@ -27177,9 +27266,13 @@ function _drawBirds(ctx, W, H, dt){
     const footR = drawLeg(x + 4 * s, bodyY + 5 * s, legR);
     // === CHAUSSURES — couleur selon rareté de l'équipement, sinon couleur du maillot ===
     const shoeColor = (spec.equipped?.shoes?.color) || spec.jersey;
+    // Outline chaussures (silhouette fine)
+    ctx.fillStyle = 'rgba(40,22,10,0.55)';
+    ctx.beginPath(); ctx.ellipse(footL.footX, footL.footY, 7.0 * s, 4.0 * s, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(footR.footX, footR.footY, 7.0 * s, 4.0 * s, 0, 0, Math.PI*2); ctx.fill();
     ctx.fillStyle = shoeColor;
-    ctx.beginPath(); ctx.ellipse(footL.footX, footL.footY, 6.5 * s, 3.5 * s, 0, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(footR.footX, footR.footY, 6.5 * s, 3.5 * s, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(footL.footX, footL.footY, 6.2 * s, 3.5 * s, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(footR.footX, footR.footY, 6.2 * s, 3.5 * s, 0, 0, Math.PI*2); ctx.fill();
     // Bande blanche / dorée selon la rareté (effet "premium")
     if(spec.equipped?.shoes?.rarity && ['epic', 'legendary'].includes(spec.equipped.shoes.rarity)){
       ctx.fillStyle = spec.equipped.shoes.rarity === 'legendary' ? '#ffd060' : '#c8a8e8';
@@ -27188,8 +27281,8 @@ function _drawBirds(ctx, W, H, dt){
     }
     // Semelle sombre (épaisseur réaliste)
     ctx.fillStyle = 'rgba(30,30,40,0.85)';
-    ctx.beginPath(); ctx.ellipse(footL.footX, footL.footY + 1.5 * s, 6.8 * s, 1.4 * s, 0, 0, Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(footR.footX, footR.footY + 1.5 * s, 6.8 * s, 1.4 * s, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(footL.footX, footL.footY + 1.5 * s, 6.5 * s, 1.3 * s, 0, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(footR.footX, footR.footY + 1.5 * s, 6.5 * s, 1.3 * s, 0, 0, Math.PI*2); ctx.fill();
     // === LOGO "F" (marque "Foulée") sur les chaussures — hero + tier 3+ pour ne pas surcharger ===
     if(isHero || (spec.tier || 0) >= 3){
       ctx.save();
@@ -27228,6 +27321,20 @@ function _drawBirds(ctx, W, H, dt){
       }
     }
 
+    // === POUSSIÈRE sol (impact pied planté) — héros + T3+ à l'effort ===
+    if((isHero || (spec.tier||0) >= 3) && effort > 0.28 && !isAirborne){
+      const _phaseDust = (phase * 2.2) % (Math.PI * 2);
+      const _tDust = _phaseDust / (Math.PI * 2);
+      if(_tDust < 0.32){
+        // Pied planté = celui dont le footX est le plus proche du centre du corps
+        const _pFoot = Math.abs(footL.footX - x) < Math.abs(footR.footX - x) ? footL : footR;
+        const _da = (0.32 - _tDust) / 0.32 * (effort - 0.28) * 0.65;
+        const _ds = 1 + _tDust * 1.8;
+        ctx.fillStyle = `rgba(210,200,175,${_da})`;
+        ctx.beginPath(); ctx.ellipse(_pFoot.footX - 5*s, _pFoot.footY + 1.5*s, 5*s*_ds, 2*s*_ds, 0, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(_pFoot.footX + 2*s, _pFoot.footY + 2*s, 3*s*_ds, 1.4*s*_ds, 0.3, 0, Math.PI*2); ctx.fill();
+      }
+    }
     // === CAPE (champion) derrière le corps ===
     if(acc.cape){
       ctx.fillStyle = '#e8b020';
@@ -27246,8 +27353,8 @@ function _drawBirds(ctx, W, H, dt){
     ctx.translate(x, bodyY - 6 * s);
     ctx.rotate(lean);
     // Dimensions corps selon build
-    const bw = build.bw * s;
-    const waist = bw * 0.82; // taille marquée pour silhouette athlétique
+    const bw = (build.bw + (isHero ? 0.3 : 0)) * s;
+    const waist = bw * 0.82; // chibi : silhouette douce et ronde
     const corpsTop = -16 * s;
     const corpsBot = 6 * s;
     // Short
@@ -27270,7 +27377,26 @@ function _drawBirds(ctx, W, H, dt){
     // Côté gauche : taille → épaule
     ctx.quadraticCurveTo(-bw, (corpsTop + corpsBot) / 2, -bw, corpsTop + r);
     ctx.lineTo(-bw, corpsTop + r); ctx.quadraticCurveTo(-bw, corpsTop, -bw + r, corpsTop);
-    ctx.fill();
+    ctx.closePath(); ctx.fill();
+    // Contour corps chibi (silhouette nette)
+    ctx.strokeStyle = 'rgba(40,22,10,0.50)'; ctx.lineWidth = 1.8 * s; ctx.stroke();
+    // === PETITE ÉTOILE CUTE sur le maillot (héros + T4+) ===
+    if(isHero || (spec.tier || 0) >= 4){
+      const _starX = bw * 0.55; const _starY = corpsTop + 8 * s;
+      const _starR = 2.5 * s;
+      ctx.fillStyle = 'rgba(255,255,255,0.80)';
+      ctx.save(); ctx.translate(_starX, _starY);
+      ctx.beginPath();
+      for(let _si = 0; _si < 5; _si++){
+        const _aO = (_si / 5) * Math.PI * 2 - Math.PI / 2;
+        const _aI = _aO + Math.PI / 5;
+        if(_si === 0) ctx.moveTo(Math.cos(_aO) * _starR, Math.sin(_aO) * _starR);
+        else ctx.lineTo(Math.cos(_aO) * _starR, Math.sin(_aO) * _starR);
+        ctx.lineTo(Math.cos(_aI) * _starR * 0.42, Math.sin(_aI) * _starR * 0.42);
+      }
+      ctx.closePath(); ctx.fill();
+      ctx.restore();
+    }
     // === COU visible (skin tone, raccord tête → torse)
     ctx.fillStyle = spec.skin;
     ctx.beginPath();
@@ -27503,8 +27629,10 @@ function _drawBirds(ctx, W, H, dt){
         upperR = -1.6 + u * 1.4;
       }
     } else {
-      upperL = -armSwing * .9 - .3;
-      upperR = armSwing * .9 - .3;
+      // Amplitude augmentée (1.05 au lieu de .9) — pompe bras plus agressive au sprint
+      const _armAmp = 0.88 + effort * 0.22; // 0.88 au repos → 1.10 à plein sprint
+      upperL = -armSwing * _armAmp - .28;
+      upperR = armSwing * _armAmp - .28;
     }
     function drawArm(shX, shY, upperAngle){
       const upperLen = 8 * s;
@@ -27514,12 +27642,20 @@ function _drawBirds(ctx, W, H, dt){
       const lowerAngle = upperAngle + Math.PI * .55;
       const handX = elbX + Math.sin(lowerAngle) * lowerLen;
       const handY = elbY + Math.cos(lowerAngle) * lowerLen;
-      ctx.strokeStyle = spec.skin; ctx.lineWidth = 5 * s; ctx.lineCap = 'round';
-      ctx.beginPath();
-      ctx.moveTo(shX, shY);
-      ctx.lineTo(elbX, elbY);
-      ctx.lineTo(handX, handY);
-      ctx.stroke();
+      // Outline fin chibi (silhouette)
+      ctx.strokeStyle = 'rgba(40,22,10,0.52)'; ctx.lineWidth = 6.2 * s; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(shX, shY); ctx.lineTo(elbX, elbY); ctx.lineTo(handX, handY); ctx.stroke();
+      // Bras (couleur peau)
+      ctx.strokeStyle = spec.skin; ctx.lineWidth = 5.0 * s; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(shX, shY); ctx.lineTo(elbX, elbY); ctx.lineTo(handX, handY); ctx.stroke();
+      // Highlight volume
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)'; ctx.lineWidth = 1.4 * s; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(shX - 0.7*s, shY); ctx.lineTo(elbX - 0.7*s, elbY); ctx.stroke();
+      // Petit poing
+      ctx.fillStyle = 'rgba(40,22,10,0.48)';
+      ctx.beginPath(); ctx.arc(handX, handY, 2.8 * s, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = spec.skin;
+      ctx.beginPath(); ctx.arc(handX, handY, 2.3 * s, 0, Math.PI*2); ctx.fill();
     }
     const shoulderX = bw - 2 * s;
     drawArm(-shoulderX, -10 * s, upperL);
@@ -27527,11 +27663,18 @@ function _drawBirds(ctx, W, H, dt){
     ctx.restore();
 
     // === Tête (suit le hop, sans lean dur) ===
-    const headY = bodyY - 27 * s;
-    const headX = x + Math.sin(lean) * 8 * s;
+    // Micro-bob chibi : la grosse tête rebondit légèrement plus que le corps (phase décalée)
+    const _headExtraBob = Math.sin(phase * 1.9 + 1.1) * 1.3 * s * (1 - _idleT);
+    const headY = bodyY - 27 * s + _headExtraBob;
+    // Micro-wobble latéral très subtil au sprint
+    const _headWobble = Math.cos(phase * 1.9) * 0.5 * s * effort;
+    const headX = x + Math.sin(lean) * 8 * s + _headWobble;
     const hr = build.hr * s;
     ctx.fillStyle = spec.skin;
     ctx.beginPath(); ctx.arc(headX, headY, hr, 0, Math.PI*2); ctx.fill();
+    // Contour tête chibi (silhouette nette)
+    ctx.strokeStyle = 'rgba(40,22,10,0.68)'; ctx.lineWidth = 1.9 * s;
+    ctx.beginPath(); ctx.arc(headX, headY, hr, 0, Math.PI*2); ctx.stroke();
     // === OMBRAGE TÊTE : highlight côté gauche (lumière) + ombre côté droit ===
     ctx.save();
     ctx.globalCompositeOperation = 'overlay';
@@ -27562,6 +27705,7 @@ function _drawBirds(ctx, W, H, dt){
       }
     }
 
+    // (mâchoire supprimée — style chibi : tête ronde sans angularité)
     // === BANDEAU HÉROS SIGNATURE (cyan blanc, exclusif) — sous les cheveux
     if(isHero){
       ctx.fillStyle = '#00d4ff';
@@ -27575,10 +27719,19 @@ function _drawBirds(ctx, W, H, dt){
     if(hairStyle === 'bald'){
       // chauve : rien
     } else if(hairStyle === 'buzz'){
-      // Demi-cercle plat sur le crâne
+      // Demi-cercle texturé + micro-mouvement dans la direction de course
+      const _buzzShift = effort * Math.sin(cyclePhase * 1.5) * 0.4 * s;
       ctx.beginPath();
-      ctx.arc(headX, headY - 1 * s, hr - 0.5 * s, Math.PI + 0.2, -0.2);
+      ctx.arc(headX + _buzzShift, headY - 1.5 * s, hr - 0.5 * s, Math.PI + 0.15, -0.15);
       ctx.fill();
+      // Texture "cheveux rasés" : petites lignes horizontales subtiles
+      ctx.strokeStyle = `rgba(0,0,0,0.14)`; ctx.lineWidth = 0.7 * s; ctx.lineCap = 'round';
+      for(let _bz = 0; _bz < 3; _bz++){
+        const _bzy = headY - 5 * s + _bz * 2 * s;
+        const _bza = Math.acos(Math.max(-1, Math.min(1, (_bzy - (headY - 1.5*s)) / (hr - 0.5*s))));
+        const _bzx = (hr - 0.5*s) * Math.sin(_bza);
+        ctx.beginPath(); ctx.moveTo(headX - _bzx + 1*s, _bzy); ctx.lineTo(headX + _bzx - 1*s, _bzy); ctx.stroke();
+      }
     } else if(hairStyle === 'long'){
       // Cheveux qui descendent + mèche flottante derrière (amplifiée au sprint)
       const longWind = (1 + effort * 2) * Math.sin(cyclePhase * 2) * 1.5 * s;
@@ -27702,6 +27855,16 @@ function _drawBirds(ctx, W, H, dt){
       ctx.fillRect(headX + 6 * s, headY - 3 * s, 9 * s, 2 * s);
     }
 
+    // === BRILLANCE CHEVEUX (highlight naturel haut-gauche) ===
+    if(hairStyle !== 'bald'){
+      const _hSheen = ctx.createRadialGradient(headX - hr*0.30, headY - hr*0.55, 0, headX, headY, hr*0.92);
+      _hSheen.addColorStop(0, 'rgba(255,255,255,0.26)');
+      _hSheen.addColorStop(0.42, 'rgba(255,255,255,0.07)');
+      _hSheen.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = _hSheen;
+      ctx.beginPath(); ctx.arc(headX, headY - 1*s, hr + 1*s, 0, Math.PI*2); ctx.fill();
+    }
+
     // === Yeux selon faceExpr (lunettes acc.glasses prioritaire si tier le force) ===
     const showShades = (faceExpr === 'shades');
     const showGlasses = acc.glasses || (faceExpr === 'glasses');
@@ -27728,36 +27891,81 @@ function _drawBirds(ctx, W, H, dt){
       ctx.beginPath(); ctx.arc(headX + 1 * s, headY + 1 * s, 1.8 * s, Math.PI + 0.3, -0.3); ctx.stroke();
       ctx.beginPath(); ctx.arc(headX + 7 * s, headY + 1 * s, 1.8 * s, Math.PI + 0.3, -0.3); ctx.stroke();
     } else {
-      // Yeux ronds (smile, focus, beard)
-      ctx.fillStyle = '#1a1010';
-      ctx.beginPath(); ctx.arc(headX + 1 * s, headY + 1 * s, 2 * s, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(headX + 7 * s, headY + 1 * s, 2 * s, 0, Math.PI*2); ctx.fill();
-      ctx.fillStyle = '#fff';
-      ctx.beginPath(); ctx.arc(headX + 1.6 * s, headY + .5 * s, .8 * s, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.arc(headX + 7.6 * s, headY + .5 * s, .8 * s, 0, Math.PI*2); ctx.fill();
+      // Yeux ANIME CHIBI — énormes, expressifs, style manga kawaii
+      // Fond sclère blanc pur (plus grand = yeux plus mignons)
+      ctx.fillStyle = '#ffffff';
+      ctx.beginPath(); ctx.arc(headX + 1 * s, headY + 1 * s, 3.4 * s, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(headX + 7 * s, headY + 1 * s, 3.4 * s, 0, Math.PI*2); ctx.fill();
+      // Contour œil fin (définition)
+      ctx.strokeStyle = '#2a1a10'; ctx.lineWidth = 0.7 * s;
+      ctx.beginPath(); ctx.arc(headX + 1 * s, headY + 1 * s, 3.4 * s, 0, Math.PI*2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(headX + 7 * s, headY + 1 * s, 3.4 * s, 0, Math.PI*2); ctx.stroke();
+      // Iris coloré (couleur selon cheveux)
+      const _irisCol = (spec.hair && ['#f0d080','#e0e0e0','#ff8040','#ffd060'].includes(spec.hair)) ? '#3a70d0' : (spec.hair === '#20c050' ? '#208040' : '#4a3020');
+      const _irisGrad = ctx.createRadialGradient(headX + 1*s, headY + 0.5*s, 0, headX + 1*s, headY + 1*s, 2.85*s);
+      _irisGrad.addColorStop(0, _irisCol + 'ff');
+      _irisGrad.addColorStop(1, _irisCol + '88');
+      ctx.fillStyle = _irisGrad;
+      ctx.beginPath(); ctx.arc(headX + 1 * s, headY + 1.2 * s, 2.85 * s, 0, Math.PI*2); ctx.fill();
+      const _irisGrad2 = ctx.createRadialGradient(headX + 7*s, headY + 0.5*s, 0, headX + 7*s, headY + 1*s, 2.85*s);
+      _irisGrad2.addColorStop(0, _irisCol + 'ff');
+      _irisGrad2.addColorStop(1, _irisCol + '88');
+      ctx.fillStyle = _irisGrad2;
+      ctx.beginPath(); ctx.arc(headX + 7 * s, headY + 1.2 * s, 2.85 * s, 0, Math.PI*2); ctx.fill();
+      // Pupille noire ovale (grande = plus expressive)
+      ctx.fillStyle = '#0a0810';
+      ctx.beginPath(); ctx.ellipse(headX + 1 * s, headY + 1.5 * s, 1.55 * s, 1.95 * s, 0, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(headX + 7 * s, headY + 1.5 * s, 1.55 * s, 1.95 * s, 0, 0, Math.PI*2); ctx.fill();
+      // Grand reflet blanc (style manga, coin haut-gauche)
+      ctx.fillStyle = 'rgba(255,255,255,0.92)';
+      ctx.beginPath(); ctx.ellipse(headX + 0.2 * s, headY - 0.1 * s, 1.1 * s, 0.9 * s, -0.3, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(headX + 6.2 * s, headY - 0.1 * s, 1.1 * s, 0.9 * s, -0.3, 0, Math.PI*2); ctx.fill();
+      // Petit reflet secondaire (sparkle bas-droite)
+      ctx.fillStyle = 'rgba(255,255,255,0.60)';
+      ctx.beginPath(); ctx.arc(headX + 2 * s, headY + 2.5 * s, 0.55 * s, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.arc(headX + 8 * s, headY + 2.5 * s, 0.55 * s, 0, Math.PI*2); ctx.fill();
+      // Cils du haut (2 traits épais)
+      ctx.strokeStyle = '#1a0f08'; ctx.lineWidth = 1.1 * s; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.arc(headX + 1 * s, headY + 1 * s, 3.3 * s, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke();
+      ctx.beginPath(); ctx.arc(headX + 7 * s, headY + 1 * s, 3.3 * s, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke();
+      ctx.lineWidth = 1; ctx.lineCap = 'butt';
+      // Nez chibi mignon : petit point rose arrondi discret
+      ctx.fillStyle = 'rgba(255,120,130,0.60)';
+      ctx.beginPath(); ctx.arc(headX + 4 * s, headY + 2.5 * s, 1.2 * s, 0, Math.PI*2); ctx.fill();
       // Sourcils froncés pour focus
       if(faceExpr === 'focus'){
         ctx.strokeStyle = spec.hair || '#3a2818'; ctx.lineWidth = 1.4 * s; ctx.lineCap = 'round';
         ctx.beginPath(); ctx.moveTo(headX - 3 * s, headY - 3 * s); ctx.lineTo(headX + 2 * s, headY - 2 * s); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(headX + 11 * s, headY - 3 * s); ctx.lineTo(headX + 6 * s, headY - 2 * s); ctx.stroke();
       } else if(faceExpr !== 'beard'){
-        // === SOURCILS DYNAMIQUES (smile/effort) — angle change selon effort ===
-        // smile : sourcils légèrement relevés (détendu)
-        // effort : sourcils froncés vers le bas (rage)
-        const browAng = (faceExpr === 'effort') ? -0.28 : (effort > 0.3 ? -0.08 : 0.08);
-        ctx.fillStyle = spec.hair || '#3a2818';
-        // Sourcil gauche (au-dessus oeil gauche, à headX + 1)
+        // === SOURCILS CHIBI — épais, arrondis, très expressifs ===
+        // smile : légèrement arqués vers le haut (kawaii détendu)
+        // effort : froncés en V agressif (chibi rage face)
+        const browAng = (faceExpr === 'effort') ? -0.35 : (effort > 0.3 ? -0.10 : 0.12);
+        const browCol = spec.hair || '#3a2818';
+        ctx.fillStyle = browCol;
+        // Sourcil gauche — arrondi style chibi (arc au lieu de rect)
         ctx.save();
-        ctx.translate(headX + 1 * s, headY - 2.5 * s);
+        ctx.translate(headX + 1 * s, headY - 3.5 * s);
         ctx.rotate(browAng);
-        ctx.fillRect(-2.2 * s, 0, 4.4 * s, 0.9 * s);
+        ctx.beginPath(); ctx.ellipse(0, 0, 3.2 * s, 1.1 * s, 0, 0, Math.PI*2); ctx.fill();
         ctx.restore();
-        // Sourcil droit (au-dessus oeil droit, à headX + 7)
+        // Sourcil droit
         ctx.save();
-        ctx.translate(headX + 7 * s, headY - 2.5 * s);
+        ctx.translate(headX + 7 * s, headY - 3.5 * s);
         ctx.rotate(-browAng);
-        ctx.fillRect(-2.2 * s, 0, 4.4 * s, 0.9 * s);
+        ctx.beginPath(); ctx.ellipse(0, 0, 3.2 * s, 1.1 * s, 0, 0, Math.PI*2); ctx.fill();
         ctx.restore();
+        // Petite accentuation "levé" pour smile : petite courbe au bout
+        if(faceExpr === 'smile' || effort < 0.35){
+          ctx.fillStyle = browCol;
+          ctx.save(); ctx.translate(headX - 1.8 * s, headY - 3.8 * s); ctx.rotate(browAng - 0.3);
+          ctx.beginPath(); ctx.ellipse(0, 0, 1 * s, 0.7 * s, 0, 0, Math.PI*2); ctx.fill();
+          ctx.restore();
+          ctx.save(); ctx.translate(headX + 8.8 * s, headY - 3.8 * s); ctx.rotate(-browAng + 0.3);
+          ctx.beginPath(); ctx.ellipse(0, 0, 1 * s, 0.7 * s, 0, 0, Math.PI*2); ctx.fill();
+          ctx.restore();
+        }
       }
     }
 
@@ -27770,15 +27978,20 @@ function _drawBirds(ctx, W, H, dt){
 
     // === Joues (cachées si lunettes ou beard) ===
     if(!eyesHidden && faceExpr !== 'beard'){
-      ctx.fillStyle = 'rgba(255,138,144,.55)';
-      ctx.beginPath(); ctx.ellipse(headX - 5 * s, headY + 4 * s, 2.5 * s, 1.8 * s, 0, 0, Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(headX + 10 * s, headY + 4 * s, 2.5 * s, 1.8 * s, 0, 0, Math.PI*2); ctx.fill();
+      // Joues chibi puffies — correctement positionnées sous les yeux
+      ctx.fillStyle = 'rgba(255,105,130,.65)';
+      ctx.beginPath(); ctx.ellipse(headX - 1.5 * s, headY + 5 * s, 4.2 * s, 3.0 * s, 0, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(headX + 9.5 * s, headY + 5 * s, 4.2 * s, 3.0 * s, 0, 0, Math.PI*2); ctx.fill();
+      // Cœur de joue (plus clair au centre pour effet "poudré")
+      ctx.fillStyle = 'rgba(255,180,200,.40)';
+      ctx.beginPath(); ctx.ellipse(headX - 1.5 * s, headY + 5 * s, 2.4 * s, 1.7 * s, 0, 0, Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(headX + 9.5 * s, headY + 5 * s, 2.4 * s, 1.7 * s, 0, 0, Math.PI*2); ctx.fill();
       // === JOUES ROUGIES au sprint (effort > 0.4) — superposition rouge intense ===
       if(effort > 0.4){
         const flushAlpha = (effort - 0.4) * 0.7;
         ctx.fillStyle = `rgba(255,90,75,${flushAlpha})`;
-        ctx.beginPath(); ctx.ellipse(headX - 5 * s, headY + 4 * s, 2.8 * s, 2 * s, 0, 0, Math.PI*2); ctx.fill();
-        ctx.beginPath(); ctx.ellipse(headX + 10 * s, headY + 4 * s, 2.8 * s, 2 * s, 0, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(headX - 1.5 * s, headY + 4 * s, 2.8 * s, 2 * s, 0, 0, Math.PI*2); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(headX + 9.5 * s, headY + 4 * s, 2.8 * s, 2 * s, 0, 0, Math.PI*2); ctx.fill();
       }
     }
 
@@ -27822,9 +28035,13 @@ function _drawBirds(ctx, W, H, dt){
       ctx.ellipse(headX + 5 * s, headY + 6 * s, 1.4 * s, .8 * s, 0, 0, Math.PI*2);
       ctx.fill();
     } else {
-      // Sourire arc (smile par défaut, ou pour glasses/shades)
-      ctx.strokeStyle = '#3a2818'; ctx.lineWidth = 1.2 * s;
-      ctx.beginPath(); ctx.arc(headX + 5 * s, headY + 5 * s, 2 * s, .2, Math.PI - .2); ctx.stroke();
+      // Sourire chibi large (arc plus grand, plus expressif)
+      ctx.strokeStyle = '#2a1408'; ctx.lineWidth = 1.5 * s; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.arc(headX + 4 * s, headY + 5.5 * s, 3.2 * s, 0.05, Math.PI - 0.05); ctx.stroke();
+      // Petits "crochets" de sourire aux coins (style cartoon)
+      ctx.beginPath(); ctx.moveTo(headX + 4 * s - 3.2 * s * Math.cos(0.05), headY + 5.5 * s + 3.2 * s * Math.sin(0.05));
+      ctx.lineTo(headX + 0.2 * s, headY + 4.5 * s); ctx.stroke();
+      ctx.lineWidth = 1; ctx.lineCap = 'butt';
     }
 
     // === Sueur DYNAMIQUE (plus généreuse au sprint) ===
@@ -27857,6 +28074,32 @@ function _drawBirds(ctx, W, H, dt){
         }
       }
       ctx.globalAlpha = 1;
+    }
+
+    // === ÉTOILES COMBO ORBITANTES (STATE.comboCount >= 5, héros uniquement) ===
+    if(isHero && (STATE.comboCount || 0) >= 5){
+      const _cCount = Math.min(5, Math.floor(((STATE.comboCount || 5) - 5) / 4) + 2);
+      const _cOrbitR = 30 * s;
+      const _cPhase = phase * 1.3;
+      for(let _ci = 0; _ci < _cCount; _ci++){
+        const _cAngle = _cPhase + (_ci / _cCount) * Math.PI * 2;
+        const _cStarX = x + Math.cos(_cAngle) * _cOrbitR;
+        const _cStarY = bodyY - 18 * s + Math.sin(_cAngle) * _cOrbitR * 0.38;
+        const _cAlpha = 0.55 + Math.sin(_cAngle * 2) * 0.20;
+        const _cSR = (1.8 + Math.sin(_cAngle) * 0.4) * s;
+        ctx.fillStyle = `rgba(255,218,60,${_cAlpha})`;
+        ctx.save(); ctx.translate(_cStarX, _cStarY);
+        ctx.beginPath();
+        for(let _csi = 0; _csi < 5; _csi++){
+          const _caO = (_csi / 5) * Math.PI * 2 - Math.PI / 2;
+          const _caI = _caO + Math.PI / 5;
+          if(_csi === 0) ctx.moveTo(Math.cos(_caO) * _cSR, Math.sin(_caO) * _cSR);
+          else ctx.lineTo(Math.cos(_caO) * _cSR, Math.sin(_caO) * _cSR);
+          ctx.lineTo(Math.cos(_caI) * _cSR * 0.42, Math.sin(_caI) * _cSR * 0.42);
+        }
+        ctx.closePath(); ctx.fill();
+        ctx.restore();
+      }
     }
 
     // === REFLETS sur chaussures (highlight blanc top) au sprint ===
@@ -29715,6 +29958,77 @@ function _drawBirds(ctx, W, H, dt){
           ctx.fill();
         }
       }
+      // === TONNEAUX EN FEU (post-apocalyptique) ===
+      { const _brT = -(decorScroll * 0.28); const _brSp = 340;
+        const _brX0 = ((_brT % _brSp) + _brSp) % _brSp;
+        for(let _bri = 0; _bri < 3; _bri++){
+          const _bx = _brX0 + _bri * _brSp - 40;
+          if(_bx < -20 || _bx > W + 20) continue;
+          const _fireGrad = ctx.createRadialGradient(_bx + 6, baseY - 5, 0, _bx + 6, baseY - 5, 22);
+          _fireGrad.addColorStop(0, 'rgba(255,140,20,0.40)'); _fireGrad.addColorStop(1, 'rgba(255,80,0,0)');
+          ctx.fillStyle = _fireGrad; ctx.beginPath(); ctx.arc(_bx + 6, baseY - 5, 22, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = '#4a3828'; ctx.fillRect(_bx, baseY - 18, 12, 18);
+          ctx.fillStyle = '#3a2818'; ctx.fillRect(_bx, baseY - 20, 12, 3); ctx.fillRect(_bx, baseY - 10, 12, 2);
+          const _fp = (t * 0.08 + _bri * 1.4) % (Math.PI * 2);
+          const _fdat = [[0,-6,3],[3,-8,2.5],[7,-5,3.5],[9,-7,2]];
+          for(const [_fdx, _fdy, _fdr] of _fdat){
+            ctx.fillStyle = `rgba(255,${(120 + _fdx * 9) | 0},0,0.85)`;
+            ctx.beginPath(); ctx.ellipse(_bx + _fdx + Math.sin(_fp + _fdx * 0.4) * 1.5, baseY - 18 + _fdy, _fdr * 0.7, _fdr, 0, 0, Math.PI*2); ctx.fill();
+          }
+          ctx.fillStyle = 'rgba(255,240,180,0.80)';
+          ctx.beginPath(); ctx.ellipse(_bx + 6 + Math.sin(_fp * 2) * 1.5, baseY - 26, 1.5, 2.5, 0, 0, Math.PI*2); ctx.fill();
+        }
+      }
+      // === CLÔTURE MÉTALLIQUE ROUILLÉE + BARBELÉS ===
+      { const _fnT = -(decorScroll * 0.33); const _fnSp = 40;
+        const _fnX0 = ((_fnT % _fnSp) + _fnSp) % _fnSp;
+        for(let _fi2 = 0; _fi2 < Math.ceil(W / _fnSp) + 2; _fi2++){
+          const _fx2 = _fnX0 + _fi2 * _fnSp - 20;
+          if(_fx2 < -20 || _fx2 > W + 20) continue;
+          if(_fi2 % 4 === 0){ ctx.fillStyle = '#6a4828'; ctx.fillRect(_fx2 - 1, baseY - 22, 2.5, 22); }
+          ctx.strokeStyle = '#7a5838'; ctx.lineWidth = 0.8;
+          ctx.beginPath(); ctx.moveTo(_fx2, baseY - 18); ctx.lineTo(_fx2 + _fnSp, baseY - 18); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(_fx2, baseY - 10); ctx.lineTo(_fx2 + _fnSp, baseY - 10); ctx.stroke();
+          if(_fi2 % 2 === 0){
+            ctx.strokeStyle = '#8a6040'; ctx.lineWidth = 0.6;
+            ctx.beginPath(); ctx.moveTo(_fx2 + 3, baseY - 20); ctx.lineTo(_fx2 + 7, baseY - 16); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(_fx2 + 7, baseY - 20); ctx.lineTo(_fx2 + 3, baseY - 16); ctx.stroke();
+          }
+          ctx.lineWidth = 1;
+        }
+      }
+      // === FLAQUES D'EAU HUILEUSES ===
+      { const _flT = -(decorScroll * 0.38); const _flSp = 280;
+        const _flX0 = ((_flT % _flSp) + _flSp) % _flSp;
+        for(let _fli = 0; _fli < 2; _fli++){
+          const _flx = _flX0 + _fli * _flSp - 30;
+          if(_flx < -30 || _flx > W + 30) continue;
+          ctx.fillStyle = 'rgba(50,60,70,0.45)';
+          ctx.beginPath(); ctx.ellipse(_flx + 18, baseY - 1, 22, 5, 0, 0, Math.PI*2); ctx.fill();
+          ctx.save(); ctx.globalCompositeOperation = 'screen';
+          ctx.fillStyle = 'rgba(200,100,255,0.11)';
+          ctx.beginPath(); ctx.ellipse(_flx + 14, baseY - 1, 10, 3, -0.2, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = 'rgba(100,255,200,0.09)';
+          ctx.beginPath(); ctx.ellipse(_flx + 22, baseY - 2, 8, 2, 0.1, 0, Math.PI*2); ctx.fill();
+          ctx.restore();
+        }
+      }
+      // === GRAVATS ET FERRAILLES ===
+      { const _gbT = -(decorScroll * 0.34); const _gbSp = 450;
+        const _gbX0 = ((_gbT % _gbSp) + _gbSp) % _gbSp;
+        for(let _gbi = 0; _gbi < 2; _gbi++){
+          const _gbx = _gbX0 + _gbi * _gbSp - 30;
+          if(_gbx < -20 || _gbx > W + 20) continue;
+          ctx.fillStyle = '#6a5a48';
+          ctx.beginPath(); ctx.moveTo(_gbx, baseY); ctx.lineTo(_gbx + 28, baseY); ctx.lineTo(_gbx + 22, baseY - 14); ctx.lineTo(_gbx + 6, baseY - 16); ctx.closePath(); ctx.fill();
+          ctx.fillStyle = '#8a7a68';
+          ctx.beginPath(); ctx.moveTo(_gbx + 3, baseY - 2); ctx.lineTo(_gbx + 20, baseY - 2); ctx.lineTo(_gbx + 18, baseY - 10); ctx.lineTo(_gbx + 8, baseY - 12); ctx.closePath(); ctx.fill();
+          ctx.strokeStyle = '#8a6040'; ctx.lineWidth = 1.5;
+          ctx.beginPath(); ctx.moveTo(_gbx + 10, baseY - 12); ctx.lineTo(_gbx + 14, baseY - 18); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(_gbx + 18, baseY - 10); ctx.lineTo(_gbx + 24, baseY - 15); ctx.stroke();
+          ctx.lineWidth = 1;
+        }
+      }
     } else if(_stageNow?.biome === 'rural'){
       // ═══ CAMPAGNE PAUVRE (signes de vie modestes) ═══
       const baseY = H * .55;
@@ -30226,6 +30540,73 @@ function _drawBirds(ctx, W, H, dt){
           ctx.fillRect(fx - 0.5 + grassSway, baseY - wh - 1, 2, 1.5);
         }
       }
+      // === PAPILLONS COLORÉS (vol oscillant libre) ===
+      { const _bflySeeds = [14,67,33,81,22,55,44,90];
+        for(let _bfi = 0; _bfi < _bflySeeds.length; _bfi++){
+          const _seed = _bflySeeds[_bfi];
+          const _bx2 = ((_seed * 43 + (t * 12 * (_seed % 3 === 0 ? 1 : -1))) % (W + 60) + (W + 60)) % (W + 60) - 30;
+          const _by2 = H * 0.28 + Math.sin(t * 1.4 + _seed) * 18 + (_seed % 5) * 12;
+          if(_bx2 < -20 || _bx2 > W + 20) continue;
+          const _cols = ['#ff8040','#ffd060','#e85090','#40c8ff','#a0e060','#ff60b0'];
+          ctx.fillStyle = _cols[_bfi % _cols.length];
+          const _wa = Math.sin(t * 6.5 + _seed) * 0.65;
+          ctx.save(); ctx.translate(_bx2, _by2); ctx.rotate(_wa);
+          ctx.beginPath(); ctx.ellipse(-3, 0, 4, 2.5, 0.3, 0, Math.PI*2); ctx.fill();
+          ctx.restore();
+          ctx.save(); ctx.translate(_bx2, _by2); ctx.rotate(-_wa);
+          ctx.beginPath(); ctx.ellipse(3, 0, 4, 2.5, -0.3, 0, Math.PI*2); ctx.fill();
+          ctx.restore();
+          ctx.fillStyle = 'rgba(40,25,8,0.72)';
+          ctx.beginPath(); ctx.ellipse(_bx2, _by2, 1, 3, 0, 0, Math.PI*2); ctx.fill();
+        }
+      }
+      // === CERF-VOLANT DANS LE CIEL ===
+      { const _ktX = (((t * 5 + 40) % (W + 80) + (W + 80)) % (W + 80)) - 40;
+        const _ktY = H * 0.18 + Math.sin(t * 0.38) * 22;
+        ctx.strokeStyle = 'rgba(180,140,80,0.50)'; ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        for(let _qi = 0; _qi < 8; _qi++){
+          const _qx = _ktX + Math.sin(t * 0.8 + _qi * 0.7) * 4;
+          const _qy = _ktY + 8 + _qi * 7;
+          if(_qi === 0) ctx.moveTo(_qx, _qy); else ctx.lineTo(_qx, _qy);
+        }
+        ctx.stroke();
+        ctx.fillStyle = '#e85040';
+        ctx.beginPath(); ctx.moveTo(_ktX, _ktY - 8); ctx.lineTo(_ktX + 7, _ktY); ctx.lineTo(_ktX, _ktY + 10); ctx.lineTo(_ktX - 7, _ktY); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#ffd060';
+        ctx.beginPath(); ctx.moveTo(_ktX, _ktY - 8); ctx.lineTo(_ktX + 7, _ktY); ctx.lineTo(_ktX, _ktY); ctx.closePath(); ctx.fill();
+        ctx.strokeStyle = 'rgba(100,80,50,0.42)'; ctx.lineWidth = 0.7;
+        ctx.beginPath(); ctx.moveTo(_ktX, _ktY + 10); ctx.quadraticCurveTo(_ktX + 20, _ktY + 38, _ktX + 32, H * 0.54); ctx.stroke();
+        ctx.lineWidth = 1;
+      }
+      // === CLÔTURE BOIS BLANCHE CAMPAGNE ===
+      { const _cfT = -(decorScroll * 0.32); const _cfSp = 35;
+        const _cfX0 = ((_cfT % _cfSp) + _cfSp) % _cfSp;
+        for(let _cfi = 0; _cfi < Math.ceil(W / _cfSp) + 2; _cfi++){
+          const _cfx = _cfX0 + _cfi * _cfSp - 18;
+          if(_cfx < -18 || _cfx > W + 18) continue;
+          ctx.fillStyle = '#e8e0d0'; ctx.fillRect(_cfx, baseY - 24, 4, 24);
+          ctx.beginPath(); ctx.moveTo(_cfx, baseY - 24); ctx.lineTo(_cfx + 2, baseY - 30); ctx.lineTo(_cfx + 4, baseY - 24); ctx.closePath(); ctx.fill();
+          ctx.fillStyle = '#d0c8b8'; ctx.fillRect(_cfx - 2, baseY - 20, 8, 2.5); ctx.fillRect(_cfx - 2, baseY - 10, 8, 2.5);
+        }
+      }
+      // === TOURNESOLS SUR LE BORD ===
+      { const _sfT = -(decorScroll * 0.32); const _sfSp = 120;
+        const _sfX0 = ((_sfT % _sfSp) + _sfSp) % _sfSp;
+        for(let _sfi = 0; _sfi < Math.ceil(W / _sfSp) + 2; _sfi++){
+          const _sfx = _sfX0 + _sfi * _sfSp - 30;
+          if(_sfx < -20 || _sfx > W + 20) continue;
+          const _sfh = 22 + (_sfi % 3) * 5;
+          ctx.fillStyle = '#6a8828'; ctx.fillRect(_sfx, baseY - _sfh, 2, _sfh);
+          ctx.fillStyle = '#ffa820';
+          for(let _pp = 0; _pp < 8; _pp++){
+            const _pA = (_pp / 8) * Math.PI * 2;
+            ctx.beginPath(); ctx.ellipse(_sfx + 1 + Math.cos(_pA) * 4.5, baseY - _sfh + Math.sin(_pA) * 4.5, 2.8, 1.4, _pA, 0, Math.PI*2); ctx.fill();
+          }
+          ctx.fillStyle = '#5a3a10';
+          ctx.beginPath(); ctx.arc(_sfx + 1, baseY - _sfh, 4, 0, Math.PI*2); ctx.fill();
+        }
+      }
     } else if(_stageNow?.biome === 'urban'){
       // ═══ PETITE VILLE → MÉTROPOLE ═══
       const baseY = H * .55;
@@ -30495,6 +30876,95 @@ function _drawBirds(ctx, W, H, dt){
         ctx.beginPath();
         ctx.arc(lUX + 10, baseY - 55, 22, 0, Math.PI*2);
         ctx.fill();
+      }
+      // === ABRIBUS (bus shelter) ===
+      { const _abtT = -(decorScroll * 0.30); const _abtSp = 380;
+        const _abtX0 = ((_abtT % _abtSp) + _abtSp) % _abtSp;
+        for(let _ai = 0; _ai < 3; _ai++){
+          const _ax = _abtX0 + _ai * _abtSp - 60;
+          if(_ax < -40 || _ax > W + 40) continue;
+          ctx.fillStyle = '#4a4a58'; ctx.fillRect(_ax, baseY - 40, 3, 40); ctx.fillRect(_ax + 20, baseY - 40, 3, 40);
+          ctx.fillStyle = '#c83030'; ctx.fillRect(_ax - 2, baseY - 43, 25, 4);
+          ctx.fillStyle = 'rgba(180,220,255,0.22)'; ctx.fillRect(_ax, baseY - 39, 20, 22);
+          ctx.fillStyle = '#6a6a7a'; ctx.fillRect(_ax + 2, baseY - 19, 16, 3);
+          ctx.fillStyle = '#ffd060'; ctx.font = `bold 4px Nunito`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText('BUS', _ax + 11, baseY - 29);
+        }
+      }
+      // === PANNEAUX PUBLICITAIRES GRANDS FORMAT ===
+      { const _bllT = -(decorScroll * 0.20); const _bllSp = 560;
+        const _bllX0 = ((_bllT % _bllSp) + _bllSp) % _bllSp;
+        for(let _bi = 0; _bi < 2; _bi++){
+          const _bx = _bllX0 + _bi * _bllSp - 80;
+          if(_bx < -60 || _bx > W + 60) continue;
+          ctx.fillStyle = '#3a3a48'; ctx.fillRect(_bx + 5, baseY - 72, 3, 72); ctx.fillRect(_bx + 47, baseY - 72, 3, 72);
+          ctx.fillStyle = '#1a4a8a'; ctx.fillRect(_bx, baseY - 74, 55, 36);
+          ctx.fillStyle = '#ffd060'; ctx.font = `bold 7px Nunito`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText('PARIS 25', _bx + 27, baseY - 61);
+          ctx.fillStyle = '#fff'; ctx.font = `5px Nunito`; ctx.fillText('CHILL RUN', _bx + 27, baseY - 51);
+          for(let _li = 0; _li < 5; _li++){
+            ctx.fillStyle = `rgba(255,220,80,${0.55 + Math.sin(t * 0.04 + _li * 1.3) * 0.35})`;
+            ctx.beginPath(); ctx.arc(_bx + 8 + _li * 9, baseY - 40, 1.5, 0, Math.PI*2); ctx.fill();
+          }
+        }
+      }
+      // === FONTAINE PUBLIQUE ===
+      { const _ftT = -(decorScroll * 0.28); const _ftSp = 680;
+        const _ftX0 = ((_ftT % _ftSp) + _ftSp) % _ftSp;
+        for(let _fi = 0; _fi < 2; _fi++){
+          const _fx = _ftX0 + _fi * _ftSp - 50;
+          if(_fx < -30 || _fx > W + 30) continue;
+          ctx.fillStyle = '#5a8aaa'; ctx.beginPath(); ctx.ellipse(_fx + 15, baseY - 3, 18, 5, 0, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = 'rgba(100,180,255,0.35)'; ctx.beginPath(); ctx.ellipse(_fx + 15, baseY - 3, 15, 3.5, 0, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = '#7a8a98'; ctx.fillRect(_fx + 13, baseY - 24, 4, 21);
+          ctx.strokeStyle = 'rgba(140,200,255,0.65)'; ctx.lineWidth = 1;
+          const _jp = (t * 0.055) % (Math.PI * 2);
+          for(let _j = 0; _j < 4; _j++){
+            const _jA = (_j / 4) * Math.PI * 2; const _jL = 7 + Math.sin(_jp + _j) * 2;
+            ctx.beginPath(); ctx.moveTo(_fx + 15, baseY - 24);
+            ctx.quadraticCurveTo(_fx + 15 + Math.cos(_jA) * _jL, baseY - 28, _fx + 15 + Math.cos(_jA) * _jL * 0.6, baseY - 9);
+            ctx.stroke();
+          }
+          ctx.lineWidth = 1;
+        }
+      }
+      // === CABINE TÉLÉPHONIQUE (rouge rétro) ===
+      { const _cbT = -(decorScroll * 0.33); const _cbSp = 820;
+        const _cbX0 = ((_cbT % _cbSp) + _cbSp) % _cbSp;
+        for(let _ci = 0; _ci < 2; _ci++){
+          const _cx = _cbX0 + _ci * _cbSp - 40;
+          if(_cx < -20 || _cx > W + 20) continue;
+          ctx.fillStyle = '#c82828'; ctx.fillRect(_cx, baseY - 44, 18, 44);
+          ctx.beginPath(); ctx.arc(_cx + 9, baseY - 44, 9, Math.PI, 0); ctx.fill();
+          ctx.fillStyle = 'rgba(180,230,255,0.28)'; ctx.fillRect(_cx + 2, baseY - 40, 14, 22);
+          ctx.strokeStyle = '#a02020'; ctx.lineWidth = 0.8;
+          ctx.beginPath(); ctx.moveTo(_cx + 9, baseY - 40); ctx.lineTo(_cx + 9, baseY - 18); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(_cx + 2, baseY - 29); ctx.lineTo(_cx + 16, baseY - 29); ctx.stroke();
+          ctx.lineWidth = 1;
+          ctx.fillStyle = '#fff'; ctx.font = `bold 4px Nunito`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText('TEL', _cx + 9, baseY - 12);
+        }
+      }
+      // === VÉLOS GARÉS SUR ARCEAU ===
+      { const _vcT = -(decorScroll * 0.36); const _vcSp = 450;
+        const _vcX0 = ((_vcT % _vcSp) + _vcSp) % _vcSp;
+        for(let _vi = 0; _vi < 2; _vi++){
+          const _vx = _vcX0 + _vi * _vcSp - 50;
+          if(_vx < -30 || _vx > W + 30) continue;
+          ctx.fillStyle = '#5a5a68';
+          ctx.beginPath(); ctx.arc(_vx + 16, baseY - 10, 8, Math.PI, 0); ctx.fill();
+          ctx.fillStyle = '#3a3a48'; ctx.fillRect(_vx + 8, baseY - 10, 2, 10); ctx.fillRect(_vx + 22, baseY - 10, 2, 10);
+          for(let _vj = 0; _vj < 2; _vj++){
+            const _bx2 = _vx + _vj * 17; const _bCol = _vj === 0 ? '#e85040' : '#4a9fd9';
+            ctx.strokeStyle = _bCol; ctx.lineWidth = 1.2; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(_bx2 + 4, baseY - 12); ctx.lineTo(_bx2 + 8, baseY - 18); ctx.lineTo(_bx2 + 12, baseY - 12); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(_bx2 + 4, baseY - 12); ctx.lineTo(_bx2 + 12, baseY - 12); ctx.stroke();
+            ctx.strokeStyle = '#3a3a48'; ctx.lineWidth = 1;
+            ctx.beginPath(); ctx.arc(_bx2 + 4, baseY - 7, 4.5, 0, Math.PI*2); ctx.stroke();
+            ctx.beginPath(); ctx.arc(_bx2 + 12, baseY - 7, 4.5, 0, Math.PI*2); ctx.stroke();
+          }
+          ctx.lineWidth = 1; ctx.lineCap = 'butt';
+        }
       }
     } else if(_stageNow?.biome === 'stadium'){
       // ═══ STADE OLYMPIQUE — APOTHÉOSE ═══
@@ -30824,6 +31294,59 @@ function _drawBirds(ctx, W, H, dt){
         ctx.lineTo(pX - 40, baseY + 60);
         ctx.closePath();
         ctx.fill();
+      }
+      // === PHOTOGRAPHES PRESSE (bord de piste) ===
+      { const _phT = -(decorScroll * 0.38); const _phSp = 320;
+        const _phX0 = ((_phT % _phSp) + _phSp) % _phSp;
+        for(let _phi = 0; _phi < 3; _phi++){
+          const _phx = _phX0 + _phi * _phSp - 40;
+          if(_phx < -20 || _phx > W + 20) continue;
+          ctx.fillStyle = '#2a2a38';
+          ctx.beginPath(); ctx.arc(_phx + 6, baseY - 24, 5, 0, Math.PI*2); ctx.fill();
+          ctx.fillRect(_phx + 2, baseY - 19, 8, 14);
+          ctx.fillStyle = '#1a1a28'; ctx.fillRect(_phx + 8, baseY - 22, 18, 7);
+          ctx.fillStyle = '#3a3a48'; ctx.beginPath(); ctx.arc(_phx + 26, baseY - 18, 4, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = 'rgba(150,200,255,0.40)'; ctx.beginPath(); ctx.arc(_phx + 26, baseY - 18, 2.5, 0, Math.PI*2); ctx.fill();
+          const _flashT2 = (t * 0.08 + _phi * 2.3) % (Math.PI * 2);
+          if(_flashT2 > Math.PI * 1.82){
+            const _fa = Math.min(1, (_flashT2 - Math.PI * 1.82) * 3.2);
+            ctx.fillStyle = `rgba(255,255,200,${_fa * 0.8})`;
+            ctx.beginPath(); ctx.arc(_phx + 26, baseY - 18, 10, 0, Math.PI*2); ctx.fill();
+          }
+        }
+      }
+      // === FLASHES CAMÉRA FOULE (petits éclairs clignotants dans tribunes) ===
+      { const _fcSeeds = [17,43,71,29,58,83,12,66,37,92,51,78];
+        for(const _fcs of _fcSeeds){
+          const _fcx = ((_fcs * 37 + decorScroll * 0.05) % W + W) % W;
+          const _fcy = H * 0.06 + (_fcs % 9) * 7;
+          const _fcPhase = (t * 0.07 + _fcs * 0.42) % (Math.PI * 2);
+          const _fcAlpha = Math.max(0, Math.sin(_fcPhase * 3.5) * 0.85);
+          if(_fcAlpha > 0.12){
+            ctx.fillStyle = `rgba(255,255,220,${_fcAlpha})`;
+            ctx.beginPath(); ctx.arc(_fcx, _fcy, 1.8, 0, Math.PI*2); ctx.fill();
+          }
+        }
+      }
+      // === VÉHICULE MÉDICAL (ambulance) ===
+      { const _ambT = -(decorScroll * 0.42); const _ambSp = 1200;
+        const _ambX = ((_ambT % _ambSp) + _ambSp) % _ambSp - 80;
+        if(_ambX > -50 && _ambX < W + 50){
+          ctx.fillStyle = '#f0f0f0'; ctx.fillRect(_ambX, baseY - 22, 45, 18);
+          ctx.fillStyle = '#e03030'; ctx.fillRect(_ambX, baseY - 18, 45, 5);
+          ctx.fillStyle = '#fff'; ctx.fillRect(_ambX + 33, baseY - 21, 5, 12); ctx.fillRect(_ambX + 29, baseY - 17, 13, 4);
+          ctx.fillStyle = '#2a2a38';
+          ctx.beginPath(); ctx.arc(_ambX + 8, baseY - 2, 4.5, 0, Math.PI*2); ctx.fill();
+          ctx.beginPath(); ctx.arc(_ambX + 36, baseY - 2, 4.5, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = '#3a3a48';
+          ctx.beginPath(); ctx.arc(_ambX + 8, baseY - 2, 2.5, 0, Math.PI*2); ctx.fill();
+          ctx.beginPath(); ctx.arc(_ambX + 36, baseY - 2, 2.5, 0, Math.PI*2); ctx.fill();
+          const _gyroPh = (t * 0.18) % (Math.PI * 2);
+          ctx.fillStyle = `rgba(255,60,60,${0.45 + Math.sin(_gyroPh * 5) * 0.45})`;
+          ctx.beginPath(); ctx.arc(_ambX + 38, baseY - 24, 3.5, 0, Math.PI*2); ctx.fill();
+          ctx.fillStyle = `rgba(60,60,255,${0.45 + Math.sin(_gyroPh * 5 + Math.PI) * 0.45})`;
+          ctx.beginPath(); ctx.arc(_ambX + 32, baseY - 24, 3.5, 0, Math.PI*2); ctx.fill();
+        }
       }
     } else if(_stageNow?.biome === 'lunar'){
       // ═══ SURFACE LUNAIRE — CHAPITRE 2 ═══
@@ -32728,8 +33251,8 @@ function _drawBirds(ctx, W, H, dt){
           showRunnerBubble(msgs[Math.floor(Math.random() * msgs.length)], 2200);
         }
       }
-      if(pixAhead < -120){
-        // NPC out of frame to the left → remove (spawn loop fera apparaître le suivant)
+      if(pixAhead < -(W * 0.5 + 100)){
+        // NPC hors écran gauche (~100px après le bord) → remove
         npcs.splice(i, 1);
         continue;
       }
@@ -32803,6 +33326,9 @@ function _drawBirds(ctx, W, H, dt){
         pool = ['single'];
         metersBetween = 200;
       }
+      // Saison 2+ : haies plus fréquentes (−10% par saison, max −35%)
+      const _saisonHurdleMul = Math.max(0.65, 1.0 - ((window.STATE?.saison||1) - 1) * 0.10);
+      metersBetween = Math.round(metersBetween * _saisonHurdleMul);
       const pattern = pool[Math.floor(Math.random() * pool.length)];
       const baseAhead = 80;
       if(pattern === 'single'){

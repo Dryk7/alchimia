@@ -11488,7 +11488,7 @@ function checkAchievements(){
       STATE.gold += a.reward;
       if(a.gemReward || a.gem){
         const gemAmt = a.gemReward || a.gem || 0;
-        STATE.gems = (STATE.gems || 0) + gemAmt;
+        if(typeof addGems === 'function') addGems(gemAmt); else STATE.gems = (STATE.gems || 0) + gemAmt;
         try { if(typeof showToast === 'function') showToast(`💎 +${gemAmt} gemme${gemAmt>1?'s':''} !`, 'success'); } catch(e){}
       }
       achievementToast(a);
@@ -15077,7 +15077,7 @@ function eventNotification(e, extra){
 }
 
 function applyEventModifiers(){
-  const ae = STATE.activeEvents || {};
+  const ae = _activeEvents(); // filtre les events expirés (expiresAt > now)
   let cdMul = 1, regenMul = 1;
   for(const id in ae){ const a = ae[id]; if(a.multipliers?.cdMul) cdMul *= a.multipliers.cdMul; if(a.multipliers?.regenMul) regenMul *= a.multipliers.regenMul; }
   STATE.eventCdMul = cdMul;
@@ -17766,6 +17766,7 @@ if(typeof window !== 'undefined'){
 function scrapItem(item){
   const med = itemScrapMed(item);
   STATE.gold = (STATE.gold || 0) + med;
+  STATE.totalGoldEarned = (STATE.totalGoldEarned || 0) + med;
   if(typeof showRunnerBubble === 'function') showRunnerBubble('+' + fmtBigNumber(med) + ' gouttes');
   if(A?.ctx) blip(660, .08, "triangle", .22, .45);
 }
@@ -17799,6 +17800,7 @@ function _spawnDrop(item){
     if(current){
       const med = itemScrapMed(current);
       STATE.gold = (STATE.gold || 0) + med;
+      STATE.totalGoldEarned = (STATE.totalGoldEarned || 0) + med;
     }
     STATE.equipment[item.typeId] = item;
     _showDropToast(item, 'equipped');
@@ -17806,6 +17808,7 @@ function _spawnDrop(item){
     // Inférieur : scrap auto pour gouttes
     const med = itemScrapMed(item);
     STATE.gold = (STATE.gold || 0) + med;
+    STATE.totalGoldEarned = (STATE.totalGoldEarned || 0) + med;
     _showDropToast(item, 'scrapped', med);
   }
   if(typeof renderEquipment === 'function') renderEquipment();
@@ -18389,6 +18392,7 @@ function openChest(chestId){
       if(current){
         const med = itemScrapMed(current);
         STATE.gold = (STATE.gold || 0) + med;
+        STATE.totalGoldEarned = (STATE.totalGoldEarned || 0) + med;
       }
       if(!STATE.equipment) STATE.equipment = {};
       STATE.equipment[newItem.typeId] = newItem;
@@ -18403,6 +18407,7 @@ function openChest(chestId){
     });
     stage.querySelector('[data-action="scrap"]')?.addEventListener('click', ()=>{
       STATE.gold = (STATE.gold || 0) + scrapMed;
+      STATE.totalGoldEarned = (STATE.totalGoldEarned || 0) + scrapMed;
       if(A?.ctx) blip(660, .08, "triangle", .22, .45);
       stage.classList.remove('active');
       stage.innerHTML = '';
@@ -19137,6 +19142,7 @@ function buyUpgrade(id){
   const cost = upgradeCost(id);
   if(STATE.gold < cost){ if(typeof sfxDeny === 'function') sfxDeny(); flashStat?.('gold-val'); return; }
   STATE.gold -= cost;
+  if(typeof progressQuest === 'function') progressQuest('spent', cost);
   STATE[u.state] = (STATE[u.state] || 0) + 1;
   // === JUICE ACHAT upgrade : floating "+1 LVL" + particules attractives + flash HUD
   try {
@@ -20491,6 +20497,7 @@ function getTapMul(){
 function getGems(){ return STATE.gems || 0; }
 function addGems(n){
   STATE.gems = (STATE.gems || 0) + n;
+  STATE.totalGemsEarned = (STATE.totalGemsEarned || 0) + n;
   if(typeof renderStats === 'function') renderStats();
   if(typeof renderShopUI === 'function') renderShopUI();
 }
@@ -20498,6 +20505,7 @@ function spendGems(n){
   if((STATE.gems || 0) < n) return false;
   STATE.gems -= n;
   if(typeof renderStats === 'function') renderStats();
+  if(typeof renderShopUI === 'function') renderShopUI();
   return true;
 }
 /* ================ SHOP PREMIUM ================ */
@@ -24202,6 +24210,7 @@ function save(){
       _seasonMaxKmh: STATE._seasonMaxKmh || 0,
       weather: STATE.weather || null,
       totalChestsOpened: STATE.totalChestsOpened || 0,
+      totalGemsEarned: STATE.totalGemsEarned || 0,
     };
     const json = JSON.stringify(s);
     localStorage.setItem("alchimia.save", json);
@@ -25543,6 +25552,7 @@ function load(){
     STATE._seasonMaxKmh = s._seasonMaxKmh || 0;
     STATE._seasonHurdleStreak = s._seasonHurdleStreak || 0;
     STATE.totalChestsOpened = s.totalChestsOpened || 0;
+    STATE.totalGemsEarned = s.totalGemsEarned || 0;
     STATE._seasonChestsOpened = s._seasonChestsOpened || 0;
     STATE.dailyStats = s.dailyStats || {};
     STATE.lifetimeStats = s.lifetimeStats || { totalKm:0, totalGold:0, totalTaps:0, totalHurdles:0, totalNpcs:0, totalChests:0 };

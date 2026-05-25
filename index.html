@@ -18609,7 +18609,12 @@ function runnerBaseSpeed(){
   // Avant km 3 : base=0 → le tap est la SEULE façon d'avancer (full tap mode).
   // Au km 3 : base=0.4 → vrai wow-moment de l'AUTO-COURSE qui s'enclenche.
   // Le commentaire pivot disait "automation = wow moment tangible" → fix promesse non tenue.
-  let base = (STATE.lapsRun || 0) >= 3 ? 0.4 : 0;
+  // La base auto-course 0.4 s'active au km 3 UNIQUEMENT si une source d'auto-run existe.
+  // Sans aucune amélioration → base = 0 → vitesse retombe bien à 0 quand on arrête de taper.
+  // Fix bug : "sans aucune amélioration, ça ne retombe plus à 0 km/h"
+  const _hasAutoSource = (STATE.upgradeAutoTap || 0) > 0
+    || (STATE.team && Object.values(STATE.team).some(v => v?.mgr));
+  let base = ((STATE.lapsRun || 0) >= 3 && _hasAutoSource) ? 0.4 : 0;
   base += (STATE.upgradeAutoTap || 0) * 0.15;
   base += (STATE.upgradeTapValue || 0) * 0.04;
   base += (STATE.upgradeLapBonus || 0) * 0.06;

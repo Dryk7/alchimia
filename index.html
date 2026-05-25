@@ -13844,8 +13844,8 @@ function updateSeasonQuests(){
   });
   q.econome.progress = totalLvl;
   q.econome.done = totalLvl >= 40;
-  // sprinter : kmh max atteint (lit le HUD)
-  const curKmh = parseFloat(document.getElementById('runner-pace')?.textContent || '0');
+  // sprinter : kmh max atteint cette saison (tracké en continu dans le RAF, pas dans le DOM)
+  const curKmh = STATE._seasonMaxKmh || 0;
   if(curKmh > q.sprinter.progress) q.sprinter.progress = curKmh;
   q.sprinter.done = q.sprinter.progress >= 35;
   // collector : chests ouverts cette saison
@@ -13965,6 +13965,10 @@ function recordRivalBeat(rivalId){
   if(!STATE.rivals?.[rivalId]) return;
   STATE.rivals[rivalId].beatCount = (STATE.rivals[rivalId].beatCount || 0) + 1;
   STATE.rivals[rivalId].lastSeenKm = STATE.lapsRun || 0;
+  // Synchronise les compteurs globaux de victoires/streak (cohérence avec rivalRunner canvas)
+  STATE.rivalsWon = (STATE.rivalsWon || 0) + 1;
+  STATE._rivalWinStreak = (STATE._rivalWinStreak || 0) + 1;
+  if(STATE._rivalWinStreak > (STATE.bestRivalStreak || 0)) STATE.bestRivalStreak = STATE._rivalWinStreak;
   if(typeof saveNow === 'function') saveNow();
 }
 function defeatBoss(bossId){
@@ -18015,7 +18019,7 @@ function deckBonus(stat){
     const c = cardDef(id);
     if(!c) continue;
     if(c.stat === stat) sum += c.bonus;
-    if(c.stat === 'allStats' && ['speed','team','tap','goldAll','crit','xp'].includes(stat)) sum += c.bonus;
+    if(c.stat === 'allStats' && ['speed','team','tap','goldAll','crit','xp','lapGold','cycle'].includes(stat)) sum += c.bonus;
   }
   return sum;
 }
@@ -18236,7 +18240,9 @@ function maybeDropItem(reasonOverride){
   const _etoileMul = (typeof hasRelic === 'function' && hasRelic('etoile'))
     ? 1 + (STATE.totalStarsEarned || STATE.stars || 0) * 0.05
     : 1;
-  const _totalDropMul = _weatherDrop * _etoileMul;
+  // Star tree bonus
+  const _starDropRate = 1 + (STATE.starTree?.dropRate || 0) * 0.20;
+  const _totalDropMul = _weatherDrop * _etoileMul * _starDropRate;
   let _bonus = Math.floor(_totalDropMul - 1);
   if(Math.random() < ((_totalDropMul - 1) - _bonus)) _bonus += 1;
   STATE.chests[chest.id] = (STATE.chests[chest.id] || 0) + 1 + _bonus;
@@ -18640,6 +18646,13 @@ function runnerBaseSpeed(){
     base *= (1 + deckBonus('speed'));
     base *= deckAllMul();
   }
+  // === SKILL TREE : vitesse de base ===
+  const _stMul = STATE._stMul || 1;          // +5% par noeud vitesse
+  const _stSpeedMul = STATE._stSpeedMul || 1; // vitesse globale +10%
+  if(base > 0) base *= _stMul * _stSpeedMul;
+  // Star tree bonus
+  const _starBasePower = 1 + (STATE.starTree?.basePower || 0) * 0.10;
+  if(base > 0) base *= _starBasePower;
   return base;
 }
 function runnerSpeedMultiplier(){
@@ -18708,8 +18721,9 @@ function tapBoost(e){
   STATE._lastTapAt = performance.now();
   // Combo : si tap < COMBO_WINDOW depuis le précédent, +1, sinon reset
   const _prevCombo = _comboCount;
+  const _stComboGain = 1 + (STATE._stComboGain || 0); // skill tree combo gain per tap (+10% per node)
   if(now - _lastTapAt < TAP_COMBO_WINDOW && _lastTapAt > 0){
-    _comboCount++;
+    _comboCount = Math.round(_comboCount + _stComboGain);
   } else {
     _comboCount = 1;
   }
@@ -18724,7 +18738,12 @@ function tapBoost(e){
       blip(330, .12, "sine", .10, .25);
       setTimeout(() => blip(247, .15, "sine", .08, .20), 80);
     }
-    _comboCount = 0;
+    // SKILL TREE : INÉPUISABLE — combo ne descend jamais sous min(30, comboCount)
+    if(STATE._stComboNeverReset){
+      _comboCount = Math.min(30, _comboCount);
+    } else {
+      _comboCount = 0;
+    }
     updateComboDisplay();
   }, TAP_COMBO_WINDOW + 50);
   updateComboDisplay();
@@ -18753,7 +18772,8 @@ function tapBoost(e){
   const _rawComboMul = _comboCount >= 25 ? 5 : _comboCount >= 12 ? 3 : _comboCount >= 6 ? 2 : _comboCount >= 3 ? 1.5 : 1;
   const comboMul = Math.min(_comboCap, _rawComboMul);
   // Bump stamina = boost de vitesse temporaire
-  if(typeof bumpStamina === 'function') bumpStamina(0.14 + _comboCount * 0.005);
+  const _stStamBump = STATE._stStamBump || 1; // skill tree stamina bump multiplier
+  if(typeof bumpStamina === 'function') bumpStamina((0.14 + _comboCount * 0.005) * _stStamBump);
   // Gouttes par tap : multipliers + équipement maillot + cartes star
   const tapMul = (typeof getTapMul === 'function') ? getTapMul() : 1;
   const shopMul = (typeof getShopBoostMul === 'function') ? getShopBoostMul() : 1;
@@ -18770,16 +18790,22 @@ function tapBoost(e){
   const _buffMul = (typeof getActiveBuffMul === 'function') ? getActiveBuffMul() : 1.0;
   // === BONUS PRESTIGE VAGUE 16 : +5% gouttes par etoile permanente (cross-runs)
   const starsBoost = 1 + (STATE.stars || 0) * 0.05;
-  const perTap = (1 + (STATE.upgradeTapValue||0) * 1.5) * comboMul * tapMul * shopMul * eTapMul * eGoldMul * skillTap * equipMul * cardTap * cardAll * bigBangBonus * mapTapMul * starsBoost * (typeof saisonGoldMul==='function'?saisonGoldMul():1) * _buffMul;
+  const _stTapMul = STATE._stTapMul || 1; // skill tree tap multiplier
+  // Star tree bonus
+  const _starTapPower = 1 + (STATE.starTree?.tapPower || 0) * 0.10;
+  const perTap = (1 + (STATE.upgradeTapValue||0) * 1.5) * comboMul * tapMul * shopMul * eTapMul * eGoldMul * skillTap * equipMul * cardTap * cardAll * bigBangBonus * mapTapMul * starsBoost * (typeof saisonGoldMul==='function'?saisonGoldMul():1) * _buffMul * _stTapMul * _starTapPower;
   // Crit chance plafonné à 60% + équipement + cartes
   const equipCrit = (typeof equipBonus === 'function') ? equipBonus('critRate') : 0;
   const cardCrit = (typeof deckBonus === 'function') ? deckBonus('crit') : 0;
   // === Vague 21 : relique Atalante (+10% crit) ===
   const _atalanteCrit = (typeof hasRelic === 'function' && hasRelic('atalante')) ? 0.10 : 0;
-  const rawCrit = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + equipCrit + cardCrit + _atalanteCrit + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
+  // Star tree bonus
+  const _starCritPower = (STATE.starTree?.critPower || 0) * 0.10;
+  const rawCrit = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + equipCrit + cardCrit + _atalanteCrit + _starCritPower + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
   const critChance = Math.min(0.60, rawCrit);
   const isCrit = Math.random() < critChance;
-  const gain = Math.floor(isCrit ? perTap * 5 : perTap);
+  const _stCritMul = STATE._stCritMul || 5; // skill tree crit multiplier (default 5)
+  const gain = Math.floor(isCrit ? perTap * _stCritMul : perTap);
   STATE.gold += gain;
   STATE.totalGoldEarned = (STATE.totalGoldEarned || 0) + gain;
   // Pop visuel "+X" à l'endroit du tap (sur le stade)
@@ -19789,6 +19815,9 @@ function doSaisonAscend(){
     STATE.stars = (STATE.stars || 0) + totalStarsEarned;
     STATE.totalStars = (STATE.totalStars || 0) + totalStarsEarned;
     STATE.totalStarsEarned = (STATE.totalStarsEarned || 0) + totalStarsEarned;
+    // Star tree bonus
+    STATE.stars += (STATE.starTree?.starsJackpot || 0);
+    STATE.totalStarsEarned += (STATE.starTree?.starsJackpot || 0);
     // Toast premier gain d'étoile : explique le système prestige
     if(STATE.totalStarsEarned === 1 && !STATE._firstStarToastShown){
       STATE._firstStarToastShown = true;
@@ -19814,6 +19843,12 @@ function doSaisonAscend(){
       const _newStadium = currentStadium();
       if(_newStadium) showRunnerBubble(_newStadium.name + ' débloqué !');
     }
+    // Accumule les laps à vie pour le skill tree (jamais remis à 0)
+    if(STATE.skills) STATE.skills.totalLapsEarned = (STATE.skills.totalLapsEarned || 0) + (STATE.lapsRun || 0);
+    // Reset rival win streak + named rival lastSeenKm + speed tracking pour nouvelle saison
+    STATE._rivalWinStreak = 0;
+    STATE._seasonMaxKmh = 0;
+    if(STATE.rivals){ for(const id in STATE.rivals) STATE.rivals[id].lastSeenKm = 0; }
     // Reset progression de saison
     STATE.gold = 0;
     STATE.lapsRun = 0;
@@ -19831,7 +19866,8 @@ function doSaisonAscend(){
     STATE.team = {};
     STATE.runnerStamina = (typeof STAMINA_MAX !== 'undefined') ? STAMINA_MAX : 100;
     // === ENERGY POOL reset
-    STATE.staminaMax = 100 + (STATE.upgradeEndurance || 0) * 10;
+    // Star tree bonus
+    STATE.staminaMax = 100 + (STATE.upgradeEndurance || 0) * 10 + (STATE.starTree?.staminaPlus || 0) * 50;
     STATE.stamina = STATE.staminaMax;
     STATE._lastTapAt = 0;
     // Reset trackers per-run pour achievements signature (lapins de la session courante, clean km auto)
@@ -20100,7 +20136,8 @@ const SKILLS = [
     unlockLaps:0,
     apply(){
       // Math.max : si déjà actif, prolonge au lieu de reset (cohérent avec rhythm bonus)
-      STATE.skillSprintUntil = Math.max(Date.now(), STATE.skillSprintUntil || 0) + 30000;
+      const _stSprintDurMul = STATE._stSprintDurMul || 1; // skill tree sprint duration ×1.5
+      STATE.skillSprintUntil = Math.max(Date.now(), STATE.skillSprintUntil || 0) + Math.round(30000 * _stSprintDurMul);
     }
   },
   {
@@ -20150,7 +20187,10 @@ const SKILLS = [
 function skillUnlocked(s){ return (STATE.lapsRun || 0) >= s.unlockLaps; }
 function skillCooldownRemaining(s){
   const last = (STATE.skillsLastUsed && STATE.skillsLastUsed[s.id]) || 0;
-  const ready = last + s.cooldown * 1000;
+  const cdMul = (s.id === 'sprint') ? (STATE._stSprintCdMul || 1) : 1; // skill tree sprint CD ×0.5
+  // Star tree bonus
+  const _starCdNeg = (s.id === 'sprint') ? Math.max(0.1, 1 - (STATE.starTree?.cooldownNeg || 0) * 0.15) : 1;
+  const ready = last + s.cooldown * 1000 * cdMul * _starCdNeg;
   return Math.max(0, ready - Date.now());
 }
 function skillReady(s){ return skillCooldownRemaining(s) === 0; }
@@ -20697,7 +20737,8 @@ function runnerMilestoneMul(id){
   return Math.pow(2, Math.floor(runnerLevel(id) / 25));
 }
 function runnerPistardTeamMul(){
-  return 1 + runnerLevel('pistard') * 0.05;
+  const _stPistardMul = STATE._stPistardMul || 0.05; // skill tree pistard bonus per level (0.10 if unlocked)
+  return 1 + runnerLevel('pistard') * _stPistardMul;
 }
 /* Valeur d'UN batch (collect) */
 function runnerBatchValue(r){
@@ -20715,13 +20756,14 @@ function runnerBatchValue(r){
   const cardTeam = (typeof deckBonus === 'function') ? (1 + deckBonus('team') + deckBonus('goldAll')) : 1;
   const cardAllMul = (typeof deckAllMul === 'function') ? deckAllMul() : 1;
   const mapBatchMul = (typeof mapStadiumBatchMul === 'function') ? mapStadiumBatchMul() : 1;
-  return Math.floor(baseBatch * pistardMul * saisonMul * shopMul * eTeamMul * eGoldMul * skillTeam * equipMul * cardTeam * cardAllMul * mapBatchMul);
+  const _stTeamMul = STATE._stTeamMul || 1; // skill tree team production +10%
+  return Math.floor(baseBatch * pistardMul * saisonMul * shopMul * eTeamMul * eGoldMul * skillTeam * equipMul * cardTeam * cardAllMul * mapBatchMul * _stTeamMul);
 }
 /* Production théorique gtt/sec (info uniquement) */
 function runnerProductionPerSec(r){
   const lvl = runnerLevel(r.id);
   if(lvl <= 0) return 0;
-  return runnerBatchValue(r) / r.cycleTime;
+  return runnerBatchValue(r) / (r.cycleTime || 1);
 }
 function teamTotalPerSec(){
   let total = 0;
@@ -20824,14 +20866,15 @@ function tickTeam(dt){
   _ensureTeamShape();
   const eCycleMul = (typeof eventCycleMul === 'function') ? eventCycleMul() : 1;
   const skillCycle = (typeof skillTailwindCycleMul === 'function') ? skillTailwindCycleMul() : 1;
-  const cardCycle = (typeof deckBonus === 'function') ? (1 - deckBonus('cycle')) : 1;
+  const cardCycle = (typeof deckBonus === 'function') ? Math.max(0.01, 1 - deckBonus('cycle')) : 1;
   const mapCycle = (typeof mapStadiumCycleMul === 'function') ? mapStadiumCycleMul() : 1;
-  const cycleSpeedMul = 1 / (eCycleMul * skillCycle * cardCycle * mapCycle);
+  const _stTeamCycle = STATE._stTeamCycle || 1; // skill tree cycle duration reduction (multiplier < 1 = faster)
+  const cycleSpeedMul = 1 / (eCycleMul * skillCycle * cardCycle * mapCycle * _stTeamCycle);
   for(const r of TEAM_RUNNERS){
     const d = STATE.team[r.id];
     if(d.level < 1) continue;
     if(d.cycle < 1){
-      d.cycle += (dt * cycleSpeedMul) / r.cycleTime;
+      d.cycle += (dt * cycleSpeedMul) / (r.cycleTime || 1);
       if(d.cycle > 1) d.cycle = 1;
     }
     // Auto-collect si manager
@@ -21682,16 +21725,22 @@ function tickAutoTap(dt){
     const _atMapMul   = (typeof mapStadiumTapMul  === 'function') ? mapStadiumTapMul()  : 1;
     const _atStars    = 1 + (STATE.stars || 0) * 0.05;
     const _atBuffMul  = (typeof getActiveBuffMul  === 'function') ? getActiveBuffMul()  : 1;
+    const _atStTapMul = STATE._stTapMul || 1; // skill tree tap multiplier
+    // Star tree bonus
+    const _atStarTapPower = 1 + (STATE.starTree?.tapPower || 0) * 0.10;
     const perTap = (1 + (STATE.upgradeTapValue||0) * 1.5)
       * _atShopMul * _atTapMul * _atETapMul * _atEGoldMul
       * _atEquipMul * _atCardTap * _atCardAll * _atMapMul
-      * _atStars * (typeof saisonGoldMul==='function'?saisonGoldMul():1) * _atBuffMul;
+      * _atStars * (typeof saisonGoldMul==='function'?saisonGoldMul():1) * _atBuffMul * _atStTapMul * _atStarTapPower;
     // === Vague 21 : relique Atalante (+10% crit) ===
     const _atalanteCritAuto = (typeof hasRelic === 'function' && hasRelic('atalante')) ? 0.10 : 0;
-    const rawCrit = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + _atalanteCritAuto + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
+    // Star tree bonus
+    const _atStarCritPower = (STATE.starTree?.critPower || 0) * 0.10;
+    const rawCrit = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + _atalanteCritAuto + _atStarCritPower + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
     const critChance = Math.min(0.60, rawCrit);
     const isCrit = Math.random() < critChance;
-    const gain = Math.floor(isCrit ? perTap * 5 : perTap);
+    const _atStCritMul = STATE._stCritMul || 5; // skill tree crit multiplier
+    const gain = Math.floor(isCrit ? perTap * _atStCritMul : perTap);
     STATE.gold += gain;
     if(typeof bumpStamina === 'function') bumpStamina(0.04);
     if(typeof gainXp === 'function') gainXp(1);
@@ -21708,7 +21757,8 @@ function tickRunnerLap(dt){
   if(_idleMs > 4000 && _curStam < 1.0){
     STATE.runnerStamina = Math.min(1.0, _curStam + 0.03 * dt);
   } else {
-    STATE.runnerStamina = Math.max(STAMINA_MIN, _curStam - STAMINA_DECAY_PER_SEC * dt);
+    const _stStaminaDecay = STATE._stStaminaDecay || 1; // skill tree stamina decay multiplier
+    STATE.runnerStamina = Math.max(STAMINA_MIN, _curStam - STAMINA_DECAY_PER_SEC * _stStaminaDecay * dt);
   }
   // NOTE : la progression de lapProgress est désormais gérée EXCLUSIVEMENT dans le canvas tick
   // (RUNNER_2D, autour de la ligne 18560). Cet ancien path doublait la vitesse en km 0-2
@@ -21784,7 +21834,9 @@ function completeLap(){
   // Bonus event lapBonus aussi
   if(typeof eventLapBonus === 'function') baseReward += eventLapBonus();
   const stamBonus = Math.floor(baseReward * Math.max(0, (STATE.runnerStamina||1) - 1) * 0.5);
-  const totalReward = baseReward + stamBonus;
+  // Star tree bonus
+  const _starLapPower = 1 + (STATE.starTree?.lapPower || 0) * 0.15;
+  const totalReward = Math.floor((baseReward + stamBonus) * _starLapPower);
   window._lapLastDrops = totalReward || 0; // capture pour la result card
   STATE.gold += totalReward;
   // FIX bug 4 : track le gold cumulé à vie (manquait sur le lap reward + milestone)
@@ -24024,6 +24076,8 @@ function save(){
       // === Upgrades spéciaux (Eagle Eye + Cruise Control) ===
       upgradeEagleEye: STATE.upgradeEagleEye || 0,
       upgradeCruiseControl: STATE.upgradeCruiseControl || 0,
+      // === Buffs actifs (bougie 5min, doping 30min) ===
+      buffs: STATE.buffs || { bougie: 0, doping: 0, dopingLastUsed: 0 },
       // === Prestige Star Tree ===
       starTree: STATE.starTree || { tapPower:0, lapPower:0, dropRate:0, basePower:0, staminaPlus:0, critPower:0, cooldownNeg:0, starsJackpot:0 },
       starSpec: STATE.starSpec || null,
@@ -24041,6 +24095,18 @@ function save(){
       _loreSeenIds: STATE._loreSeenIds,
       // === VAGUE 20 P4 — Reliques ===
       relics: STATE.relics,
+      // === Flags one-shot (cinématiques + toasts, pour éviter rejoue au rechargement) ===
+      _epicKm100Played: STATE._epicKm100Played || false,
+      _eagleEyeCinematicShown: STATE._eagleEyeCinematicShown || false,
+      tier6Seen: STATE.tier6Seen || false,
+      _firstStarToastShown: STATE._firstStarToastShown || false,
+      _celebratedT1: STATE._celebratedT1 || false,
+      legendaryTrophy: STATE.legendaryTrophy || false,
+      // === Buffs actifs et cooldowns ===
+      tapMul: STATE.tapMul || null,
+      tapMulUntil: STATE.tapMulUntil || 0,
+      lastEvent: STATE.lastEvent || null,
+      _rivalWinStreak: STATE._rivalWinStreak || 0,
     };
     const json = JSON.stringify(s);
     localStorage.setItem("alchimia.save", json);
@@ -24619,10 +24685,11 @@ const SkillTree = (() => {
     if(!STATE.skills.unlocked) STATE.skills.unlocked = {};
     if(STATE.skills.pointsSpent == null) STATE.skills.pointsSpent = 0;
   }
-  // Points disponibles = 1 par 5 km bouclés (cumulatif) - points déjà dépensés
+  // Points disponibles = 1 par 5 km bouclés sur TOUTE la vie (cross-ascensions) - points dépensés
   function pointsAvailable(){
     _ensureState();
-    const earned = Math.floor((STATE.lapsRun || 0) / 5);
+    const lifetimeLaps = (STATE.skills.totalLapsEarned || 0) + (STATE.lapsRun || 0);
+    const earned = Math.floor(lifetimeLaps / 5);
     return Math.max(0, earned - (STATE.skills.pointsSpent || 0));
   }
   function isUnlocked(nodeId){
@@ -25280,7 +25347,8 @@ function load(){
     STATE.alchLevel = s.alchLevel ?? 1;
     STATE.runnerStamina = s.runnerStamina ?? 1.5;
     // === ENERGY POOL load (rétro-compat : si absent → max)
-    STATE.staminaMax = s.staminaMax ?? (100 + (s.upgradeEndurance || 0) * 10);
+    // Star tree bonus
+    STATE.staminaMax = s.staminaMax ?? (100 + (s.upgradeEndurance || 0) * 10 + (s.starTree?.staminaPlus || 0) * 50);
     STATE.stamina = s.stamina ?? STATE.staminaMax;
     STATE._lastTapAt = 0;
     STATE.lapProgress = s.lapProgress ?? 0;
@@ -25293,6 +25361,19 @@ function load(){
     STATE.upgradeBaseSpeed = s.upgradeBaseSpeed ?? 0;
     STATE.upgradeEagleEye = s.upgradeEagleEye ?? 0;
     STATE.upgradeCruiseControl = s.upgradeCruiseControl ?? 0;
+    STATE.buffs = s.buffs || { bougie: 0, doping: 0, dopingLastUsed: 0 };
+    // === Flags one-shot (cinématiques + toasts) ===
+    STATE._epicKm100Played = s._epicKm100Played || false;
+    STATE._eagleEyeCinematicShown = s._eagleEyeCinematicShown || false;
+    STATE.tier6Seen = s.tier6Seen || false;
+    STATE._firstStarToastShown = s._firstStarToastShown || false;
+    STATE._celebratedT1 = s._celebratedT1 || false;
+    STATE.legendaryTrophy = s.legendaryTrophy || false;
+    // === Buffs actifs + cooldowns ===
+    STATE.tapMul = s.tapMul || null;
+    STATE.tapMulUntil = s.tapMulUntil || 0;
+    STATE.lastEvent = s.lastEvent || null;
+    STATE._rivalWinStreak = s._rivalWinStreak || 0;
     STATE.totalTaps = s.totalTaps ?? 0;
     STATE.saison = s.saison ?? 1;
     STATE.saisonBonus = s.saisonBonus ?? 0;
@@ -25415,15 +25496,15 @@ function load(){
         const batch = runnerBatchValue(r);
         if(d.mgr){
           // Manager actif : auto-collect chaque cycle, plein régime
-          const cycles = Math.floor(cappedSec / r.cycleTime);
+          const cycles = Math.floor(cappedSec / (r.cycleTime || 1));
           offlineGold += cycles * batch;
         } else {
           // Sans manager : 1 batch max accumulé (le cycle complète une fois)
-          if(cappedSec >= r.cycleTime){
+          if(cappedSec >= (r.cycleTime || 1)){
             offlineGold += batch;
             d.cycle = 1; // ready à collecter au retour
           } else {
-            d.cycle = Math.min(1, (d.cycle || 0) + cappedSec / r.cycleTime);
+            d.cycle = Math.min(1, (d.cycle || 0) + cappedSec / (r.cycleTime || 1));
           }
         }
       }
@@ -26776,7 +26857,8 @@ function _drawBirds(ctx, W, H, dt){
     // FIX QA : pas de lapin doré en biome lunar (animal terrestre)
     const _stB = (typeof currentStage==='function')?currentStage():null;
     const _biomeRb = _stB?.biome;
-    if(!rabbit && _biomeRb !== 'lunar' && Math.random() < 0.15){
+    const _stRabbitMul = (window.STATE && window.STATE._stRabbitMul) || 1; // skill tree rabbit spawn ×3
+    if(!rabbit && _biomeRb !== 'lunar' && Math.random() < Math.min(0.90, 0.15 * _stRabbitMul)){
       spawnRabbit();
     }
     const delay = 40000 + Math.random() * 30000;
@@ -28197,7 +28279,8 @@ function _drawBirds(ctx, W, H, dt){
     // === STAMINA regen au repos (si dernier tap > 0.5s)
     if(window.STATE){
       const _sinceLastTap = (now - (window.STATE._lastTapAt || 0)) / 1000;
-      window.STATE.staminaMax = 100 + (window.STATE.upgradeEndurance || 0) * 10;
+      window.STATE.staminaMax = 100 + (window.STATE.upgradeEndurance || 0) * 10
+        + (window.STATE._stStamMax || 0); // skill tree stamina max bonus (+0.3 per node → added as %)
       if(window.STATE.staminaMax > 300) window.STATE.staminaMax = 300;
       if(_sinceLastTap > 0.5){
         const _weatherSReg = (typeof getWeatherMul === 'function') ? getWeatherMul('staminaRegenMul') : 1;
@@ -28584,6 +28667,8 @@ function _drawBirds(ctx, W, H, dt){
       }
     }
 
+    // Track vitesse max pour la quête saisonnière "Sprinter"
+    if(window.STATE && displayKmh > (window.STATE._seasonMaxKmh || 0)) window.STATE._seasonMaxKmh = displayKmh;
     // Vague 21 : météo speedMul
     if(typeof getWeatherMul === 'function'){
       displayKmh *= getWeatherMul('speedMul');
@@ -33594,7 +33679,8 @@ function _drawBirds(ctx, W, H, dt){
             // Le héros a creusé l'écart → VICTOIRE
             rival.settled = true; rival.won = true;
             const lapsRunForBonus = window.STATE?.lapsRun || 0;
-            const bonus = 100 + lapsRunForBonus * 20;
+            const _stRivalBonus = window.STATE?._stRivalBonus || 1; // skill tree rival win bonus ×2
+            const bonus = Math.floor((100 + lapsRunForBonus * 20) * _stRivalBonus);
             window.STATE.gold = (window.STATE.gold || 0) + bonus;
             overtakePops.push({
               x: W * 0.45, y: H * 0.45,
@@ -34286,7 +34372,8 @@ function _drawBirds(ctx, W, H, dt){
 
     // ═══ INDICATEUR STAMINA : barre + "FATIGUÉ !" quand basse ═══
     // FIX P0 : ne pas afficher FATIGUÉ pour un nouveau joueur (1ère impression dépressive)
-    if(stam < 0.7 && (STATE.totalTaps || 0) > 30 && (STATE.lapsRun || 0) > 0){
+    // SKILL TREE : _stNoTired = skill "Marathonien" supprime l'état FATIGUÉ
+    if(stam < 0.7 && (STATE.totalTaps || 0) > 30 && (STATE.lapsRun || 0) > 0 && !STATE._stNoTired){
       const barX = heroX - 28;
       const barY = heroY - 60;
       const barW = 56;
@@ -34530,7 +34617,7 @@ function _drawBirds(ctx, W, H, dt){
   function onRabbitCaught(){
     const ST = window.STATE || {};
     // Bonus : 5 secondes de production passive + 50 gouttes flat
-    const passive = (typeof totalPassiveGold === 'function') ? totalPassiveGold() : (ST.gold * .01);
+    const passive = (typeof totalPassiveGold === 'function') ? totalPassiveGold() : ((ST.gold || 0) * .01);
     const bonus = Math.max(50, Math.floor(passive * 5));
     ST.gold = (ST.gold || 0) + bonus;
     // Notif visuelle

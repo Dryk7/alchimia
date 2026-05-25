@@ -14331,7 +14331,12 @@ function modStarsMul(){ return modifierEffect().starsMul || 1; }
 function modShopDisabled(){ return !!modifierEffect().shopDisabled; }
 function modLowGoldDisabled(){ return !!modifierEffect().lowGoldDisabled; }
 function modComboWindowMul(){ return modifierEffect().comboWindowMul || 1; }
-function modComboMax(){ return modifierEffect().comboMax || 4; }
+function modComboMax(){
+  const _base = modifierEffect().comboMax || 4;
+  // === Relique Cendres : +50% combo cap ===
+  const _cendresMul = (typeof hasRelic==='function' && hasRelic('cendres')) ? 1.5 : 1;
+  return Math.round(_base * _cendresMul);
+}
 function modEventRarityMul(){ return modifierEffect().eventRarityMul || 1; }
 
 function pickThreeModifiers(){
@@ -18245,7 +18250,10 @@ function maybeDropItem(reasonOverride){
   const _totalDropMul = _weatherDrop * _etoileMul * _starDropRate;
   let _bonus = Math.floor(_totalDropMul - 1);
   if(Math.random() < ((_totalDropMul - 1) - _bonus)) _bonus += 1;
-  STATE.chests[chest.id] = (STATE.chests[chest.id] || 0) + 1 + _bonus;
+  // === Relique Manteau : coffres -50% ===
+  const _manteauChestMul = (typeof hasRelic==='function' && hasRelic('manteau')) ? 0.5 : 1;
+  const _chestCount = Math.max(0, Math.round((1 + _bonus) * _manteauChestMul));
+  STATE.chests[chest.id] = (STATE.chests[chest.id] || 0) + _chestCount;
   _showChestDropToast(chest, reason);
   if(typeof updateChestBadge === 'function') updateChestBadge();
 }
@@ -18780,7 +18788,7 @@ function tapBoost(e){
   const eTapMul = (typeof eventTapMul === 'function') ? eventTapMul() : 1;
   const eGoldMul = (typeof eventGoldMul === 'function') ? eventGoldMul() : 1;
   const skillTap = (typeof skillSprintTapMul === 'function') ? skillSprintTapMul() : 1;
-  const equipMul = (typeof equipBonus === 'function') ? (1 + equipBonus('goldMul')) : 1;
+  const equipMul = (typeof equipBonus === 'function') ? (1 + equipBonus('goldMul') + equipBonus('tapMul')) : 1;
   const cardTap = (typeof deckBonus === 'function') ? (1 + deckBonus('tap') + deckBonus('goldAll')) : 1;
   const cardAll = (typeof deckAllMul === 'function') ? deckAllMul() : 1;
   // Big Bang : chaque tap 5% chance de ×100
@@ -18793,7 +18801,9 @@ function tapBoost(e){
   const _stTapMul = STATE._stTapMul || 1; // skill tree tap multiplier
   // Star tree bonus
   const _starTapPower = 1 + (STATE.starTree?.tapPower || 0) * 0.10;
-  const perTap = (1 + (STATE.upgradeTapValue||0) * 1.5) * comboMul * tapMul * shopMul * eTapMul * eGoldMul * skillTap * equipMul * cardTap * cardAll * bigBangBonus * mapTapMul * starsBoost * (typeof saisonGoldMul==='function'?saisonGoldMul():1) * _buffMul * _stTapMul * _starTapPower;
+  // === Relique MédailleCassée : ×2 gouttes par tap ===
+  const _medCasseMul = (typeof hasRelic==='function' && hasRelic('medCasse')) ? 2 : 1;
+  const perTap = (1 + (STATE.upgradeTapValue||0) * 1.5) * comboMul * tapMul * shopMul * eTapMul * eGoldMul * skillTap * equipMul * cardTap * cardAll * bigBangBonus * mapTapMul * starsBoost * (typeof saisonGoldMul==='function'?saisonGoldMul():1) * _buffMul * _stTapMul * _starTapPower * _medCasseMul;
   // Crit chance plafonné à 60% + équipement + cartes
   const equipCrit = (typeof equipBonus === 'function') ? equipBonus('critRate') : 0;
   const cardCrit = (typeof deckBonus === 'function') ? deckBonus('crit') : 0;
@@ -18808,6 +18818,15 @@ function tapBoost(e){
   const gain = Math.floor(isCrit ? perTap * _stCritMul : perTap);
   STATE.gold += gain;
   STATE.totalGoldEarned = (STATE.totalGoldEarned || 0) + gain;
+  // === Relique Bourrasque : tous les 10 taps = sprint gratuit 1.5s ===
+  if(typeof hasRelic==='function' && hasRelic('bourrasque')){
+    STATE._bourrasqueTapCount = (STATE._bourrasqueTapCount||0) + 1;
+    if(STATE._bourrasqueTapCount >= 10){
+      STATE._bourrasqueTapCount = 0;
+      STATE.skillSprintUntil = Math.max(STATE.skillSprintUntil||0, Date.now() + 1500);
+      if(typeof showToast==='function') showToast('Bourrasque : ⚡ Sprint !', 'success', 1200);
+    }
+  }
   // Pop visuel "+X" à l'endroit du tap (sur le stade)
   const evX = (typeof e === 'object' && e?.clientX) ? e.clientX : null;
   const evY = (typeof e === 'object' && e?.clientY) ? e.clientY : null;
@@ -19868,6 +19887,10 @@ function doSaisonAscend(){
     // === ENERGY POOL reset
     // Star tree bonus
     STATE.staminaMax = 100 + (STATE.upgradeEndurance || 0) * 10 + (STATE.starTree?.staminaPlus || 0) * 50;
+    // === Relique Cendres : -30% stamina max ===
+    if(typeof hasRelic==='function' && hasRelic('cendres')){
+      STATE.staminaMax = Math.floor(STATE.staminaMax * 0.70);
+    }
     STATE.stamina = STATE.staminaMax;
     STATE._lastTapAt = 0;
     // Reset trackers per-run pour achievements signature (lapins de la session courante, clean km auto)
@@ -20137,7 +20160,9 @@ const SKILLS = [
     apply(){
       // Math.max : si déjà actif, prolonge au lieu de reset (cohérent avec rhythm bonus)
       const _stSprintDurMul = STATE._stSprintDurMul || 1; // skill tree sprint duration ×1.5
-      STATE.skillSprintUntil = Math.max(Date.now(), STATE.skillSprintUntil || 0) + Math.round(30000 * _stSprintDurMul);
+      // === Relique ChronoCassé : durée skills -30% ===
+      const _chronoCasseDurMul = (typeof hasRelic==='function' && hasRelic('chronoCasse')) ? 0.70 : 1;
+      STATE.skillSprintUntil = Math.max(Date.now(), STATE.skillSprintUntil || 0) + Math.round(30000 * _stSprintDurMul * _chronoCasseDurMul);
     }
   },
   {
@@ -20190,7 +20215,9 @@ function skillCooldownRemaining(s){
   const cdMul = (s.id === 'sprint') ? (STATE._stSprintCdMul || 1) : 1; // skill tree sprint CD ×0.5
   // Star tree bonus
   const _starCdNeg = (s.id === 'sprint') ? Math.max(0.1, 1 - (STATE.starTree?.cooldownNeg || 0) * 0.15) : 1;
-  const ready = last + s.cooldown * 1000 * cdMul * _starCdNeg;
+  // === Relique ChronoCassé : -50% cooldown tous skills ===
+  const _chronoCasseCdMul = (typeof hasRelic==='function' && hasRelic('chronoCasse')) ? 0.50 : 1;
+  const ready = last + s.cooldown * 1000 * cdMul * _starCdNeg * _chronoCasseCdMul;
   return Math.max(0, ready - Date.now());
 }
 function skillReady(s){ return skillCooldownRemaining(s) === 0; }
@@ -20751,7 +20778,7 @@ function runnerBatchValue(r){
   const eTeamMul = (typeof eventTeamMul === 'function') ? eventTeamMul() : 1;
   const eGoldMul = (typeof eventGoldMul === 'function') ? eventGoldMul() : 1;
   const skillTeam = (typeof skillBreathTeamMul === 'function') ? skillBreathTeamMul() : 1;
-  const equipMul = (typeof equipBonus === 'function') ? (1 + equipBonus('goldMul')) : 1;
+  const equipMul = (typeof equipBonus === 'function') ? (1 + equipBonus('goldMul') + equipBonus('tapMul')) : 1;
   // CARTES STAR : team + goldAll multipliers
   const cardTeam = (typeof deckBonus === 'function') ? (1 + deckBonus('team') + deckBonus('goldAll')) : 1;
   const cardAllMul = (typeof deckAllMul === 'function') ? deckAllMul() : 1;
@@ -21277,8 +21304,9 @@ function claimDailyReward(){
   }
   STATE.dailyLast = Date.now();
   STATE.dailyStreak = day; // Cycle 30 jours linéaire, reset uniquement après J30
-  if(day >= 30) STATE.dailyStreak = 0; // reset après J30 pour relancer le cycle
+  // checkAchievements AVANT le reset du streak (sinon daily_30 ne peut jamais déclencher)
   if(typeof checkAchievements === 'function') checkAchievements();
+  if(day >= 30) STATE.dailyStreak = 0; // reset après J30 pour relancer le cycle
   // FX + son
   if(A?.ctx){
     blip(660, .15, "triangle", .22, .6);
@@ -21719,7 +21747,7 @@ function tickAutoTap(dt){
     const _atTapMul   = (typeof getTapMul         === 'function') ? getTapMul()         : 1;
     const _atETapMul  = (typeof eventTapMul       === 'function') ? eventTapMul()       : 1;
     const _atEGoldMul = (typeof eventGoldMul      === 'function') ? eventGoldMul()      : 1;
-    const _atEquipMul = (typeof equipBonus        === 'function') ? (1+equipBonus('goldMul')) : 1;
+    const _atEquipMul = (typeof equipBonus        === 'function') ? (1+equipBonus('goldMul')+equipBonus('tapMul')) : 1;
     const _atCardTap  = (typeof deckBonus         === 'function') ? (1+deckBonus('tap')+deckBonus('goldAll')) : 1;
     const _atCardAll  = (typeof deckAllMul        === 'function') ? deckAllMul()        : 1;
     const _atMapMul   = (typeof mapStadiumTapMul  === 'function') ? mapStadiumTapMul()  : 1;
@@ -21758,7 +21786,12 @@ function tickRunnerLap(dt){
     STATE.runnerStamina = Math.min(1.0, _curStam + 0.03 * dt);
   } else {
     const _stStaminaDecay = STATE._stStaminaDecay || 1; // skill tree stamina decay multiplier
-    STATE.runnerStamina = Math.max(STAMINA_MIN, _curStam - STAMINA_DECAY_PER_SEC * _stStaminaDecay * dt);
+    // === Relique CœurMec : plus de stamina decay ===
+    if(typeof hasRelic==='function' && hasRelic('coeurMec')){
+      // stamina ne décroît pas
+    } else {
+      STATE.runnerStamina = Math.max(STAMINA_MIN, _curStam - STAMINA_DECAY_PER_SEC * _stStaminaDecay * dt);
+    }
   }
   // NOTE : la progression de lapProgress est désormais gérée EXCLUSIVEMENT dans le canvas tick
   // (RUNNER_2D, autour de la ligne 18560). Cet ancien path doublait la vitesse en km 0-2
@@ -21806,6 +21839,12 @@ function completeLap(){
   if(!window._lapStartTime) window._lapStartTime = Date.now();
   STATE.lapsRun = (STATE.lapsRun || 0) + 1;
   const lapNum = STATE.lapsRun;
+  // === Relique Couronne : +1 étoile tous les 25 km au-delà du km 100 ===
+  if(typeof hasRelic==='function' && hasRelic('couronne') && lapNum > 100 && lapNum % 25 === 0){
+    STATE.stars = (STATE.stars||0) + 1;
+    STATE.totalStarsEarned = (STATE.totalStarsEarned||0) + 1;
+    if(typeof showToast==='function') showToast('Couronne : +1 ⭐ (km '+lapNum+')', 'success', 3000);
+  }
   if(typeof trackDailyStat === 'function') trackDailyStat('km', 1);
   // FIX : track km clean en mode AUTO pour achievement master_runner (3 km auto sans rater de haie)
   // AUTO-COURSE débloquée à partir du km 3 → on compte les km bouclés sans aucune haie ratée
@@ -21836,7 +21875,9 @@ function completeLap(){
   const stamBonus = Math.floor(baseReward * Math.max(0, (STATE.runnerStamina||1) - 1) * 0.5);
   // Star tree bonus
   const _starLapPower = 1 + (STATE.starTree?.lapPower || 0) * 0.15;
-  const totalReward = Math.floor((baseReward + stamBonus) * _starLapPower);
+  // === Relique MédailleCassée : ×2 gouttes par lap ===
+  const _medCasseLapMul = (typeof hasRelic==='function' && hasRelic('medCasse')) ? 2 : 1;
+  const totalReward = Math.floor((baseReward + stamBonus) * _starLapPower * _medCasseLapMul);
   window._lapLastDrops = totalReward || 0; // capture pour la result card
   STATE.gold += totalReward;
   // FIX bug 4 : track le gold cumulé à vie (manquait sur le lap reward + milestone)
@@ -21861,9 +21902,10 @@ function completeLap(){
   // Accumule UNE fois après tous les +gold de ce lap (lap reward + milestone bonus)
   STATE.totalGoldEarned = (STATE.totalGoldEarned || 0) + _lapGoldEarned;
   if(typeof trackDailyStat === 'function') trackDailyStat('gold', _lapGoldEarned);
-  // Spawn 2 items random T1-T2 en bonus
+  // Spawn 2 items random T1-T2 en bonus (×3 si relique Manteau)
+  const _manteauItemMul = (typeof hasRelic==='function' && hasRelic('manteau')) ? 3 : 1;
   const empties = (typeof findEmpty === 'function') ? findEmpty() : [];
-  for(let i=0; i<2 && empties.length; i++){
+  for(let i=0; i<2*_manteauItemMul && empties.length; i++){
     const idx = Math.floor(Math.random()*empties.length);
     const [x,y] = empties.splice(idx,1)[0];
     const c = Math.floor(Math.random()*3);
@@ -24649,7 +24691,7 @@ const SKILL_TREE = {
 
     // === ENDURANCE BRANCH (centre, vert) ===
     { id:'en_root', branch:'endurance', x:50, y:80, cost:1, needs:[], name:'Endurance de base',
-      desc:'Stamina max +0.3', effect:s => s._stStamMax = (s._stStamMax||0) + 0.3 },
+      desc:'Stamina max +30', effect:s => s._stStamMax = (s._stStamMax||0) + 30 },
     { id:'en_1', branch:'endurance', x:50, y:62, cost:2, needs:['en_root'], name:'Récupération',
       desc:'Bumpstamina +50% par tap', effect:s => s._stStamBump = (s._stStamBump||1) + 0.50 },
     { id:'en_2', branch:'endurance', x:50, y:44, cost:3, needs:['en_1'], name:'Marathonien',
@@ -28279,9 +28321,16 @@ function _drawBirds(ctx, W, H, dt){
     // === STAMINA regen au repos (si dernier tap > 0.5s)
     if(window.STATE){
       const _sinceLastTap = (now - (window.STATE._lastTapAt || 0)) / 1000;
-      window.STATE.staminaMax = 100 + (window.STATE.upgradeEndurance || 0) * 10
-        + (window.STATE._stStamMax || 0); // skill tree stamina max bonus (+0.3 per node → added as %)
+      const _equipStamMul = (typeof equipBonus === 'function') ? (1 + equipBonus('staminaMul')) : 1;
+      window.STATE.staminaMax = Math.floor(
+        (100 + (window.STATE.upgradeEndurance || 0) * 10 + (window.STATE._stStamMax || 0))
+        * _equipStamMul
+      ); // + skill tree flat bonus + équipement bracelet %
       if(window.STATE.staminaMax > 300) window.STATE.staminaMax = 300;
+      // === Relique Cendres : -30% stamina max ===
+      if(typeof hasRelic==='function' && hasRelic('cendres')){
+        window.STATE.staminaMax = Math.floor(window.STATE.staminaMax * 0.70);
+      }
       if(_sinceLastTap > 0.5){
         const _weatherSReg = (typeof getWeatherMul === 'function') ? getWeatherMul('staminaRegenMul') : 1;
         window.STATE.stamina = Math.min(window.STATE.staminaMax, (window.STATE.stamina ?? 0) + 8 * dt * _weatherSReg);
@@ -28667,6 +28716,10 @@ function _drawBirds(ctx, W, H, dt){
       }
     }
 
+    // === Relique CœurMec : vitesse fixe 25 km/h (override tout) ===
+    if(typeof hasRelic === 'function' && hasRelic('coeurMec')){
+      displayKmh = 25;
+    }
     // Track vitesse max pour la quête saisonnière "Sprinter"
     if(window.STATE && displayKmh > (window.STATE._seasonMaxKmh || 0)) window.STATE._seasonMaxKmh = displayKmh;
     // Vague 21 : météo speedMul
@@ -34587,6 +34640,9 @@ function _drawBirds(ctx, W, H, dt){
   // BONUS LIÈVRE : tap dessus = burst gold + boost vitesse temporaire
   function onHareCaught(){
     const ST = window.STATE || {};
+    // Incrément compteurs (achievements secret_hare)
+    ST.haresCaught = (ST.haresCaught || 0) + 1;
+    if(typeof checkAchievements === 'function') checkAchievements();
     // Bonus gold proportionnel au level (l'attraper devient + lucratif tard)
     const lvl = ST.alchLevel || 1;
     const bonus = Math.max(100, 50 + lvl * 25);
@@ -34616,6 +34672,10 @@ function _drawBirds(ctx, W, H, dt){
   // BONUS LAPIN : burst de médailles + animation
   function onRabbitCaught(){
     const ST = window.STATE || {};
+    // Incrément compteurs (achievements secret_rabbit + rabbit_run3)
+    ST.rabbitsCaught = (ST.rabbitsCaught || 0) + 1;
+    ST.rabbitsCaughtThisRun = (ST.rabbitsCaughtThisRun || 0) + 1;
+    if(typeof checkAchievements === 'function') checkAchievements();
     // Bonus : 5 secondes de production passive + 50 gouttes flat
     const passive = (typeof totalPassiveGold === 'function') ? totalPassiveGold() : ((ST.gold || 0) * .01);
     const bonus = Math.max(50, Math.floor(passive * 5));
@@ -34665,7 +34725,10 @@ function _drawBirds(ctx, W, H, dt){
       const _nh = hurdles.find(h => h.success === null && h.metersAhead > -3);
       const _hk = _nh?.kind || 'single';
       // Puissance calibrée : single=300, wide=350, tall=430 (must exceed jumpReq: -8/-20/-45 at detection)
-      const _pow = _hk === 'tall' ? -430 : (_hk === 'wide' ? -350 : -300);
+      const _basePow = _hk === 'tall' ? -430 : (_hk === 'wide' ? -350 : -300);
+      // === Relique Pied : +30% puissance de saut ===
+      const _piedMul = (typeof hasRelic==='function' && hasRelic('pied')) ? 1.30 : 1;
+      const _pow = _basePow * _piedMul;
       heroJumpVY = _pow;
       window._v29JumpAt = _nh ? _nh.metersAhead : null; // pour détection PARFAIT
       if(typeof sfxJump === 'function') sfxJump();

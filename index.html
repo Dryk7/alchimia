@@ -24104,6 +24104,7 @@ function save(){
       // === Achievement stat counters (semaine 3) ===
       totalGoldEarned: STATE.totalGoldEarned || 0,
       hurdlesCleared: STATE.hurdlesCleared || 0,
+      hurdlesFailed: STATE.hurdlesFailed || 0,
       bestHurdleStreak: STATE.bestHurdleStreak || 0,
       triplesCleared: STATE.triplesCleared || 0,
       tallsCleared: STATE.tallsCleared || 0,
@@ -25461,6 +25462,7 @@ function load(){
     // === Achievement stat counters (semaine 3) ===
     STATE.totalGoldEarned = s.totalGoldEarned || 0;
     STATE.hurdlesCleared = s.hurdlesCleared || 0;
+    STATE.hurdlesFailed = s.hurdlesFailed || 0;
     STATE.bestHurdleStreak = s.bestHurdleStreak || 0;
     STATE.triplesCleared = s.triplesCleared || 0;
     STATE.tallsCleared = s.tallsCleared || 0;

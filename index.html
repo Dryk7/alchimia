@@ -26450,13 +26450,25 @@ window.addEventListener('appinstalled', () => {
     const cyclePhase = phase % (Math.PI * 2);
     // === Détection saut : airborneFrac est un number (peut être 0 à l'apex) quand le héros est en l'air, null/undefined sinon
     const isAirborne = typeof airborneFrac === 'number';
-    // Hop : 2 envols par cycle (max au mid-flight de chaque jambe) — désactivé en plein saut
+    // === Idle state : héros debout quand effortLevel ≈ 0 (pas de tap récent)
+    // _idleT : 1 = plein repos, 0 = plein sprint. Transition lisse sur effortLevel 0→0.125
+    const _idleT = (isHero && !isAirborne)
+      ? Math.max(0, 1 - (typeof effortLevel === 'number' ? effortLevel : 0) * 8)
+      : 0;
+    // === Burst de démarrage : extra lean forward 0.4s après reprise depuis idle
+    const _burstAge = (window._heroStartBurst && isHero) ? (performance.now() - window._heroStartBurst) / 400 : 1;
+    const _burstLean = (_burstAge < 1) ? Math.sin((1 - _burstAge) * Math.PI) * 0.14 : 0;
+    // Hop : 2 envols par cycle — supprimé à l'idle (pas de rebond en position debout)
     const hopT = (cyclePhase / (Math.PI * 2)) * 4;
     const hopFrac = hopT % 1;
-    const hop = isAirborne ? 0 : Math.sin(hopFrac * Math.PI) * 8 * s * (hopT % 2 < 1 ? 1 : .85);
-    const bodyY = y - hop;
-    // Body lean : forward au décollage, vertical à l'atterrissage
-    const lean = isAirborne ? (0.18 + (airborneFrac < 0 ? 0.15 : -0.08)) : .18;
+    const hop = isAirborne ? 0 : Math.sin(hopFrac * Math.PI) * 8 * s * (hopT % 2 < 1 ? 1 : .85) * (1 - _idleT);
+    // Respiration idle : léger bob vertical quand arrêté (héros respire)
+    const breathBob = (_idleT > 0.2 && isHero) ? Math.sin(performance.now() * 0.0018) * 1.6 * s * _idleT : 0;
+    const bodyY = y - hop + breathBob;
+    // Lean : upright à l'idle, penché au sprint + burst démarrage, flying en saut
+    const lean = isAirborne
+      ? (0.18 + (airborneFrac < 0 ? 0.15 : -0.08))
+      : (0.18 * (1 - _idleT * 0.9) + _burstLean);
     const acc = spec.accessory || {};
 
     // === OMBRE DYNAMIQUE PREMIUM (lumière haut-gauche → ombre bas-droite) ===
@@ -27717,7 +27729,8 @@ window.addEventListener('appinstalled', () => {
     decorScroll += displayKmh * KMH_TO_PX_PER_SEC * dt;
     // === FIX cohérence bob : 1 bob vertical = 1 pas (donc moitié de la cadence leg) ===
     // legPhase avance à (3+displayKmh*0.18)*π rad/sec. bobPhase avance à la moitié → 1 bob/pas.
-    heroBobPhase += (3 + displayKmh * 0.18) * dt * Math.PI * 0.5;
+    // Idle : bob quasi nul à l'arrêt (0.25 = respiration lente), course normale si displayKmh > 0.3
+    heroBobPhase += (displayKmh > 0.3 ? (3 + displayKmh * 0.18) : 0.25) * dt * Math.PI * 0.5;
     // === Sprint beat procédural (kick + sub-bass) synchronisé sur la cadence ===
     if(typeof tickSprintBeat === 'function') tickSprintBeat(pace, displayKmh);
     // Milestones audio : chime quand on passe 15, 25, 33 km/h
@@ -32761,7 +32774,7 @@ window.addEventListener('appinstalled', () => {
     const heroX = W * .35;
     // Centre du body au milieu du couloir 2, bob amplifié au tap
     const heroY = LANES_TOP + (heroLaneIdx + 0.5) * LANE_H;
-    const heroBob = Math.abs(Math.sin(heroBobPhase)) * (6 + heroDashBob);
+    const heroBob = displayKmh > 0.3 ? Math.abs(Math.sin(heroBobPhase)) * (6 + heroDashBob) : 0;
     // === Apply selected SKIN to hero spec (impact direct sur ce qu'on voit) ===
     const _selSkinId = window.STATE?.selectedSkinId || 'base';
     const _allSkins = (typeof RUNNER_SKINS !== 'undefined' ? RUNNER_SKINS : [])
@@ -32854,7 +32867,12 @@ window.addEventListener('appinstalled', () => {
     // Modèle : 10 km/h → 3 pas/sec (jogging), 35 km/h → ~5 pas/sec (sprint).
     // Cadence (pas/sec) = 3 + displayKmh * 0.18 → 10 km/h → 4.8, 35 km/h → 9.3 (réaliste).
     // 1 cycle leg = 2 pas → rad/sec = (pas/sec) * π, donc:
-    heroLegPhase += (3 + displayKmh * 0.18) * dt * Math.PI;
+    // Legs s'arrêtent complètement à idle (displayKmh ≤ 0.3) → pas de course sur place
+    heroLegPhase += (displayKmh > 0.3 ? (3 + displayKmh * 0.18) : 0) * dt * Math.PI;
+    // Burst de démarrage : détecte la transition idle → run pour l'effet lunge dans drawRunner
+    if(!window._heroPrevKmh) window._heroPrevKmh = 0;
+    if(window._heroPrevKmh < 0.3 && displayKmh >= 0.3) window._heroStartBurst = performance.now();
+    window._heroPrevKmh = displayKmh;
     // airborneFrac : -1 (décollage, vy très négatif) → 0 (apex) → +1 (atterrissage, vy très positif)
     // null/undefined = au sol. Seuls les héros décollés (heroJumpY < -3) déclenchent la pose saut.
     let airborneFrac = null;

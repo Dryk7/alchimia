@@ -14950,7 +14950,7 @@ const EVENTS = [
     desc:"Tout le stade fête. +50% gouttes toutes sources pendant 90s.",
     multipliers:{ goldMul:1.5 } },
   { id:"hydration", name:"Pause Hydratation", duration:0,
-    desc:"+30 gouttes × niveau coureur (récompense immédiate).",
+    desc:"+30 gouttes × niveau coureur + 100 bonus (récompense immédiate).",
     apply:()=>{
       const bonus = (STATE.alchLevel||1) * 30 + 100;
       STATE.gold = (STATE.gold || 0) + bonus;
@@ -14986,7 +14986,7 @@ const EVENTS = [
     desc:"La pluie tombe mais tu tiens ! Cycles +20% lents, gouttes ×2.",
     multipliers:{ cycleMul:1.2, goldMul:2.0 }, minSaison:3 },
   { id:"second_wind", name:"Second Souffle", duration:30000,
-    desc:"Coup de fouet ! Stamina rechargée + cycles ×1.5 pendant 30s.",
+    desc:"Coup de fouet ! Stamina rechargée + cycles ×1.54 plus rapides pendant 30s.",
     multipliers:{ cycleMul:0.65 }, weight:3,
     apply:()=>{ STATE.stamina = STATE.staminaMax || 100; return 'Stamina rechargée !'; }},
   { id:"media", name:"Passage Médias", duration:45000,
@@ -16943,10 +16943,10 @@ function renderQuests(){
   if(claimAllBtn){
     if(claimable >= 2){
       claimAllBtn.style.display = "block";
-      // Calcul avec multipliers actifs (event Souffle d'Or + upgrade Sol Aurum)
-      const eventGoldMul = (STATE.activeEvents?.goldbreath?.multipliers?.goldMul) || 1;
+      // Calcul avec multipliers actifs (events actifs + upgrade Sol Aurum)
+      const _eGoldMulDisp = (typeof eventGoldMul === 'function') ? eventGoldMul() : 1;
       const upgGoldMul = getQuestGoldMul();
-      document.getElementById("claim-all-sum").textContent = Math.floor(claimableSum * eventGoldMul * upgGoldMul);
+      document.getElementById("claim-all-sum").textContent = Math.floor(claimableSum * _eGoldMulDisp * upgGoldMul);
     } else {
       claimAllBtn.style.display = "none";
     }
@@ -16958,9 +16958,9 @@ function claimAll(){
   if(!done.length) return;
   for(const q of done){
     q.claimed = true;
-    const eventGoldMul = (STATE.activeEvents?.goldbreath?.multipliers?.goldMul) || 1;
+    const _eGoldMulClaim = (typeof eventGoldMul === 'function') ? eventGoldMul() : 1;
     const upgGoldMul = getQuestGoldMul();
-    STATE.gold += Math.floor(q.reward * eventGoldMul * upgGoldMul);
+    STATE.gold += Math.floor(q.reward * _eGoldMulClaim * upgGoldMul);
   }
   sfxClaim();
   vibrate([15, 30, 15, 30, 80]);
@@ -19826,6 +19826,8 @@ function doSaisonAscend(){
     STATE.upgradeAutoTap = 0;
     STATE.upgradeEndurance = 0;
     STATE.upgradeBaseSpeed = 0;
+    STATE.upgradeEagleEye = 0;       // Fix : était oublié dans le reset d'ascension
+    STATE.upgradeCruiseControl = 0;  // Fix : était oublié dans le reset d'ascension
     STATE.team = {};
     STATE.runnerStamina = (typeof STAMINA_MAX !== 'undefined') ? STAMINA_MAX : 100;
     // === ENERGY POOL reset
@@ -21668,7 +21670,22 @@ function tickAutoTap(dt){
   _autoTapAccumulator += dt * rate;
   while(_autoTapAccumulator >= 1){
     _autoTapAccumulator -= 1;
-    const perTap = (1 + (STATE.upgradeTapValue||0) * 1.5) * (typeof saisonGoldMul==='function'?saisonGoldMul():1);
+    // Fix : auto-tap applique les mêmes multiplicateurs que le tap manuel
+    // (sauf comboMul et bigBangBonus qui sont réservés au tap humain)
+    const _atShopMul  = (typeof getShopBoostMul  === 'function') ? getShopBoostMul()  : 1;
+    const _atTapMul   = (typeof getTapMul         === 'function') ? getTapMul()         : 1;
+    const _atETapMul  = (typeof eventTapMul       === 'function') ? eventTapMul()       : 1;
+    const _atEGoldMul = (typeof eventGoldMul      === 'function') ? eventGoldMul()      : 1;
+    const _atEquipMul = (typeof equipBonus        === 'function') ? (1+equipBonus('goldMul')) : 1;
+    const _atCardTap  = (typeof deckBonus         === 'function') ? (1+deckBonus('tap')+deckBonus('goldAll')) : 1;
+    const _atCardAll  = (typeof deckAllMul        === 'function') ? deckAllMul()        : 1;
+    const _atMapMul   = (typeof mapStadiumTapMul  === 'function') ? mapStadiumTapMul()  : 1;
+    const _atStars    = 1 + (STATE.stars || 0) * 0.05;
+    const _atBuffMul  = (typeof getActiveBuffMul  === 'function') ? getActiveBuffMul()  : 1;
+    const perTap = (1 + (STATE.upgradeTapValue||0) * 1.5)
+      * _atShopMul * _atTapMul * _atETapMul * _atEGoldMul
+      * _atEquipMul * _atCardTap * _atCardAll * _atMapMul
+      * _atStars * (typeof saisonGoldMul==='function'?saisonGoldMul():1) * _atBuffMul;
     // === Vague 21 : relique Atalante (+10% crit) ===
     const _atalanteCritAuto = (typeof hasRelic === 'function' && hasRelic('atalante')) ? 0.10 : 0;
     const rawCrit = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + _atalanteCritAuto + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
@@ -23252,9 +23269,9 @@ function doMerge(fx, fy, tx, ty){
       }
     }
     // Cinématique Grand Œuvre à chaque palier ultime atteint pour la première fois
-    const eventGoldMul = (STATE.activeEvents?.deepnight?.multipliers?.mergeGoldMul) || 1;
+    const _eGoldMulMerge = (typeof eventGoldMul === 'function') ? eventGoldMul() : 1;
     const cMul = comboMultiplier();
-    const goldMul = eventGoldMul * cMul * recipeGoldMul() * modGoldMul();
+    const goldMul = _eGoldMulMerge * cMul * recipeGoldMul() * modGoldMul();
     const cinematicMul = modCinematicGoldMul();
     const frenzyMul = frenzyGoldMul();
     if(newTier >= 5 && (STATE.firstReached[a.chain] || 0) < newTier){
@@ -23311,9 +23328,9 @@ function doMerge(fx, fy, tx, ty){
 function claimQuest(q){
   if(!q.done || q.claimed) return;
   q.claimed = true;
-  const eventGoldMul = (STATE.activeEvents?.goldbreath?.multipliers?.goldMul) || 1;
+  const _eGoldMulQuest = (typeof eventGoldMul === 'function') ? eventGoldMul() : 1;
   const upgradeGoldMul = getQuestGoldMul();
-  const reward = Math.floor(q.reward * eventGoldMul * upgradeGoldMul);
+  const reward = Math.floor(q.reward * _eGoldMulQuest * upgradeGoldMul);
   STATE.gold += reward;
   q.actualReward = reward;
   sfxClaim();
@@ -24004,7 +24021,8 @@ function save(){
       npcOvertakeCount: STATE.npcOvertakeCount || 0,
       // === Skill tree (semaine 6) ===
       skills: STATE.skills || { unlocked: {}, pointsSpent: 0 },
-      // === ULTIMATE : pilote automatique ===
+      // === Upgrades spéciaux (Eagle Eye + Cruise Control) ===
+      upgradeEagleEye: STATE.upgradeEagleEye || 0,
       upgradeCruiseControl: STATE.upgradeCruiseControl || 0,
       // === Prestige Star Tree ===
       starTree: STATE.starTree || { tapPower:0, lapPower:0, dropRate:0, basePower:0, staminaPlus:0, critPower:0, cooldownNeg:0, starsJackpot:0 },
@@ -25273,6 +25291,7 @@ function load(){
     STATE.upgradeAutoTap = s.upgradeAutoTap ?? 0;
     STATE.upgradeEndurance = s.upgradeEndurance ?? 0;
     STATE.upgradeBaseSpeed = s.upgradeBaseSpeed ?? 0;
+    STATE.upgradeEagleEye = s.upgradeEagleEye ?? 0;
     STATE.upgradeCruiseControl = s.upgradeCruiseControl ?? 0;
     STATE.totalTaps = s.totalTaps ?? 0;
     STATE.saison = s.saison ?? 1;

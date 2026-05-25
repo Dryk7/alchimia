@@ -7656,6 +7656,322 @@ body.shop-epic-flash::after{
   justify-content: center;
   box-shadow: 0 2px 6px rgba(0,0,0,0.3);
 }
+
+/* ═══ PROGRESS MAP — Road to the Moon ═══ */
+#progress-map {
+  position: absolute;
+  bottom: 50px;
+  left: 12px;
+  right: 12px;
+  z-index: 9;
+  pointer-events: none;
+  user-select: none;
+}
+#pm-track {
+  height: 5px;
+  border-radius: 3px;
+  background: linear-gradient(90deg,
+    #7a5a3a 0%, #7a5a3a 3%,
+    #4a7a3a 3%, #4a7a3a 10%,
+    #3a5a8a 10%, #3a5a8a 50%,
+    #c84030 50%, #c84030 100%,
+    #1a1a4a 100%
+  );
+  position: relative;
+  box-shadow: 0 1px 4px rgba(0,0,0,.35);
+}
+#pm-fill {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  background: rgba(255,255,255,.30);
+  border-radius: 3px;
+  transition: width .6s cubic-bezier(.2,.9,.2,1);
+}
+#pm-hero-dot {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 11px;
+  height: 11px;
+  background: #fff;
+  border: 2.5px solid #c84030;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(200,64,48,.7);
+  transition: left .6s cubic-bezier(.2,.9,.2,1);
+  z-index: 2;
+}
+#pm-hero-dot.pulse {
+  animation: pmDotPulse .4s ease-out;
+}
+@keyframes pmDotPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(200,64,48,.8); }
+  100% { box-shadow: 0 0 0 8px rgba(200,64,48,0); }
+}
+.pm-milestone {
+  position: absolute;
+  top: -14px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+.pm-milestone-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.5);
+  border: 1.5px solid rgba(255,255,255,.7);
+  transition: background .4s, transform .4s;
+}
+.pm-milestone.reached .pm-milestone-dot {
+  background: #ffd060;
+  border-color: #ffd060;
+  box-shadow: 0 0 5px #ffd060;
+  transform: scale(1.3);
+}
+.pm-milestone-lbl {
+  font: 600 7px/1 "Nunito", sans-serif;
+  color: rgba(255,255,255,.65);
+  white-space: nowrap;
+  letter-spacing: .03em;
+  margin-top: 3px;
+}
+.pm-milestone.reached .pm-milestone-lbl {
+  color: #ffd060;
+}
+#pm-km-label {
+  position: absolute;
+  top: -20px;
+  transform: translateX(-50%);
+  font: 800 8px/1 "Nunito", sans-serif;
+  color: #fff;
+  background: #c84030;
+  padding: 1px 5px;
+  border-radius: 4px;
+  white-space: nowrap;
+  transition: left .6s cubic-bezier(.2,.9,.2,1);
+  pointer-events: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,.3);
+}
+/* ═══ LAP RESULT CARD ═══ */
+#lap-result {
+  position: fixed;
+  inset: 0;
+  z-index: 9980;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 80px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .3s;
+}
+#lap-result.show { opacity: 1; pointer-events: auto; }
+#lap-result-card {
+  background: linear-gradient(160deg, #1a0808 0%, #2a0a0a 40%, #1a0818 100%);
+  border: 1.5px solid rgba(200,64,48,.5);
+  border-radius: 20px;
+  padding: 20px 24px 16px;
+  min-width: 260px;
+  max-width: 320px;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(0,0,0,.6), 0 0 0 1px rgba(200,64,48,.2), inset 0 1px 0 rgba(255,255,255,.08);
+  transform: translateY(30px) scale(.95);
+  transition: transform .35s cubic-bezier(.2,1.3,.3,1);
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+#lap-result.show #lap-result-card {
+  transform: translateY(0) scale(1);
+}
+#lap-result-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, #c84030, #ffd060, #c84030, transparent);
+  animation: lapCardShine 2s linear infinite;
+}
+@keyframes lapCardShine {
+  0% { opacity: .4; }
+  50% { opacity: 1; }
+  100% { opacity: .4; }
+}
+.lr-lap-num {
+  font: 800 11px/1 "Nunito", sans-serif;
+  color: rgba(255,255,255,.5);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.lr-title {
+  font: 900 26px/1 "Nunito", sans-serif;
+  color: #fff;
+  letter-spacing: .04em;
+  margin-bottom: 16px;
+}
+.lr-title span { color: #ffd060; }
+.lr-stats {
+  display: flex;
+  justify-content: space-around;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.lr-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.lr-stat-ico {
+  width: 28px; height: 28px;
+  background: rgba(255,255,255,.08);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 2px;
+}
+.lr-stat-val {
+  font: 800 16px/1 "Nunito", sans-serif;
+  color: #fff;
+}
+.lr-stat-val.counting { color: #ffd060; }
+.lr-stat-lbl {
+  font: 600 9px/1 "Nunito", sans-serif;
+  color: rgba(255,255,255,.5);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.lr-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+.lr-btn-continue {
+  flex: 1;
+  padding: 10px;
+  background: linear-gradient(135deg, #e85040, #c82020);
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font: 800 13px/1 "Nunito", sans-serif;
+  letter-spacing: .05em;
+  cursor: pointer;
+  text-transform: uppercase;
+  box-shadow: 0 4px 12px rgba(200,64,48,.4);
+  transition: transform .1s, box-shadow .1s;
+}
+.lr-btn-continue:active { transform: scale(.97); box-shadow: 0 2px 6px rgba(200,64,48,.3); }
+.lr-btn-share {
+  padding: 10px 14px;
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 12px;
+  color: rgba(255,255,255,.8);
+  font: 700 12px/1 "Nunito", sans-serif;
+  cursor: pointer;
+  transition: background .15s;
+}
+.lr-btn-share:active { background: rgba(255,255,255,.2); }
+.lr-auto-bar {
+  height: 2px;
+  background: rgba(255,255,255,.15);
+  border-radius: 1px;
+  margin-top: 12px;
+  overflow: hidden;
+}
+.lr-auto-bar-fill {
+  height: 100%;
+  background: rgba(255,255,255,.4);
+  width: 100%;
+  transform-origin: left;
+  animation: lrAutoClose 3.5s linear forwards;
+}
+@keyframes lrAutoClose {
+  from { transform: scaleX(1); }
+  to   { transform: scaleX(0); }
+}
+
+/* ═══ FIRST TAP FLASH ═══ */
+#first-tap-flash {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255,100,50,.9) 0%, rgba(200,64,48,.4) 40%, transparent 70%);
+  z-index: 9993;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .06s;
+}
+#first-tap-flash.active { opacity: 1; }
+#first-tap-text {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%) scale(.5);
+  font: 900 48px/1 "Nunito", sans-serif;
+  color: #fff;
+  text-shadow: 0 0 30px #c84030, 0 4px 12px rgba(0,0,0,.5);
+  z-index: 9994;
+  pointer-events: none;
+  opacity: 0;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  transition: transform .35s cubic-bezier(.2,1.4,.3,1), opacity .35s;
+  white-space: nowrap;
+}
+#first-tap-text.active {
+  opacity: 1;
+  transform: translate(-50%,-50%) scale(1);
+}
+
+/* ═══ COMBO STREAK HUD ═══ */
+#combo-streak {
+  position: absolute;
+  bottom: 80px;
+  right: 12px;
+  z-index: 12;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  opacity: 0;
+  transform: translateX(20px);
+  transition: opacity .2s, transform .2s;
+}
+#combo-streak.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+#combo-streak-num {
+  font: 900 32px/1 "Nunito", sans-serif;
+  color: #fff;
+  text-shadow: 0 0 20px #ff6020, 0 2px 6px rgba(0,0,0,.5);
+  letter-spacing: -.01em;
+  animation: comboStreakPulse .15s ease-out;
+}
+@keyframes comboStreakPulse {
+  0%   { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+#combo-streak-x {
+  font: 800 13px/1 "Nunito", sans-serif;
+  color: rgba(255,255,255,.7);
+  letter-spacing: .1em;
+}
+#combo-streak-bar {
+  width: 40px;
+  height: 3px;
+  background: rgba(255,255,255,.2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+#combo-streak-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffd060, #ff6020);
+  border-radius: 2px;
+  transition: width .1s;
+}
 </style>
 </head>
 <body>
@@ -8198,6 +8514,37 @@ body.shop-epic-flash::after{
       </div>
       <!-- ═══ CANVAS 2D SIDE PARALLAX (pivot D + km — preview F validé) ═══ -->
       <canvas id="runner-canvas" style="position:absolute;inset:0;width:100%;height:100%;display:block;border-radius:22px;"></canvas>
+      <!-- COMBO STREAK HUD -->
+      <div id="combo-streak">
+        <div id="combo-streak-x">COMBO</div>
+        <div id="combo-streak-num">x1</div>
+        <div id="combo-streak-bar"><div id="combo-streak-bar-fill" style="width:100%"></div></div>
+      </div>
+      <!-- PROGRESS MAP — Road to the Moon -->
+      <div id="progress-map">
+        <div id="pm-km-label">0 km</div>
+        <div id="pm-track">
+          <div id="pm-fill"></div>
+          <div id="pm-hero-dot"></div>
+          <!-- Milestones -->
+          <div class="pm-milestone" style="left:3%" id="pm-ms-3">
+            <div class="pm-milestone-dot"></div>
+            <div class="pm-milestone-lbl">RURAL</div>
+          </div>
+          <div class="pm-milestone" style="left:10%" id="pm-ms-10">
+            <div class="pm-milestone-dot"></div>
+            <div class="pm-milestone-lbl">VILLE</div>
+          </div>
+          <div class="pm-milestone" style="left:50%" id="pm-ms-50">
+            <div class="pm-milestone-dot"></div>
+            <div class="pm-milestone-lbl">STADE</div>
+          </div>
+          <div class="pm-milestone" style="left:100%" id="pm-ms-100">
+            <div class="pm-milestone-dot"></div>
+            <div class="pm-milestone-lbl">LUNE</div>
+          </div>
+        </div>
+      </div>
       <!-- HUD overlay top : Profil (gauche) + KM (centre) + Pace (droite) -->
       <div class="runner-hud-overlay" style="position:absolute;top:calc(env(safe-area-inset-top, 0) + 44px);left:8px;right:8px;display:flex;justify-content:space-between;align-items:flex-start;gap:6px;pointer-events:none;z-index:5;font-family:Nunito,sans-serif;font-weight:900">
         <!-- Profil compact joueur (en overlay sur le canvas) -->
@@ -12997,6 +13344,38 @@ STATE.buffs = STATE.buffs ?? { bougie: 0, doping: 0, dopingLastUsed: 0 };
 // dopingLastUsed: timestamp dernière utilisation (cooldown 24h)
 // Expose STATE à window pour que le module 3D puisse lire lapProgress, lapsRun, etc.
 window.STATE = STATE;
+
+// ═══ PROGRESS MAP UPDATE ═══
+function updateProgressMap(){
+  const km = Math.min(100, Math.max(0, window.STATE?.lapsRun || 0));
+  const pct = km; // 0-100%
+  const fill = document.getElementById('pm-fill');
+  const dot = document.getElementById('pm-hero-dot');
+  const lbl = document.getElementById('pm-km-label');
+  if(!fill || !dot || !lbl) return;
+  fill.style.width = pct + '%';
+  dot.style.left = pct + '%';
+  lbl.style.left = pct + '%';
+  lbl.textContent = km < 100 ? km.toFixed(1) + ' km' : '🌙 LUNE !';
+  // Milestones reached
+  [[3,'pm-ms-3'],[10,'pm-ms-10'],[50,'pm-ms-50'],[100,'pm-ms-100']].forEach(([threshold, id]) => {
+    const el = document.getElementById(id);
+    if(el) el.classList.toggle('reached', km >= threshold);
+  });
+  // Pulse dot on new km
+  if(window._pmLastKm !== undefined && Math.floor(km) > Math.floor(window._pmLastKm)){
+    dot.classList.remove('pulse');
+    void dot.offsetWidth; // reflow
+    dot.classList.add('pulse');
+    setTimeout(() => dot.classList.remove('pulse'), 400);
+  }
+  window._pmLastKm = km;
+}
+// Hook dans le RAF du jeu (appelée chaque frame si STATE disponible)
+(function _pmLoop(){
+  updateProgressMap();
+  requestAnimationFrame(_pmLoop);
+})();
 
 // === VAGUE 20 P7 — CODEX NARRATIF (20 entrées de lore) ===
 const LORE_CODEX = [
@@ -18219,6 +18598,24 @@ function tapBoost(e){
     updateComboDisplay();
   }, TAP_COMBO_WINDOW + 50);
   updateComboDisplay();
+  // Sync combo visuel streak
+  window._comboForFire = typeof _comboCount !== 'undefined' ? _comboCount : (window._comboForFire || 0);
+  const _cStreak = document.getElementById('combo-streak');
+  const _cNum = document.getElementById('combo-streak-num');
+  const _cBar = document.getElementById('combo-streak-bar-fill');
+  if(_cStreak && _cNum){
+    if(window._comboForFire >= 2){
+      _cStreak.classList.add('show');
+      _cNum.textContent = 'x' + window._comboForFire;
+      // Re-trigger animation
+      _cNum.style.animation = 'none';
+      void _cNum.offsetWidth;
+      _cNum.style.animation = '';
+      if(_cBar) _cBar.style.width = Math.min(100, window._comboForFire * 10) + '%';
+    } else {
+      _cStreak.classList.remove('show');
+    }
+  }
   // Combo multiplier : 1× (1 tap), 1.5× (3+), 2× (6+), 3× (12+), 5× (25+)
   // SOFT CAP V16: cap dur x5, bonus x6 si stamina >80% (récompense gestion endurance)
   const _staminaR = STATE.staminaMax ? (STATE.stamina / STATE.staminaMax) : 1;
@@ -21155,6 +21552,44 @@ function tickRunnerLap(dt){
 }
 /* Tour bouclé : GIGA récompense + célébration */
 function completeLap(){
+  // ═══ LAP RESULT CARD ═══
+  (function showLapResult(){
+    const _lr = document.getElementById('lap-result');
+    if(!_lr) return;
+    const lapNum = window.STATE?.lapsRun || 1;
+    const maxSpeed = (window.STATE?.bestKmh || 0).toFixed(1);
+    const drops = window._lapLastDrops || 0;
+    const elapsed = window._lapStartTime ? Math.round((Date.now() - window._lapStartTime) / 1000) : 0;
+    const mins = Math.floor(elapsed / 60);
+    const secs = elapsed % 60;
+    const timeStr = mins > 0 ? mins + 'm' + secs + 's' : secs + 's';
+    // Partage
+    window._lapResultShare = function(){
+      const txt = 'Je viens de boucler le km ' + lapNum + ' sur FOULÉE !\n⚡ ' + maxSpeed + ' km/h max | 💧 +' + drops + ' gouttes\nhttp://localhost:8770';
+      navigator.clipboard?.writeText(txt).then(()=>{ const b=document.getElementById('lr-share-btn'); if(b){b.textContent='✓ COPIÉ !'; setTimeout(()=>{ b.textContent='↑ PARTAGER'; },2000);} });
+    };
+    // Fermeture
+    let _lrTimer;
+    window._lapResultClose = function(){
+      _lr.classList.remove('show');
+      clearTimeout(_lrTimer);
+      window._lapStartTime = Date.now();
+    };
+    // Remplir
+    const setEl = (id, val) => { const e = document.getElementById(id); if(e) e.textContent = val; };
+    setEl('lr-lap-num', 'TOUR ' + lapNum);
+    setEl('lr-km', lapNum);
+    setEl('lr-speed', maxSpeed);
+    setEl('lr-drops', drops > 0 ? '+' + drops : '0');
+    setEl('lr-time', timeStr);
+    // Reset barre auto
+    const bar = document.getElementById('lr-auto-bar-fill');
+    if(bar){ bar.style.animation='none'; void bar.offsetWidth; bar.style.animation='lrAutoClose 3.5s linear forwards'; }
+    // Afficher
+    _lr.classList.add('show');
+    _lrTimer = setTimeout(window._lapResultClose, 3500);
+  })();
+  if(!window._lapStartTime) window._lapStartTime = Date.now();
   STATE.lapsRun = (STATE.lapsRun || 0) + 1;
   const lapNum = STATE.lapsRun;
   if(typeof trackDailyStat === 'function') trackDailyStat('km', 1);
@@ -21186,6 +21621,7 @@ function completeLap(){
   if(typeof eventLapBonus === 'function') baseReward += eventLapBonus();
   const stamBonus = Math.floor(baseReward * Math.max(0, (STATE.runnerStamina||1) - 1) * 0.5);
   const totalReward = baseReward + stamBonus;
+  window._lapLastDrops = totalReward || 0; // capture pour la result card
   STATE.gold += totalReward;
   // FIX bug 4 : track le gold cumulé à vie (manquait sur le lap reward + milestone)
   let _lapGoldEarned = totalReward;
@@ -25606,6 +26042,55 @@ window.addEventListener('appinstalled', () => {
      CANVAS 2D SIDE PARALLAX — Pivot D + KM (preview F validé)
      ═══════════════════════════════════════════════════════════════════════ -->
 <script>
+// ═══ BIRDS SYSTEM ═══
+const _birds = [];
+let _birdSpawnTimer = 0;
+function _spawnBirdFlock(){
+  const count = 3 + Math.floor(Math.random() * 4);
+  const startX = -30;
+  const baseY = 30 + Math.random() * 80; // haut du ciel
+  const speed = 0.6 + Math.random() * 0.8;
+  for(let i = 0; i < count; i++){
+    _birds.push({
+      x: startX - i * 18,
+      y: baseY + (Math.random()-0.5) * 20,
+      vx: speed + Math.random() * 0.3,
+      vy: (Math.random()-0.5) * 0.03,
+      phase: Math.random() * Math.PI * 2,
+      scale: 0.7 + Math.random() * 0.5,
+    });
+  }
+}
+function _drawBirds(ctx, W, H, dt){
+  _birdSpawnTimer -= dt;
+  if(_birdSpawnTimer <= 0){
+    _spawnBirdFlock();
+    _birdSpawnTimer = 8 + Math.random() * 12; // toutes les 8-20s
+  }
+  for(let i = _birds.length - 1; i >= 0; i--){
+    const b = _birds[i];
+    b.x += b.vx;
+    b.y += b.vy + Math.sin(b.phase) * 0.015;
+    b.phase += 0.12;
+    if(b.x > W + 40){ _birds.splice(i, 1); continue; }
+    // Dessin : un "M" simple (2 ailes courbées)
+    const s = b.scale;
+    const flap = Math.sin(b.phase * 3) * 3 * s;
+    ctx.save();
+    ctx.strokeStyle = 'rgba(60,60,80,0.55)';
+    ctx.lineWidth = 1.2 * s;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    // Aile gauche
+    ctx.moveTo(b.x - 7*s, b.y + flap*0.5);
+    ctx.quadraticCurveTo(b.x - 4*s, b.y - flap, b.x, b.y);
+    // Aile droite
+    ctx.quadraticCurveTo(b.x + 4*s, b.y - flap, b.x + 7*s, b.y + flap*0.5);
+    ctx.stroke();
+    ctx.restore();
+  }
+}
+
 (function initSideParallax(){
   const cv = document.getElementById('runner-canvas');
   if(!cv) return;
@@ -28163,6 +28648,8 @@ window.addEventListener('appinstalled', () => {
         ctx.ellipse(cx - 20, cy + 2, 30, 11, 0, 0, Math.PI*2); ctx.fill();
       }
     }
+    // Oiseaux dans le ciel
+    if(_biomeName !== 'lunar'){ _drawBirds(ctx, W, H, dt); }
 
     // ═══ Layer 2.5 : Pluie (gouttes verticales) ===
     // FIX QA : pas de pluie en biome lunar (incohérent)
@@ -32953,6 +33440,23 @@ window.addEventListener('appinstalled', () => {
       }
       ctx.restore();
     }
+    // ═══ TAP BURST PARTICLES ═══
+    if(!ctx._tapBurst) ctx._tapBurst = [];
+    if(ctx._tapBurst.length){
+      for(let i = ctx._tapBurst.length - 1; i >= 0; i--){
+        const p = ctx._tapBurst[i];
+        p.x += p.vx; p.y += p.vy; p.vy += 0.22; p.vx *= 0.95; p.life--;
+        if(p.life <= 0){ ctx._tapBurst.splice(i,1); continue; }
+        const a = (p.life / p.maxLife);
+        ctx.save();
+        ctx.globalAlpha = a;
+        ctx.fillStyle = p.col;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * (0.5 + 0.5*a), 0, Math.PI*2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
     // Particules SUEUR : volent vers l'arrière au sprint
     if(_trailIntensity > 0.3){
       if(!ctx._heroSweat) ctx._heroSweat = [];
@@ -32981,6 +33485,40 @@ window.addEventListener('appinstalled', () => {
       }
     }
     drawRunner(heroX, heroY - heroBob + heroJumpY, heroScale, heroSpec, heroLegPhase, true, tapBoost / 2, airborneFrac);
+
+    // ═══ COMBO FIRE TRAIL ═══
+    const _comboFire = window._comboForFire || 0;
+    if(_comboFire >= 2){
+      const fireIntensity = Math.min(1, (_comboFire - 1) / 8); // 0→1 sur combo 2→10
+      if(!ctx._fireParticles) ctx._fireParticles = [];
+      // Spawn particules feu sous les pieds
+      if(Math.random() < 0.4 + fireIntensity * 0.5){
+        const footX = heroX - 5 + Math.random() * 10;
+        const footY = heroY + 26 * heroScale;
+        ctx._fireParticles.push({
+          x: footX, y: footY,
+          vx: (Math.random()-0.5) * 1.5 - displayKmh * 0.15,
+          vy: -0.8 - Math.random() * 1.2,
+          life: 12 + Math.random() * 8,
+          maxLife: 20,
+          r: 2 + Math.random() * 2 * fireIntensity,
+        });
+      }
+      // Dessine les flammes
+      for(let i = ctx._fireParticles.length - 1; i >= 0; i--){
+        const fp = ctx._fireParticles[i];
+        fp.x += fp.vx; fp.y += fp.vy; fp.vy += 0.06; fp.life--;
+        if(fp.life <= 0){ ctx._fireParticles.splice(i,1); continue; }
+        const fa = fp.life / fp.maxLife;
+        const fireCol = fa > 0.6
+          ? `rgba(255,${Math.floor(200*fa)},0,${fa * 0.85})`
+          : `rgba(255,80,0,${fa * 0.6})`;
+        ctx.fillStyle = fireCol;
+        ctx.beginPath();
+        ctx.arc(fp.x, fp.y, fp.r * fa, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
 
     // === SPEED LINES AMPLIFIÉES (sprint) : tirets horizontaux blancs autour du héros ===
     if(_trailIntensity > 0.4){
@@ -33185,6 +33723,39 @@ window.addEventListener('appinstalled', () => {
       }
     }, true);
     stadiumEl.addEventListener('click', () => {
+        // ═══ PREMIER TAP MAGIQUE ═══
+        if((window.STATE?.totalTaps || 0) === 0){
+          const flash = document.getElementById('first-tap-flash');
+          const txt = document.getElementById('first-tap-text');
+          if(flash){ flash.classList.add('active'); setTimeout(()=>flash.classList.remove('active'),120); }
+          if(txt){ txt.classList.add('active'); setTimeout(()=>{ txt.style.opacity='0'; txt.style.transform='translate(-50%,-50%) scale(1.15)'; setTimeout(()=>{ txt.classList.remove('active'); txt.style.opacity=''; txt.style.transform=''; },400); },700); }
+          // Camera shake CSS
+          const stad = document.getElementById('runner-stadium');
+          if(stad){ stad.style.transition='transform .05s'; stad.style.transform='translate(3px,-3px)'; setTimeout(()=>{ stad.style.transform='translate(-2px,2px)'; setTimeout(()=>{ stad.style.transform=''; }, 60); },60); }
+        }
+        // ═══ TAP BURST PARTICLES ═══
+        const _tapCanvas = document.querySelector('#runner-stadium canvas');
+        if(_tapCanvas && _tapCanvas.getContext){
+          const _tc = _tapCanvas.getContext('2d');
+          if(!_tc._tapBurst) _tc._tapBurst = [];
+          const heroX = _tapCanvas.width * 0.35;
+          const heroY = _tapCanvas.height * 0.72;
+          const BURST_COLS = ['#c84030','#ffd060','#ffffff','#ff8040','#ffaa60'];
+          for(let i = 0; i < 8; i++){
+            const ang = (i / 8) * Math.PI * 2 + Math.random() * 0.5;
+            const spd = 2.5 + Math.random() * 3.5;
+            _tc._tapBurst.push({
+              x: heroX + (Math.random()-0.5)*10,
+              y: heroY - 20 + (Math.random()-0.5)*10,
+              vx: Math.cos(ang) * spd,
+              vy: Math.sin(ang) * spd - 1.5,
+              r: 2 + Math.random() * 2.5,
+              life: 18 + Math.random() * 12,
+              maxLife: 30,
+              col: BURST_COLS[Math.floor(Math.random()*BURST_COLS.length)],
+            });
+          }
+        }
       // 1 tap incrémente le compteur de 1. Cap à 100 → vitesse max
       tapCount = Math.min(100, tapCount + 1);
       lastTapTime = performance.now();
@@ -33450,6 +34021,45 @@ window.addEventListener('appinstalled', () => {
   };
 })();
 </script>
+
+<!-- LAP RESULT CARD -->
+<div id="lap-result">
+  <div id="lap-result-card">
+    <div class="lr-lap-num" id="lr-lap-num">TOUR 1</div>
+    <div class="lr-title">KM <span id="lr-km">1</span> BOUCLÉ</div>
+    <div class="lr-stats">
+      <div class="lr-stat">
+        <div class="lr-stat-ico">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ffd060" stroke-width="2.5"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div class="lr-stat-val" id="lr-speed">0</div>
+        <div class="lr-stat-lbl">max km/h</div>
+      </div>
+      <div class="lr-stat">
+        <div class="lr-stat-ico">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5ab0ee" stroke-width="2.5"><circle cx="12" cy="12" r="2"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/></svg>
+        </div>
+        <div class="lr-stat-val" id="lr-drops">0</div>
+        <div class="lr-stat-lbl">gouttes</div>
+      </div>
+      <div class="lr-stat">
+        <div class="lr-stat-ico">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7ec46a" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div class="lr-stat-val" id="lr-time">0s</div>
+        <div class="lr-stat-lbl">temps</div>
+      </div>
+    </div>
+    <div class="lr-actions">
+      <button class="lr-btn-share" id="lr-share-btn" onclick="window._lapResultShare && window._lapResultShare()">&#x2191; PARTAGER</button>
+      <button class="lr-btn-continue" onclick="window._lapResultClose && window._lapResultClose()">CONTINUER &#x2192;</button>
+    </div>
+    <div class="lr-auto-bar"><div class="lr-auto-bar-fill" id="lr-auto-bar-fill"></div></div>
+  </div>
+</div>
+
+<div id="first-tap-flash"></div>
+<div id="first-tap-text">ALLEZ !</div>
 
 </body>
 </html>

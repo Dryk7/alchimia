@@ -32850,19 +32850,21 @@ function _drawBirds(ctx, W, H, dt){
           hurdleCombo = (hurdleCombo || 0) + 1;
           // Bonus selon difficulté : single=20, double/wide=30, triple=40, tall=50
           const baseBonus = { single:20, double:30, triple:40, wide:30, tall:50 }[hk] || 20;
-          const bonus = baseBonus + hurdleCombo * 5;
+          // V29 PARFAIT : saut initié quand haie était entre 2-10m → bonus ×2
+          const _wasParfait = typeof window._v29JumpAt === 'number' && window._v29JumpAt >= 2 && window._v29JumpAt <= 10;
+          const bonus = Math.round((baseBonus + hurdleCombo * 5) * (_wasParfait ? 2 : 1));
           if(window.STATE){
             window.STATE.gold = (window.STATE.gold || 0) + bonus;
           }
-          // Pop visuel
+          // Pop visuel — "PARFAIT !" si timing parfait, sinon "HAIE !"
           overtakePops.push({
             x: W * 0.35 - 10,
             y: H * 0.65,
             amount: bonus,
-            life: 1.2,
+            life: _wasParfait ? 1.8 : 1.2,
             vy: -50,
-            tier: 2,
-            txt: (typeof t === 'function') ? t('pop_hurdle') : 'HAIE !',
+            tier: _wasParfait ? 1 : 2,
+            txt: _wasParfait ? 'PARFAIT !' : ((typeof t === 'function') ? t('pop_hurdle') : 'HAIE !'),
           });
           // 6 éclats d'or volants
           for(let g = 0; g < 6; g++){
@@ -32876,6 +32878,15 @@ function _drawBirds(ctx, W, H, dt){
               rot: Math.random() * Math.PI * 2,
               vrot: (Math.random() - 0.5) * 8,
             });
+          }
+          // V29 : spawn fragments haie brisée (7 morceaux de crossbar colorés)
+          if(!ctx._v29Frags) ctx._v29Frags = [];
+          { const _fc = { single:'#c84030', double:'#e89020', triple:'#7ec46a', wide:'#4a9fd9', tall:'#c89af0' }[hk]||'#c84030';
+            const _fhx = W * 0.35, _fhy = LANES_TOP + 2.5 * LANE_H, _fhH = hk === 'tall' ? 38 : 26;
+            for(let _fi=0;_fi<7;_fi++){
+              const _fa=(_fi/7)*Math.PI*2;
+              ctx._v29Frags.push({ x:_fhx+(Math.random()-.5)*14, y:_fhy-_fhH*.5, vx:Math.cos(_fa)*(2.5+Math.random()*3.5), vy:Math.sin(_fa)*2.5-4.5, rot:Math.random()*Math.PI, vrot:(Math.random()-.5)*.4, w:4+Math.random()*6, h:3, color:_fc, life:.75, max:.75 });
+            }
           }
           // SFX réussite — varie selon kind + combo
           if(typeof sfxHurdleByKind === 'function') sfxHurdleByKind(hk, hurdleCombo);
@@ -32959,6 +32970,14 @@ function _drawBirds(ctx, W, H, dt){
       }
       if(h.metersAhead < -28){
         hurdles.splice(i, 1);
+      }
+    }
+
+    // === V29 : bouton SAUT → .ready quand haie à moins de 14m ===
+    { const _jb = document.getElementById('jump-btn');
+      if(_jb){
+        const _nrh = hurdles.find(h => h.success === null && h.metersAhead > 0 && h.metersAhead < 14);
+        _jb.classList.toggle('ready', !!_nrh);
       }
     }
 
@@ -33124,10 +33143,64 @@ function _drawBirds(ctx, W, H, dt){
         ctx.lineTo(hx + halfW + 1, hy - hurdleH / 2 + 4);
         ctx.closePath(); ctx.fill();
       }
-      // Si haie ratée, traverse renversée (style "knocked down")
+      // Si haie ratée : traverse renversée inclinée + piquet affaissé (V29 — plus dramatique)
       if(h.success === false){
-        ctx.fillStyle = 'rgba(200,50,30,.6)';
-        ctx.fillRect(hx - halfW, hy - 4, halfW * 2, 4);
+        ctx.save();
+        ctx.translate(hx, hy - 3);
+        ctx.rotate(0.5);
+        ctx.fillStyle = 'rgba(200,50,30,.8)';
+        ctx.fillRect(-halfW, -3, halfW * 2, 5);
+        ctx.restore();
+        ctx.save();
+        ctx.translate(hx - halfW + 2, hy - 1);
+        ctx.rotate(0.4);
+        ctx.fillStyle = 'rgba(255,255,255,.5)';
+        ctx.fillRect(-1.5, -hurdleH * 0.55, 3, hurdleH * 0.55);
+        ctx.restore();
+      }
+    }
+    // V29 : arc de timing SAUT (indicateur approche haie) + render fragments brisés
+    { const _nhArc = hurdles.find(h => h.success === null && h.metersAhead > 0 && h.metersAhead < 14);
+      if(_nhArc){
+        const _prox = 1 - _nhArc.metersAhead / 14; // 0=loin, 1=imminent
+        const _hxA = W * 0.35, _hyA = LANES_TOP + 2.5 * LANE_H;
+        const _arcC = { single:'#c84030', double:'#e89020', triple:'#7ec46a', wide:'#4a9fd9', tall:'#c89af0' }[_nhArc.kind]||'#c84030';
+        const _arcR = 20 - _prox * 8 + Math.sin(t * 14) * 2;
+        ctx.save();
+        ctx.globalAlpha = Math.min(0.88, 0.2 + _prox * 0.68);
+        ctx.strokeStyle = _arcC;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(_hxA, _hyA + 2, _arcR, Math.PI, 2 * Math.PI);
+        ctx.stroke();
+        if(_prox > 0.45){
+          // Flèche "↑ SAUT" au-dessus du héros
+          ctx.fillStyle = _arcC;
+          ctx.globalAlpha = Math.min(0.85, _prox * 0.9);
+          ctx.beginPath();
+          ctx.moveTo(_hxA, _hyA - _arcR - 9);
+          ctx.lineTo(_hxA - 5, _hyA - _arcR - 2);
+          ctx.lineTo(_hxA + 5, _hyA - _arcR - 2);
+          ctx.closePath(); ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        ctx.restore();
+      }
+    }
+    // V29 : render fragments haie brisée
+    if(ctx._v29Frags && ctx._v29Frags.length){
+      for(let _fi = ctx._v29Frags.length - 1; _fi >= 0; _fi--){
+        const _fr = ctx._v29Frags[_fi];
+        _fr.x += _fr.vx; _fr.y += _fr.vy; _fr.vy += 12; _fr.rot += _fr.vrot; _fr.life -= dt;
+        if(_fr.life <= 0){ ctx._v29Frags.splice(_fi, 1); continue; }
+        ctx.save();
+        ctx.translate(_fr.x, _fr.y);
+        ctx.rotate(_fr.rot);
+        ctx.globalAlpha = _fr.life / _fr.max;
+        ctx.fillStyle = _fr.color;
+        ctx.fillRect(-_fr.w / 2, -_fr.h / 2, _fr.w, _fr.h);
+        ctx.globalAlpha = 1;
+        ctx.restore();
       }
     }
     // Render éclats d'or (style Idle Slayer)
@@ -33927,6 +34000,24 @@ function _drawBirds(ctx, W, H, dt){
       lastFrameT = 0;
     }
   });
+
+  // ═══ BOUTON SAUT — câblage V29 (FIX P0 : heroJumpVY jamais initialisé auparavant) ═══
+  const _jumpBtnEl = document.getElementById('jump-btn');
+  if(_jumpBtnEl){
+    const _doJump = () => {
+      if(heroJumpY < -3) return; // déjà en l'air → ignore double-tap
+      const _nh = hurdles.find(h => h.success === null && h.metersAhead > -3);
+      const _hk = _nh?.kind || 'single';
+      // Puissance calibrée : single=300, wide=350, tall=430 (must exceed jumpReq: -8/-20/-45 at detection)
+      const _pow = _hk === 'tall' ? -430 : (_hk === 'wide' ? -350 : -300);
+      heroJumpVY = _pow;
+      window._v29JumpAt = _nh ? _nh.metersAhead : null; // pour détection PARFAIT
+      if(typeof sfxJump === 'function') sfxJump();
+      if(typeof vibrate === 'function') vibrate(12);
+    };
+    _jumpBtnEl.addEventListener('pointerdown', (e) => { e.stopPropagation(); e.preventDefault(); _doJump(); });
+    _jumpBtnEl.addEventListener('touchend', (e) => { e.preventDefault(); }, { passive: false });
+  }
 
   window.RUNNER_2D = {
     resize, npcs, milestones,

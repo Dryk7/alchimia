@@ -18736,6 +18736,8 @@ function tapBoost(e){
     _comboCount = 1;
   }
   _lastTapAt = now;
+  // Sync bestCombo sur STATE (pour achievements combo_10/25/50/100 + records)
+  if(_comboCount > (STATE.bestCombo || 0)) STATE.bestCombo = _comboCount;
   // CHANTIER 3 : blip chromatique à chaque incrément combo (passe inaperçu en solo, chante en série)
   if(_comboCount >= 2 && _comboCount > _prevCombo) _comboBlip(_comboCount);
   // Renouveler le timer de reset combo + reset audible si on perd un gros combo
@@ -18746,9 +18748,9 @@ function tapBoost(e){
       blip(330, .12, "sine", .10, .25);
       setTimeout(() => blip(247, .15, "sine", .08, .20), 80);
     }
-    // SKILL TREE : INÉPUISABLE — combo ne descend jamais sous min(30, comboCount)
+    // SKILL TREE : INÉPUISABLE — combo ne descend jamais sous 30 (floor, pas cap)
     if(STATE._stComboNeverReset){
-      _comboCount = Math.min(30, _comboCount);
+      _comboCount = Math.max(30, _comboCount);
     } else {
       _comboCount = 0;
     }
@@ -20566,7 +20568,7 @@ const SHOP_PREMIUM_ITEMS = [
     id: 'pack-etoiles', name:'PACK 10 ÉTOILES', icon: SHOP_SVG.star,
     price:500, currency:'gems',
     desc:'10 étoiles à dépenser dans les perks permanents.',
-    apply(){ STATE.stars = (STATE.stars || 0) + 10; }
+    apply(){ STATE.stars = (STATE.stars || 0) + 10; STATE.totalStarsEarned = (STATE.totalStarsEarned || 0) + 10; }
   },
 ];
 function getShopBoostMul(){
@@ -21254,6 +21256,7 @@ function claimDailyReward(){
   } else if(rwd.type === 'mega'){
     STATE.gold = (STATE.gold || 0) + 15000;
     STATE.stars = (STATE.stars || 0) + 5;
+    STATE.totalStarsEarned = (STATE.totalStarsEarned || 0) + 5;
     if(typeof addGems === 'function') addGems(25);
     STATE.dailyCycles = (STATE.dailyCycles || 0) + 1;
     if(typeof showRunnerBubble === 'function') showRunnerBubble('+15k gouttes + 5 ★ + 25 !');
@@ -21294,6 +21297,7 @@ function claimDailyReward(){
     // RÉCOMPENSE DE JOUR 30 — la plus généreuse
     STATE.gold = (STATE.gold || 0) + 500000; // 500k gouttes
     STATE.stars = (STATE.stars || 0) + 10;   // 10 étoiles
+    STATE.totalStarsEarned = (STATE.totalStarsEarned || 0) + 10;
     if(typeof addGems === 'function') addGems(100); // 100 gemmes
     STATE.shopBoostX2Until = Math.max(Date.now(), STATE.shopBoostX2Until || 0) + 48*3600*1000; // boost 48h
     STATE.legendaryTrophy = true; // flag pour cosmétique futur
@@ -33624,6 +33628,8 @@ function _drawBirds(ctx, W, H, dt){
           h.success = false;
           hurdleCombo = 0;
           hurdleFailStreak++;
+          // Compteur global de haies ratées (pour stats modal)
+          if(window.STATE) window.STATE.hurdlesFailed = (window.STATE.hurdlesFailed || 0) + 1;
           // Achievement tracker : flag "raté ce km" pour casser le master_runner (3 km auto clean)
           if(window.STATE) window.STATE._hadHurdleFailThisKm = true;
           // === Daily challenge : reset hurdle streak ===

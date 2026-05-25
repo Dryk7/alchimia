@@ -1,0 +1,1682 @@
+{
+  "preflight": {
+    "applyProgressiveDisclosure_exists": true,
+    "STATE_lapsRun_exists": true,
+    "viewport": "540x960"
+  },
+  "km1_tapValue": {
+    "km": 1,
+    "name": "tapValue",
+    "toast_at_appear": {
+      "count": 2,
+      "texts": [
+        "✨ NOUVEAU : Puissance débloqué !",
+        "✨ NOUVEAU : chests débloqué !"
+      ],
+      "positions": [
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        }
+      ],
+      "styles": [
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        }
+      ],
+      "viewport": {
+        "w": 540,
+        "h": 960
+      },
+      "revealed": [
+        "tapValue",
+        "chests"
+      ]
+    },
+    "toast_after_fade": {
+      "count": 0,
+      "texts": [],
+      "positions": [],
+      "styles": [],
+      "viewport": {
+        "w": 540,
+        "h": 960
+      },
+      "revealed": [
+        "tapValue",
+        "chests"
+      ]
+    },
+    "btn_drawer_flash": {
+      "found": true,
+      "classes": "upg-btn upg-power affordable",
+      "hasJustUnlocked": false,
+      "locked": "0",
+      "visible": true
+    }
+  },
+  "km3_lapBonus": {
+    "km": 3,
+    "name": "lapBonus",
+    "toast_at_appear": {
+      "count": 3,
+      "texts": [
+        "✨ NOUVEAU : Puissance débloqué !",
+        "✨ NOUVEAU : Trophée débloqué !",
+        "✨ NOUVEAU : chests débloqué !"
+      ],
+      "positions": [
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        }
+      ],
+      "styles": [
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        }
+      ],
+      "viewport": {
+        "w": 540,
+        "h": 960
+      },
+      "revealed": [
+        "tapValue",
+        "lapBonus",
+        "chests"
+      ]
+    },
+    "toast_after_fade": {
+      "count": 0,
+      "texts": [],
+      "positions": [],
+      "styles": [],
+      "viewport": {
+        "w": 540,
+        "h": 960
+      },
+      "revealed": [
+        "tapValue",
+        "lapBonus",
+        "chests"
+      ]
+    },
+    "btn_drawer_flash": {
+      "found": true,
+      "classes": "upg-btn upg-trophy affordable",
+      "hasJustUnlocked": false,
+      "locked": "0",
+      "visible": true
+    }
+  },
+  "km5_critChance": {
+    "km": 5,
+    "name": "critChance",
+    "toast_at_appear": {
+      "count": 6,
+      "texts": [
+        "✨ NOUVEAU : Puissance débloqué !",
+        "✨ NOUVEAU : Chance critique débloqué !",
+        "✨ NOUVEAU : Trophée débloqué !",
+        "✨ NOUVEAU : buy-bougie débloqué !",
+        "✨ NOUVEAU : quests-daily débloqué !",
+        "✨ NOUVEAU : chests débloqué !"
+      ],
+      "positions": [
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        }
+      ],
+      "styles": [
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        }
+      ],
+      "viewport": {
+        "w": 540,
+        "h": 960
+      },
+      "revealed": [
+        "tapValue",
+        "critChance",
+        "lapBonus",
+        "buy-bougie",
+        "quests-daily",
+        "chests"
+      ]
+    },
+    "toast_after_fade": {
+      "count": 0,
+      "texts": [],
+      "positions": [],
+      "styles": [],
+      "viewport": {
+        "w": 540,
+        "h": 960
+      },
+      "revealed": [
+        "tapValue",
+        "critChance",
+        "lapBonus",
+        "buy-bougie",
+        "quests-daily",
+        "chests"
+      ]
+    },
+    "btn_drawer_flash": {
+      "found": true,
+      "classes": "upg-btn upg-luck affordable",
+      "hasJustUnlocked": false,
+      "locked": "0",
+      "visible": true
+    }
+  },
+  "km8_eagleEye": {
+    "km": 8,
+    "name": "eagleEye",
+    "toast_at_appear": {
+      "count": 7,
+      "texts": [
+        "✨ NOUVEAU : Puissance débloqué !",
+        "✨ NOUVEAU : Chance critique débloqué !",
+        "✨ NOUVEAU : Trophée débloqué !",
+        "✨ NOUVEAU : Vision d'Aigle débloqué !",
+        "✨ NOUVEAU : buy-bougie débloqué !",
+        "✨ NOUVEAU : quests-daily débloqué !",
+        "✨ NOUVEAU : chests débloqué !"
+      ],
+      "positions": [
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        }
+      ],
+      "styles": [
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        }
+      ],
+      "viewport": {
+        "w": 540,
+        "h": 960
+      },
+      "revealed": [
+        "tapValue",
+        "critChance",
+        "lapBonus",
+        "eagleEye",
+        "buy-bougie",
+        "quests-daily",
+        "chests"
+      ]
+    },
+    "toast_after_fade": {
+      "count": 0,
+      "texts": [],
+      "positions": [],
+      "styles": [],
+      "viewport": {
+        "w": 540,
+        "h": 960
+      },
+      "revealed": [
+        "tapValue",
+        "critChance",
+        "lapBonus",
+        "eagleEye",
+        "buy-bougie",
+        "quests-daily",
+        "chests"
+      ]
+    },
+    "btn_drawer_flash": {
+      "found": true,
+      "classes": "upg-btn upg-eagle",
+      "hasJustUnlocked": false,
+      "locked": "0",
+      "visible": true
+    }
+  },
+  "km12_endurance": {
+    "km": 12,
+    "name": "endurance",
+    "toast_at_appear": {
+      "count": 8,
+      "texts": [
+        "✨ NOUVEAU : Puissance débloqué !",
+        "✨ NOUVEAU : Chance critique débloqué !",
+        "✨ NOUVEAU : Trophée débloqué !",
+        "✨ NOUVEAU : Souffle débloqué !",
+        "✨ NOUVEAU : Vision d'Aigle débloqué !",
+        "✨ NOUVEAU : buy-bougie débloqué !",
+        "✨ NOUVEAU : quests-daily débloqué !",
+        "✨ NOUVEAU : chests débloqué !"
+      ],
+      "positions": [
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        }
+      ],
+      "styles": [
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        }
+      ],
+      "viewport": {
+        "w": 540,
+        "h": 960
+      },
+      "revealed": [
+        "tapValue",
+        "critChance",
+        "lapBonus",
+        "endurance",
+        "eagleEye",
+        "buy-bougie",
+        "quests-daily",
+        "chests"
+      ]
+    },
+    "toast_after_fade": {
+      "count": 0,
+      "texts": [],
+      "positions": [],
+      "styles": [],
+      "viewport": {
+        "w": 540,
+        "h": 960
+      },
+      "revealed": [
+        "tapValue",
+        "critChance",
+        "lapBonus",
+        "endurance",
+        "eagleEye",
+        "buy-bougie",
+        "quests-daily",
+        "chests"
+      ]
+    },
+    "btn_drawer_flash": {
+      "found": true,
+      "classes": "upg-btn upg-breath",
+      "hasJustUnlocked": false,
+      "locked": "0",
+      "visible": true
+    }
+  },
+  "km18_autoTap": {
+    "km": 18,
+    "name": "autoTap",
+    "toast_at_appear": {
+      "count": 9,
+      "texts": [
+        "✨ NOUVEAU : Puissance débloqué !",
+        "✨ NOUVEAU : Chance critique débloqué !",
+        "✨ NOUVEAU : Auto-pilote débloqué !",
+        "✨ NOUVEAU : Trophée débloqué !",
+        "✨ NOUVEAU : Souffle débloqué !",
+        "✨ NOUVEAU : Vision d'Aigle débloqué !",
+        "✨ NOUVEAU : buy-bougie débloqué !",
+        "✨ NOUVEAU : quests-daily débloqué !",
+        "✨ NOUVEAU : chests débloqué !"
+      ],
+      "positions": [
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        }
+      ],
+      "styles": [
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        }
+      ],
+      "viewport": {
+        "w": 540,
+        "h": 960
+      },
+      "revealed": [
+        "tapValue",
+        "critChance",
+        "autoTap",
+        "lapBonus",
+        "endurance",
+        "eagleEye",
+        "buy-bougie",
+        "quests-daily",
+        "chests"
+      ]
+    },
+    "toast_after_fade": {
+      "count": 0,
+      "texts": [],
+      "positions": [],
+      "styles": [],
+      "viewport": {
+        "w": 540,
+        "h": 960
+      },
+      "revealed": [
+        "tapValue",
+        "critChance",
+        "autoTap",
+        "lapBonus",
+        "endurance",
+        "eagleEye",
+        "buy-bougie",
+        "quests-daily",
+        "chests"
+      ]
+    },
+    "btn_drawer_flash": {
+      "found": true,
+      "classes": "upg-btn upg-auto locked",
+      "hasJustUnlocked": false,
+      "locked": "0",
+      "visible": true
+    }
+  },
+  "km25_baseSpeed": {
+    "km": 25,
+    "name": "baseSpeed",
+    "toast_at_appear": {
+      "count": 12,
+      "texts": [
+        "✨ NOUVEAU : Puissance débloqué !",
+        "✨ NOUVEAU : Chance critique débloqué !",
+        "✨ NOUVEAU : Auto-pilote débloqué !",
+        "✨ NOUVEAU : Trophée débloqué !",
+        "✨ NOUVEAU : Souffle débloqué !",
+        "✨ NOUVEAU : Vitesse débloqué !",
+        "✨ NOUVEAU : Vision d'Aigle débloqué !",
+        "✨ NOUVEAU : buy-bougie débloqué !",
+        "✨ NOUVEAU : quests-daily débloqué !",
+        "✨ NOUVEAU : shop-premium débloqué !",
+        "✨ NOUVEAU : chests débloqué !",
+        "✨ NOUVEAU : equip débloqué !"
+      ],
+      "positions": [
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        }
+      ],
+      "styles": [
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        }
+      ],
+      "viewport": {
+        "w": 540,
+        "h": 960
+      },
+      "revealed": [
+        "tapValue",
+        "critChance",
+        "autoTap",
+        "lapBonus",
+        "endurance",
+        "baseSpeed",
+        "eagleEye",
+        "buy-bougie",
+        "quests-daily",
+        "shop-premium",
+        "chests",
+        "equip"
+      ]
+    },
+    "toast_after_fade": {
+      "count": 0,
+      "texts": [],
+      "positions": [],
+      "styles": [],
+      "viewport": {
+        "w": 540,
+        "h": 960
+      },
+      "revealed": [
+        "tapValue",
+        "critChance",
+        "autoTap",
+        "lapBonus",
+        "endurance",
+        "baseSpeed",
+        "eagleEye",
+        "buy-bougie",
+        "quests-daily",
+        "shop-premium",
+        "chests",
+        "equip"
+      ]
+    },
+    "btn_drawer_flash": {
+      "found": true,
+      "classes": "upg-btn upg-speed",
+      "hasJustUnlocked": false,
+      "locked": "0",
+      "visible": true
+    }
+  },
+  "km30_cruiseControl": {
+    "km": 30,
+    "name": "cruiseControl",
+    "toast_at_appear": {
+      "count": 15,
+      "texts": [
+        "✨ NOUVEAU : Puissance débloqué !",
+        "✨ NOUVEAU : Chance critique débloqué !",
+        "✨ NOUVEAU : Auto-pilote débloqué !",
+        "✨ NOUVEAU : Trophée débloqué !",
+        "✨ NOUVEAU : Souffle débloqué !",
+        "✨ NOUVEAU : Vitesse débloqué !",
+        "✨ NOUVEAU : Vision d'Aigle débloqué !",
+        "✨ NOUVEAU : Pilote automatique débloqué !",
+        "✨ NOUVEAU : buy-bougie débloqué !",
+        "✨ NOUVEAU : buy-doping débloqué !",
+        "✨ NOUVEAU : quests-daily débloqué !",
+        "✨ NOUVEAU : shop-premium débloqué !",
+        "✨ NOUVEAU : chests débloqué !",
+        "✨ NOUVEAU : equip débloqué !",
+        "✨ NOUVEAU : wardrobe débloqué !"
+      ],
+      "positions": [
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        },
+        {
+          "top": 80,
+          "left": 135,
+          "width": 270,
+          "height": 66
+        }
+      ],
+      "styles": [
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        },
+        {
+          "position": "fixed",
+          "zIndex": "9999",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% /",
+          "color": "rgb(26, 26, 46)",
+          "fontSize": "15px",
+          "fontWeight": "700",
+          "animation": "4s forwards unlockFadeInOut",
+          "opacity": "1",
+          "transform": "matrix(1, 0, 0, 1, -135, 0)"
+        }
+      ],
+      "viewport": {
+        "w": 540,
+        "h": 960
+      },
+      "revealed": [
+        "tapValue",
+        "critChance",
+        "autoTap",
+        "lapBonus",
+        "endurance",
+        "baseSpeed",
+        "eagleEye",
+        "cruiseControl",
+        "buy-bougie",
+        "buy-doping",
+        "quests-daily",
+        "shop-premium",
+        "chests",
+        "equip",
+        "wardrobe"
+      ]
+    },
+    "toast_after_fade": {
+      "count": 0,
+      "texts": [],
+      "positions": [],
+      "styles": [],
+      "viewport": {
+        "w": 540,
+        "h": 960
+      },
+      "revealed": [
+        "tapValue",
+        "critChance",
+        "autoTap",
+        "lapBonus",
+        "endurance",
+        "baseSpeed",
+        "eagleEye",
+        "cruiseControl",
+        "buy-bougie",
+        "buy-doping",
+        "quests-daily",
+        "shop-premium",
+        "chests",
+        "equip",
+        "wardrobe"
+      ]
+    },
+    "btn_drawer_flash": {
+      "found": true,
+      "classes": "upg-btn upg-cruise",
+      "hasJustUnlocked": false,
+      "locked": "0",
+      "visible": true
+    }
+  },
+  "stack_test_km30": {
+    "toast_count": 15,
+    "toast_texts": [
+      "✨ NOUVEAU : Puissance débloqué !",
+      "✨ NOUVEAU : Chance critique débloqué !",
+      "✨ NOUVEAU : Auto-pilote débloqué !",
+      "✨ NOUVEAU : Trophée débloqué !",
+      "✨ NOUVEAU : Souffle débloqué !",
+      "✨ NOUVEAU : Vitesse débloqué !",
+      "✨ NOUVEAU : Vision d'Aigle débloqué !",
+      "✨ NOUVEAU : Pilote automatique débloqué !",
+      "✨ NOUVEAU : buy-bougie débloqué !",
+      "✨ NOUVEAU : buy-doping débloqué !",
+      "✨ NOUVEAU : quests-daily débloqué !",
+      "✨ NOUVEAU : shop-premium débloqué !",
+      "✨ NOUVEAU : chests débloqué !",
+      "✨ NOUVEAU : equip débloqué !",
+      "✨ NOUVEAU : wardrobe débloqué !"
+    ],
+    "toast_positions": [
+      {
+        "top": 80,
+        "left": 135,
+        "width": 270,
+        "height": 66
+      },
+      {
+        "top": 80,
+        "left": 135,
+        "width": 270,
+        "height": 66
+      },
+      {
+        "top": 80,
+        "left": 135,
+        "width": 270,
+        "height": 66
+      },
+      {
+        "top": 80,
+        "left": 135,
+        "width": 270,
+        "height": 66
+      },
+      {
+        "top": 80,
+        "left": 135,
+        "width": 270,
+        "height": 66
+      },
+      {
+        "top": 80,
+        "left": 135,
+        "width": 270,
+        "height": 66
+      },
+      {
+        "top": 80,
+        "left": 135,
+        "width": 270,
+        "height": 66
+      },
+      {
+        "top": 80,
+        "left": 135,
+        "width": 270,
+        "height": 66
+      },
+      {
+        "top": 80,
+        "left": 135,
+        "width": 270,
+        "height": 66
+      },
+      {
+        "top": 80,
+        "left": 135,
+        "width": 270,
+        "height": 66
+      },
+      {
+        "top": 80,
+        "left": 135,
+        "width": 270,
+        "height": 66
+      },
+      {
+        "top": 80,
+        "left": 135,
+        "width": 270,
+        "height": 66
+      },
+      {
+        "top": 80,
+        "left": 135,
+        "width": 270,
+        "height": 66
+      },
+      {
+        "top": 80,
+        "left": 135,
+        "width": 270,
+        "height": 66
+      },
+      {
+        "top": 80,
+        "left": 135,
+        "width": 270,
+        "height": 66
+      }
+    ],
+    "revealed_unlocks": [
+      "tapValue",
+      "critChance",
+      "autoTap",
+      "lapBonus",
+      "endurance",
+      "baseSpeed",
+      "eagleEye",
+      "cruiseControl",
+      "buy-bougie",
+      "buy-doping",
+      "quests-daily",
+      "shop-premium",
+      "chests",
+      "equip",
+      "wardrobe"
+    ]
+  },
+  "console_relevant": [],
+  "console_total": 0
+}

@@ -1,0 +1,247 @@
+{
+  "tapValue": {
+    "before": {
+      "label": "BEFORE tapValue buy",
+      "gold": 100500,
+      "upgradeTapValue": 0,
+      "upgradeBaseSpeed": 0,
+      "upgradeAutoTap": 0,
+      "tapValueCalc": 1,
+      "displayKmh": null,
+      "paceText": "4.4",
+      "perTapText": "+1",
+      "perLapText": "+27",
+      "boostPerTapText": "1",
+      "goldText": "101k",
+      "btnTapBonus": "+1 goutte / tap",
+      "btnTapClasses": "upg-btn upg-power affordable locked",
+      "btnBaseBonus": "+10% vitesse passive",
+      "btnAutoBonus": "+1 tap auto/sec"
+    },
+    "after": {
+      "label": "AFTER tapValue buy",
+      "gold": 100420,
+      "upgradeTapValue": 1,
+      "upgradeBaseSpeed": 0,
+      "upgradeAutoTap": 0,
+      "tapValueCalc": 2.5,
+      "displayKmh": null,
+      "paceText": "1.0",
+      "perTapText": "+2.5",
+      "perLapText": "+27",
+      "boostPerTapText": "2.5",
+      "goldText": "100k",
+      "btnTapBonus": "+1 goutte / tap",
+      "btnTapClasses": "upg-btn upg-power affordable just-bought",
+      "btnBaseBonus": "+10% vitesse passive",
+      "btnAutoBonus": "+1 tap auto/sec"
+    },
+    "delta": {
+      "tapValue_delta": 1,
+      "tapValueCalc_delta": 1.5,
+      "perTapText_change": [
+        "+1",
+        "+2.5"
+      ],
+      "boostPerTapText_change": [
+        "1",
+        "2.5"
+      ],
+      "goldText_change": [
+        "101k",
+        "100k"
+      ],
+      "pace_change": [
+        "4.4",
+        "1.0"
+      ],
+      "btn_bonus_preview": "+1 goutte / tap"
+    },
+    "fx_events": 2,
+    "fx_names": [
+      "vibrate",
+      "particles"
+    ],
+    "btn_animation": {
+      "exists": true,
+      "classes": "upg-btn upg-power affordable just-bought",
+      "animationName": "upgBoughtFlash",
+      "animationDuration": "0.6s",
+      "justBought": true
+    }
+  },
+  "baseSpeed": {
+    "before": {
+      "label": "BEFORE baseSpeed buy",
+      "gold": 100000,
+      "upgradeTapValue": 1,
+      "upgradeBaseSpeed": 0,
+      "upgradeAutoTap": 0,
+      "tapValueCalc": 2.5,
+      "displayKmh": null,
+      "paceText": "1.0",
+      "perTapText": "+2.5",
+      "perLapText": "+27",
+      "boostPerTapText": "2.5",
+      "goldText": "100k",
+      "btnTapBonus": "+1 goutte / tap",
+      "btnTapClasses": "upg-btn upg-power affordable locked",
+      "btnBaseBonus": "+10% vitesse passive",
+      "btnAutoBonus": "+1 tap auto/sec"
+    },
+    "after": {
+      "label": "AFTER baseSpeed buy",
+      "gold": 97000,
+      "upgradeTapValue": 1,
+      "upgradeBaseSpeed": 1,
+      "upgradeAutoTap": 0,
+      "tapValueCalc": 2.5,
+      "displayKmh": null,
+      "paceText": "1.2",
+      "perTapText": "+2.5",
+      "perLapText": "+27",
+      "boostPerTapText": "2.5",
+      "goldText": "97k",
+      "btnTapBonus": "+1 goutte / tap",
+      "btnTapClasses": "upg-btn upg-power affordable",
+      "btnBaseBonus": "+10% vitesse passive",
+      "btnAutoBonus": "+1 tap auto/sec"
+    },
+    "after_2s": {
+      "label": "BS +2s",
+      "gold": 97000,
+      "upgradeTapValue": 1,
+      "upgradeBaseSpeed": 1,
+      "upgradeAutoTap": 0,
+      "tapValueCalc": 2.5,
+      "displayKmh": null,
+      "paceText": "1.2",
+      "perTapText": "+2.5",
+      "perLapText": "+27",
+      "boostPerTapText": "2.5",
+      "goldText": "97k",
+      "btnTapBonus": "+1 goutte / tap",
+      "btnTapClasses": "upg-btn upg-power affordable",
+      "btnBaseBonus": "+10% vitesse passive",
+      "btnAutoBonus": "+1 tap auto/sec"
+    },
+    "delta": {
+      "baseSpeed_delta": 1,
+      "displayKmh_change": [
+        null,
+        null
+      ],
+      "pace_change": [
+        "1.0",
+        "1.2"
+      ],
+      "btn_bonus_preview": "+10% vitesse passive",
+      "fx_count": 6
+    }
+  },
+  "autoTap": {
+    "before": {
+      "label": "BEFORE autoTap buy",
+      "gold": 100000,
+      "upgradeTapValue": 1,
+      "upgradeBaseSpeed": 1,
+      "upgradeAutoTap": 0,
+      "tapValueCalc": 2.5,
+      "displayKmh": null,
+      "paceText": "1.2",
+      "perTapText": "+2.5",
+      "perLapText": "+27",
+      "boostPerTapText": "2.5",
+      "goldText": "100k",
+      "btnTapBonus": "+1 goutte / tap",
+      "btnTapClasses": "upg-btn upg-power affordable",
+      "btnBaseBonus": "+10% vitesse passive",
+      "btnAutoBonus": "+1 tap auto/sec"
+    },
+    "after": {
+      "label": "AFTER autoTap buy",
+      "gold": 97500,
+      "upgradeTapValue": 1,
+      "upgradeBaseSpeed": 1,
+      "upgradeAutoTap": 1,
+      "tapValueCalc": 2.5,
+      "displayKmh": null,
+      "paceText": "1.5",
+      "perTapText": "+2.5",
+      "perLapText": "+27",
+      "boostPerTapText": "2.5",
+      "goldText": "98k",
+      "btnTapBonus": "+1 goutte / tap",
+      "btnTapClasses": "upg-btn upg-power affordable",
+      "btnBaseBonus": "+10% vitesse passive",
+      "btnAutoBonus": "+1 tap auto/sec"
+    },
+    "after_3s": {
+      "label": "AT +3s",
+      "gold": 97510,
+      "upgradeTapValue": 1,
+      "upgradeBaseSpeed": 1,
+      "upgradeAutoTap": 1,
+      "tapValueCalc": 2.5,
+      "displayKmh": null,
+      "paceText": "1.6",
+      "perTapText": "+2.5",
+      "perLapText": "+27",
+      "boostPerTapText": "2.5",
+      "goldText": "98k",
+      "btnTapBonus": "+1 goutte / tap",
+      "btnTapClasses": "upg-btn upg-power affordable locked",
+      "btnBaseBonus": "+10% vitesse passive",
+      "btnAutoBonus": "+1 tap auto/sec"
+    },
+    "delta": {
+      "autoTap_delta": 1,
+      "gold_change_after_3s": [
+        97500,
+        97510
+      ],
+      "gold_passive_gain_3s": 10,
+      "btn_bonus_preview": "+1 tap auto/sec",
+      "fx_count": 6
+    }
+  },
+  "preview_check": {
+    "tapValue": {
+      "data_bonus": "+1 goutte / tap",
+      "has_preview_visible_in_dom": false,
+      "desc_text": "+1 goutte / tap",
+      "lvl_text": "Niv 1",
+      "cost_text": "124"
+    },
+    "baseSpeed": {
+      "data_bonus": "+10% vitesse passive",
+      "has_preview_visible_in_dom": false,
+      "desc_text": "+10% vitesse passive",
+      "lvl_text": "Niv 1",
+      "cost_text": "5.0k"
+    },
+    "autoTap": {
+      "data_bonus": "+1 tap auto/sec",
+      "has_preview_visible_in_dom": false,
+      "desc_text": "+1 tap auto / seconde",
+      "lvl_text": "Niv 1",
+      "cost_text": "4.1k"
+    },
+    "lapBonus": {
+      "data_bonus": "+3 gouttes/km",
+      "has_preview_visible_in_dom": false,
+      "desc_text": "+2 gouttes à chaque km",
+      "lvl_text": "Niv 0",
+      "cost_text": "400"
+    },
+    "critChance": {
+      "data_bonus": "+1% chance crit",
+      "has_preview_visible_in_dom": false,
+      "desc_text": "+1% chance ×5 gouttes",
+      "lvl_text": "Niv 0",
+      "cost_text": "350"
+    }
+  },
+  "gold_mutations_count": 24,
+  "console_errors": []
+}

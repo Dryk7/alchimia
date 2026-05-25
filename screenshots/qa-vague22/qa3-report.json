@@ -1,0 +1,307 @@
+{
+  "exposed": {
+    "getBossIdForKm": "function",
+    "getActiveBoss": "function",
+    "defeatBoss": "function",
+    "spawnNpc": "undefined",
+    "BOSS_KM_MAP": "object",
+    "STATE_bosses": "object",
+    "STATE_bosses_keys": [
+      "draftbreaker",
+      "shadowpace",
+      "stormsprint",
+      "ironlung",
+      "mirror",
+      "cosmic",
+      "moonking"
+    ]
+  },
+  "boss_km_map": {
+    "60": "draftbreaker",
+    "80": "shadowpace",
+    "110": "stormsprint",
+    "140": "ironlung",
+    "170": "mirror",
+    "200": "cosmic",
+    "250": "moonking"
+  },
+  "initial_bosses": {
+    "draftbreaker": {
+      "name": "Draftbreaker",
+      "spawnKm": 60,
+      "type": "stamina_drain",
+      "defeated": false
+    },
+    "shadowpace": {
+      "name": "Shadow Pace",
+      "spawnKm": 80,
+      "type": "mirror_speed",
+      "defeated": false
+    },
+    "stormsprint": {
+      "name": "Storm Sprinter",
+      "spawnKm": 110,
+      "type": "rain_trigger",
+      "defeated": false
+    },
+    "ironlung": {
+      "name": "Iron Lung",
+      "spawnKm": 140,
+      "type": "no_regen",
+      "defeated": false
+    },
+    "mirror": {
+      "name": "Mirror Match",
+      "spawnKm": 170,
+      "type": "double_hero",
+      "defeated": false
+    },
+    "cosmic": {
+      "name": "Cosmic Runner",
+      "spawnKm": 200,
+      "type": "teleport",
+      "defeated": false
+    },
+    "moonking": {
+      "name": "King of the Moon",
+      "spawnKm": 250,
+      "type": "all_effects",
+      "defeated": false
+    }
+  },
+  "spawn_results": [
+    {
+      "km": 60,
+      "expected_id": "draftbreaker",
+      "getBossIdForKm": "draftbreaker",
+      "getActiveBoss": {
+        "id": "draftbreaker",
+        "name": "Draftbreaker",
+        "spawnKm": 60,
+        "type": "stamina_drain",
+        "defeated": false,
+        "lore": "Aspire l'air autour de lui"
+      },
+      "spawn_attempts": 1,
+      "npcs_src": "none",
+      "npcs_total": 0,
+      "boss_npc": null,
+      "helper_match": true,
+      "active_match": true,
+      "npc_bossId_match": false,
+      "npc_isBoss_true": false,
+      "npc_tier_ge6": false
+    },
+    {
+      "km": 80,
+      "expected_id": "shadowpace",
+      "getBossIdForKm": "shadowpace",
+      "getActiveBoss": {
+        "id": "shadowpace",
+        "name": "Shadow Pace",
+        "spawnKm": 80,
+        "type": "mirror_speed",
+        "defeated": false,
+        "lore": "Te copie pour mieux t'écraser"
+      },
+      "spawn_attempts": 1,
+      "npcs_src": "none",
+      "npcs_total": 0,
+      "boss_npc": null,
+      "helper_match": true,
+      "active_match": true,
+      "npc_bossId_match": false,
+      "npc_isBoss_true": false,
+      "npc_tier_ge6": false
+    },
+    {
+      "km": 110,
+      "expected_id": "stormsprint",
+      "getBossIdForKm": "stormsprint",
+      "getActiveBoss": {
+        "id": "stormsprint",
+        "name": "Storm Sprinter",
+        "spawnKm": 110,
+        "type": "rain_trigger",
+        "defeated": false,
+        "lore": "Vient avec son propre orage"
+      },
+      "spawn_attempts": 1,
+      "npcs_src": "none",
+      "npcs_total": 0,
+      "boss_npc": null,
+      "helper_match": true,
+      "active_match": true,
+      "npc_bossId_match": false,
+      "npc_isBoss_true": false,
+      "npc_tier_ge6": false
+    },
+    {
+      "km": 140,
+      "expected_id": "ironlung",
+      "getBossIdForKm": "ironlung",
+      "getActiveBoss": {
+        "id": "ironlung",
+        "name": "Iron Lung",
+        "spawnKm": 140,
+        "type": "no_regen",
+        "defeated": false,
+        "lore": "Sa présence asphyxie"
+      },
+      "spawn_attempts": 1,
+      "npcs_src": "none",
+      "npcs_total": 0,
+      "boss_npc": null,
+      "helper_match": true,
+      "active_match": true,
+      "npc_bossId_match": false,
+      "npc_isBoss_true": false,
+      "npc_tier_ge6": false
+    },
+    {
+      "km": 170,
+      "expected_id": "mirror",
+      "getBossIdForKm": "mirror",
+      "getActiveBoss": {
+        "id": "mirror",
+        "name": "Mirror Match",
+        "spawnKm": 170,
+        "type": "double_hero",
+        "defeated": false,
+        "lore": "Reflet du futur, sombre"
+      },
+      "spawn_attempts": 1,
+      "npcs_src": "none",
+      "npcs_total": 0,
+      "boss_npc": null,
+      "helper_match": true,
+      "active_match": true,
+      "npc_bossId_match": false,
+      "npc_isBoss_true": false,
+      "npc_tier_ge6": false
+    },
+    {
+      "km": 200,
+      "expected_id": "cosmic",
+      "getBossIdForKm": "cosmic",
+      "getActiveBoss": {
+        "id": "cosmic",
+        "name": "Cosmic Runner",
+        "spawnKm": 200,
+        "type": "teleport",
+        "defeated": false,
+        "lore": "Foule les couloirs du cosmos"
+      },
+      "spawn_attempts": 1,
+      "npcs_src": "none",
+      "npcs_total": 0,
+      "boss_npc": null,
+      "helper_match": true,
+      "active_match": true,
+      "npc_bossId_match": false,
+      "npc_isBoss_true": false,
+      "npc_tier_ge6": false
+    },
+    {
+      "km": 250,
+      "expected_id": "moonking",
+      "getBossIdForKm": "moonking",
+      "getActiveBoss": {
+        "id": "moonking",
+        "name": "King of the Moon",
+        "spawnKm": 250,
+        "type": "all_effects",
+        "defeated": false,
+        "lore": "Le ciel-roi des coureurs morts"
+      },
+      "spawn_attempts": 1,
+      "npcs_src": "none",
+      "npcs_total": 0,
+      "boss_npc": null,
+      "helper_match": true,
+      "active_match": true,
+      "npc_bossId_match": false,
+      "npc_isBoss_true": false,
+      "npc_tier_ge6": false
+    }
+  ],
+  "defeat_result": {
+    "call": {
+      "ok": true
+    },
+    "before": {
+      "stars": 0,
+      "gold": 100500,
+      "totalStarsEarned": 0,
+      "defeated": false
+    },
+    "after": {
+      "stars": 1,
+      "gold": 110500,
+      "totalStarsEarned": 1,
+      "defeated": true
+    },
+    "delta_stars": 1,
+    "delta_gold": 10000,
+    "delta_totalStars": 1,
+    "stars_plus_1": true,
+    "gold_plus_10000": true,
+    "defeated_true": true
+  },
+  "no_respawn_after_defeat": {
+    "km": 60,
+    "expected_id_when_defeated": null,
+    "getBossIdForKm_returned": null,
+    "getActiveBoss_returned": null,
+    "skip_defeated_ok": true
+  },
+  "boundaries": {
+    "km_59": {
+      "expected": "draftbreaker",
+      "got": "draftbreaker",
+      "match": true
+    },
+    "km_61": {
+      "expected": "draftbreaker",
+      "got": "draftbreaker",
+      "match": true
+    },
+    "km_62": {
+      "expected": null,
+      "got": null,
+      "match": true
+    },
+    "km_58": {
+      "expected": null,
+      "got": null,
+      "match": true
+    }
+  },
+  "page_errors_total": 0,
+  "console_errors_total": 0,
+  "page_errors": [],
+  "console_errors": [],
+  "scenario_errors": {
+    "spawn_km60": [
+      "spawnNpc-fail attempt 0: {'ok': False, 'reason': 'no spawnNpc'}"
+    ],
+    "spawn_km80": [
+      "spawnNpc-fail attempt 0: {'ok': False, 'reason': 'no spawnNpc'}"
+    ],
+    "spawn_km110": [
+      "spawnNpc-fail attempt 0: {'ok': False, 'reason': 'no spawnNpc'}"
+    ],
+    "spawn_km140": [
+      "spawnNpc-fail attempt 0: {'ok': False, 'reason': 'no spawnNpc'}"
+    ],
+    "spawn_km170": [
+      "spawnNpc-fail attempt 0: {'ok': False, 'reason': 'no spawnNpc'}"
+    ],
+    "spawn_km200": [
+      "spawnNpc-fail attempt 0: {'ok': False, 'reason': 'no spawnNpc'}"
+    ],
+    "spawn_km250": [
+      "spawnNpc-fail attempt 0: {'ok': False, 'reason': 'no spawnNpc'}"
+    ]
+  }
+}

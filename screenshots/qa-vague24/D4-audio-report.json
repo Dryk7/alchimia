@@ -1,0 +1,66 @@
+{
+  "sfx_distinct_functions": 17,
+  "sfx_function_names": [
+    "sfxBuyScaled",
+    "sfxClaim",
+    "sfxDeny",
+    "sfxFootstep",
+    "sfxGrand",
+    "sfxHurdleByKind",
+    "sfxHurdleCleared",
+    "sfxHurdleFail",
+    "sfxItemUpgrade",
+    "sfxJump",
+    "sfxKmBell",
+    "sfxLand",
+    "sfxMerge",
+    "sfxSpawn",
+    "sfxSpeedMilestone",
+    "sfxSprintKick",
+    "sfxStart"
+  ],
+  "blip_oneshot_calls": 272,
+  "createOscillator_calls": 31,
+  "bgm_presets": [
+    "CHILL",
+    "EARLY",
+    "INTRO",
+    "STADIUM"
+  ],
+  "bgm_count": 4,
+  "adaptive_signals": {
+    "stamina ratio": true,
+    "biome switch": true,
+    "tempo by stamina": true,
+    "sprint kick layer": true,
+    "ducking sidechain": true
+  },
+  "has_setIntensity": true,
+  "has_setTempo": true,
+  "has_mute": true,
+  "has_volume_slider": true,
+  "has_stereo_panner": true,
+  "has_fade_ramps": true,
+  "has_intro_jingle": true,
+  "has_kmBell": true,
+  "runtime": {
+    "ProcBGM_exists": true,
+    "isPlaying_t0": true,
+    "preset_t0": "chill",
+    "preset_after_chill": "chill",
+    "preset_after_intro": "intro",
+    "preset_after_stadium": "stadium",
+    "preset_after_early": "early",
+    "has_setIntensity_rt": true,
+    "has_setTempo_rt": true,
+    "adaptive_call_ok": true
+  },
+  "scores": {
+    "sfx": 0.68,
+    "bgm": 0.8,
+    "adaptive": 2.0,
+    "polish": 3.0,
+    "memorability": 0.5
+  },
+  "NOTE_AUDIO": 7.0
+}

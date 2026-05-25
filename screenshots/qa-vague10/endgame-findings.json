@@ -1,0 +1,232 @@
+{
+  "steps": [
+    {
+      "km": 75,
+      "hud": {
+        "gold": {
+          "text": "50M",
+          "w": 31,
+          "h": 15,
+          "visible": true
+        },
+        "km": {
+          "text": "75.00",
+          "w": 35,
+          "h": 13,
+          "visible": true
+        },
+        "kmh": null,
+        "lvl": {
+          "text": "NIV 50",
+          "w": 55,
+          "h": 19,
+          "visible": true
+        },
+        "ascBtn": {
+          "text": "ASCENSION DISPO · +0 ★",
+          "w": 0,
+          "h": 0,
+          "visible": false
+        },
+        "npcSummary": null,
+        "canAscend": false,
+        "biome": "stadium"
+      },
+      "overlaps": [],
+      "screenshot": "endgame-km075.png"
+    },
+    {
+      "km": 85,
+      "hud": {
+        "gold": {
+          "text": "50M",
+          "w": 31,
+          "h": 15,
+          "visible": true
+        },
+        "km": {
+          "text": "85.00",
+          "w": 35,
+          "h": 13,
+          "visible": true
+        },
+        "kmh": null,
+        "lvl": {
+          "text": "NIV 50",
+          "w": 55,
+          "h": 19,
+          "visible": true
+        },
+        "ascBtn": {
+          "text": "ASCENSION DISPO · +0 ★",
+          "w": 0,
+          "h": 0,
+          "visible": false
+        },
+        "npcSummary": null,
+        "canAscend": false,
+        "biome": "stadium"
+      },
+      "overlaps": [],
+      "screenshot": "endgame-km085.png"
+    },
+    {
+      "km": 95,
+      "hud": {
+        "gold": {
+          "text": "50M",
+          "w": 31,
+          "h": 15,
+          "visible": true
+        },
+        "km": {
+          "text": "95.00",
+          "w": 35,
+          "h": 13,
+          "visible": true
+        },
+        "kmh": null,
+        "lvl": {
+          "text": "NIV 50",
+          "w": 55,
+          "h": 19,
+          "visible": true
+        },
+        "ascBtn": {
+          "text": "ASCENSION DISPO · +0 ★",
+          "w": 0,
+          "h": 0,
+          "visible": false
+        },
+        "npcSummary": null,
+        "canAscend": false,
+        "biome": "stadium"
+      },
+      "overlaps": [],
+      "screenshot": "endgame-km095.png"
+    },
+    {
+      "km": 99,
+      "hud": {
+        "gold": {
+          "text": "50M",
+          "w": 31,
+          "h": 15,
+          "visible": true
+        },
+        "km": {
+          "text": "99.00",
+          "w": 35,
+          "h": 13,
+          "visible": true
+        },
+        "kmh": null,
+        "lvl": {
+          "text": "NIV 50",
+          "w": 55,
+          "h": 19,
+          "visible": true
+        },
+        "ascBtn": {
+          "text": "ASCENSION DISPO · +0 ★",
+          "w": 0,
+          "h": 0,
+          "visible": false
+        },
+        "npcSummary": null,
+        "canAscend": false,
+        "biome": "stadium"
+      },
+      "overlaps": [],
+      "screenshot": "endgame-km099.png"
+    },
+    {
+      "km": 100,
+      "hud": {
+        "gold": {
+          "text": "50M",
+          "w": 31,
+          "h": 15,
+          "visible": true
+        },
+        "km": {
+          "text": "100.00",
+          "w": 43,
+          "h": 13,
+          "visible": true
+        },
+        "kmh": null,
+        "lvl": {
+          "text": "NIV 50",
+          "w": 55,
+          "h": 19,
+          "visible": true
+        },
+        "ascBtn": {
+          "text": "ASCENSION DISPO · +10 ★",
+          "w": 528,
+          "h": 46,
+          "visible": true
+        },
+        "npcSummary": null,
+        "canAscend": true,
+        "biome": "lunar"
+      },
+      "overlaps": [],
+      "screenshot": "endgame-km100.png"
+    }
+  ],
+  "errors": [],
+  "warnings": [],
+  "observations": {
+    "epic_status": {
+      "epicPlayed": false,
+      "epicNodePresent": false,
+      "ascendBtnVisible": true,
+      "canAscend": true,
+      "ascensionOverlayPresent": true,
+      "ascensionOverlayShown": false
+    },
+    "ascension_btn": "btn_hidden",
+    "achievements_check": {
+      "lap_75": true,
+      "lap_100": false,
+      "biome_flame": true,
+      "t6_first": true,
+      "speed_25": false,
+      "speed_33": false,
+      "_unlocked": [
+        "gold_500",
+        "gold_5000",
+        "gold_50k",
+        "gold_500k",
+        "gold_1M",
+        "tap_100",
+        "tap_1000",
+        "tap_10000",
+        "lap_1",
+        "lap_3",
+        "lap_10",
+        "lap_25",
+        "lap_50",
+        "lap_75",
+        "lap_100",
+        "biome_rural",
+        "biome_urban",
+        "biome_stadium",
+        "biome_flame",
+        "hurdle_10",
+        "hurdle_100",
+        "lvl_10",
+        "lvl_25",
+        "lvl_50",
+        "npc_50",
+        "t6_first"
+      ]
+    },
+    "console_logs_count": 0,
+    "console_logs_sample": [],
+    "page_errors": []
+  },
+  "summary": {}
+}

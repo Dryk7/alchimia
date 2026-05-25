@@ -1,0 +1,385 @@
+{
+  "url": "http://localhost:8770/",
+  "codex_meta": {
+    "ok": true,
+    "length": 20,
+    "ids": [
+      "l01",
+      "l02",
+      "l03",
+      "l04",
+      "l05",
+      "l06",
+      "l07",
+      "l08",
+      "l09",
+      "l10",
+      "l11",
+      "l12",
+      "l13",
+      "l14",
+      "l15",
+      "l16",
+      "l17",
+      "l18",
+      "l19",
+      "l20"
+    ],
+    "conds": [
+      "km1",
+      "km5",
+      "km12",
+      "km20",
+      "km30",
+      "boss_ironlung",
+      "km42",
+      "km50",
+      "km60",
+      "boss_stormsprint",
+      "km75",
+      "km80",
+      "km90",
+      "km99",
+      "km100",
+      "km110",
+      "boss_cosmic",
+      "ascend5",
+      "boss_moonking",
+      "final"
+    ],
+    "duplicates": [],
+    "hasTitle": true,
+    "hasText": true,
+    "hasIsLoreUnlocked": true,
+    "hasOpenLore": true,
+    "hasRenderLore": true
+  },
+  "paliers": {
+    "km0": {
+      "total": 20,
+      "count": 0,
+      "unlocked": [],
+      "locked": [
+        "l01(km1)",
+        "l02(km5)",
+        "l03(km12)",
+        "l04(km20)",
+        "l05(km30)",
+        "l06(boss_ironlung)",
+        "l07(km42)",
+        "l08(km50)",
+        "l09(km60)",
+        "l10(boss_stormsprint)",
+        "l11(km75)",
+        "l12(km80)",
+        "l13(km90)",
+        "l14(km99)",
+        "l15(km100)",
+        "l16(km110)",
+        "l17(boss_cosmic)",
+        "l18(ascend5)",
+        "l19(boss_moonking)",
+        "l20(final)"
+      ],
+      "lapsRun": 0,
+      "ascensions": 0,
+      "bosses": {
+        "draftbreaker": false,
+        "shadowpace": false,
+        "stormsprint": false,
+        "ironlung": false,
+        "mirror": false,
+        "cosmic": false,
+        "moonking": false
+      }
+    },
+    "km5": {
+      "total": 20,
+      "count": 2,
+      "unlocked": [
+        "l01",
+        "l02"
+      ],
+      "locked": [
+        "l03(km12)",
+        "l04(km20)",
+        "l05(km30)",
+        "l06(boss_ironlung)",
+        "l07(km42)",
+        "l08(km50)",
+        "l09(km60)",
+        "l10(boss_stormsprint)",
+        "l11(km75)",
+        "l12(km80)",
+        "l13(km90)",
+        "l14(km99)",
+        "l15(km100)",
+        "l16(km110)",
+        "l17(boss_cosmic)",
+        "l18(ascend5)",
+        "l19(boss_moonking)",
+        "l20(final)"
+      ],
+      "lapsRun": 5,
+      "ascensions": 0,
+      "bosses": {
+        "draftbreaker": false,
+        "shadowpace": false,
+        "stormsprint": false,
+        "ironlung": false,
+        "mirror": false,
+        "cosmic": false,
+        "moonking": false
+      }
+    },
+    "km50": {
+      "total": 20,
+      "count": 7,
+      "unlocked": [
+        "l01",
+        "l02",
+        "l03",
+        "l04",
+        "l05",
+        "l07",
+        "l08"
+      ],
+      "locked": [
+        "l06(boss_ironlung)",
+        "l09(km60)",
+        "l10(boss_stormsprint)",
+        "l11(km75)",
+        "l12(km80)",
+        "l13(km90)",
+        "l14(km99)",
+        "l15(km100)",
+        "l16(km110)",
+        "l17(boss_cosmic)",
+        "l18(ascend5)",
+        "l19(boss_moonking)",
+        "l20(final)"
+      ],
+      "lapsRun": 50,
+      "ascensions": 0,
+      "bosses": {
+        "draftbreaker": false,
+        "shadowpace": false,
+        "stormsprint": false,
+        "ironlung": false,
+        "mirror": false,
+        "cosmic": false,
+        "moonking": false
+      }
+    },
+    "km100": {
+      "total": 20,
+      "count": 13,
+      "unlocked": [
+        "l01",
+        "l02",
+        "l03",
+        "l04",
+        "l05",
+        "l07",
+        "l08",
+        "l09",
+        "l11",
+        "l12",
+        "l13",
+        "l14",
+        "l15"
+      ],
+      "locked": [
+        "l06(boss_ironlung)",
+        "l10(boss_stormsprint)",
+        "l16(km110)",
+        "l17(boss_cosmic)",
+        "l18(ascend5)",
+        "l19(boss_moonking)",
+        "l20(final)"
+      ],
+      "lapsRun": 100,
+      "ascensions": 0,
+      "bosses": {
+        "draftbreaker": false,
+        "shadowpace": false,
+        "stormsprint": false,
+        "ironlung": false,
+        "mirror": false,
+        "cosmic": false,
+        "moonking": false
+      }
+    },
+    "boss_ironlung": {
+      "total": 20,
+      "count": 3,
+      "unlocked": [
+        "l01",
+        "l02",
+        "l06"
+      ],
+      "locked": [
+        "l03(km12)",
+        "l04(km20)",
+        "l05(km30)",
+        "l07(km42)",
+        "l08(km50)",
+        "l09(km60)",
+        "l10(boss_stormsprint)",
+        "l11(km75)",
+        "l12(km80)",
+        "l13(km90)",
+        "l14(km99)",
+        "l15(km100)",
+        "l16(km110)",
+        "l17(boss_cosmic)",
+        "l18(ascend5)",
+        "l19(boss_moonking)",
+        "l20(final)"
+      ],
+      "lapsRun": 5,
+      "ascensions": 0,
+      "bosses": {
+        "draftbreaker": false,
+        "shadowpace": false,
+        "stormsprint": false,
+        "ironlung": true,
+        "mirror": false,
+        "cosmic": false,
+        "moonking": false
+      }
+    },
+    "ascend5": {
+      "total": 20,
+      "count": 1,
+      "unlocked": [
+        "l18"
+      ],
+      "locked": [
+        "l01(km1)",
+        "l02(km5)",
+        "l03(km12)",
+        "l04(km20)",
+        "l05(km30)",
+        "l06(boss_ironlung)",
+        "l07(km42)",
+        "l08(km50)",
+        "l09(km60)",
+        "l10(boss_stormsprint)",
+        "l11(km75)",
+        "l12(km80)",
+        "l13(km90)",
+        "l14(km99)",
+        "l15(km100)",
+        "l16(km110)",
+        "l17(boss_cosmic)",
+        "l19(boss_moonking)",
+        "l20(final)"
+      ],
+      "lapsRun": 0,
+      "ascensions": 5,
+      "bosses": {
+        "draftbreaker": false,
+        "shadowpace": false,
+        "stormsprint": false,
+        "ironlung": false,
+        "mirror": false,
+        "cosmic": false,
+        "moonking": false
+      }
+    },
+    "final": {
+      "total": 20,
+      "count": 20,
+      "unlocked": [
+        "l01",
+        "l02",
+        "l03",
+        "l04",
+        "l05",
+        "l06",
+        "l07",
+        "l08",
+        "l09",
+        "l10",
+        "l11",
+        "l12",
+        "l13",
+        "l14",
+        "l15",
+        "l16",
+        "l17",
+        "l18",
+        "l19",
+        "l20"
+      ],
+      "locked": [],
+      "lapsRun": 200,
+      "ascensions": 5,
+      "bosses": {
+        "draftbreaker": false,
+        "shadowpace": false,
+        "stormsprint": true,
+        "ironlung": true,
+        "mirror": false,
+        "cosmic": true,
+        "moonking": true
+      }
+    }
+  },
+  "expected": {
+    "km0": 0,
+    "km5": 2,
+    "km50": 7,
+    "km100": 14,
+    "boss_ironlung_min": 3,
+    "ascend5_min": 1,
+    "final_min": 19
+  },
+  "modal_state_all_unlocked": {
+    "visible": true,
+    "counter": {
+      "unlocked": 20,
+      "total": 20
+    },
+    "lockedBlocks": 0,
+    "goldBlocks": 20,
+    "grayBlocks": 0,
+    "htmlLen": 8135
+  },
+  "modal_state_mostly_locked": {
+    "counter": {
+      "unlocked": 2,
+      "total": 20
+    },
+    "lockedBlocks": 18,
+    "goldBlocks": 2,
+    "grayBlocks": 18
+  },
+  "burger_inventory_lore": {
+    "count": 1
+  },
+  "burger_opened_modal": true,
+  "silent_entries_after_force_everything": {
+    "stillLocked": [],
+    "totalBosses": [
+      "draftbreaker",
+      "shadowpace",
+      "stormsprint",
+      "ironlung",
+      "mirror",
+      "cosmic",
+      "moonking",
+      "iron_lung",
+      "storm_sprint",
+      "moon_king"
+    ]
+  },
+  "page_errors_total": 0,
+  "console_errors_total": 0,
+  "console_warnings_undef_total": 0,
+  "page_errors": [],
+  "console_errors": [],
+  "console_warnings": [],
+  "scenario_errors": {}
+}

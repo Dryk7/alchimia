@@ -1,0 +1,207 @@
+{
+  "errors_console": [],
+  "snapshots": {
+    "t0_initial": {
+      "gold": 0,
+      "totalGoldEarned": 0,
+      "tapValue": 1,
+      "upgradeTapValue": 0,
+      "lapsRun": 0,
+      "lapProgress": 0.000857535000047684,
+      "totalTaps": 0,
+      "runnerStamina": 1.2225074999999992,
+      "cruiseLevel": 0,
+      "cleanAutoKm": 0,
+      "starterPackClaimed": false,
+      "starterPackDeclined": false,
+      "visibleUpgrades": [],
+      "openModals": [],
+      "storyVisible": false
+    },
+    "t1_after_story": {
+      "gold": 0,
+      "totalGoldEarned": 0,
+      "tapValue": 1,
+      "upgradeTapValue": 0,
+      "lapsRun": 0,
+      "lapProgress": 0.0014104600001192096,
+      "totalTaps": 0,
+      "runnerStamina": 1.0537650000000016,
+      "cruiseLevel": 0,
+      "cleanAutoKm": 0,
+      "starterPackClaimed": false,
+      "starterPackDeclined": false,
+      "visibleUpgrades": [],
+      "openModals": [],
+      "storyVisible": false
+    },
+    "km1": {
+      "gold": 1366.09998,
+      "totalGoldEarned": 528,
+      "tapValue": 1,
+      "upgradeTapValue": 0,
+      "lapsRun": 1,
+      "lapProgress": 0.006042734999856261,
+      "totalTaps": 104,
+      "runnerStamina": 2.1625074999999994,
+      "cruiseLevel": 0,
+      "cleanAutoKm": 0,
+      "starterPackClaimed": false,
+      "starterPackDeclined": false,
+      "visibleUpgrades": [],
+      "openModals": [],
+      "storyVisible": false
+    },
+    "km3": {
+      "gold": 2715.212899999994,
+      "totalGoldEarned": 1643,
+      "tapValue": 1,
+      "upgradeTapValue": 0,
+      "lapsRun": 3,
+      "lapProgress": 0.004839315000091192,
+      "totalTaps": 295,
+      "runnerStamina": 2.1650050000000007,
+      "cruiseLevel": 0,
+      "cleanAutoKm": 1,
+      "starterPackClaimed": false,
+      "starterPackDeclined": false,
+      "visibleUpgrades": [],
+      "openModals": [],
+      "storyVisible": false
+    },
+    "km5": {
+      "gold": 4572.993060000082,
+      "totalGoldEarned": 3389,
+      "tapValue": 1,
+      "upgradeTapValue": 0,
+      "lapsRun": 4,
+      "lapProgress": 0.8885347647110426,
+      "totalTaps": 585,
+      "runnerStamina": 1.9300074999999979,
+      "cruiseLevel": 0,
+      "cleanAutoKm": 2,
+      "starterPackClaimed": false,
+      "starterPackDeclined": false,
+      "visibleUpgrades": [],
+      "openModals": [],
+      "storyVisible": false
+    },
+    "km10": {
+      "gold": 9563.48895999993,
+      "totalGoldEarned": 5003,
+      "tapValue": 1,
+      "upgradeTapValue": 0,
+      "lapsRun": 6,
+      "lapProgress": 0.843312852010895,
+      "totalTaps": 913,
+      "runnerStamina": 2.128757499999997,
+      "cruiseLevel": 0,
+      "cleanAutoKm": 4,
+      "starterPackClaimed": false,
+      "starterPackDeclined": false,
+      "visibleUpgrades": [],
+      "openModals": [],
+      "storyVisible": false
+    },
+    "after_upgrades": {
+      "gold": 9565.189059999928,
+      "totalGoldEarned": 5003,
+      "tapValue": 1,
+      "upgradeTapValue": 0,
+      "lapsRun": 6,
+      "lapProgress": 0.8455563668964372,
+      "totalTaps": 913,
+      "runnerStamina": 2.0862549999999964,
+      "cruiseLevel": 0,
+      "cleanAutoKm": 4,
+      "starterPackClaimed": false,
+      "starterPackDeclined": false,
+      "visibleUpgrades": [],
+      "openModals": [],
+      "storyVisible": false
+    }
+  },
+  "timings": {
+    "km1_seconds": 17.36,
+    "km1_taps": 104,
+    "km3_seconds_extra": 28.73,
+    "km3_taps_extra": 191,
+    "km5_seconds_extra": 91.62,
+    "km10_seconds_extra": 120.12
+  },
+  "notes": [],
+  "story_intro": {
+    "present": true,
+    "display": "none",
+    "opacity": "1",
+    "gone": false,
+    "hasNext": true,
+    "hasSkip": true,
+    "steps": 8,
+    "stepsState": [
+      {
+        "step": "0",
+        "active": true,
+        "visible": true
+      },
+      {
+        "step": "1",
+        "active": false,
+        "visible": false
+      },
+      {
+        "step": "2",
+        "active": false,
+        "visible": false
+      },
+      {
+        "step": "3",
+        "active": false,
+        "visible": false
+      },
+      {
+        "step": "4",
+        "active": false,
+        "visible": false
+      },
+      {
+        "step": "5",
+        "active": false,
+        "visible": false
+      },
+      {
+        "step": "6",
+        "active": false,
+        "visible": false
+      },
+      {
+        "step": "7",
+        "active": false,
+        "visible": false
+      }
+    ]
+  },
+  "active_tuto": {
+    "present": true,
+    "isActive": false,
+    "isDone": false,
+    "bubbles": []
+  },
+  "starter_pack_at_km1": {
+    "present": true,
+    "visible": false,
+    "bodyText": "\n  \n    ×\n    ⏰ OFFRE DE BIENVENUE\n    STARTER PACK\n    \n      \n      Réservé aux nouveaux joueurs\n    \n    \n      5 000 gouttes instant\n      30 gemmes\n      ×2 gouttes pendant 24h automatique\n      Manager Sprinter offert\n    \n    RÉCUPÉRER (GRATUIT)\n    Cette offre disparaît à la première ascension.\n  \n"
+  },
+  "upgrade_purchases_at_km10": [],
+  "facilities_audit": {
+    "shopBoostX2Until": 0,
+    "shopBoostActive": 0,
+    "shopBoostHoursLeft": 0,
+    "gems": 0,
+    "hasManager": false,
+    "eventActive": 1,
+    "ev_eventGoldMul": 1,
+    "comboWindow": null,
+    "tap_cooldown": 50
+  }
+}

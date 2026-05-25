@@ -1,0 +1,208 @@
+{
+  "upgrades": [
+    {
+      "id": "tapValue",
+      "name": "PUISSANCE",
+      "desc": "+1 goutte / tap",
+      "lvl": "Niv 0",
+      "cost": "80",
+      "dataTooltip": "",
+      "dataTooltipTitle": "",
+      "dataBonus": "+1 goutte / tap",
+      "ariaLabel": "Puissance",
+      "ariaDescribedBy": "",
+      "nameColor": "rgb(26, 26, 26)",
+      "descColor": "rgb(102, 102, 102)",
+      "nameSize": "12.5px",
+      "descSize": "9.5px",
+      "descWeight": "600",
+      "descLineCount": 1,
+      "descHeightPx": 11
+    },
+    {
+      "id": "critChance",
+      "name": "CHANCE",
+      "desc": "+1% chance ×5 gouttes",
+      "lvl": "Niv 0",
+      "cost": "350",
+      "dataTooltip": "",
+      "dataTooltipTitle": "",
+      "dataBonus": "+1% chance crit",
+      "ariaLabel": "Chance critique",
+      "ariaDescribedBy": "",
+      "nameColor": "rgb(26, 26, 26)",
+      "descColor": "rgb(102, 102, 102)",
+      "nameSize": "12.5px",
+      "descSize": "9.5px",
+      "descWeight": "600",
+      "descLineCount": 1,
+      "descHeightPx": 11
+    },
+    {
+      "id": "autoTap",
+      "name": "AUTO-PILOTE",
+      "desc": "+1 tap auto / seconde",
+      "lvl": "Niv 0",
+      "cost": "2.5k",
+      "dataTooltip": "",
+      "dataTooltipTitle": "",
+      "dataBonus": "+1 tap auto/sec",
+      "ariaLabel": "Auto-pilote",
+      "ariaDescribedBy": "",
+      "nameColor": "rgb(26, 26, 26)",
+      "descColor": "rgb(102, 102, 102)",
+      "nameSize": "12.5px",
+      "descSize": "9.5px",
+      "descWeight": "600",
+      "descLineCount": 1,
+      "descHeightPx": 11
+    },
+    {
+      "id": "lapBonus",
+      "name": "TROPHÉE",
+      "desc": "+2 gouttes à chaque km",
+      "lvl": "Niv 0",
+      "cost": "400",
+      "dataTooltip": "",
+      "dataTooltipTitle": "",
+      "dataBonus": "+3 gouttes/km",
+      "ariaLabel": "Trophée",
+      "ariaDescribedBy": "",
+      "nameColor": "rgb(26, 26, 26)",
+      "descColor": "rgb(102, 102, 102)",
+      "nameSize": "12.5px",
+      "descSize": "9.5px",
+      "descWeight": "600",
+      "descLineCount": 1,
+      "descHeightPx": 11
+    },
+    {
+      "id": "endurance",
+      "name": "SOUFFLE",
+      "desc": "Combo tient + longtemps",
+      "lvl": "Niv 0",
+      "cost": "800",
+      "dataTooltip": "",
+      "dataTooltipTitle": "",
+      "dataBonus": "+10% combo duree",
+      "ariaLabel": "Souffle",
+      "ariaDescribedBy": "",
+      "nameColor": "rgb(26, 26, 26)",
+      "descColor": "rgb(102, 102, 102)",
+      "nameSize": "12.5px",
+      "descSize": "9.5px",
+      "descWeight": "600",
+      "descLineCount": 1,
+      "descHeightPx": 11
+    },
+    {
+      "id": "baseSpeed",
+      "name": "VITESSE DE CROISIÈRE",
+      "desc": "+10% vitesse passive",
+      "lvl": "Niv 0",
+      "cost": "3.0k",
+      "dataTooltip": "",
+      "dataTooltipTitle": "",
+      "dataBonus": "+10% vitesse passive",
+      "ariaLabel": "Vitesse",
+      "ariaDescribedBy": "",
+      "nameColor": "rgb(26, 26, 26)",
+      "descColor": "rgb(102, 102, 102)",
+      "nameSize": "12.5px",
+      "descSize": "9.5px",
+      "descWeight": "600",
+      "descLineCount": 1,
+      "descHeightPx": 11
+    },
+    {
+      "id": "eagleEye",
+      "name": "VISION D'AIGLE",
+      "desc": "Haies visibles 2× plus loin",
+      "lvl": "Niv 0",
+      "cost": "1.5k",
+      "dataTooltip": "",
+      "dataTooltipTitle": "",
+      "dataBonus": "+15% vision haies",
+      "ariaLabel": "Vision d'Aigle",
+      "ariaDescribedBy": "",
+      "nameColor": "rgb(26, 26, 26)",
+      "descColor": "rgb(102, 102, 102)",
+      "nameSize": "12.5px",
+      "descSize": "9.5px",
+      "descWeight": "600",
+      "descLineCount": 1,
+      "descHeightPx": 11
+    },
+    {
+      "id": "cruiseControl",
+      "name": "PILOTE AUTO",
+      "desc": "+5% vitesse maintenue sans tap",
+      "lvl": "Niv 0",
+      "cost": "50k",
+      "dataTooltip": "",
+      "dataTooltipTitle": "",
+      "dataBonus": "+5% sprint maintenu",
+      "ariaLabel": "Pilote automatique",
+      "ariaDescribedBy": "",
+      "nameColor": "rgb(26, 26, 26)",
+      "descColor": "rgb(102, 102, 102)",
+      "nameSize": "12.5px",
+      "descSize": "9.5px",
+      "descWeight": "600",
+      "descLineCount": 1,
+      "descHeightPx": 11
+    }
+  ],
+  "i18n_descs": {
+    "fr": {
+      "upg_desc_tapValue": "Chaque pas pèse plus lourd — +1 goutte par tap",
+      "upg_desc_critChance": "1% de plus de récolter le jackpot ×5 sur un tap",
+      "upg_desc_lapBonus": "Boucler 1 km te rapporte +2 gouttes",
+      "upg_desc_autoTap": "Ton coureur tape lui-même 1 fois par seconde",
+      "upg_desc_endurance": "Tu peux respirer plus longtemps entre 2 sprints",
+      "upg_desc_baseSpeed": "+10% de vitesse même quand tu ne tapes pas",
+      "upg_desc_cruiseControl": "+5% de vitesse maintenue sans toucher l'écran",
+      "upg_desc_eagleEye": "Tu vois les haies 2× plus loin — plus de temps pour préparer le saut"
+    },
+    "en": {
+      "upg_desc_tapValue": "Each stride hits harder — +1 drop per tap",
+      "upg_desc_critChance": "+1% chance to land a ×5 drop jackpot",
+      "upg_desc_lapBonus": "Every km completed earns +2 extra drops",
+      "upg_desc_autoTap": "Your runner taps 1 time per second on their own",
+      "upg_desc_endurance": "You can breathe longer between two sprints",
+      "upg_desc_baseSpeed": "+10% speed even when you don't tap",
+      "upg_desc_cruiseControl": "+5% maintained speed without touching the screen",
+      "upg_desc_eagleEye": "You see hurdles 2× farther — more time to prepare your jump"
+    }
+  },
+  "tooltips_system": {
+    "hasTooltips": true,
+    "hasTooltipCss": true,
+    "countDataTooltipGlobal": 11,
+    "countUpgWithDataTooltip": 0,
+    "countUpgWithDataBonus": 8
+  },
+  "longpress_tests": [
+    {
+      "id": "tapValue",
+      "tooltipShown": false,
+      "state": {
+        "exists": false
+      }
+    },
+    {
+      "id": "critChance",
+      "tooltipShown": false,
+      "state": {
+        "exists": false
+      }
+    },
+    {
+      "id": "autoTap",
+      "tooltipShown": false,
+      "state": {
+        "exists": false
+      }
+    }
+  ]
+}

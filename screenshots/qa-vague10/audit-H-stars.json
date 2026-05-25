@@ -1,0 +1,178 @@
+{
+  "prestige_button": {
+    "found": true,
+    "rect": {
+      "x": 99,
+      "y": 293,
+      "w": 338,
+      "h": 26
+    },
+    "visible": true,
+    "display": "flex",
+    "visibility": "visible",
+    "opacity": "1",
+    "pointerEvents": "auto",
+    "classes": "menu-item",
+    "locked": false,
+    "unlockKm": "100",
+    "title": "PRESTIGE",
+    "sub": "investis tes étoiles permanentes"
+  },
+  "modal": {
+    "found": true,
+    "isOpen": true,
+    "modalDisplay": "flex",
+    "modalOpacity": "1",
+    "modalClasses": "modal show",
+    "card": {
+      "x": 40,
+      "y": 96,
+      "w": 460,
+      "h": 768,
+      "maxWidth": "480px",
+      "maxHeight": "768px",
+      "overflowY": "auto"
+    },
+    "avail": {
+      "text": "20",
+      "fontSize": "18px",
+      "fontWeight": "900",
+      "color": "rgb(255, 208, 96)"
+    },
+    "nodeCount": 8,
+    "nodes": [
+      {
+        "label": "PUISSANCE TAP+10% gouttes par tapNiv 0 / 51 ⭐",
+        "desc": "+10% gouttes par tap",
+        "levelLine": "Niv 0 / 5",
+        "btnText": "1 ⭐",
+        "btnDisabled": false,
+        "btnDataNode": "tapPower",
+        "visible": true,
+        "h": 76
+      },
+      {
+        "label": "MAÎTRE DU KM+15% gouttes par lapNiv 0 / 5",
+        "desc": "+15% gouttes par lap",
+        "levelLine": "Niv 0 / 5",
+        "btnText": "1 ⭐",
+        "btnDisabled": false,
+        "btnDataNode": "lapPower",
+        "visible": true,
+        "h": 76
+      },
+      {
+        "label": "CHANCEUX+20% drop rate itemsNiv 0 / 5",
+        "desc": "+20% drop rate items",
+        "levelLine": "Niv 0 / 5",
+        "btnText": "2 ⭐",
+        "btnDisabled": false,
+        "btnDataNode": "dropRate",
+        "visible": true,
+        "h": 76
+      },
+      {
+        "label": "VITESSE NATIVE+10% vitesse passiveNiv 0 / 5",
+        "desc": "+10% vitesse passive",
+        "levelLine": "Niv 0 / 5",
+        "btnText": "2 ⭐",
+        "btnDisabled": false,
+        "btnDataNode": "basePower",
+        "visible": true,
+        "h": 76
+      },
+      {
+        "label": "POUMONS+50 stamina maxNiv 0 / 4",
+        "desc": "+50 stamina max",
+        "levelLine": "Niv 0 / 4",
+        "btnText": "1 ⭐",
+        "btnDisabled": false,
+        "btnDataNode": "staminaPlus",
+        "visible": true,
+        "h": 76
+      },
+      {
+        "label": "COUP CRITIQUE+10% chance critNiv 0 / 4",
+        "desc": "+10% chance crit",
+        "levelLine": "Niv 0 / 4",
+        "btnText": "2 ⭐",
+        "btnDisabled": false,
+        "btnDataNode": "critPower",
+        "visible": true,
+        "h": 76
+      },
+      {
+        "label": "RÉFLEXES-15% cooldown skillsNiv 0 / 3",
+        "desc": "-15% cooldown skills",
+        "levelLine": "Niv 0 / 3",
+        "btnText": "3 ⭐",
+        "btnDisabled": false,
+        "btnDataNode": "cooldownNeg",
+        "visible": true,
+        "h": 76
+      },
+      {
+        "label": "JACKPOT ÉTOILES+1 étoile bonus / ascensionNiv 0 / 3",
+        "desc": "+1 étoile bonus / ascension",
+        "levelLine": "Niv 0 / 3",
+        "btnText": "5 ⭐",
+        "btnDisabled": false,
+        "btnDataNode": "starsJackpot",
+        "visible": true,
+        "h": 76
+      }
+    ],
+    "viewport": {
+      "w": 540,
+      "h": 960
+    }
+  },
+  "before": {
+    "stars": 20,
+    "starTree": {
+      "tapPower": 0,
+      "lapPower": 0,
+      "dropRate": 0,
+      "basePower": 0,
+      "staminaPlus": 0,
+      "critPower": 0,
+      "cooldownNeg": 0,
+      "starsJackpot": 0
+    }
+  },
+  "click": {
+    "ok": true,
+    "node": "tapPower",
+    "txt": "1 ⭐"
+  },
+  "after": {
+    "stars": 19,
+    "starTree": {
+      "tapPower": 1,
+      "lapPower": 0,
+      "dropRate": 0,
+      "basePower": 0,
+      "staminaPlus": 0,
+      "critPower": 0,
+      "cooldownNeg": 0,
+      "starsJackpot": 0
+    },
+    "newBtnTxt": "2 ⭐",
+    "newBtnDisabled": false
+  },
+  "valid": {
+    "stars_dropped": true,
+    "node_incremented": true
+  },
+  "visual": {
+    "nbSvgs": 1,
+    "nbLines": 1,
+    "nbCards": 8,
+    "cardSampleBgs": [
+      "rgba(255, 212, 96, 0.08) none repeat scroll 0% 0% / auto padding-box border-box",
+      "rgba(255, 212, 96, 0.08) none repeat scroll 0% 0% / auto padding-box border-box",
+      "rgba(255, 212, 96, 0.08) none repeat scroll 0% 0% / auto padding-box border-box"
+    ],
+    "listLayout": "display: flex; flex-direction: column;"
+  }
+}

@@ -11463,7 +11463,7 @@ const ACHIEVEMENTS = [
   { id:"saison_5",     name:"Vétéran des Saisons",desc:"Atteindre la saison 5.",                          icon:"trinity", reward:500, gemReward:2, check:s => (s.saison||1)>=5 },
   { id:"saison_10",    name:"Ascensionniste",    desc:"Atteindre la saison 10.",                          icon:"trinity", reward:2000, gemReward:2, check:s => (s.saison||1)>=10 },
   { id:"daily_3",      name:"Habitué",           desc:"3 jours de récompense de suite.",                  icon:"crown",   reward:100,   check:s => (s.dailyStreak||0)>=3 },
-  { id:"daily_7",      name:"Fidèle de la Semaine",desc:"Compléter le calendrier 7 jours.",               icon:"crown",   reward:300, gemReward:1, check:s => (s.dailyCycles||0)>=1 },
+  { id:"daily_7",      name:"Fidèle de la Semaine",desc:"Compléter le calendrier 7 jours.",               icon:"crown",   reward:300, gemReward:1, check:s => (s.dailyStreak||0)>=7 },
   { id:"daily_30",     name:"Mois Complet",      desc:"30 jours de connexion consécutifs.",               icon:"crown",   reward:1000, gemReward:2, check:s => (s.dailyStreak||0)>=30 },
 
   // === SECRETS ===
@@ -13969,6 +13969,7 @@ function recordRivalBeat(rivalId){
   STATE.rivalsWon = (STATE.rivalsWon || 0) + 1;
   STATE._rivalWinStreak = (STATE._rivalWinStreak || 0) + 1;
   if(STATE._rivalWinStreak > (STATE.bestRivalStreak || 0)) STATE.bestRivalStreak = STATE._rivalWinStreak;
+  if(typeof checkAchievements === 'function') checkAchievements();
   if(typeof saveNow === 'function') saveNow();
 }
 function defeatBoss(bossId){
@@ -13979,6 +13980,19 @@ function defeatBoss(bossId){
   STATE.stars = (STATE.stars || 0) + 1;
   STATE.totalStarsEarned = (STATE.totalStarsEarned || 0) + 1;
   if(typeof showToast === 'function') showToast('⚔️ BOSS VAINCU : ' + STATE.bosses[bossId].name + ' — +1 ⭐ +10k g', 'success', 6000);
+  if(typeof checkAchievements === 'function') checkAchievements();
+  // Déverrouillage immédiat des entrées lore liées aux boss
+  try {
+    if(typeof LORE_CODEX !== 'undefined' && typeof isLoreUnlocked === 'function'){
+      STATE._loreSeenIds = STATE._loreSeenIds || {};
+      LORE_CODEX.forEach(entry => {
+        if(!STATE._loreSeenIds[entry.id] && isLoreUnlocked(entry)){
+          STATE._loreSeenIds[entry.id] = true;
+          if(typeof showToast === 'function') setTimeout(()=>showToast('Codex débloqué : ' + entry.title, 'info', 4000), 2000);
+        }
+      });
+    }
+  } catch(e){}
   if(typeof saveNow === 'function') saveNow();
 }
 window.getActiveRival = getActiveRival;
@@ -14686,7 +14700,7 @@ function shopOpenSeal(tier){
   modal.classList.add('show');
 }
 
-function buyShopItem(id, ev){
+function buyGoldShopItem(id, ev){
   const item = SHOP_ITEMS.find(s=>s.id===id);
   if(!item) return;
   // Vœu de Pauvreté : Marché scellé
@@ -14909,7 +14923,7 @@ function renderShop(){
           ${item.cost}
         </div>
       `;
-      if(can) row.addEventListener('click', (ev)=>buyShopItem(item.id, ev));
+      if(can) row.addEventListener('click', (ev)=>buyGoldShopItem(item.id, ev));
       sec.appendChild(row);
     }
     body.appendChild(sec);
@@ -15024,6 +15038,8 @@ function fireEvent(){
   const _totalW = _pool.reduce((s, x) => s + x.w, 0);
   let _r = Math.random() * _totalW;
   const e = _pool.find(x => { _r -= x.w; return _r <= 0; })?.ev || _pool[0].ev;
+  // Guard : ne pas re-déclencher un event déjà actif (évite double apply() + reset du timer)
+  if(e.duration > 0 && STATE.activeEvents?.[e.id]?.expiresAt > Date.now()) return;
   STATE.lastEvent = e.id;
   let extra = "";
   if(e.apply) extra = e.apply();
@@ -18320,6 +18336,7 @@ function openChest(chestId){
   STATE.chests[chestId] = Math.max(0, (STATE.chests[chestId] || 0) - 1);
   // VAGUE 20 — Quête Collectionneur : incrémente compteur saison
   STATE._seasonChestsOpened = (STATE._seasonChestsOpened || 0) + 1;
+  STATE.totalChestsOpened = (STATE.totalChestsOpened || 0) + 1;
   // VAGUE 23 — track stat quotidienne coffres
   if(typeof trackDailyStat === 'function') trackDailyStat('chests', 1);
   // Anim chest + reveal
@@ -18416,6 +18433,10 @@ function openAllChests(chestId){
   }
   STATE.chests[chestId] = 0;
   STATE.gold = (STATE.gold || 0) + gained;
+  STATE.totalGoldEarned = (STATE.totalGoldEarned || 0) + gained;
+  // VAGUE 20 — Quête Collectionneur (batch) + compteur total
+  STATE._seasonChestsOpened = (STATE._seasonChestsOpened || 0) + n;
+  STATE.totalChestsOpened = (STATE.totalChestsOpened || 0) + n;
   // VAGUE 23 — track stat quotidienne coffres (batch)
   if(typeof trackDailyStat === 'function') trackDailyStat('chests', n);
   if(typeof showRunnerBubble === 'function'){
@@ -18730,7 +18751,8 @@ function tapBoost(e){
   // Combo : si tap < COMBO_WINDOW depuis le précédent, +1, sinon reset
   const _prevCombo = _comboCount;
   const _stComboGain = 1 + (STATE._stComboGain || 0); // skill tree combo gain per tap (+10% per node)
-  if(now - _lastTapAt < TAP_COMBO_WINDOW && _lastTapAt > 0){
+  const _tapComboWin = (typeof recipeComboWindow === 'function') ? recipeComboWindow() : TAP_COMBO_WINDOW;
+  if(now - _lastTapAt < _tapComboWin && _lastTapAt > 0){
     _comboCount = Math.round(_comboCount + _stComboGain);
   } else {
     _comboCount = 1;
@@ -18755,7 +18777,7 @@ function tapBoost(e){
       _comboCount = 0;
     }
     updateComboDisplay();
-  }, TAP_COMBO_WINDOW + 50);
+  }, _tapComboWin + 50);
   updateComboDisplay();
   // Sync combo visuel streak
   window._comboForFire = typeof _comboCount !== 'undefined' ? _comboCount : (window._comboForFire || 0);
@@ -18923,7 +18945,7 @@ function tapBoost(e){
   }
   // Quêtes : tap counter
   if(typeof progressQuest === 'function') progressQuest('taps', 1);
-  if(_comboCount >= 10 && typeof progressQuest === 'function') progressQuest('combo', 1);
+  if(_comboCount >= 3 && typeof progressQuest === 'function') progressQuest('combo', 1);
   if(typeof renderStats === 'function') renderStats();
   if(typeof updateTapStrip === 'function') updateTapStrip();
   if(typeof updateRunnerHUD === 'function') updateRunnerHUD();
@@ -20044,6 +20066,18 @@ function _ensureDailyQuests(){
         claimed: false
       }))
     };
+    // Sync recruit progress : reflect runners already hired on new quest day
+    if(typeof _ensureTeamShape === 'function') _ensureTeamShape();
+    if(typeof TEAM_RUNNERS !== 'undefined' && STATE.team){
+      let recruited = 0;
+      for(const r of TEAM_RUNNERS) if((STATE.team[r.id]?.level||0) > 0) recruited++;
+      STATE.dailyQuests.quests.forEach(q => {
+        if(q.id.startsWith('recruit_')){
+          const def = _questDef(q.id);
+          q.progress = Math.min(def?.target || 99, recruited);
+        }
+      });
+    }
   }
 }
 function _questDef(id){ return DAILY_QUEST_TEMPLATES.find(q => q.id === id); }
@@ -20216,7 +20250,7 @@ function skillCooldownRemaining(s){
   const last = (STATE.skillsLastUsed && STATE.skillsLastUsed[s.id]) || 0;
   const cdMul = (s.id === 'sprint') ? (STATE._stSprintCdMul || 1) : 1; // skill tree sprint CD ×0.5
   // Star tree bonus
-  const _starCdNeg = (s.id === 'sprint') ? Math.max(0.1, 1 - (STATE.starTree?.cooldownNeg || 0) * 0.15) : 1;
+  const _starCdNeg = Math.max(0.1, 1 - (STATE.starTree?.cooldownNeg || 0) * 0.15);
   // === Relique ChronoCassé : -50% cooldown tous skills ===
   const _chronoCasseCdMul = (typeof hasRelic==='function' && hasRelic('chronoCasse')) ? 0.50 : 1;
   const ready = last + s.cooldown * 1000 * cdMul * _starCdNeg * _chronoCasseCdMul;
@@ -20545,6 +20579,7 @@ const SHOP_PREMIUM_ITEMS = [
     id: 'auto-managers-saison', name:'TOUS LES MANAGERS · cette saison', icon: SHOP_SVG.team,
     price:200, currency:'gems',
     desc:'Embauche les 6 managers pour cette saison (reset à l\'ascension).',
+    canBuy(){ _ensureTeamShape(); return TEAM_RUNNERS.some(r => (STATE.team[r.id]?.level||0) > 0 && !STATE.team[r.id]?.mgr); },
     apply(){
       _ensureTeamShape();
       for(const r of TEAM_RUNNERS){
@@ -20578,6 +20613,8 @@ function getShopBoostMul(){
 function buyShopItem(id){
   const item = SHOP_PREMIUM_ITEMS.find(i => i.id === id);
   if(!item){ if(typeof sfxDeny === 'function') sfxDeny(); return; }
+  // Guard : canBuy check before spending gems (e.g. one-time-per-season items)
+  if(item.canBuy && !item.canBuy()){ if(typeof sfxDeny === 'function') sfxDeny(); return; }
   if(item.currency === 'gems' && !spendGems(item.price)){
     if(typeof sfxDeny === 'function') sfxDeny(); return;
   }
@@ -20780,7 +20817,7 @@ function runnerBatchValue(r){
   const eTeamMul = (typeof eventTeamMul === 'function') ? eventTeamMul() : 1;
   const eGoldMul = (typeof eventGoldMul === 'function') ? eventGoldMul() : 1;
   const skillTeam = (typeof skillBreathTeamMul === 'function') ? skillBreathTeamMul() : 1;
-  const equipMul = (typeof equipBonus === 'function') ? (1 + equipBonus('goldMul') + equipBonus('tapMul')) : 1;
+  const equipMul = (typeof equipBonus === 'function') ? (1 + equipBonus('goldMul')) : 1;
   // CARTES STAR : team + goldAll multipliers
   const cardTeam = (typeof deckBonus === 'function') ? (1 + deckBonus('team') + deckBonus('goldAll')) : 1;
   const cardAllMul = (typeof deckAllMul === 'function') ? deckAllMul() : 1;
@@ -20869,6 +20906,7 @@ function collectRunnerBatch(id){
   if(d.level < 1 || d.cycle < 1) return false;
   const batch = runnerBatchValue(r);
   STATE.gold = (STATE.gold || 0) + batch;
+  STATE.totalGoldEarned = (STATE.totalGoldEarned || 0) + batch;
   d.cycle = 0;
   if(typeof gainXp === 'function'){
     const xp = Math.max(1, Math.floor(batch / 100));
@@ -20910,6 +20948,7 @@ function tickTeam(dt){
     if(d.cycle >= 1 && d.mgr){
       const batch = runnerBatchValue(r);
       STATE.gold = (STATE.gold || 0) + batch;
+      STATE.totalGoldEarned = (STATE.totalGoldEarned || 0) + batch;
       d.cycle = 0;
       if(typeof gainXp === 'function'){
         const xp = Math.max(1, Math.floor(batch / 100));
@@ -21011,6 +21050,7 @@ function bindTeamCardHandlers(){
   });
 }
 function fmtBigNumber(n){
+  if(isNaN(n)) return '0';
   if(!isFinite(n)) return '∞';
   if(n >= 1e12) return (n/1e12).toFixed(2) + 'T';
   if(n >= 1e9)  return (n/1e9).toFixed(2) + 'G';
@@ -21774,6 +21814,7 @@ function tickAutoTap(dt){
     const _atStCritMul = STATE._stCritMul || 5; // skill tree crit multiplier
     const gain = Math.floor(isCrit ? perTap * _atStCritMul : perTap);
     STATE.gold += gain;
+    STATE.totalGoldEarned = (STATE.totalGoldEarned || 0) + gain;
     if(typeof bumpStamina === 'function') bumpStamina(0.04);
     if(typeof gainXp === 'function') gainXp(1);
     STATE.totalTaps = (STATE.totalTaps || 0) + 1;
@@ -21807,7 +21848,7 @@ function completeLap(){
   (function showLapResult(){
     const _lr = document.getElementById('lap-result');
     if(!_lr) return;
-    const lapNum = window.STATE?.lapsRun || 1;
+    const lapNum = (window.STATE?.lapsRun || 0) + 1;
     const maxSpeed = (window.STATE?.bestKmh || 0).toFixed(1);
     const drops = window._lapLastDrops || 0;
     const elapsed = window._lapStartTime ? Math.round((Date.now() - window._lapStartTime) / 1000) : 0;
@@ -21881,8 +21922,12 @@ function completeLap(){
   const _starLapPower = 1 + (STATE.starTree?.lapPower || 0) * 0.15;
   // === Relique MédailleCassée : ×2 gouttes par lap ===
   const _medCasseLapMul = (typeof hasRelic==='function' && hasRelic('medCasse')) ? 2 : 1;
-  const totalReward = Math.floor((baseReward + stamBonus) * _starLapPower * _medCasseLapMul);
+  const _eGoldMulLap = (typeof eventGoldMul === 'function') ? eventGoldMul() : 1;
+  const totalReward = Math.floor((baseReward + stamBonus) * _starLapPower * _medCasseLapMul * _eGoldMulLap);
   window._lapLastDrops = totalReward || 0; // capture pour la result card
+  // Met à jour la carte de résultat avec le vrai montant de ce tour (pas le précédent)
+  { const _lrDropsEl = document.getElementById('lr-drops');
+    if(_lrDropsEl) _lrDropsEl.textContent = totalReward > 0 ? '+' + totalReward : '0'; }
   STATE.gold += totalReward;
   // FIX bug 4 : track le gold cumulé à vie (manquait sur le lap reward + milestone)
   let _lapGoldEarned = totalReward;
@@ -24154,6 +24199,9 @@ function save(){
       tapMulUntil: STATE.tapMulUntil || 0,
       lastEvent: STATE.lastEvent || null,
       _rivalWinStreak: STATE._rivalWinStreak || 0,
+      _seasonMaxKmh: STATE._seasonMaxKmh || 0,
+      weather: STATE.weather || null,
+      totalChestsOpened: STATE.totalChestsOpened || 0,
     };
     const json = JSON.stringify(s);
     localStorage.setItem("alchimia.save", json);
@@ -25492,11 +25540,14 @@ function load(){
     // === VAGUE 20 — Quêtes saisonnières ===
     if(s.seasonQuests) STATE.seasonQuests = Object.assign({}, STATE.seasonQuests, s.seasonQuests);
     STATE._seasonNoDoping = (s._seasonNoDoping !== false);
+    STATE._seasonMaxKmh = s._seasonMaxKmh || 0;
     STATE._seasonHurdleStreak = s._seasonHurdleStreak || 0;
+    STATE.totalChestsOpened = s.totalChestsOpened || 0;
     STATE._seasonChestsOpened = s._seasonChestsOpened || 0;
     STATE.dailyStats = s.dailyStats || {};
     STATE.lifetimeStats = s.lifetimeStats || { totalKm:0, totalGold:0, totalTaps:0, totalHurdles:0, totalNpcs:0, totalChests:0 };
     STATE._loreSeenIds = s._loreSeenIds || {};
+    if(s.weather) STATE.weather = s.weather;
     // === VAGUE 20 P4 — Reliques ===
     STATE.relics = s.relics || { owned: [], equipped: [] };
     if(!STATE.relics.owned) STATE.relics.owned = [];
@@ -25569,6 +25620,7 @@ function load(){
       }
       if(offlineGold > 0 || offlineKm > 0.01){
         STATE.gold += offlineGold;
+        if(offlineGold > 0) STATE.totalGoldEarned = (STATE.totalGoldEarned || 0) + offlineGold;
         STATE.pendingOfflineToast = { ms: offlineMs, gold: offlineGold, km: offlineKm };
       }
     }
@@ -26801,7 +26853,7 @@ function _drawBirds(ctx, W, H, dt){
       speed,
       metersAhead,
       laneIdx,
-      bobPhase: Math.random() * 6.28,
+      bobPhase: 0,
       fromBehind: !!opts.fromBehind, // marque pour effet visuel (audio "swoosh" quand il passe)
     });
     // Vague 21 : attribuer bossId au dernier npc spawned
@@ -28613,7 +28665,8 @@ function _drawBirds(ctx, W, H, dt){
         const difficultyMul = 1 / Math.pow(1.015, laps - 3);
         idleProgressPerSec = baseIdleProgressPerSec * difficultyMul;
       }
-      window.STATE.lapProgress = (window.STATE.lapProgress || 0) + idleProgressPerSec * dt * baseSpeedMul;
+      const _weatherSpeedMul = (typeof getWeatherMul === 'function') ? getWeatherMul('speedMul') : 1;
+      window.STATE.lapProgress = (window.STATE.lapProgress || 0) + idleProgressPerSec * dt * baseSpeedMul * _weatherSpeedMul;
       // MICRO-RÉCOMPENSES SUR LE 1ER KM (engagement immédiat : 4 popups avant le 1er KM)
       if((window.STATE.lapsRun || 0) === 0){
         const lp = window.STATE.lapProgress;
@@ -28726,12 +28779,12 @@ function _drawBirds(ctx, W, H, dt){
     if(typeof hasRelic === 'function' && hasRelic('coeurMec')){
       displayKmh = 25;
     }
-    // Track vitesse max pour la quête saisonnière "Sprinter"
-    if(window.STATE && displayKmh > (window.STATE._seasonMaxKmh || 0)) window.STATE._seasonMaxKmh = displayKmh;
-    // Vague 21 : météo speedMul
+    // Vague 21 : météo speedMul (appliqué avant le tracking pour que _seasonMaxKmh reflète la vraie vitesse ressentie)
     if(typeof getWeatherMul === 'function'){
       displayKmh *= getWeatherMul('speedMul');
     }
+    // Track vitesse max pour la quête saisonnière "Sprinter"
+    if(window.STATE && displayKmh > (window.STATE._seasonMaxKmh || 0)) window.STATE._seasonMaxKmh = displayKmh;
 
     // === SCROLL DÉCOR PHYSIQUEMENT RÉALISTE (refactor v8) ===
     // Avant : decorScroll += speed * dtMul (unités arbitraires sans rapport avec la vraie km/h)
@@ -33385,7 +33438,9 @@ function _drawBirds(ctx, W, H, dt){
         const bonusAmount = 5 + (npc.tier || 0) * 8 + Math.floor((STATE.lapsRun || 0) * 0.5);
         if(window.STATE){
           window.STATE.gold = (window.STATE.gold || 0) + bonusAmount;
+          window.STATE.totalGoldEarned = (window.STATE.totalGoldEarned || 0) + bonusAmount;
           window.STATE.npcOvertakeCount = (window.STATE.npcOvertakeCount || 0) + 1;
+          if(typeof checkAchievements === 'function') checkAchievements();
         }
         if(typeof trackDailyStat === 'function') trackDailyStat('npcs', 1);
         // Vague 20 : record défaite boss si c'est un boss spawn déterministe
@@ -33450,16 +33505,15 @@ function _drawBirds(ctx, W, H, dt){
       }
       const x = W / 2 + pixAhead;
       if(x < -50 || x > W + 50) continue;
-      npc.bobPhase += 0.18 * dtMul;
-      const npcBob = Math.abs(Math.sin(npc.bobPhase)) * 4;
+      npc.bobPhase += (3 + displayKmh * (npc.speed / 0.55) * 0.18) * dt * Math.PI;
       const laneFrac = npc.laneIdx / 4; // 0=fond, 1=devant
       const distFactor = 1 - Math.min(1, Math.abs(pixAhead) / 800) * 0.3;
       // Perspective marquée : petit au fond (0.6), grand devant (1.05)
       const laneScale = 0.60 + laneFrac * 0.45;
       const scale = laneScale * distFactor;
-      // CENTRE du body PILE au milieu de la lane
+      // CENTRE du body PILE au milieu de la lane (drawRunner gère le bob vertical en interne)
       const laneCenter = LANES_TOP + (npc.laneIdx + 0.5) * LANE_H;
-      const y = laneCenter - npcBob;
+      const y = laneCenter;
       drawRunner(x, y, scale, npc, npc.bobPhase);
     }
 
@@ -33688,10 +33742,11 @@ function _drawBirds(ctx, W, H, dt){
       }
     }
 
-    // === V29 : bouton SAUT → .ready quand haie à moins de 14m ===
+    // === V29 : bouton SAUT → .ready quand haie à moins de N m (Vision d'Aigle ×1.15 par niveau) ===
     { const _jb = document.getElementById('jump-btn');
       if(_jb){
-        const _nrh = hurdles.find(h => h.success === null && h.metersAhead > 0 && h.metersAhead < 14);
+        const _eagleWarnDist = 14 * (1 + (window.STATE?.upgradeEagleEye || 0) * 0.15);
+        const _nrh = hurdles.find(h => h.success === null && h.metersAhead > 0 && h.metersAhead < _eagleWarnDist);
         _jb.classList.toggle('ready', !!_nrh);
       }
     }
@@ -33758,6 +33813,7 @@ function _drawBirds(ctx, W, H, dt){
               window.STATE.rivalsWon = (window.STATE.rivalsWon || 0) + 1;
               window.STATE._rivalWinStreak = (window.STATE._rivalWinStreak || 0) + 1;
               if(window.STATE._rivalWinStreak > (window.STATE.bestRivalStreak || 0)) window.STATE.bestRivalStreak = window.STATE._rivalWinStreak;
+              if(typeof checkAchievements === 'function') checkAchievements();
             }
           } else if(rival.metersBehind < -18){
             // Le rival a passé le héros → DÉFAITE
@@ -33876,9 +33932,10 @@ function _drawBirds(ctx, W, H, dt){
       }
     }
     // V29 : arc de timing SAUT (indicateur approche haie) + render fragments brisés
-    { const _nhArc = hurdles.find(h => h.success === null && h.metersAhead > 0 && h.metersAhead < 14);
+    { const _eagleWarnDist2 = 14 * (1 + (window.STATE?.upgradeEagleEye || 0) * 0.15);
+      const _nhArc = hurdles.find(h => h.success === null && h.metersAhead > 0 && h.metersAhead < _eagleWarnDist2);
       if(_nhArc){
-        const _prox = 1 - _nhArc.metersAhead / 14; // 0=loin, 1=imminent
+        const _prox = 1 - _nhArc.metersAhead / _eagleWarnDist2; // 0=loin, 1=imminent
         const _hxA = W * 0.35, _hyA = LANES_TOP + 2.5 * LANE_H;
         const _arcC = { single:'#c84030', double:'#e89020', triple:'#7ec46a', wide:'#4a9fd9', tall:'#c89af0' }[_nhArc.kind]||'#c84030';
         const _arcR = 20 - _prox * 8 + Math.sin(t * 14) * 2;

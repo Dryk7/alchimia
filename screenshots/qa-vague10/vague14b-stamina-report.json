@@ -1,0 +1,31 @@
+{
+  "http": 200,
+  "T0": {
+    "stamina": 100,
+    "staminaMax": 100,
+    "hasBar": true,
+    "barWidth": "100%"
+  },
+  "T_after_30_taps": {
+    "stamina": 40,
+    "staminaMax": 100
+  },
+  "T_after_5s_rest": {
+    "stamina": 81.79999999999998,
+    "staminaMax": 100,
+    "barWidth": "82%"
+  },
+  "console_errors": [],
+  "console_warnings": [],
+  "pageerrors": [],
+  "hud_bar_present": true,
+  "stamina_max": 100,
+  "checks": {
+    "T0_stamina_eq_100": true,
+    "T1_stamina_lt_50": true,
+    "T2_stamina_gt_80": true,
+    "console_clean": true,
+    "hud_visible": true
+  },
+  "verdict": "PASS"
+}

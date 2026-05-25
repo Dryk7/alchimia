@@ -1,0 +1,163 @@
+{
+  "pre_menu": {
+    "hudPill": {
+      "exists": true,
+      "displayProp": "flex",
+      "offsetWidth": 43,
+      "offsetHeight": 23,
+      "visible": true,
+      "val": "5"
+    },
+    "menuPrestige": {
+      "exists": true,
+      "locked": "0",
+      "text": "PRESTIGEinvestis tes étoiles permanentes",
+      "offsetParent": true
+    },
+    "modal": {
+      "exists": true,
+      "classList": "modal",
+      "isShown": false
+    },
+    "modalContent": {
+      "availText": "0",
+      "nodeCount": 0,
+      "buttons": []
+    },
+    "modalIntroText": "× PRESTIGE — investis tes étoiles — Étoiles : 0",
+    "starTreeNodesCount": 8,
+    "starsValue": 5,
+    "totalStarsEarned": 5
+  },
+  "menu_click_error": "Page.click: Timeout 2000ms exceeded.\nCall log:\n  - waiting for locator(\"#menu-toggle\")\n    - locator resolved to <button id=\"menu-toggle\" aria-label=\"Menu\" data-tooltip-title=\"Menu ≡\" data-tooltip=\"Accède à <b>tout le reste</b> du jeu : Profil coureur, Ascension, Map des stades, Records, Saisons, Vestiaire, Équipement, Cartes, Coffres, Quêtes, Settings.\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <canvas width=\"540\" height=\"960\" id=\"intro-canvas\"></canvas> from <div id=\"intro\">…</div> subtree intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <canvas width=\"540\" height=\"960\" id=\"intro-canvas\"></canvas> from <div id=\"intro\">…</div> subtree intercepts pointer events\n    - retrying click action\n      - waiting 100ms\n    - waiting for element to be visible, enabled and stable\n    - element is visible, enabled and stable\n    - scrolling into view if needed\n    - done scrolling\n    - <canvas width=\"540\" height=\"960\" id=\"intro-canvas\"></canvas> from <div id=\"intro\">…</div> subtree intercepts pointer events\n  - retrying click action\n    - waiting 500ms\n    - waiting for element to be visible, enabled and stable\n",
+  "menu_open": {
+    "hudPill": {
+      "exists": true,
+      "displayProp": "flex",
+      "offsetWidth": 43,
+      "offsetHeight": 23,
+      "visible": true,
+      "val": "5"
+    },
+    "menuPrestige": {
+      "exists": true,
+      "locked": "0",
+      "text": "PRESTIGEinvestis tes étoiles permanentes",
+      "offsetParent": true
+    },
+    "modal": {
+      "exists": true,
+      "classList": "modal",
+      "isShown": false
+    },
+    "modalContent": {
+      "availText": "0",
+      "nodeCount": 0,
+      "buttons": []
+    },
+    "modalIntroText": "× PRESTIGE — investis tes étoiles — Étoiles : 0",
+    "starTreeNodesCount": 8,
+    "starsValue": 5,
+    "totalStarsEarned": 5
+  },
+  "prestige_click_result": "clicked",
+  "modal_open": {
+    "hudPill": {
+      "exists": true,
+      "displayProp": "flex",
+      "offsetWidth": 43,
+      "offsetHeight": 23,
+      "visible": true,
+      "val": "5"
+    },
+    "menuPrestige": {
+      "exists": true,
+      "locked": "0",
+      "text": "PRESTIGEinvestis tes étoiles permanentes",
+      "offsetParent": true
+    },
+    "modal": {
+      "exists": true,
+      "classList": "modal show",
+      "isShown": true
+    },
+    "modalContent": {
+      "availText": "5",
+      "nodeCount": 8,
+      "buttons": [
+        {
+          "label": "PUISSANCE TAP+10% gouttes par tapNiv 0 / 51 ⭐",
+          "btnText": "1 ⭐",
+          "disabled": false,
+          "node": "tapPower"
+        },
+        {
+          "label": "MAÎTRE DU KM+15% gouttes par lapNiv 0 / 51 ⭐",
+          "btnText": "1 ⭐",
+          "disabled": false,
+          "node": "lapPower"
+        },
+        {
+          "label": "CHANCEUX+20% drop rate itemsNiv 0 / 52 ⭐",
+          "btnText": "2 ⭐",
+          "disabled": false,
+          "node": "dropRate"
+        },
+        {
+          "label": "VITESSE NATIVE+10% vitesse passiveNiv 0 / 52 ⭐",
+          "btnText": "2 ⭐",
+          "disabled": false,
+          "node": "basePower"
+        },
+        {
+          "label": "POUMONS+50 stamina maxNiv 0 / 41 ⭐",
+          "btnText": "1 ⭐",
+          "disabled": false,
+          "node": "staminaPlus"
+        },
+        {
+          "label": "COUP CRITIQUE+10% chance critNiv 0 / 42 ⭐",
+          "btnText": "2 ⭐",
+          "disabled": false,
+          "node": "critPower"
+        },
+        {
+          "label": "RÉFLEXES-15% cooldown skillsNiv 0 / 33 ⭐",
+          "btnText": "3 ⭐",
+          "disabled": false,
+          "node": "cooldownNeg"
+        },
+        {
+          "label": "JACKPOT ÉTOILES+1 étoile bonus / ascensionNiv 0 / 35 ⭐",
+          "btnText": "5 ⭐",
+          "disabled": false,
+          "node": "starsJackpot"
+        }
+      ]
+    },
+    "modalIntroText": "× PRESTIGE — investis tes étoiles — Étoiles : 5 PUISSANCE TAP+10% gouttes par tapNiv 0 / 51 ⭐MAÎTRE DU KM+15% gouttes par lapNiv 0 / 51 ⭐CHANCEUX+20% drop rate itemsNiv 0 / 52 ⭐VITESSE NATIVE+10% vitesse passiveNiv 0 / 52 ⭐POUMONS+50 stamina maxNiv 0 / 41 ⭐COUP CRITIQUE+10% chance critNiv 0 / 42 ⭐RÉFLEXES-15% cooldown skillsNiv 0 / 33 ⭐JACKPOT ÉTOILES+1 étoile bonus / ascensionNiv 0 / 35 ⭐",
+    "starTreeNodesCount": 8,
+    "starsValue": 5,
+    "totalStarsEarned": 5
+  },
+  "buy_result": true,
+  "tap_power_before": {
+    "text": "1 ⭐",
+    "disabled": false,
+    "parentHtml": "<div style=\"padding:10px 12px; background:rgba(255,212,96,0.08); border-radius:8px; border:1px solid rgba(255,212,96,0.22); margin-bottom:6px;\"><div style=\"display:flex; justify-content:space-between;"
+  },
+  "tap_power_after": {
+    "text": "2 ⭐",
+    "disabled": false,
+    "lvlText": "Niv 1 / 5",
+    "stateLvl": 1,
+    "stateStars": 4
+  },
+  "narrative_hooks": {
+    "hasUnlockToastInDom": false,
+    "hasAscensionCinema": true,
+    "codeHasFirstStarHint": false,
+    "codeHasStarTreeHint": true
+  },
+  "console_errors": []
+}

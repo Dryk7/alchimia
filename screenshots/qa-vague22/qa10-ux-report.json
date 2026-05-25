@@ -1,0 +1,86 @@
+{
+  "tests": {
+    "forced_state": {
+      "ok": true,
+      "lapsRun": 30,
+      "gold": 100000,
+      "upgTV": 5
+    },
+    "test1_preview": {
+      "found": true,
+      "text": "+8.5 g/tap → +10.0 g/tap",
+      "html": "<span class=\"eff-cur\">+8.5 g/tap</span> <span class=\"eff-arrow\">→</span> <span class=\"eff-next\">+10.0 g/tap</span>",
+      "has85": true,
+      "hasArrow": true,
+      "hasCur": true,
+      "hasNext": true,
+      "isMax": false
+    },
+    "test2_modale": {
+      "found": true,
+      "isOpen": true,
+      "rows": 64,
+      "title": "FOULÉE PUISSANTE",
+      "buyTxt": "ACHETER NIV 6 — 715 g",
+      "hasTable": true,
+      "tableHtmlSample": "<div style=\"display:grid; grid-template-columns:50px 1fr auto; gap:8px; padding:6px 10px; background:rgba(126,196,106,0.10); border:1px solid rgba(0,0,0,0.08); border-radius:6px; align-items:center; f"
+    },
+    "test3_hint": {
+      "setup": {
+        "ok": true,
+        "step": 1,
+        "lapsRun": 2
+      },
+      "result": {
+        "hintFound": true,
+        "hintTxt": "🥇 PUISSANCE débloqué ! Chaque tap rapporte plus de gouttes. Effet net : +1.5 g/tap par niveau.",
+        "hintVisible": false,
+        "toastFound": false,
+        "pointedFound": true,
+        "getUpgradeFirstHintExists": true,
+        "upgFirstHintsState": [
+          "lapBonus"
+        ]
+      }
+    },
+    "test4_codex": {
+      "modalOpen": true,
+      "hasStrategieLeveling": true,
+      "hasEarly": true,
+      "hasMid": true,
+      "hasLate": true,
+      "hasSoftCap": true,
+      "hasFactorLvl": true,
+      "sectionPresent": true,
+      "sectionTxtLen": 2425
+    },
+    "test5_cap": {
+      "lvls": {
+        "tap": "Niv 5",
+        "crit": "Niv 0 / 55",
+        "lap": "Niv 0",
+        "auto": "Niv 0",
+        "endurance": "Niv 0 / 20",
+        "eagle": "Niv 0 / 15",
+        "cruise": "Niv 0 / 15"
+      },
+      "hasSlash": true
+    },
+    "test6_unaffordable": {
+      "totalUpgBtns": 8,
+      "unaffordableCount": 8,
+      "affordableCount": 0,
+      "firstUnaStyle": {
+        "opacity": "0.55",
+        "filter": "grayscale(0.534557) brightness(0.944709)"
+      }
+    }
+  },
+  "page_errors_total": 0,
+  "console_errors_total": 0,
+  "console_warnings_undef": 0,
+  "page_errors": [],
+  "console_errors": [],
+  "console_warnings": [],
+  "scenario_errors": {}
+}

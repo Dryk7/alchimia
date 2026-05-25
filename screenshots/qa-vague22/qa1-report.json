@@ -1,0 +1,51 @@
+{
+  "exposed_functions": {
+    "openStarTree": "function",
+    "openUpgradeDetail": "undefined",
+    "openSeasonQuests": "function",
+    "openRelics": "function",
+    "openProgression": "function",
+    "openLore": "function",
+    "applyProgressiveDisclosure": "function",
+    "STATE": "object"
+  },
+  "forced_state": {
+    "ok": true,
+    "lapsRun": 120,
+    "gold": 500000,
+    "stars": 10
+  },
+  "modal_results": {
+    "openStarTree": true,
+    "openUpgradeDetail": false,
+    "openSeasonQuests": true,
+    "openRelics": true,
+    "openProgression": true,
+    "openLore": true
+  },
+  "burger_results": {
+    "lore": true,
+    "season-quests": true,
+    "relics": true,
+    "progression": true,
+    "loadouts": true
+  },
+  "burger_inventory": {
+    "lore": 1,
+    "season-quests": 1,
+    "relics": 1,
+    "progression": 1,
+    "loadouts": 1
+  },
+  "page_errors_total": 0,
+  "console_errors_total": 0,
+  "console_warnings_undef": 0,
+  "page_errors": [],
+  "console_errors": [],
+  "console_warnings": [],
+  "scenario_errors": {
+    "openUpgradeDetail": [
+      "function-undefined: openUpgradeDetail('tapValue')"
+    ]
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "exposed": {
+    "saveLoadoutToSlot": "function",
+    "loadLoadoutFromSlot": "function",
+    "renameLoadout": "function",
+    "renderLoadouts": "function",
+    "openEquip": "function",
+    "STATE": "object"
+  },
+  "test1_save": {
+    "retval": true,
+    "hasLoadouts": true,
+    "slot0_eq": {
+      "shoes": {
+        "slot": "shoes",
+        "rarityId": "rare",
+        "level": 3,
+        "bonus": 0.03,
+        "baseBonus": 0.01
+      }
+    },
+    "slot0_active": true,
+    "slot0_name": "Loadout 1"
+  },
+  "test2_load": {
+    "retval": true,
+    "eq_after": {
+      "shoes": {
+        "slot": "shoes",
+        "rarityId": "rare",
+        "level": 3,
+        "bonus": 0.03,
+        "baseBonus": 0.01
+      }
+    },
+    "shoes_restored": true,
+    "shoes_rarity": "rare",
+    "shoes_level": 3
+  },
+  "test3_rename": {
+    "retval": true,
+    "slot0_name": "Sprint Build"
+  },
+  "ls_keys_before_reload": {
+    "keys_count": 10,
+    "sample": {
+      "alchimia_intro_seen": "1",
+      "alchimia_first_run": "0",
+      "alchimia.save": "{\"essence\":34.93950000000006,\"gold\":0,\"grid\":[[null,{\"id\":1,\"chain\":0,\"tier\":0},null,{\"id\":2,\"chain\":0,\"tier\":0},null],[{\"id\":3,\"chain\":1,\"tier\":0},null,null,null,{\"id\":4,\"chain\":1,\"tier\":0}],[null,nu",
+      "alchimia_onboard_done": "1",
+      "alchimia_onboarding_done": "1",
+      "alchimia_tuto_done": "1"
+    }
+  },
+  "test4_persistence": {
+    "hasLoadouts": true,
+    "loadouts_count": 3,
+    "slot0_name": "Sprint Build",
+    "slot0_eq": {
+      "shoes": {
+        "slot": "shoes",
+        "rarityId": "rare",
+        "level": 3,
+        "bonus": 0.03,
+        "baseBonus": 0.01
+      }
+    },
+    "slot0_shoes_rarity": "rare",
+    "slot0_active": true
+  },
+  "test5_ui": {
+    "modal_open": true,
+    "section_exists": true,
+    "section_visible": true,
+    "section_text_snippet": "\ud83d\udccb Loadouts\ud83d\udcbe Save\ud83d\udce5 Load\ud83d\udcbe Save\ud83d\udce5 Load\ud83d\udcbe Save\ud83d\udce5 Load",
+    "inputs_count": 3,
+    "buttons_count": 6,
+    "equip_body_present": true,
+    "equip_body_children": 3
+  },
+  "test6_save_empty": {
+    "retval": true,
+    "slot1_eq": {},
+    "slot1_eq_keys": [],
+    "slot1_active": true,
+    "slot0_active_after": false
+  },
+  "test6b_load_empty": {
+    "retval": false
+  },
+  "test7_invalid": {
+    "rename_neg": false,
+    "rename_3": false,
+    "save_neg": false,
+    "save_3": false,
+    "load_neg": false,
+    "load_3": false
+  },
+  "page_errors": [],
+  "console_errors": [],
+  "scenario_errors": {}
+}

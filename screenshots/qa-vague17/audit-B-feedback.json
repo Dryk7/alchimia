@@ -1,0 +1,173 @@
+{
+  "existence": {
+    "hasSfxUpgrade": false,
+    "hasSfxBuyScaled": true,
+    "hasSfxItemUpgrade": true,
+    "hasPunchGoldCounter": true,
+    "hasVibrate": true,
+    "hasParticles": true,
+    "hasFlashStat": true,
+    "hasShowToast": false,
+    "hasBuyUpgrade": true,
+    "hasFloating": true,
+    "hasShockwave": true,
+    "btnVisible": true
+  },
+  "before": {
+    "label": "BEFORE",
+    "t": 63804.5,
+    "btnExists": true,
+    "btnClasses": "upg-btn upg-power affordable",
+    "btnJustBought": false,
+    "btnTransform": "none",
+    "btnAnimName": "upgPulseV2",
+    "btnAnimDuration": "1.4s",
+    "btnBackground": "rgba(0, 0, 0, 0) linear-gradient(rgb(255, 224, 160), rgb(255, 186, 96)) repeat s",
+    "goldText": "1.0M",
+    "goldClasses": "stat-val val-pulse",
+    "goldCounting": false,
+    "stateGold": 1000500,
+    "stateTapValue": 0,
+    "domFxCounts": {
+      ".particle": 0,
+      ".gold-fly": 0,
+      ".reward-pop": 0,
+      ".sparkle": 0,
+      ".float-text": 0,
+      ".toast": 0,
+      ".float-pop": 0,
+      ".flash": 0,
+      ".shake": 0,
+      ".epic-sparkle": 0
+    },
+    "domFxTotal": 0,
+    "canvasParticles": 0,
+    "canvasShocks": 0
+  },
+  "during": {
+    "label": "DURING (+200ms)",
+    "t": 64422.90000009537,
+    "btnExists": true,
+    "btnClasses": "upg-btn upg-power affordable just-bought locked",
+    "btnJustBought": true,
+    "btnTransform": "matrix(1, 0, 0, 1, 0, 0)",
+    "btnAnimName": "upgBoughtFlash",
+    "btnAnimDuration": "0.6s",
+    "btnBackground": "rgba(0, 0, 0, 0) linear-gradient(rgb(255, 250, 238), rgb(240, 216, 160)) repeat ",
+    "goldText": "1.0M",
+    "goldClasses": "stat-val val-pulse",
+    "goldCounting": false,
+    "stateGold": 1000420,
+    "stateTapValue": 1,
+    "domFxCounts": {
+      ".particle": 0,
+      ".gold-fly": 0,
+      ".reward-pop": 0,
+      ".sparkle": 0,
+      ".float-text": 0,
+      ".toast": 0,
+      ".float-pop": 0,
+      ".flash": 0,
+      ".shake": 0,
+      ".epic-sparkle": 0
+    },
+    "domFxTotal": 0,
+    "canvasParticles": 16,
+    "canvasShocks": 0
+  },
+  "after": {
+    "label": "AFTER (+1s)",
+    "t": 65437.299999952316,
+    "btnExists": true,
+    "btnClasses": "upg-btn upg-power affordable",
+    "btnJustBought": false,
+    "btnTransform": "matrix(1.01766, 0, 0, 1.01766, 0, 0)",
+    "btnAnimName": "upgPulseV2",
+    "btnAnimDuration": "1.4s",
+    "btnBackground": "rgba(0, 0, 0, 0) linear-gradient(rgb(255, 224, 160), rgb(255, 186, 96)) repeat s",
+    "goldText": "1.0M",
+    "goldClasses": "stat-val val-pulse",
+    "goldCounting": false,
+    "stateGold": 1000420,
+    "stateTapValue": 1,
+    "domFxCounts": {
+      ".particle": 0,
+      ".gold-fly": 0,
+      ".reward-pop": 0,
+      ".sparkle": 0,
+      ".float-text": 0,
+      ".toast": 0,
+      ".float-pop": 0,
+      ".flash": 0,
+      ".shake": 0,
+      ".epic-sparkle": 0
+    },
+    "domFxTotal": 0,
+    "canvasParticles": 1,
+    "canvasShocks": 0
+  },
+  "delta": {
+    "gold_text_before": "1.0M",
+    "gold_text_during": "1.0M",
+    "gold_text_after": "1.0M",
+    "state_gold_before": 1000500,
+    "state_gold_after": 1000420,
+    "gold_spent": 80,
+    "tapValue_before": 0,
+    "tapValue_after": 1,
+    "just_bought_during": true,
+    "just_bought_after": false,
+    "btn_anim_during": "upgBoughtFlash",
+    "btn_anim_duration": "0.6s",
+    "btn_transform_during": "matrix(1, 0, 0, 1, 0, 0)",
+    "btn_transform_after": "matrix(1.01766, 0, 0, 1.01766, 0, 0)",
+    "domFx_before": 0,
+    "domFx_during": 0,
+    "domFx_after": 0,
+    "canvasParticles_before": 0,
+    "canvasParticles_during": 16,
+    "canvasParticles_after": 1,
+    "canvasShocks_during": 0
+  },
+  "fx_call_counts": {
+    "vibrate": 3,
+    "particles": 1
+  },
+  "fx_total_calls": 4,
+  "fx_first10": [
+    {
+      "fn": "vibrate",
+      "args": [
+        "[obj]"
+      ],
+      "t": 64138.700000047684
+    },
+    {
+      "fn": "particles",
+      "args": [
+        "0",
+        "0",
+        "#ffd070"
+      ],
+      "t": 64139
+    },
+    {
+      "fn": "vibrate",
+      "args": [
+        "[obj]"
+      ],
+      "t": 64677.799999952316
+    },
+    {
+      "fn": "vibrate",
+      "args": [
+        "[obj]"
+      ],
+      "t": 64940.700000047684
+    }
+  ],
+  "button_mutations_count": 168,
+  "just_bought_duration_ms": 730.2000000476837,
+  "gold_mutations_count": 89,
+  "console_errors": []
+}

@@ -1,0 +1,421 @@
+{
+  "drawerOpen": true,
+  "state": {
+    "lapsRun": 30,
+    "gold": 100500
+  },
+  "svgCount": 8,
+  "upgBtnTotal": 8,
+  "upgBtnVisible": 8,
+  "distinctSvgPaths": 8,
+  "buttons": [
+    {
+      "name": "PUISSANCE",
+      "desc": "+1 goutte / tap",
+      "classes": "upg-btn upg-power affordable",
+      "dataUpgrade": "tapValue",
+      "dataUnlockKm": "1",
+      "locked": false,
+      "affordable": true,
+      "visible": true,
+      "rect": {
+        "w": 250,
+        "h": 79,
+        "x": 18,
+        "y": 605
+      },
+      "btn": {
+        "width": "246px",
+        "height": "77.1406px",
+        "padding": "8px 10px",
+        "fontSize": "13.3333px",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "background": "rgba(0, 0, 0, 0) linear-gradient(rgb(255, 224, 160), rgb(255, 186, 96)) repeat scroll 0% 0% / auto p",
+        "color": "rgb(26, 26, 26)",
+        "borderRadius": "12px",
+        "border": "1px solid rgb(232, 64, 48)",
+        "boxShadow": "rgba(232, 64, 48, 0.4) 0px 4px 12px 0px, rgba(255, 160, 120, 0.45) 0px 0px 0px 2px, rgba(255, 255, 255, 0.6) 0px 1px 0px"
+      },
+      "icon": {
+        "w": "48px",
+        "h": "48px",
+        "bg": "rgb(248, 248, 248)",
+        "border": "1px solid rgb(236, 236, 236)",
+        "borderRadius": "10px",
+        "svgPresent": true,
+        "svgColor": "rgb(232, 64, 48)"
+      },
+      "lvl": {
+        "text": "Niv 0",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)",
+        "fontSize": "9px",
+        "fontWeight": "900"
+      },
+      "cost": {
+        "text": "80",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)",
+        "fontSize": "11px",
+        "fontWeight": "900"
+      }
+    },
+    {
+      "name": "CHANCE",
+      "desc": "+1% chance ×5 gouttes",
+      "classes": "upg-btn upg-luck affordable",
+      "dataUpgrade": "critChance",
+      "dataUnlockKm": "5",
+      "locked": false,
+      "affordable": true,
+      "visible": true,
+      "rect": {
+        "w": 250,
+        "h": 79,
+        "x": 272,
+        "y": 605
+      },
+      "btn": {
+        "width": "246px",
+        "height": "77.1406px",
+        "padding": "8px 10px",
+        "fontSize": "13.3333px",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "background": "rgba(0, 0, 0, 0) linear-gradient(rgb(255, 224, 160), rgb(255, 186, 96)) repeat scroll 0% 0% / auto p",
+        "color": "rgb(26, 26, 26)",
+        "borderRadius": "12px",
+        "border": "1px solid rgb(244, 184, 48)",
+        "boxShadow": "rgba(244, 184, 48, 0.4) 0px 4px 12px 0px, rgba(255, 220, 120, 0.5) 0px 0px 0px 2px, rgba(255, 255, 255, 0.6) 0px 1px 0px"
+      },
+      "icon": {
+        "w": "48px",
+        "h": "48px",
+        "bg": "rgb(248, 248, 248)",
+        "border": "1px solid rgb(236, 236, 236)",
+        "borderRadius": "10px",
+        "svgPresent": true,
+        "svgColor": "rgb(244, 184, 48)"
+      },
+      "lvl": {
+        "text": "Niv 0",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)",
+        "fontSize": "9px",
+        "fontWeight": "900"
+      },
+      "cost": {
+        "text": "350",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)",
+        "fontSize": "11px",
+        "fontWeight": "900"
+      }
+    },
+    {
+      "name": "AUTO-PILOTE",
+      "desc": "+1 tap auto / seconde",
+      "classes": "upg-btn upg-auto affordable",
+      "dataUpgrade": "autoTap",
+      "dataUnlockKm": "18",
+      "locked": false,
+      "affordable": true,
+      "visible": true,
+      "rect": {
+        "w": 250,
+        "h": 79,
+        "x": 18,
+        "y": 690
+      },
+      "btn": {
+        "width": "246px",
+        "height": "77.1406px",
+        "padding": "8px 10px",
+        "fontSize": "13.3333px",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "background": "rgba(0, 0, 0, 0) linear-gradient(rgb(255, 224, 160), rgb(255, 186, 96)) repeat scroll 0% 0% / auto p",
+        "color": "rgb(26, 26, 26)",
+        "borderRadius": "12px",
+        "border": "1px solid rgb(74, 159, 217)",
+        "boxShadow": "rgba(74, 159, 217, 0.4) 0px 4px 12px 0px, rgba(140, 200, 240, 0.5) 0px 0px 0px 2px, rgba(255, 255, 255, 0.6) 0px 1px 0px"
+      },
+      "icon": {
+        "w": "48px",
+        "h": "48px",
+        "bg": "rgb(248, 248, 248)",
+        "border": "1px solid rgb(236, 236, 236)",
+        "borderRadius": "10px",
+        "svgPresent": true,
+        "svgColor": "rgb(74, 159, 217)"
+      },
+      "lvl": {
+        "text": "Niv 0",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)",
+        "fontSize": "9px",
+        "fontWeight": "900"
+      },
+      "cost": {
+        "text": "2.5k",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)",
+        "fontSize": "11px",
+        "fontWeight": "900"
+      }
+    },
+    {
+      "name": "TROPHÉE",
+      "desc": "+2 gouttes à chaque km",
+      "classes": "upg-btn upg-trophy affordable",
+      "dataUpgrade": "lapBonus",
+      "dataUnlockKm": "3",
+      "locked": false,
+      "affordable": true,
+      "visible": true,
+      "rect": {
+        "w": 250,
+        "h": 79,
+        "x": 272,
+        "y": 690
+      },
+      "btn": {
+        "width": "246px",
+        "height": "77.1406px",
+        "padding": "8px 10px",
+        "fontSize": "13.3333px",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "background": "rgba(0, 0, 0, 0) linear-gradient(rgb(255, 224, 160), rgb(255, 186, 96)) repeat scroll 0% 0% / auto p",
+        "color": "rgb(26, 26, 26)",
+        "borderRadius": "12px",
+        "border": "1px solid rgb(200, 112, 32)",
+        "boxShadow": "rgba(200, 112, 32, 0.4) 0px 4px 12px 0px, rgba(255, 180, 80, 0.5) 0px 0px 0px 2px, rgba(255, 255, 255, 0.6) 0px 1px 0px "
+      },
+      "icon": {
+        "w": "48px",
+        "h": "48px",
+        "bg": "rgb(248, 248, 248)",
+        "border": "1px solid rgb(236, 236, 236)",
+        "borderRadius": "10px",
+        "svgPresent": true,
+        "svgColor": "rgb(200, 112, 32)"
+      },
+      "lvl": {
+        "text": "Niv 0",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)",
+        "fontSize": "9px",
+        "fontWeight": "900"
+      },
+      "cost": {
+        "text": "400",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)",
+        "fontSize": "11px",
+        "fontWeight": "900"
+      }
+    },
+    {
+      "name": "SOUFFLE",
+      "desc": "Combo tient + longtemps",
+      "classes": "upg-btn upg-breath affordable",
+      "dataUpgrade": "endurance",
+      "dataUnlockKm": "12",
+      "locked": false,
+      "affordable": true,
+      "visible": true,
+      "rect": {
+        "w": 250,
+        "h": 79,
+        "x": 18,
+        "y": 775
+      },
+      "btn": {
+        "width": "246px",
+        "height": "77.1406px",
+        "padding": "8px 10px",
+        "fontSize": "13.3333px",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "background": "rgba(0, 0, 0, 0) linear-gradient(rgb(255, 224, 160), rgb(255, 186, 96)) repeat scroll 0% 0% / auto p",
+        "color": "rgb(26, 26, 26)",
+        "borderRadius": "12px",
+        "border": "1px solid rgb(126, 196, 106)",
+        "boxShadow": "rgba(126, 196, 106, 0.4) 0px 4px 12px 0px, rgba(180, 220, 160, 0.5) 0px 0px 0px 2px, rgba(255, 255, 255, 0.6) 0px 1px 0p"
+      },
+      "icon": {
+        "w": "48px",
+        "h": "48px",
+        "bg": "rgb(248, 248, 248)",
+        "border": "1px solid rgb(236, 236, 236)",
+        "borderRadius": "10px",
+        "svgPresent": true,
+        "svgColor": "rgb(126, 196, 106)"
+      },
+      "lvl": {
+        "text": "Niv 0",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)",
+        "fontSize": "9px",
+        "fontWeight": "900"
+      },
+      "cost": {
+        "text": "800",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)",
+        "fontSize": "11px",
+        "fontWeight": "900"
+      }
+    },
+    {
+      "name": "VITESSE DE CROISIÈRE",
+      "desc": "+10% vitesse passive",
+      "classes": "upg-btn upg-speed affordable",
+      "dataUpgrade": "baseSpeed",
+      "dataUnlockKm": "25",
+      "locked": false,
+      "affordable": true,
+      "visible": true,
+      "rect": {
+        "w": 250,
+        "h": 79,
+        "x": 272,
+        "y": 775
+      },
+      "btn": {
+        "width": "246px",
+        "height": "77.1406px",
+        "padding": "8px 10px",
+        "fontSize": "13.3333px",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "background": "rgba(0, 0, 0, 0) linear-gradient(rgb(255, 224, 160), rgb(255, 186, 96)) repeat scroll 0% 0% / auto p",
+        "color": "rgb(26, 26, 26)",
+        "borderRadius": "12px",
+        "border": "1px solid rgb(200, 154, 240)",
+        "boxShadow": "rgba(200, 154, 240, 0.4) 0px 4px 12px 0px, rgba(220, 180, 250, 0.5) 0px 0px 0px 2px, rgba(255, 255, 255, 0.6) 0px 1px 0p"
+      },
+      "icon": {
+        "w": "48px",
+        "h": "48px",
+        "bg": "rgb(248, 248, 248)",
+        "border": "1px solid rgb(236, 236, 236)",
+        "borderRadius": "10px",
+        "svgPresent": true,
+        "svgColor": "rgb(200, 154, 240)"
+      },
+      "lvl": {
+        "text": "Niv 0",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)",
+        "fontSize": "9px",
+        "fontWeight": "900"
+      },
+      "cost": {
+        "text": "3.0k",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)",
+        "fontSize": "11px",
+        "fontWeight": "900"
+      }
+    },
+    {
+      "name": "VISION D'AIGLE",
+      "desc": "Haies visibles 2× plus loin",
+      "classes": "upg-btn upg-eagle affordable",
+      "dataUpgrade": "eagleEye",
+      "dataUnlockKm": "8",
+      "locked": false,
+      "affordable": true,
+      "visible": true,
+      "rect": {
+        "w": 250,
+        "h": 81,
+        "x": 18,
+        "y": 860
+      },
+      "btn": {
+        "width": "246px",
+        "height": "79.1406px",
+        "padding": "8px 10px",
+        "fontSize": "13.3333px",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "background": "rgba(0, 0, 0, 0) linear-gradient(rgb(255, 224, 160), rgb(255, 186, 96)) repeat scroll 0% 0% / auto p",
+        "color": "rgb(26, 26, 26)",
+        "borderRadius": "12px",
+        "border": "1px solid rgb(200, 64, 48)",
+        "boxShadow": "rgba(200, 64, 48, 0.35) 0px 4px 12px 0px, rgba(255, 200, 80, 0.45) 0px 0px 0px 2px, rgba(255, 255, 255, 0.6) 0px 1px 0px"
+      },
+      "icon": {
+        "w": "48px",
+        "h": "48px",
+        "bg": "rgb(248, 248, 248)",
+        "border": "1px solid rgb(236, 236, 236)",
+        "borderRadius": "10px",
+        "svgPresent": true,
+        "svgColor": "rgb(200, 64, 48)"
+      },
+      "lvl": {
+        "text": "Niv 0",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)",
+        "fontSize": "9px",
+        "fontWeight": "900"
+      },
+      "cost": {
+        "text": "1.5k",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)",
+        "fontSize": "11px",
+        "fontWeight": "900"
+      }
+    },
+    {
+      "name": "PILOTE AUTO",
+      "desc": "+5% vitesse maintenue sans tap",
+      "classes": "upg-btn upg-cruise affordable",
+      "dataUpgrade": "cruiseControl",
+      "dataUnlockKm": "30",
+      "locked": false,
+      "affordable": true,
+      "visible": true,
+      "rect": {
+        "w": 250,
+        "h": 81,
+        "x": 272,
+        "y": 860
+      },
+      "btn": {
+        "width": "246px",
+        "height": "79.1406px",
+        "padding": "8px 10px",
+        "fontSize": "13.3333px",
+        "backgroundColor": "rgba(0, 0, 0, 0)",
+        "background": "rgba(0, 0, 0, 0) linear-gradient(rgb(255, 224, 160), rgb(255, 186, 96)) repeat scroll 0% 0% / auto p",
+        "color": "rgb(26, 26, 26)",
+        "borderRadius": "12px",
+        "border": "2px solid rgb(0, 196, 208)",
+        "boxShadow": "rgba(0, 196, 208, 0.4) 0px 4px 12px 0px, rgba(80, 220, 230, 0.5) 0px 0px 0px 2px, rgba(255, 255, 255, 0.6) 0px 1px 0px 0"
+      },
+      "icon": {
+        "w": "48px",
+        "h": "48px",
+        "bg": "rgb(248, 248, 248)",
+        "border": "1px solid rgb(236, 236, 236)",
+        "borderRadius": "10px",
+        "svgPresent": true,
+        "svgColor": "rgb(0, 196, 208)"
+      },
+      "lvl": {
+        "text": "Niv 0",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)",
+        "fontSize": "9px",
+        "fontWeight": "900"
+      },
+      "cost": {
+        "text": "50k",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)",
+        "fontSize": "11px",
+        "fontWeight": "900"
+      }
+    }
+  ]
+}

@@ -1,0 +1,586 @@
+{
+  "km_10": {
+    "lapsRun": 10,
+    "gold": 500,
+    "upgradeBaseSpeed": 0,
+    "upgradeTapValue": 0,
+    "upgradeCritChance": 0,
+    "upgradeLapBonus": 0,
+    "upgradeAutoTap": 0,
+    "upgradeEndurance": 0,
+    "upgradeEagleEye": 0,
+    "upgradeCruiseControl": 0,
+    "stars": 0,
+    "chests": {
+      "wood": 0,
+      "iron": 0,
+      "gold": 0,
+      "legendary": 0
+    },
+    "totalChests": 0,
+    "rivalsWon": 0,
+    "rivalsLost": 0,
+    "achievementsUnlocked": 0,
+    "achievementsList": [],
+    "skillsInfo": [
+      {
+        "id": "sprint",
+        "name": "SPRINT",
+        "unlockLaps": 0,
+        "cooldown": 240,
+        "unlocked": true,
+        "lastUsed": 0
+      },
+      {
+        "id": "tailwind",
+        "name": "VENT",
+        "unlockLaps": 5,
+        "cooldown": 360,
+        "unlocked": true,
+        "lastUsed": 0
+      },
+      {
+        "id": "bounty",
+        "name": "PRIME",
+        "unlockLaps": 20,
+        "cooldown": 1800,
+        "unlocked": false,
+        "lastUsed": 0
+      },
+      {
+        "id": "breath",
+        "name": "SOUFFLE",
+        "unlockLaps": 50,
+        "cooldown": 450,
+        "unlocked": false,
+        "lastUsed": 0
+      }
+    ],
+    "upgradesInfo": {
+      "tapValue": {
+        "lvl": 0,
+        "cost": 80,
+        "visible": true,
+        "maxLevel": null,
+        "unlockLaps": 0,
+        "affordable": true
+      },
+      "critChance": {
+        "lvl": 0,
+        "cost": 350,
+        "visible": true,
+        "maxLevel": 55,
+        "unlockLaps": 0,
+        "affordable": true
+      },
+      "lapBonus": {
+        "lvl": 0,
+        "cost": 400,
+        "visible": true,
+        "maxLevel": null,
+        "unlockLaps": 0,
+        "affordable": true
+      },
+      "autoTap": {
+        "lvl": 0,
+        "cost": 2500,
+        "visible": true,
+        "maxLevel": null,
+        "unlockLaps": 0,
+        "affordable": false
+      },
+      "endurance": {
+        "lvl": 0,
+        "cost": 800,
+        "visible": true,
+        "maxLevel": 20,
+        "unlockLaps": 0,
+        "affordable": false
+      },
+      "eagleEye": {
+        "lvl": 0,
+        "cost": 1500,
+        "visible": true,
+        "maxLevel": 15,
+        "unlockLaps": 8,
+        "affordable": false
+      },
+      "baseSpeed": {
+        "lvl": 0,
+        "cost": 3000,
+        "visible": true,
+        "maxLevel": 15,
+        "unlockLaps": 0,
+        "affordable": false
+      },
+      "cruiseControl": {
+        "lvl": 0,
+        "cost": 50000,
+        "visible": false,
+        "maxLevel": 15,
+        "unlockLaps": 30,
+        "affordable": false
+      }
+    },
+    "equip_keys": null,
+    "inv_count": null
+  },
+  "km_20": {
+    "lapsRun": 20,
+    "gold": 500,
+    "upgradeBaseSpeed": 0,
+    "upgradeTapValue": 0,
+    "upgradeCritChance": 0,
+    "upgradeLapBonus": 0,
+    "upgradeAutoTap": 0,
+    "upgradeEndurance": 0,
+    "upgradeEagleEye": 0,
+    "upgradeCruiseControl": 0,
+    "stars": 0,
+    "chests": {
+      "wood": 0,
+      "iron": 0,
+      "gold": 0,
+      "legendary": 0
+    },
+    "totalChests": 0,
+    "rivalsWon": 0,
+    "rivalsLost": 0,
+    "achievementsUnlocked": 0,
+    "achievementsList": [],
+    "skillsInfo": [
+      {
+        "id": "sprint",
+        "name": "SPRINT",
+        "unlockLaps": 0,
+        "cooldown": 240,
+        "unlocked": true,
+        "lastUsed": 0
+      },
+      {
+        "id": "tailwind",
+        "name": "VENT",
+        "unlockLaps": 5,
+        "cooldown": 360,
+        "unlocked": true,
+        "lastUsed": 0
+      },
+      {
+        "id": "bounty",
+        "name": "PRIME",
+        "unlockLaps": 20,
+        "cooldown": 1800,
+        "unlocked": true,
+        "lastUsed": 0
+      },
+      {
+        "id": "breath",
+        "name": "SOUFFLE",
+        "unlockLaps": 50,
+        "cooldown": 450,
+        "unlocked": false,
+        "lastUsed": 0
+      }
+    ],
+    "upgradesInfo": {
+      "tapValue": {
+        "lvl": 0,
+        "cost": 80,
+        "visible": true,
+        "maxLevel": null,
+        "unlockLaps": 0,
+        "affordable": true
+      },
+      "critChance": {
+        "lvl": 0,
+        "cost": 350,
+        "visible": true,
+        "maxLevel": 55,
+        "unlockLaps": 0,
+        "affordable": true
+      },
+      "lapBonus": {
+        "lvl": 0,
+        "cost": 400,
+        "visible": true,
+        "maxLevel": null,
+        "unlockLaps": 0,
+        "affordable": true
+      },
+      "autoTap": {
+        "lvl": 0,
+        "cost": 2500,
+        "visible": true,
+        "maxLevel": null,
+        "unlockLaps": 0,
+        "affordable": false
+      },
+      "endurance": {
+        "lvl": 0,
+        "cost": 800,
+        "visible": true,
+        "maxLevel": 20,
+        "unlockLaps": 0,
+        "affordable": false
+      },
+      "eagleEye": {
+        "lvl": 0,
+        "cost": 1500,
+        "visible": true,
+        "maxLevel": 15,
+        "unlockLaps": 8,
+        "affordable": false
+      },
+      "baseSpeed": {
+        "lvl": 0,
+        "cost": 3000,
+        "visible": true,
+        "maxLevel": 15,
+        "unlockLaps": 0,
+        "affordable": false
+      },
+      "cruiseControl": {
+        "lvl": 0,
+        "cost": 50000,
+        "visible": false,
+        "maxLevel": 15,
+        "unlockLaps": 30,
+        "affordable": false
+      }
+    },
+    "equip_keys": null,
+    "inv_count": null
+  },
+  "km_25": {
+    "lapsRun": 25,
+    "gold": 500,
+    "upgradeBaseSpeed": 0,
+    "upgradeTapValue": 0,
+    "upgradeCritChance": 0,
+    "upgradeLapBonus": 0,
+    "upgradeAutoTap": 0,
+    "upgradeEndurance": 0,
+    "upgradeEagleEye": 0,
+    "upgradeCruiseControl": 0,
+    "stars": 0,
+    "chests": {
+      "wood": 0,
+      "iron": 0,
+      "gold": 0,
+      "legendary": 0
+    },
+    "totalChests": 0,
+    "rivalsWon": 0,
+    "rivalsLost": 0,
+    "achievementsUnlocked": 0,
+    "achievementsList": [],
+    "skillsInfo": [
+      {
+        "id": "sprint",
+        "name": "SPRINT",
+        "unlockLaps": 0,
+        "cooldown": 240,
+        "unlocked": true,
+        "lastUsed": 0
+      },
+      {
+        "id": "tailwind",
+        "name": "VENT",
+        "unlockLaps": 5,
+        "cooldown": 360,
+        "unlocked": true,
+        "lastUsed": 0
+      },
+      {
+        "id": "bounty",
+        "name": "PRIME",
+        "unlockLaps": 20,
+        "cooldown": 1800,
+        "unlocked": true,
+        "lastUsed": 0
+      },
+      {
+        "id": "breath",
+        "name": "SOUFFLE",
+        "unlockLaps": 50,
+        "cooldown": 450,
+        "unlocked": false,
+        "lastUsed": 0
+      }
+    ],
+    "upgradesInfo": {
+      "tapValue": {
+        "lvl": 0,
+        "cost": 80,
+        "visible": true,
+        "maxLevel": null,
+        "unlockLaps": 0,
+        "affordable": true
+      },
+      "critChance": {
+        "lvl": 0,
+        "cost": 350,
+        "visible": true,
+        "maxLevel": 55,
+        "unlockLaps": 0,
+        "affordable": true
+      },
+      "lapBonus": {
+        "lvl": 0,
+        "cost": 400,
+        "visible": true,
+        "maxLevel": null,
+        "unlockLaps": 0,
+        "affordable": true
+      },
+      "autoTap": {
+        "lvl": 0,
+        "cost": 2500,
+        "visible": true,
+        "maxLevel": null,
+        "unlockLaps": 0,
+        "affordable": false
+      },
+      "endurance": {
+        "lvl": 0,
+        "cost": 800,
+        "visible": true,
+        "maxLevel": 20,
+        "unlockLaps": 0,
+        "affordable": false
+      },
+      "eagleEye": {
+        "lvl": 0,
+        "cost": 1500,
+        "visible": true,
+        "maxLevel": 15,
+        "unlockLaps": 8,
+        "affordable": false
+      },
+      "baseSpeed": {
+        "lvl": 0,
+        "cost": 3000,
+        "visible": true,
+        "maxLevel": 15,
+        "unlockLaps": 0,
+        "affordable": false
+      },
+      "cruiseControl": {
+        "lvl": 0,
+        "cost": 50000,
+        "visible": false,
+        "maxLevel": 15,
+        "unlockLaps": 30,
+        "affordable": false
+      }
+    },
+    "equip_keys": null,
+    "inv_count": null
+  },
+  "km_30": {
+    "lapsRun": 30,
+    "gold": 500,
+    "upgradeBaseSpeed": 0,
+    "upgradeTapValue": 0,
+    "upgradeCritChance": 0,
+    "upgradeLapBonus": 0,
+    "upgradeAutoTap": 0,
+    "upgradeEndurance": 0,
+    "upgradeEagleEye": 0,
+    "upgradeCruiseControl": 0,
+    "stars": 0,
+    "chests": {
+      "wood": 0,
+      "iron": 0,
+      "gold": 0,
+      "legendary": 0
+    },
+    "totalChests": 0,
+    "rivalsWon": 0,
+    "rivalsLost": 0,
+    "achievementsUnlocked": 0,
+    "achievementsList": [],
+    "skillsInfo": [
+      {
+        "id": "sprint",
+        "name": "SPRINT",
+        "unlockLaps": 0,
+        "cooldown": 240,
+        "unlocked": true,
+        "lastUsed": 0
+      },
+      {
+        "id": "tailwind",
+        "name": "VENT",
+        "unlockLaps": 5,
+        "cooldown": 360,
+        "unlocked": true,
+        "lastUsed": 0
+      },
+      {
+        "id": "bounty",
+        "name": "PRIME",
+        "unlockLaps": 20,
+        "cooldown": 1800,
+        "unlocked": true,
+        "lastUsed": 0
+      },
+      {
+        "id": "breath",
+        "name": "SOUFFLE",
+        "unlockLaps": 50,
+        "cooldown": 450,
+        "unlocked": false,
+        "lastUsed": 0
+      }
+    ],
+    "upgradesInfo": {
+      "tapValue": {
+        "lvl": 0,
+        "cost": 80,
+        "visible": true,
+        "maxLevel": null,
+        "unlockLaps": 0,
+        "affordable": true
+      },
+      "critChance": {
+        "lvl": 0,
+        "cost": 350,
+        "visible": true,
+        "maxLevel": 55,
+        "unlockLaps": 0,
+        "affordable": true
+      },
+      "lapBonus": {
+        "lvl": 0,
+        "cost": 400,
+        "visible": true,
+        "maxLevel": null,
+        "unlockLaps": 0,
+        "affordable": true
+      },
+      "autoTap": {
+        "lvl": 0,
+        "cost": 2500,
+        "visible": true,
+        "maxLevel": null,
+        "unlockLaps": 0,
+        "affordable": false
+      },
+      "endurance": {
+        "lvl": 0,
+        "cost": 800,
+        "visible": true,
+        "maxLevel": 20,
+        "unlockLaps": 0,
+        "affordable": false
+      },
+      "eagleEye": {
+        "lvl": 0,
+        "cost": 1500,
+        "visible": true,
+        "maxLevel": 15,
+        "unlockLaps": 8,
+        "affordable": false
+      },
+      "baseSpeed": {
+        "lvl": 0,
+        "cost": 3000,
+        "visible": true,
+        "maxLevel": 15,
+        "unlockLaps": 0,
+        "affordable": false
+      },
+      "cruiseControl": {
+        "lvl": 0,
+        "cost": 50000,
+        "visible": true,
+        "maxLevel": 15,
+        "unlockLaps": 30,
+        "affordable": false
+      }
+    },
+    "equip_keys": null,
+    "inv_count": null
+  },
+  "_global": {
+    "keys": [
+      "_hadHurdleFailThisKm",
+      "_idlePerSec",
+      "_idlePerSecByChain",
+      "_lastAlmostReady",
+      "_lastShopAffordable",
+      "_rivalWinStreak",
+      "achievements",
+      "activeEvents",
+      "ascensions",
+      "audio",
+      "bestCombo",
+      "bestKmh",
+      "bgmUserVolume",
+      "cardsDeck",
+      "chests",
+      "codexUnlocks",
+      "comboCount",
+      "dailyChallenge",
+      "dailyQuests",
+      "essence",
+      "essenceMax",
+      "essenceRegen",
+      "eventCdMul",
+      "eventRegenMul",
+      "firstKmRewarded",
+      "firstReached",
+      "generators",
+      "gold",
+      "grid",
+      "lapProgress",
+      "lapsRun",
+      "lastAutoSpawnAt",
+      "lastEvent",
+      "lastMergeTime",
+      "lastOfflineMs",
+      "lastSaveTime",
+      "masterQuestDone",
+      "nextId",
+      "quests",
+      "recipes",
+      "rivalsLost",
+      "runnerStamina",
+      "selectedCodex",
+      "sessionMs",
+      "sessionStartMs",
+      "sfxUserVolume",
+      "stadiumProgress",
+      "stars",
+      "starterPackClaimed",
+      "starterPackDeclined",
+      "team",
+      "totalPlayMs",
+      "totalStars",
+      "totals",
+      "upgradeCdMul",
+      "upgradeEssenceMaxMul",
+      "upgradeRegenMul",
+      "upgrades",
+      "vibrationEnabled"
+    ],
+    "hasEquipFn": true,
+    "hasWardrobeFn": true,
+    "hasSkillTreeFn": false,
+    "chestsState": {
+      "wood": 0,
+      "iron": 0,
+      "gold": 0,
+      "legendary": 0
+    },
+    "equipment": null,
+    "inventory": null,
+    "skills": null,
+    "skillsLastUsed": null,
+    "rivalsWon": 0,
+    "rivalsLost": 1,
+    "activeRival": null
+  },
+  "_console": []
+}

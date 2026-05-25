@@ -1,0 +1,242 @@
+{
+  "console_errors": [],
+  "checks": {
+    "cycle": [
+      {
+        "km": 0,
+        "type": "clear",
+        "startedAtKm": 0,
+        "endsAtKm": 3,
+        "hudHTML": "<span style=\"font-size:14px;\">☀️</span> <span style=\"font-size:11px; color:#888;\">Beau temps</span>",
+        "hudText": "☀️ Beau temps",
+        "speedMul": 1,
+        "staminaRegenMul": 1,
+        "dropMul": 1
+      },
+      {
+        "km": 3,
+        "type": "wind",
+        "startedAtKm": 3,
+        "endsAtKm": 6,
+        "hudHTML": "<span style=\"font-size:14px;\">💨</span> <span style=\"font-size:11px; color:#888;\">Vent dos</span>",
+        "hudText": "💨 Vent dos",
+        "speedMul": 1.15,
+        "staminaRegenMul": 0.9,
+        "dropMul": 1
+      },
+      {
+        "km": 6,
+        "type": "clear",
+        "startedAtKm": 6,
+        "endsAtKm": 9,
+        "hudHTML": "<span style=\"font-size:14px;\">☀️</span> <span style=\"font-size:11px; color:#888;\">Beau temps</span>",
+        "hudText": "☀️ Beau temps",
+        "speedMul": 1,
+        "staminaRegenMul": 1,
+        "dropMul": 1
+      },
+      {
+        "km": 9,
+        "type": "heat",
+        "startedAtKm": 9,
+        "endsAtKm": 12,
+        "hudHTML": "<span style=\"font-size:14px;\">🔥</span> <span style=\"font-size:11px; color:#888;\">Canicule</span>",
+        "hudText": "🔥 Canicule",
+        "speedMul": 1,
+        "staminaRegenMul": 0.8,
+        "dropMul": 1.1
+      },
+      {
+        "km": 12,
+        "type": "clear",
+        "startedAtKm": 12,
+        "endsAtKm": 15,
+        "hudHTML": "<span style=\"font-size:14px;\">☀️</span> <span style=\"font-size:11px; color:#888;\">Beau temps</span>",
+        "hudText": "☀️ Beau temps",
+        "speedMul": 1,
+        "staminaRegenMul": 1,
+        "dropMul": 1
+      },
+      {
+        "km": 15,
+        "type": "wind",
+        "startedAtKm": 15,
+        "endsAtKm": 18,
+        "hudHTML": "<span style=\"font-size:14px;\">💨</span> <span style=\"font-size:11px; color:#888;\">Vent dos</span>",
+        "hudText": "💨 Vent dos",
+        "speedMul": 1.15,
+        "staminaRegenMul": 0.9,
+        "dropMul": 1
+      },
+      {
+        "km": 18,
+        "type": "rain",
+        "startedAtKm": 18,
+        "endsAtKm": 21,
+        "hudHTML": "<span style=\"font-size:14px;\">🌧️</span> <span style=\"font-size:11px; color:#888;\">Pluie</span>",
+        "hudText": "🌧️ Pluie",
+        "speedMul": 0.9,
+        "staminaRegenMul": 1,
+        "dropMul": 1.2
+      }
+    ],
+    "cycle_3km_ok": true,
+    "hud_reflects": [
+      {
+        "km": 0,
+        "type": "clear",
+        "in_hud": true,
+        "hud_snippet": "<span style=\"font-size:14px;\">☀️</span> <span style=\"font-size:11px; color:#888;"
+      },
+      {
+        "km": 3,
+        "type": "wind",
+        "in_hud": true,
+        "hud_snippet": "<span style=\"font-size:14px;\">💨</span> <span style=\"font-size:11px; color:#888;\""
+      },
+      {
+        "km": 6,
+        "type": "clear",
+        "in_hud": true,
+        "hud_snippet": "<span style=\"font-size:14px;\">☀️</span> <span style=\"font-size:11px; color:#888;"
+      },
+      {
+        "km": 9,
+        "type": "heat",
+        "in_hud": true,
+        "hud_snippet": "<span style=\"font-size:14px;\">🔥</span> <span style=\"font-size:11px; color:#888;\""
+      },
+      {
+        "km": 12,
+        "type": "clear",
+        "in_hud": true,
+        "hud_snippet": "<span style=\"font-size:14px;\">☀️</span> <span style=\"font-size:11px; color:#888;"
+      },
+      {
+        "km": 15,
+        "type": "wind",
+        "in_hud": true,
+        "hud_snippet": "<span style=\"font-size:14px;\">💨</span> <span style=\"font-size:11px; color:#888;\""
+      },
+      {
+        "km": 18,
+        "type": "rain",
+        "in_hud": true,
+        "hud_snippet": "<span style=\"font-size:14px;\">🌧️</span> <span style=\"font-size:11px; color:#888;"
+      }
+    ],
+    "hud_ok": true,
+    "multipliers": {
+      "clear": {
+        "speedMul": 1,
+        "staminaRegenMul": 1,
+        "dropMul": 1
+      },
+      "rain": {
+        "speedMul": 0.9,
+        "staminaRegenMul": 1,
+        "dropMul": 1.2
+      },
+      "wind": {
+        "speedMul": 1.15,
+        "staminaRegenMul": 0.9,
+        "dropMul": 1
+      },
+      "heat": {
+        "speedMul": 1,
+        "staminaRegenMul": 0.8,
+        "dropMul": 1.1
+      }
+    },
+    "speed_clear_vs_rain_pct": 11.11,
+    "speed_diff_meets_11pct": true,
+    "measured_kmh": {
+      "clear": null,
+      "rain": null,
+      "wind": null
+    },
+    "stamina_regen": {
+      "clear": 1,
+      "heat": 0.8
+    },
+    "stamina_heat_slower": true,
+    "determinism": [
+      {
+        "km": 3,
+        "t1": "wind",
+        "t2": "wind",
+        "deterministic": true
+      },
+      {
+        "km": 6,
+        "t1": "clear",
+        "t2": "clear",
+        "deterministic": true
+      },
+      {
+        "km": 9,
+        "t1": "heat",
+        "t2": "heat",
+        "deterministic": true
+      },
+      {
+        "km": 12,
+        "t1": "clear",
+        "t2": "clear",
+        "deterministic": true
+      },
+      {
+        "km": 15,
+        "t1": "wind",
+        "t2": "wind",
+        "deterministic": true
+      },
+      {
+        "km": 18,
+        "t1": "rain",
+        "t2": "rain",
+        "deterministic": true
+      },
+      {
+        "km": 21,
+        "t1": "rain",
+        "t2": "rain",
+        "deterministic": true
+      },
+      {
+        "km": 24,
+        "t1": "heat",
+        "t2": "heat",
+        "deterministic": true
+      },
+      {
+        "km": 30,
+        "t1": "rain",
+        "t2": "rain",
+        "deterministic": true
+      },
+      {
+        "km": 60,
+        "t1": "clear",
+        "t2": "clear",
+        "deterministic": true
+      },
+      {
+        "km": 99,
+        "t1": "clear",
+        "t2": "clear",
+        "deterministic": true
+      }
+    ],
+    "determinism_ok": true,
+    "types_seen": [
+      "wind",
+      "rain",
+      "clear",
+      "heat"
+    ],
+    "diversity_ok": true,
+    "console_errors_count": 0,
+    "console_errors": []
+  }
+}

@@ -1,0 +1,686 @@
+{
+  "km30": {
+    "gold": 105492,
+    "totalTaps": 2005,
+    "lapsRun": 30,
+    "lapProgress": 0.004803815993865894,
+    "bestKmh": 30,
+    "runnerStamina": 1.9812624999999995,
+    "upgrades": {
+      "upgradeTapValue": 8,
+      "upgradeCritChance": 5,
+      "upgradeLapBonus": 6,
+      "upgradeAutoTap": 2,
+      "upgradeEndurance": 4,
+      "upgradeEagleEye": 3,
+      "upgradeBaseSpeed": 3,
+      "upgradeCruiseControl": 0
+    },
+    "upgradeCosts": {
+      "tapValue": 1563,
+      "critChance": 2657,
+      "lapBonus": 3717,
+      "autoTap": 6006,
+      "endurance": 4050,
+      "eagleEye": 4572,
+      "baseSpeed": 11171,
+      "cruiseControl": 50000
+    },
+    "chests": {
+      "wood": 24,
+      "iron": 5,
+      "gold": 0,
+      "legendary": 1
+    },
+    "ownedSkins": {},
+    "equippedSkin": null,
+    "equipment": {},
+    "activeBoosts": {},
+    "achievements": [
+      "gold_500",
+      "gold_5000",
+      "gold_50k",
+      "tap_100",
+      "tap_1000",
+      "lap_1",
+      "speed_15",
+      "speed_25",
+      "sprint_first",
+      "lap_3",
+      "biome_rural",
+      "biome_urban",
+      "lap_10",
+      "lap_25"
+    ],
+    "achievementsCount": 14,
+    "visibleModals": [],
+    "menuItems": [
+      {
+        "action": "eagleEye",
+        "unlockKm": 8,
+        "unlocked": true,
+        "visible": false
+      },
+      {
+        "action": "cruiseControl",
+        "unlockKm": 30,
+        "unlocked": true,
+        "visible": false
+      },
+      {
+        "action": "saison",
+        "unlockKm": 90,
+        "unlocked": false,
+        "visible": false
+      },
+      {
+        "action": "quests-daily",
+        "unlockKm": 5,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "shop-premium",
+        "unlockKm": 20,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "chests",
+        "unlockKm": 1,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "",
+        "unlockKm": 20,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "cards",
+        "unlockKm": 50,
+        "unlocked": false,
+        "visible": false
+      },
+      {
+        "action": "equip",
+        "unlockKm": 20,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "wardrobe",
+        "unlockKm": 30,
+        "unlocked": true,
+        "visible": true
+      }
+    ]
+  },
+  "km40": {
+    "gold": 105582,
+    "totalTaps": 2011,
+    "lapsRun": 40,
+    "lapProgress": 0.003980087335708824,
+    "bestKmh": 30,
+    "runnerStamina": 1.990022499999999,
+    "upgrades": {
+      "upgradeTapValue": 8,
+      "upgradeCritChance": 5,
+      "upgradeLapBonus": 6,
+      "upgradeAutoTap": 2,
+      "upgradeEndurance": 4,
+      "upgradeEagleEye": 3,
+      "upgradeBaseSpeed": 3,
+      "upgradeCruiseControl": 0
+    },
+    "upgradeCosts": {
+      "tapValue": 1563,
+      "critChance": 2657,
+      "lapBonus": 3717,
+      "autoTap": 6006,
+      "endurance": 4050,
+      "eagleEye": 4572,
+      "baseSpeed": 11171,
+      "cruiseControl": 50000
+    },
+    "chests": {
+      "wood": 32,
+      "iron": 7,
+      "gold": 0,
+      "legendary": 1
+    },
+    "ownedSkins": {},
+    "equippedSkin": null,
+    "equipment": {},
+    "activeBoosts": {},
+    "achievements": [
+      "gold_500",
+      "gold_5000",
+      "gold_50k",
+      "tap_100",
+      "tap_1000",
+      "lap_1",
+      "speed_15",
+      "speed_25",
+      "sprint_first",
+      "lap_3",
+      "biome_rural",
+      "biome_urban",
+      "lap_10",
+      "lap_25"
+    ],
+    "achievementsCount": 14,
+    "visibleModals": [],
+    "menuItems": [
+      {
+        "action": "eagleEye",
+        "unlockKm": 8,
+        "unlocked": true,
+        "visible": false
+      },
+      {
+        "action": "cruiseControl",
+        "unlockKm": 30,
+        "unlocked": true,
+        "visible": false
+      },
+      {
+        "action": "saison",
+        "unlockKm": 90,
+        "unlocked": false,
+        "visible": false
+      },
+      {
+        "action": "quests-daily",
+        "unlockKm": 5,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "shop-premium",
+        "unlockKm": 20,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "chests",
+        "unlockKm": 1,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "",
+        "unlockKm": 20,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "cards",
+        "unlockKm": 50,
+        "unlocked": false,
+        "visible": false
+      },
+      {
+        "action": "equip",
+        "unlockKm": 20,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "wardrobe",
+        "unlockKm": 30,
+        "unlocked": true,
+        "visible": true
+      }
+    ]
+  },
+  "km45": {
+    "gold": 108136,
+    "totalTaps": 2017,
+    "lapsRun": 45,
+    "lapProgress": 0.0036945571653879397,
+    "bestKmh": 30,
+    "runnerStamina": 2.0125299999999995,
+    "upgrades": {
+      "upgradeTapValue": 8,
+      "upgradeCritChance": 5,
+      "upgradeLapBonus": 6,
+      "upgradeAutoTap": 2,
+      "upgradeEndurance": 4,
+      "upgradeEagleEye": 3,
+      "upgradeBaseSpeed": 3,
+      "upgradeCruiseControl": 0
+    },
+    "upgradeCosts": {
+      "tapValue": 1563,
+      "critChance": 2657,
+      "lapBonus": 3717,
+      "autoTap": 6006,
+      "endurance": 4050,
+      "eagleEye": 4572,
+      "baseSpeed": 11171,
+      "cruiseControl": 50000
+    },
+    "chests": {
+      "wood": 36,
+      "iron": 8,
+      "gold": 0,
+      "legendary": 1
+    },
+    "ownedSkins": {},
+    "equippedSkin": null,
+    "equipment": {},
+    "activeBoosts": {},
+    "achievements": [
+      "gold_500",
+      "gold_5000",
+      "gold_50k",
+      "tap_100",
+      "tap_1000",
+      "lap_1",
+      "speed_15",
+      "speed_25",
+      "sprint_first",
+      "lap_3",
+      "biome_rural",
+      "biome_urban",
+      "lap_10",
+      "lap_25",
+      "biome_stadium"
+    ],
+    "achievementsCount": 15,
+    "visibleModals": [],
+    "menuItems": [
+      {
+        "action": "eagleEye",
+        "unlockKm": 8,
+        "unlocked": true,
+        "visible": false
+      },
+      {
+        "action": "cruiseControl",
+        "unlockKm": 30,
+        "unlocked": true,
+        "visible": false
+      },
+      {
+        "action": "saison",
+        "unlockKm": 90,
+        "unlocked": false,
+        "visible": false
+      },
+      {
+        "action": "quests-daily",
+        "unlockKm": 5,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "shop-premium",
+        "unlockKm": 20,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "chests",
+        "unlockKm": 1,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "",
+        "unlockKm": 20,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "cards",
+        "unlockKm": 50,
+        "unlocked": false,
+        "visible": false
+      },
+      {
+        "action": "equip",
+        "unlockKm": 20,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "wardrobe",
+        "unlockKm": 30,
+        "unlocked": true,
+        "visible": true
+      }
+    ]
+  },
+  "km49": {
+    "gold": 108262,
+    "totalTaps": 2023,
+    "lapsRun": 49,
+    "lapProgress": 0.003480953499121335,
+    "bestKmh": 30,
+    "runnerStamina": 2.0325400000000027,
+    "upgrades": {
+      "upgradeTapValue": 8,
+      "upgradeCritChance": 5,
+      "upgradeLapBonus": 6,
+      "upgradeAutoTap": 2,
+      "upgradeEndurance": 4,
+      "upgradeEagleEye": 3,
+      "upgradeBaseSpeed": 3,
+      "upgradeCruiseControl": 0
+    },
+    "upgradeCosts": {
+      "tapValue": 1563,
+      "critChance": 2657,
+      "lapBonus": 3717,
+      "autoTap": 6006,
+      "endurance": 4050,
+      "eagleEye": 4572,
+      "baseSpeed": 11171,
+      "cruiseControl": 50000
+    },
+    "chests": {
+      "wood": 40,
+      "iron": 8,
+      "gold": 0,
+      "legendary": 1
+    },
+    "ownedSkins": {},
+    "equippedSkin": null,
+    "equipment": {},
+    "activeBoosts": {},
+    "achievements": [
+      "gold_500",
+      "gold_5000",
+      "gold_50k",
+      "tap_100",
+      "tap_1000",
+      "lap_1",
+      "speed_15",
+      "speed_25",
+      "sprint_first",
+      "lap_3",
+      "biome_rural",
+      "biome_urban",
+      "lap_10",
+      "lap_25",
+      "biome_stadium"
+    ],
+    "achievementsCount": 15,
+    "visibleModals": [],
+    "menuItems": [
+      {
+        "action": "eagleEye",
+        "unlockKm": 8,
+        "unlocked": true,
+        "visible": false
+      },
+      {
+        "action": "cruiseControl",
+        "unlockKm": 30,
+        "unlocked": true,
+        "visible": false
+      },
+      {
+        "action": "saison",
+        "unlockKm": 90,
+        "unlocked": false,
+        "visible": false
+      },
+      {
+        "action": "quests-daily",
+        "unlockKm": 5,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "shop-premium",
+        "unlockKm": 20,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "chests",
+        "unlockKm": 1,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "",
+        "unlockKm": 20,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "cards",
+        "unlockKm": 50,
+        "unlocked": false,
+        "visible": false
+      },
+      {
+        "action": "equip",
+        "unlockKm": 20,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "wardrobe",
+        "unlockKm": 30,
+        "unlocked": true,
+        "visible": true
+      }
+    ]
+  },
+  "km50": {
+    "gold": 110316,
+    "totalTaps": 2029,
+    "lapsRun": 50,
+    "lapProgress": 0.003429510836572746,
+    "bestKmh": 30,
+    "runnerStamina": 2.046295000000006,
+    "upgrades": {
+      "upgradeTapValue": 8,
+      "upgradeCritChance": 5,
+      "upgradeLapBonus": 6,
+      "upgradeAutoTap": 2,
+      "upgradeEndurance": 4,
+      "upgradeEagleEye": 3,
+      "upgradeBaseSpeed": 3,
+      "upgradeCruiseControl": 0
+    },
+    "upgradeCosts": {
+      "tapValue": 1563,
+      "critChance": 2657,
+      "lapBonus": 3717,
+      "autoTap": 6006,
+      "endurance": 4050,
+      "eagleEye": 4572,
+      "baseSpeed": 11171,
+      "cruiseControl": 50000
+    },
+    "chests": {
+      "wood": 40,
+      "iron": 8,
+      "gold": 0,
+      "legendary": 2
+    },
+    "ownedSkins": {},
+    "equippedSkin": null,
+    "equipment": {},
+    "activeBoosts": {},
+    "achievements": [
+      "gold_500",
+      "gold_5000",
+      "gold_50k",
+      "tap_100",
+      "tap_1000",
+      "lap_1",
+      "speed_15",
+      "speed_25",
+      "sprint_first",
+      "lap_3",
+      "biome_rural",
+      "biome_urban",
+      "lap_10",
+      "lap_25",
+      "biome_stadium",
+      "lap_50"
+    ],
+    "achievementsCount": 16,
+    "visibleModals": [],
+    "menuItems": [
+      {
+        "action": "eagleEye",
+        "unlockKm": 8,
+        "unlocked": true,
+        "visible": false
+      },
+      {
+        "action": "cruiseControl",
+        "unlockKm": 30,
+        "unlocked": true,
+        "visible": false
+      },
+      {
+        "action": "saison",
+        "unlockKm": 90,
+        "unlocked": false,
+        "visible": false
+      },
+      {
+        "action": "quests-daily",
+        "unlockKm": 5,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "shop-premium",
+        "unlockKm": 20,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "chests",
+        "unlockKm": 1,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "",
+        "unlockKm": 20,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "cards",
+        "unlockKm": 50,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "equip",
+        "unlockKm": 20,
+        "unlocked": true,
+        "visible": true
+      },
+      {
+        "action": "wardrobe",
+        "unlockKm": 30,
+        "unlocked": true,
+        "visible": true
+      }
+    ]
+  },
+  "cruiseCheck": {
+    "cost": 50000,
+    "lvl": 0,
+    "gold": 110424,
+    "affordable": true
+  },
+  "achievementsUnlockedAtKm50": [
+    {
+      "id": "gold_500",
+      "name": "Premières gouttes",
+      "reward": 50
+    },
+    {
+      "id": "gold_5000",
+      "name": "Trésor",
+      "reward": 300
+    },
+    {
+      "id": "gold_50k",
+      "name": "Magnat",
+      "reward": 2000
+    },
+    {
+      "id": "tap_100",
+      "name": "Tape Tape Tape",
+      "reward": 50
+    },
+    {
+      "id": "tap_1000",
+      "name": "Pouce Acier",
+      "reward": 300
+    },
+    {
+      "id": "lap_1",
+      "name": "Premier Km",
+      "reward": 25
+    },
+    {
+      "id": "lap_3",
+      "name": "Auto-Course",
+      "reward": 100
+    },
+    {
+      "id": "lap_10",
+      "name": "Premier Dossard",
+      "reward": 300
+    },
+    {
+      "id": "lap_25",
+      "name": "Quart de Marathon",
+      "reward": 800
+    },
+    {
+      "id": "lap_50",
+      "name": "Coureur Confirmé",
+      "reward": 2000
+    },
+    {
+      "id": "biome_rural",
+      "name": "Sortie du Chantier",
+      "reward": 100
+    },
+    {
+      "id": "biome_urban",
+      "name": "Ville Lumière",
+      "reward": 300
+    },
+    {
+      "id": "biome_stadium",
+      "name": "Stade Olympique",
+      "reward": 2500
+    },
+    {
+      "id": "speed_15",
+      "name": "Footing",
+      "reward": 50
+    },
+    {
+      "id": "speed_25",
+      "name": "Course",
+      "reward": 300
+    },
+    {
+      "id": "sprint_first",
+      "name": "Premier Sprint",
+      "reward": 200
+    }
+  ],
+  "consoleErrors": [],
+  "consoleWarns": []
+}

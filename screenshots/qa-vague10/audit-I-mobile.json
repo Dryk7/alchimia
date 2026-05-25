@@ -1,0 +1,234 @@
+{
+  "320x568": {
+    "viewport": {
+      "w": 320,
+      "h": 568
+    },
+    "scrollWidth": 320,
+    "clientWidth": 320,
+    "horizontalOverflow": false,
+    "drawer": {
+      "scrollHeight": 552,
+      "clientHeight": 552,
+      "offsetHeight": 552,
+      "verticalOverflow": false,
+      "width": 308,
+      "height": 551.8125
+    },
+    "gridCols": "146px 146px",
+    "buttons": [
+      {
+        "label": "PUISSANCE",
+        "visible": true,
+        "width": 147,
+        "height": 104,
+        "top": 607,
+        "bottom": 711,
+        "locked": false,
+        "display": "grid"
+      },
+      {
+        "label": "CHANCE",
+        "visible": true,
+        "width": 147,
+        "height": 104,
+        "top": 607,
+        "bottom": 711,
+        "locked": false,
+        "display": "grid"
+      },
+      {
+        "label": "AUTO-PILOTE",
+        "visible": true,
+        "width": 147,
+        "height": 118,
+        "top": 719,
+        "bottom": 836,
+        "locked": false,
+        "display": "grid"
+      },
+      {
+        "label": "TROPHÉE",
+        "visible": true,
+        "width": 147,
+        "height": 118,
+        "top": 719,
+        "bottom": 836,
+        "locked": false,
+        "display": "grid"
+      },
+      {
+        "label": "SOUFFLE",
+        "visible": true,
+        "width": 147,
+        "height": 132,
+        "top": 844,
+        "bottom": 975,
+        "locked": false,
+        "display": "grid"
+      },
+      {
+        "label": "VITESSE DE CROISIÈRE",
+        "visible": true,
+        "width": 147,
+        "height": 132,
+        "top": 844,
+        "bottom": 975,
+        "locked": false,
+        "display": "grid"
+      },
+      {
+        "label": "VISION D'AIGLE",
+        "visible": true,
+        "width": 147,
+        "height": 131,
+        "top": 983,
+        "bottom": 1114,
+        "locked": false,
+        "display": "grid"
+      },
+      {
+        "label": "PILOTE AUTO",
+        "visible": true,
+        "width": 147,
+        "height": 131,
+        "top": 983,
+        "bottom": 1114,
+        "locked": false,
+        "display": "grid"
+      }
+    ],
+    "btnCount": 8,
+    "btnVisible": 8,
+    "btnUnder48": 0,
+    "btnUnder44": 0,
+    "utilization": 0.839,
+    "_setup": {
+      "touched": {
+        "STATE": {
+          "gold": 100000,
+          "lapsRun": 30
+        },
+        "applyProgressiveDisclosure": true,
+        "forcedUnlock": 8
+      },
+      "openedSelector": "[data-tab=\"upgrades\"]"
+    }
+  },
+  "412x915": {
+    "viewport": {
+      "w": 412,
+      "h": 915
+    },
+    "scrollWidth": 412,
+    "clientWidth": 412,
+    "horizontalOverflow": false,
+    "drawer": {
+      "scrollHeight": 405,
+      "clientHeight": 405,
+      "offsetHeight": 405,
+      "verticalOverflow": false,
+      "width": 400,
+      "height": 405
+    },
+    "gridCols": "192px 192px",
+    "buttons": [
+      {
+        "label": "PUISSANCE",
+        "visible": true,
+        "width": 192,
+        "height": 77,
+        "top": 954,
+        "bottom": 1031,
+        "locked": true,
+        "display": "grid"
+      },
+      {
+        "label": "CHANCE",
+        "visible": true,
+        "width": 192,
+        "height": 77,
+        "top": 954,
+        "bottom": 1031,
+        "locked": false,
+        "display": "grid"
+      },
+      {
+        "label": "AUTO-PILOTE",
+        "visible": true,
+        "width": 192,
+        "height": 77,
+        "top": 1039,
+        "bottom": 1117,
+        "locked": true,
+        "display": "grid"
+      },
+      {
+        "label": "TROPHÉE",
+        "visible": true,
+        "width": 192,
+        "height": 77,
+        "top": 1039,
+        "bottom": 1117,
+        "locked": true,
+        "display": "grid"
+      },
+      {
+        "label": "SOUFFLE",
+        "visible": true,
+        "width": 192,
+        "height": 91,
+        "top": 1125,
+        "bottom": 1216,
+        "locked": false,
+        "display": "grid"
+      },
+      {
+        "label": "VITESSE DE CROISIÈRE",
+        "visible": true,
+        "width": 192,
+        "height": 91,
+        "top": 1125,
+        "bottom": 1216,
+        "locked": false,
+        "display": "grid"
+      },
+      {
+        "label": "VISION D'AIGLE",
+        "visible": true,
+        "width": 192,
+        "height": 91,
+        "top": 1223,
+        "bottom": 1314,
+        "locked": false,
+        "display": "grid"
+      },
+      {
+        "label": "PILOTE AUTO",
+        "visible": true,
+        "width": 192,
+        "height": 91,
+        "top": 1223,
+        "bottom": 1314,
+        "locked": false,
+        "display": "grid"
+      }
+    ],
+    "btnCount": 8,
+    "btnVisible": 8,
+    "btnUnder48": 0,
+    "btnUnder44": 0,
+    "utilization": 0.796,
+    "_setup": {
+      "touched": {
+        "STATE": {
+          "gold": 100000,
+          "lapsRun": 30
+        },
+        "applyProgressiveDisclosure": true,
+        "forcedUnlock": 8
+      },
+      "openedSelector": "[data-tab=\"upgrades\"]"
+    }
+  }
+}

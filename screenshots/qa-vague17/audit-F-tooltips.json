@@ -1,0 +1,216 @@
+{
+  "tooltip_system_global": {
+    "tooltipsObj": "object",
+    "hasDataTooltipElements": 11,
+    "hasFouleeBubble": false
+  },
+  "buttons": [
+    {
+      "upgradeId": "tapValue",
+      "ariaLabel": "Puissance",
+      "title": null,
+      "dataTooltip": null,
+      "dataTooltipTitle": null,
+      "dataBonus": "+1 goutte / tap",
+      "dataUnlockKm": "1",
+      "dataLocked": "0",
+      "visible": true,
+      "rect": {
+        "x": 8.033096313476562,
+        "y": 998.7041625976562,
+        "w": 259.933837890625,
+        "h": 78.32598876953125
+      },
+      "name": "PUISSANCE",
+      "desc": "+1 goutte / tap",
+      "lvl": "Niv 5",
+      "cost": "715"
+    },
+    {
+      "upgradeId": "critChance",
+      "ariaLabel": "Chance critique",
+      "title": null,
+      "dataTooltip": null,
+      "dataTooltipTitle": null,
+      "dataBonus": "+1% chance crit",
+      "dataUnlockKm": "5",
+      "dataLocked": "0",
+      "visible": true,
+      "rect": {
+        "x": 272.0330810546875,
+        "y": 998.7041625976562,
+        "w": 259.933837890625,
+        "h": 78.32598876953125
+      },
+      "name": "CHANCE",
+      "desc": "+1% chance ×5 gouttes",
+      "lvl": "Niv 2",
+      "cost": "896"
+    },
+    {
+      "upgradeId": "autoTap",
+      "ariaLabel": "Auto-pilote",
+      "title": null,
+      "dataTooltip": null,
+      "dataTooltipTitle": null,
+      "dataBonus": "+1 tap auto/sec",
+      "dataUnlockKm": "18",
+      "dataLocked": "0",
+      "visible": true,
+      "rect": {
+        "x": 8.033096313476562,
+        "y": 1083.8448486328125,
+        "w": 259.933837890625,
+        "h": 78.325927734375
+      },
+      "name": "AUTO-PILOTE",
+      "desc": "+1 tap auto / seconde",
+      "lvl": "Niv 1",
+      "cost": "4.1k"
+    },
+    {
+      "upgradeId": "lapBonus",
+      "ariaLabel": "Trophée",
+      "title": null,
+      "dataTooltip": null,
+      "dataTooltipTitle": null,
+      "dataBonus": "+9 gouttes/km",
+      "dataUnlockKm": "3",
+      "dataLocked": "0",
+      "visible": true,
+      "rect": {
+        "x": 272.0330810546875,
+        "y": 1083.8448486328125,
+        "w": 259.933837890625,
+        "h": 78.325927734375
+      },
+      "name": "TROPHÉE",
+      "desc": "+2 gouttes à chaque km",
+      "lvl": "Niv 3",
+      "cost": "1.5k"
+    },
+    {
+      "upgradeId": "endurance",
+      "ariaLabel": "Souffle",
+      "title": null,
+      "dataTooltip": null,
+      "dataTooltipTitle": null,
+      "dataBonus": "+10% combo duree",
+      "dataUnlockKm": "12",
+      "dataLocked": "0",
+      "visible": true,
+      "rect": {
+        "x": 8.033096313476562,
+        "y": 1168.9854736328125,
+        "w": 259.933837890625,
+        "h": 78.325927734375
+      },
+      "name": "SOUFFLE",
+      "desc": "Combo tient + longtemps",
+      "lvl": "Niv 1",
+      "cost": "1.3k"
+    },
+    {
+      "upgradeId": "baseSpeed",
+      "ariaLabel": "Vitesse",
+      "title": null,
+      "dataTooltip": null,
+      "dataTooltipTitle": null,
+      "dataBonus": "+10% vitesse passive",
+      "dataUnlockKm": "25",
+      "dataLocked": "0",
+      "visible": true,
+      "rect": {
+        "x": 272.0330810546875,
+        "y": 1168.9854736328125,
+        "w": 259.933837890625,
+        "h": 78.325927734375
+      },
+      "name": "VITESSE DE CROISIÈRE",
+      "desc": "+10% vitesse passive",
+      "lvl": "Niv 1",
+      "cost": "5.0k"
+    },
+    {
+      "upgradeId": "eagleEye",
+      "ariaLabel": "Vision d'Aigle",
+      "title": null,
+      "dataTooltip": null,
+      "dataTooltipTitle": null,
+      "dataBonus": "+15% vision haies",
+      "dataUnlockKm": "8",
+      "dataLocked": "0",
+      "visible": true,
+      "rect": {
+        "x": 8.033096313476562,
+        "y": 1254.1107177734375,
+        "w": 259.933837890625,
+        "h": 80.356689453125
+      },
+      "name": "VISION D'AIGLE",
+      "desc": "Haies visibles 2× plus loin",
+      "lvl": "Niv 0",
+      "cost": "1.5k"
+    },
+    {
+      "upgradeId": "cruiseControl",
+      "ariaLabel": "Pilote automatique",
+      "title": null,
+      "dataTooltip": null,
+      "dataTooltipTitle": null,
+      "dataBonus": "+5% sprint maintenu",
+      "dataUnlockKm": "30",
+      "dataLocked": "0",
+      "visible": true,
+      "rect": {
+        "x": 272.0330810546875,
+        "y": 1254.1107177734375,
+        "w": 259.933837890625,
+        "h": 80.356689453125
+      },
+      "name": "PILOTE AUTO",
+      "desc": "+5% vitesse maintenue sans tap",
+      "lvl": "Niv 0",
+      "cost": "50k"
+    }
+  ],
+  "next_level_preview_fn": {
+    "hasPreviewFn": "function",
+    "samples": {
+      "tapValue": "+1 goutte / tap",
+      "critChance": "+1% chance crit",
+      "lapBonus": "+9 gouttes/km"
+    }
+  },
+  "codex_presence": {
+    "codexElement": true,
+    "guideButtonFound": true,
+    "guideButtonText": ""
+  },
+  "errors": [],
+  "hold_tap_result": {
+    "visible": false,
+    "text": null
+  },
+  "hold_target": {
+    "upgradeId": "tapValue",
+    "ariaLabel": "Puissance",
+    "title": null,
+    "dataTooltip": null,
+    "dataTooltipTitle": null,
+    "dataBonus": "+1 goutte / tap",
+    "dataUnlockKm": "1",
+    "dataLocked": "0",
+    "visible": true,
+    "rect": {
+      "x": 8.033096313476562,
+      "y": 998.7041625976562,
+      "w": 259.933837890625,
+      "h": 78.32598876953125
+    },
+    "name": "PUISSANCE",
+    "desc": "+1 goutte / tap",
+    "lvl": "Niv 5",
+    "cost": "715"
+  }
+}

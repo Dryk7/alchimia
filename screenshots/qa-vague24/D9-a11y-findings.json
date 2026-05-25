@@ -1,0 +1,195 @@
+{
+  "html_lang": "fr",
+  "aria_buttons": {
+    "total": 46,
+    "labelled": 46,
+    "unlabelled": 0,
+    "samples": []
+  },
+  "aria_live": {
+    "count": 4,
+    "kinds": [
+      "polite",
+      "polite",
+      "polite",
+      "polite"
+    ]
+  },
+  "focus_css": {
+    "focus_visible_rules": 2,
+    "focus_rules": 0,
+    "outline_none": 1
+  },
+  "contrast": {
+    "tested": 60,
+    "AA_pass": 28,
+    "AAA_pass": 17,
+    "AA_fail_samples": [
+      {
+        "txt": "GOUTTES\n0",
+        "ratio": 1.21,
+        "fontSize": 15,
+        "large": false,
+        "passAA": false,
+        "passAAA": false
+      },
+      {
+        "txt": "GOUTTES\n0",
+        "ratio": 1.21,
+        "fontSize": 13,
+        "large": false,
+        "passAA": false,
+        "passAAA": false
+      },
+      {
+        "txt": "NIV 1\n0.00\nkm\n0.0\nkm/h\n☀️\nBeau",
+        "ratio": 1.21,
+        "fontSize": 15,
+        "large": false,
+        "passAA": false,
+        "passAAA": false
+      },
+      {
+        "txt": "NIV 1",
+        "ratio": 1.21,
+        "fontSize": 15,
+        "large": false,
+        "passAA": false,
+        "passAAA": false
+      },
+      {
+        "txt": "☀️\nBeau temps",
+        "ratio": 1.21,
+        "fontSize": 11,
+        "large": false,
+        "passAA": false,
+        "passAAA": false
+      },
+      {
+        "txt": "☀️",
+        "ratio": 1.21,
+        "fontSize": 14,
+        "large": false,
+        "passAA": false,
+        "passAAA": false
+      },
+      {
+        "txt": "JOUR 1",
+        "ratio": 1,
+        "fontSize": 22,
+        "large": false,
+        "passAA": false,
+        "passAAA": false
+      },
+      {
+        "txt": "JOUR 1",
+        "ratio": 3.72,
+        "fontSize": 9,
+        "large": false,
+        "passAA": false,
+        "passAAA": false
+      },
+      {
+        "txt": "UPGRADES\nPAR TAP\n+1\nG/SEC\n0\nPR",
+        "ratio": 1.21,
+        "fontSize": 15,
+        "large": false,
+        "passAA": false,
+        "passAAA": false
+      },
+      {
+        "txt": "UPGRADES",
+        "ratio": 1.21,
+        "fontSize": 15,
+        "large": false,
+        "passAA": false,
+        "passAAA": false
+      }
+    ]
+  },
+  "reduced_motion": {
+    "media_query_present": true,
+    "anim_count": 158,
+    "transition_count": 96
+  },
+  "tap_targets": {
+    "total": 46,
+    "pass_44": 16,
+    "pass_48": 15,
+    "fail_44_samples": [
+      {
+        "w": 54,
+        "h": 33,
+        "ok44": false,
+        "ok48": false
+      },
+      {
+        "w": 79,
+        "h": 33,
+        "ok44": false,
+        "ok48": false
+      },
+      {
+        "w": 66,
+        "h": 33,
+        "ok44": false,
+        "ok48": false
+      },
+      {
+        "w": 58,
+        "h": 33,
+        "ok44": false,
+        "ok48": false
+      },
+      {
+        "w": 64,
+        "h": 33,
+        "ok44": false,
+        "ok48": false
+      },
+      {
+        "w": 79,
+        "h": 33,
+        "ok44": false,
+        "ok48": false
+      },
+      {
+        "w": 64,
+        "h": 33,
+        "ok44": false,
+        "ok48": false
+      },
+      {
+        "w": 58,
+        "h": 33,
+        "ok44": false,
+        "ok48": false
+      }
+    ]
+  },
+  "a11y_keywords": {
+    "found_keywords": []
+  },
+  "src_signals": {
+    "has_aria_label": true,
+    "aria_label_count": 51,
+    "has_role": true,
+    "role_count": 3,
+    "has_focus_visible": true,
+    "has_prm": true,
+    "has_high_contrast": false,
+    "has_large_text": false,
+    "has_colorblind": false,
+    "screen_reader_only": false
+  },
+  "reduced_motion_runtime": {
+    "animated_elements": 200,
+    "sample_durations": [
+      "1e-05s",
+      "1e-05s",
+      "1e-05s",
+      "1e-05s",
+      "1e-05s"
+    ]
+  }
+}

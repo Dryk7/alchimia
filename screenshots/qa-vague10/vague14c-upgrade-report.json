@@ -1,0 +1,94 @@
+{
+  "http": 200,
+  "T0_initial": {
+    "gold": 100000,
+    "shoes": {
+      "typeId": "shoes",
+      "rarityId": "uncommon",
+      "level": 1,
+      "bonus": 0.04
+    },
+    "fnsOk": {
+      "upgradeItem": true,
+      "ascendItem": true,
+      "getItemUpgradeCost": true,
+      "canUpgradeItem": true,
+      "canAscendItem": true
+    },
+    "initialCost": 500
+  },
+  "T1_after_1_upgrade": {
+    "upgrade_returned": true,
+    "gold": 99500,
+    "level": 2,
+    "rarityId": "uncommon",
+    "bonus": 0.08
+  },
+  "T2_after_5_upgrades": {
+    "steps": [
+      {
+        "i": 0,
+        "ok": true,
+        "level": 3,
+        "gold": 98500
+      },
+      {
+        "i": 1,
+        "ok": true,
+        "level": 4,
+        "gold": 97000
+      },
+      {
+        "i": 2,
+        "ok": true,
+        "level": 5,
+        "gold": 95000
+      },
+      {
+        "i": 3,
+        "ok": false,
+        "level": 5,
+        "gold": 95000
+      }
+    ],
+    "finalLevel": 5,
+    "finalGold": 95000,
+    "finalBonus": 0.2
+  },
+  "T3_can_upgrade_at_cap": {
+    "canUpgrade": false,
+    "canAscend": true,
+    "ascendCost": 7500
+  },
+  "T4_after_ascend": {
+    "ascend_returned": true,
+    "gold": 87500,
+    "level": 1,
+    "rarityId": "rare",
+    "bonus": 0.08
+  },
+  "console_errors": [],
+  "console_warnings": [],
+  "pageerrors": [],
+  "checks": {
+    "T0_fns_present": true,
+    "T0_initial_cost_500": true,
+    "T1_returned_true": true,
+    "T1_level_eq_2": true,
+    "T1_gold_eq_99500": true,
+    "T1_bonus_recomputed": true,
+    "T2_level_eq_5": true,
+    "T2_gold_eq_95000": true,
+    "T2_bonus_recomputed": true,
+    "T3_canUpgrade_false_at_cap": true,
+    "T3_canAscend_true": true,
+    "T3_ascendCost_eq_7500": true,
+    "T4_returned_true": true,
+    "T4_rarity_rare": true,
+    "T4_level_eq_1": true,
+    "T4_gold_eq_87500": true,
+    "T4_bonus_recomputed": true,
+    "console_clean": true
+  },
+  "verdict": "PASS"
+}

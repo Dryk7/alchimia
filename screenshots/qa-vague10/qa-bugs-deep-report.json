@@ -1,0 +1,1722 @@
+{
+  "pageerrors": [],
+  "console_errors": [],
+  "console_warnings": [],
+  "console_logs": [],
+  "paliers": {
+    "km001": {
+      "stacked_modals": {
+        "count": 0,
+        "ids": []
+      },
+      "overflow_horizontal": false,
+      "overflow_scrollW": 540,
+      "overflow_clientW": 540,
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        }
+      ],
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ],
+      "canvas_hash": {
+        "len": 160842,
+        "tail": "SXT8PTye/3r+AAAA//8gtPihAAAABklEQVQDALyiaYhsZsi+AAAAAElFTkSuQmCC",
+        "size": "540x960"
+      },
+      "npc_count": 1,
+      "npc_tiers": [
+        0
+      ],
+      "fps": {
+        "fps": 44.8,
+        "frames": 68,
+        "elapsed": 1.52
+      },
+      "errors_total_so_far": 0,
+      "console_err_so_far": 0,
+      "console_warn_so_far": 0
+    },
+    "km005": {
+      "stacked_modals": {
+        "count": 0,
+        "ids": []
+      },
+      "overflow_horizontal": false,
+      "overflow_scrollW": 540,
+      "overflow_clientW": 540,
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        }
+      ],
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ],
+      "canvas_hash": {
+        "len": 161686,
+        "tail": "4TFJlH0nHv8CAAD//+iYCL4AAAAGSURBVAMAQdfWPZIGWQsAAAAASUVORK5CYII=",
+        "size": "540x960"
+      },
+      "npc_count": 3,
+      "npc_tiers": [
+        0,
+        0,
+        1
+      ],
+      "fps": {
+        "fps": 41.8,
+        "frames": 63,
+        "elapsed": 1.51
+      },
+      "errors_total_so_far": 0,
+      "console_err_so_far": 0,
+      "console_warn_so_far": 0
+    },
+    "km012": {
+      "stacked_modals": {
+        "count": 0,
+        "ids": []
+      },
+      "overflow_horizontal": false,
+      "overflow_scrollW": 540,
+      "overflow_clientW": 540,
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        }
+      ],
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ],
+      "canvas_hash": {
+        "len": 175166,
+        "tail": "sayDH47PfwEAAP//+TiK1gAAAAZJREFUAwA1tTqir3NDuwAAAABJRU5ErkJggg==",
+        "size": "540x960"
+      },
+      "npc_count": 3,
+      "npc_tiers": [
+        0,
+        0,
+        1
+      ],
+      "fps": {
+        "fps": 46.6,
+        "frames": 70,
+        "elapsed": 1.5
+      },
+      "errors_total_so_far": 0,
+      "console_err_so_far": 0,
+      "console_warn_so_far": 0
+    },
+    "km030": {
+      "stacked_modals": {
+        "count": 0,
+        "ids": []
+      },
+      "overflow_horizontal": false,
+      "overflow_scrollW": 540,
+      "overflow_clientW": 540,
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        }
+      ],
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ],
+      "canvas_hash": {
+        "len": 177702,
+        "tail": "5wDk4N4cPv8fAAD//2C9gUIAAAAGSURBVAMAXsoz/Tbv6/gAAAAASUVORK5CYII=",
+        "size": "540x960"
+      },
+      "npc_count": 4,
+      "npc_tiers": [
+        0,
+        0,
+        1,
+        4
+      ],
+      "fps": {
+        "fps": 42.1,
+        "frames": 64,
+        "elapsed": 1.52
+      },
+      "errors_total_so_far": 0,
+      "console_err_so_far": 0,
+      "console_warn_so_far": 0
+    },
+    "km050": {
+      "stacked_modals": {
+        "count": 0,
+        "ids": []
+      },
+      "overflow_horizontal": false,
+      "overflow_scrollW": 540,
+      "overflow_clientW": 540,
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        }
+      ],
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ],
+      "canvas_hash": {
+        "len": 217918,
+        "tail": "cxi6y+3i8f8AAAD//zu9WqIAAAAGSURBVAMAs88cEa+RJsgAAAAASUVORK5CYII=",
+        "size": "540x960"
+      },
+      "npc_count": 3,
+      "npc_tiers": [
+        1,
+        4,
+        4
+      ],
+      "fps": {
+        "fps": 38.5,
+        "frames": 58,
+        "elapsed": 1.51
+      },
+      "errors_total_so_far": 0,
+      "console_err_so_far": 0,
+      "console_warn_so_far": 0
+    },
+    "km075": {
+      "stacked_modals": {
+        "count": 0,
+        "ids": []
+      },
+      "overflow_horizontal": false,
+      "overflow_scrollW": 540,
+      "overflow_clientW": 540,
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        }
+      ],
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ],
+      "canvas_hash": {
+        "len": 279690,
+        "tail": "wRc6O/jj/wMAAP//eMdN2AAAAAZJREFUAwD98VDigtdi8wAAAABJRU5ErkJggg==",
+        "size": "540x960"
+      },
+      "npc_count": 4,
+      "npc_tiers": [
+        1,
+        4,
+        4,
+        4
+      ],
+      "fps": {
+        "fps": 29.3,
+        "frames": 45,
+        "elapsed": 1.54
+      },
+      "errors_total_so_far": 0,
+      "console_err_so_far": 0,
+      "console_warn_so_far": 0
+    },
+    "km099": {
+      "stacked_modals": {
+        "count": 0,
+        "ids": []
+      },
+      "overflow_horizontal": false,
+      "overflow_scrollW": 540,
+      "overflow_clientW": 540,
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        }
+      ],
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ],
+      "canvas_hash": {
+        "len": 436370,
+        "tail": "BiIDkYEZz8B/BgAA//8D+VZsAAAABklEQVQDAOZ0yJmcfsOgAAAAAElFTkSuQmCC",
+        "size": "540x960"
+      },
+      "npc_count": 3,
+      "npc_tiers": [
+        4,
+        4,
+        4
+      ],
+      "fps": {
+        "fps": 18.6,
+        "frames": 28,
+        "elapsed": 1.5
+      },
+      "errors_total_so_far": 0,
+      "console_err_so_far": 0,
+      "console_warn_so_far": 0
+    },
+    "km100": {
+      "stacked_modals": {
+        "count": 0,
+        "ids": []
+      },
+      "overflow_horizontal": false,
+      "overflow_scrollW": 540,
+      "overflow_clientW": 540,
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        }
+      ],
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ],
+      "canvas_hash": {
+        "len": 443946,
+        "tail": "xPzwAnGQHfzfAAAA//+NdKUcAAAABklEQVQDAAzqAi62Ie7tAAAAAElFTkSuQmCC",
+        "size": "540x960"
+      },
+      "npc_count": 3,
+      "npc_tiers": [
+        4,
+        4,
+        4
+      ],
+      "fps": {
+        "fps": 19.2,
+        "frames": 29,
+        "elapsed": 1.51
+      },
+      "errors_total_so_far": 0,
+      "console_err_so_far": 0,
+      "console_warn_so_far": 0
+    },
+    "km105": {
+      "stacked_modals": {
+        "count": 0,
+        "ids": []
+      },
+      "overflow_horizontal": false,
+      "overflow_scrollW": 540,
+      "overflow_clientW": 540,
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        }
+      ],
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ],
+      "canvas_hash": {
+        "len": 397374,
+        "tail": "+eEF4jjy4P8EAAD//zcQpB4AAAAGSURBVAMAJ9mV1x1ey34AAAAASUVORK5CYII=",
+        "size": "540x960"
+      },
+      "npc_count": 4,
+      "npc_tiers": [
+        4,
+        4,
+        4,
+        5
+      ],
+      "fps": {
+        "fps": 31.3,
+        "frames": 47,
+        "elapsed": 1.5
+      },
+      "errors_total_so_far": 0,
+      "console_err_so_far": 0,
+      "console_warn_so_far": 0
+    }
+  },
+  "npc_observation": [
+    {
+      "t_iter": 0,
+      "count": 4
+    },
+    {
+      "t_iter": 1,
+      "count": 4
+    },
+    {
+      "t_iter": 2,
+      "count": 4
+    },
+    {
+      "t_iter": 3,
+      "count": 4
+    },
+    {
+      "t_iter": 4,
+      "count": 4
+    },
+    {
+      "t_iter": 5,
+      "count": 4
+    },
+    {
+      "t_iter": 6,
+      "count": 4
+    },
+    {
+      "t_iter": 7,
+      "count": 4
+    },
+    {
+      "t_iter": 8,
+      "count": 4
+    },
+    {
+      "t_iter": 9,
+      "count": 4
+    },
+    {
+      "t_iter": 10,
+      "count": 4
+    },
+    {
+      "t_iter": 11,
+      "count": 4
+    },
+    {
+      "t_iter": 12,
+      "count": 4
+    },
+    {
+      "t_iter": 13,
+      "count": 4
+    },
+    {
+      "t_iter": 14,
+      "count": 4
+    },
+    {
+      "t_iter": 15,
+      "count": 4
+    },
+    {
+      "t_iter": 16,
+      "count": 4
+    },
+    {
+      "t_iter": 17,
+      "count": 4
+    },
+    {
+      "t_iter": 18,
+      "count": 4
+    },
+    {
+      "t_iter": 19,
+      "count": 4
+    }
+  ],
+  "canvas_hashes": [
+    {
+      "km": 1,
+      "hash": {
+        "len": 160842,
+        "tail": "SXT8PTye/3r+AAAA//8gtPihAAAABklEQVQDALyiaYhsZsi+AAAAAElFTkSuQmCC",
+        "size": "540x960"
+      }
+    },
+    {
+      "km": 5,
+      "hash": {
+        "len": 161686,
+        "tail": "4TFJlH0nHv8CAAD//+iYCL4AAAAGSURBVAMAQdfWPZIGWQsAAAAASUVORK5CYII=",
+        "size": "540x960"
+      }
+    },
+    {
+      "km": 12,
+      "hash": {
+        "len": 175166,
+        "tail": "sayDH47PfwEAAP//+TiK1gAAAAZJREFUAwA1tTqir3NDuwAAAABJRU5ErkJggg==",
+        "size": "540x960"
+      }
+    },
+    {
+      "km": 30,
+      "hash": {
+        "len": 177702,
+        "tail": "5wDk4N4cPv8fAAD//2C9gUIAAAAGSURBVAMAXsoz/Tbv6/gAAAAASUVORK5CYII=",
+        "size": "540x960"
+      }
+    },
+    {
+      "km": 50,
+      "hash": {
+        "len": 217918,
+        "tail": "cxi6y+3i8f8AAAD//zu9WqIAAAAGSURBVAMAs88cEa+RJsgAAAAASUVORK5CYII=",
+        "size": "540x960"
+      }
+    },
+    {
+      "km": 75,
+      "hash": {
+        "len": 279690,
+        "tail": "wRc6O/jj/wMAAP//eMdN2AAAAAZJREFUAwD98VDigtdi8wAAAABJRU5ErkJggg==",
+        "size": "540x960"
+      }
+    },
+    {
+      "km": 99,
+      "hash": {
+        "len": 436370,
+        "tail": "BiIDkYEZz8B/BgAA//8D+VZsAAAABklEQVQDAOZ0yJmcfsOgAAAAAElFTkSuQmCC",
+        "size": "540x960"
+      }
+    },
+    {
+      "km": 100,
+      "hash": {
+        "len": 443946,
+        "tail": "xPzwAnGQHfzfAAAA//+NdKUcAAAABklEQVQDAAzqAi62Ie7tAAAAAElFTkSuQmCC",
+        "size": "540x960"
+      }
+    },
+    {
+      "km": 105,
+      "hash": {
+        "len": 397374,
+        "tail": "+eEF4jjy4P8EAAD//zcQpB4AAAAGSURBVAMAJ9mV1x1ey34AAAAASUVORK5CYII=",
+        "size": "540x960"
+      }
+    }
+  ],
+  "pause_resume": {
+    "pre": {
+      "laps": 50,
+      "prog": 0.23697211250708422,
+      "perf": 114535
+    },
+    "post": {
+      "laps": 50,
+      "prog": 0.2506540828618561,
+      "perf": 121153
+    },
+    "delta_laps": 0,
+    "delta_prog": 0.0137,
+    "canvas_changed": true,
+    "fps_after_resume": {
+      "fps": 45.7,
+      "frames": 69,
+      "elapsed": 1.51
+    }
+  },
+  "resize_tests": {
+    "320x480": {
+      "canvas": {
+        "cssW": 320,
+        "cssH": 480,
+        "attrW": 320,
+        "attrH": 480,
+        "vw": 320,
+        "vh": 480
+      },
+      "overflow": {
+        "horizontal": false,
+        "scrollW": 320,
+        "clientW": 320
+      },
+      "stacked_modals": [],
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -275,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 320,
+          "right": 595,
+          "opacity": "1.00"
+        }
+      ]
+    },
+    "1024x768": {
+      "canvas": {
+        "cssW": 1024,
+        "cssH": 768,
+        "attrW": 1024,
+        "attrH": 768,
+        "vw": 1024,
+        "vh": 768
+      },
+      "overflow": {
+        "horizontal": false,
+        "scrollW": 1024,
+        "clientW": 1024
+      },
+      "stacked_modals": [],
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 1024,
+          "right": 1384,
+          "opacity": "1.00"
+        }
+      ]
+    }
+  },
+  "modal_probes": {
+    "guide": {
+      "opened": "err: openGuide is not defined",
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* =========================================================\n   ALCHIMIA — moteur\n   ==============="
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "(function initSideParallax(){\n  const cv = document.getElementById('runner-canvas');\n  if(!cv) retur"
+        }
+      ],
+      "stacked": {
+        "count": 0,
+        "ids": []
+      },
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ]
+    },
+    "shop": {
+      "opened": true,
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* =========================================================\n   ALCHIMIA — moteur\n   ==============="
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "(function initSideParallax(){\n  const cv = document.getElementById('runner-canvas');\n  if(!cv) retur"
+        }
+      ],
+      "stacked": {
+        "count": 1,
+        "ids": [
+          "shop-premium-modal"
+        ]
+      },
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ]
+    },
+    "daily": {
+      "opened": true,
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* =========================================================\n   ALCHIMIA — moteur\n   ==============="
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "(function initSideParallax(){\n  const cv = document.getElementById('runner-canvas');\n  if(!cv) retur"
+        }
+      ],
+      "stacked": {
+        "count": 1,
+        "ids": [
+          "daily-modal"
+        ]
+      },
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ]
+    },
+    "equip": {
+      "opened": true,
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* =========================================================\n   ALCHIMIA — moteur\n   ==============="
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "(function initSideParallax(){\n  const cv = document.getElementById('runner-canvas');\n  if(!cv) retur"
+        }
+      ],
+      "stacked": {
+        "count": 1,
+        "ids": [
+          "equip-modal"
+        ]
+      },
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ]
+    },
+    "saison": {
+      "opened": true,
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* =========================================================\n   ALCHIMIA — moteur\n   ==============="
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "(function initSideParallax(){\n  const cv = document.getElementById('runner-canvas');\n  if(!cv) retur"
+        }
+      ],
+      "stacked": {
+        "count": 1,
+        "ids": [
+          "saison-modal"
+        ]
+      },
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ]
+    },
+    "runnerProfile": {
+      "opened": true,
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* =========================================================\n   ALCHIMIA — moteur\n   ==============="
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "(function initSideParallax(){\n  const cv = document.getElementById('runner-canvas');\n  if(!cv) retur"
+        }
+      ],
+      "stacked": {
+        "count": 1,
+        "ids": [
+          "profile-modal"
+        ]
+      },
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ]
+    },
+    "cardCollection": {
+      "opened": true,
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* =========================================================\n   ALCHIMIA — moteur\n   ==============="
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "(function initSideParallax(){\n  const cv = document.getElementById('runner-canvas');\n  if(!cv) retur"
+        }
+      ],
+      "stacked": {
+        "count": 1,
+        "ids": [
+          "cards-modal"
+        ]
+      },
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ]
+    },
+    "chests": {
+      "opened": true,
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* =========================================================\n   ALCHIMIA — moteur\n   ==============="
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "(function initSideParallax(){\n  const cv = document.getElementById('runner-canvas');\n  if(!cv) retur"
+        }
+      ],
+      "stacked": {
+        "count": 1,
+        "ids": [
+          "chests-modal"
+        ]
+      },
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ]
+    },
+    "mapStadiums": {
+      "opened": true,
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* =========================================================\n   ALCHIMIA — moteur\n   ==============="
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "(function initSideParallax(){\n  const cv = document.getElementById('runner-canvas');\n  if(!cv) retur"
+        }
+      ],
+      "stacked": {
+        "count": 1,
+        "ids": [
+          "map-stadiums-modal"
+        ]
+      },
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ]
+    },
+    "wardrobe": {
+      "opened": true,
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* =========================================================\n   ALCHIMIA — moteur\n   ==============="
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "(function initSideParallax(){\n  const cv = document.getElementById('runner-canvas');\n  if(!cv) retur"
+        }
+      ],
+      "stacked": {
+        "count": 1,
+        "ids": [
+          "wardrobe-modal"
+        ]
+      },
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ]
+    },
+    "records": {
+      "opened": "err: openRecordsModal is not defined",
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* =========================================================\n   ALCHIMIA — moteur\n   ==============="
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "(function initSideParallax(){\n  const cv = document.getElementById('runner-canvas');\n  if(!cv) retur"
+        }
+      ],
+      "stacked": {
+        "count": 0,
+        "ids": []
+      },
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ]
+    },
+    "settings": {
+      "opened": "err: openSettings is not defined",
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* =========================================================\n   ALCHIMIA — moteur\n   ==============="
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "(function initSideParallax(){\n  const cv = document.getElementById('runner-canvas');\n  if(!cv) retur"
+        }
+      ],
+      "stacked": {
+        "count": 0,
+        "ids": []
+      },
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ]
+    },
+    "credits": {
+      "opened": "err: openCredits is not defined",
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* =========================================================\n   ALCHIMIA — moteur\n   ==============="
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "(function initSideParallax(){\n  const cv = document.getElementById('runner-canvas');\n  if(!cv) retur"
+        }
+      ],
+      "stacked": {
+        "count": 0,
+        "ids": []
+      },
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ]
+    },
+    "skillTree": {
+      "opened": "err: openSkillTree is not defined",
+      "undefined_count": 5,
+      "undefined_sample": [
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   i18n SYSTEM : FR/EN avec a"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ═══════════════════════════════════════════════════════════════════\n   GÉNÉRIQUE D'OUVERTURE — 5s"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* ════════ INTRO SPLASH : scène statique avec héros en pose départ ════════ */\n(function initSplash"
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "/* =========================================================\n   ALCHIMIA — moteur\n   ==============="
+        },
+        {
+          "tag": "SCRIPT",
+          "cls": "",
+          "id": null,
+          "text": "(function initSideParallax(){\n  const cv = document.getElementById('runner-canvas');\n  if(!cv) retur"
+        }
+      ],
+      "stacked": {
+        "count": 0,
+        "ids": []
+      },
+      "offscreen_count": 2,
+      "offscreen_sample": [
+        {
+          "sel": ".drawer",
+          "id": "codex",
+          "cls": "drawer",
+          "left": -360,
+          "right": 0,
+          "opacity": "1.00"
+        },
+        {
+          "sel": ".drawer",
+          "id": "quests",
+          "cls": "drawer",
+          "left": 540,
+          "right": 900,
+          "opacity": "1.00"
+        }
+      ]
+    }
+  },
+  "notes": [],
+  "totals": {
+    "pageerrors": 0,
+    "console_errors": 0,
+    "console_warnings": 0,
+    "console_logs_sampled": 0
+  }
+}

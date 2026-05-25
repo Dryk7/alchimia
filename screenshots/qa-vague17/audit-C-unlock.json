@@ -1,0 +1,437 @@
+{
+  "paliers": [
+    {
+      "km": 1,
+      "upgrade": "tapValue",
+      "newToasts": [
+        {
+          "t": 63466,
+          "id": "unlock-toast-1779627437196",
+          "text": "✨ NOUVEAU : Puissance débloqué !",
+          "animation": "unlockFadeInOut 4s",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% / auto padding-box bo",
+          "color": "rgb(26, 26, 46)",
+          "position": "fixed",
+          "top": "80px",
+          "zIndex": "9999"
+        },
+        {
+          "t": 63473.799999952316,
+          "id": "unlock-toast-1779627437196",
+          "text": "✨ NOUVEAU : chests débloqué !",
+          "animation": "unlockFadeInOut 4s",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% / auto padding-box bo",
+          "color": "rgb(26, 26, 46)",
+          "position": "fixed",
+          "top": "80px",
+          "zIndex": "9999"
+        }
+      ],
+      "sfxCount": 0,
+      "sfx": [],
+      "btn": {
+        "exists": true,
+        "locked": "0",
+        "display": "grid",
+        "visibility": "visible",
+        "classes": "upg-btn upg-power affordable",
+        "ariaLabel": "Puissance"
+      },
+      "toastsStillInDOM": [
+        {
+          "id": "unlock-toast-1779627437196",
+          "text": "✨ NOUVEAU : Puissance débloqué !",
+          "ageMs": -1779627371690.5
+        },
+        {
+          "id": "unlock-toast-1779627437196",
+          "text": "✨ NOUVEAU : chests débloqué !",
+          "ageMs": -1779627371690.5
+        }
+      ],
+      "label_expected": "Puissance"
+    },
+    {
+      "km": 3,
+      "upgrade": "lapBonus",
+      "newToasts": [
+        {
+          "t": 67942.39999985695,
+          "id": "unlock-toast-1779627441673",
+          "text": "✨ NOUVEAU : Trophée débloqué !",
+          "animation": "unlockFadeInOut 4s",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% / auto padding-box bo",
+          "color": "rgb(26, 26, 46)",
+          "position": "fixed",
+          "top": "80px",
+          "zIndex": "9999"
+        }
+      ],
+      "sfxCount": 0,
+      "sfx": [],
+      "btn": {
+        "exists": true,
+        "locked": "0",
+        "display": "grid",
+        "visibility": "visible",
+        "classes": "upg-btn upg-trophy affordable locked",
+        "ariaLabel": "Trophée"
+      },
+      "toastsStillInDOM": [
+        {
+          "id": "unlock-toast-1779627441673",
+          "text": "✨ NOUVEAU : Trophée débloqué !",
+          "ageMs": -1779627371702.1
+        }
+      ],
+      "label_expected": "Trophée"
+    },
+    {
+      "km": 5,
+      "upgrade": "critChance",
+      "newToasts": [
+        {
+          "t": 72279.19999980927,
+          "id": "unlock-toast-1779627446009",
+          "text": "✨ NOUVEAU : Chance critique débloqué !",
+          "animation": "unlockFadeInOut 4s",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% / auto padding-box bo",
+          "color": "rgb(26, 26, 46)",
+          "position": "fixed",
+          "top": "80px",
+          "zIndex": "9999"
+        },
+        {
+          "t": 72282.09999990463,
+          "id": "unlock-toast-1779627446009",
+          "text": "✨ NOUVEAU : buy-bougie débloqué !",
+          "animation": "unlockFadeInOut 4s",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% / auto padding-box bo",
+          "color": "rgb(26, 26, 46)",
+          "position": "fixed",
+          "top": "80px",
+          "zIndex": "9999"
+        },
+        {
+          "t": 72282.09999990463,
+          "id": "unlock-toast-1779627446009",
+          "text": "✨ NOUVEAU : quests-daily débloqué !",
+          "animation": "unlockFadeInOut 4s",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% / auto padding-box bo",
+          "color": "rgb(26, 26, 46)",
+          "position": "fixed",
+          "top": "80px",
+          "zIndex": "9999"
+        }
+      ],
+      "sfxCount": 0,
+      "sfx": [],
+      "btn": {
+        "exists": true,
+        "locked": "0",
+        "display": "grid",
+        "visibility": "visible",
+        "classes": "upg-btn upg-luck affordable",
+        "ariaLabel": "Chance critique"
+      },
+      "toastsStillInDOM": [
+        {
+          "id": "unlock-toast-1779627446009",
+          "text": "✨ NOUVEAU : Chance critique débloqué !",
+          "ageMs": -1779627371682.8
+        },
+        {
+          "id": "unlock-toast-1779627446009",
+          "text": "✨ NOUVEAU : buy-bougie débloqué !",
+          "ageMs": -1779627371682.8
+        },
+        {
+          "id": "unlock-toast-1779627446009",
+          "text": "✨ NOUVEAU : quests-daily débloqué !",
+          "ageMs": -1779627371682.8
+        }
+      ],
+      "label_expected": "Chance critique"
+    },
+    {
+      "km": 8,
+      "upgrade": "eagleEye",
+      "newToasts": [
+        {
+          "t": 76734.39999985695,
+          "id": "unlock-toast-1779627450465",
+          "text": "✨ NOUVEAU : Vision d'Aigle débloqué !",
+          "animation": "unlockFadeInOut 4s",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% / auto padding-box bo",
+          "color": "rgb(26, 26, 46)",
+          "position": "fixed",
+          "top": "80px",
+          "zIndex": "9999"
+        }
+      ],
+      "sfxCount": 0,
+      "sfx": [],
+      "btn": {
+        "exists": true,
+        "locked": "0",
+        "display": "grid",
+        "visibility": "visible",
+        "classes": "upg-btn upg-eagle",
+        "ariaLabel": "Vision d'Aigle"
+      },
+      "toastsStillInDOM": [
+        {
+          "id": "unlock-toast-1779627450465",
+          "text": "✨ NOUVEAU : Vision d'Aigle débloqué !",
+          "ageMs": -1779627371681.5
+        }
+      ],
+      "label_expected": "Vision d'Aigle"
+    },
+    {
+      "km": 12,
+      "upgrade": "endurance",
+      "newToasts": [
+        {
+          "t": 81061.29999995232,
+          "id": "unlock-toast-1779627454792",
+          "text": "✨ NOUVEAU : Souffle débloqué !",
+          "animation": "unlockFadeInOut 4s",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% / auto padding-box bo",
+          "color": "rgb(26, 26, 46)",
+          "position": "fixed",
+          "top": "80px",
+          "zIndex": "9999"
+        }
+      ],
+      "sfxCount": 0,
+      "sfx": [],
+      "btn": {
+        "exists": true,
+        "locked": "0",
+        "display": "grid",
+        "visibility": "visible",
+        "classes": "upg-btn upg-breath",
+        "ariaLabel": "Souffle"
+      },
+      "toastsStillInDOM": [
+        {
+          "id": "unlock-toast-1779627454792",
+          "text": "✨ NOUVEAU : Souffle débloqué !",
+          "ageMs": -1779627371695.8
+        }
+      ],
+      "label_expected": "Souffle"
+    },
+    {
+      "km": 18,
+      "upgrade": "autoTap",
+      "newToasts": [
+        {
+          "t": 85507.5,
+          "id": "unlock-toast-1779627459238",
+          "text": "✨ NOUVEAU : Auto-pilote débloqué !",
+          "animation": "unlockFadeInOut 4s",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% / auto padding-box bo",
+          "color": "rgb(26, 26, 46)",
+          "position": "fixed",
+          "top": "80px",
+          "zIndex": "9999"
+        }
+      ],
+      "sfxCount": 0,
+      "sfx": [],
+      "btn": {
+        "exists": true,
+        "locked": "0",
+        "display": "grid",
+        "visibility": "visible",
+        "classes": "upg-btn upg-auto locked",
+        "ariaLabel": "Auto-pilote"
+      },
+      "toastsStillInDOM": [
+        {
+          "id": "unlock-toast-1779627459238",
+          "text": "✨ NOUVEAU : Auto-pilote débloqué !",
+          "ageMs": -1779627371695.9
+        }
+      ],
+      "label_expected": "Auto-pilote"
+    },
+    {
+      "km": 25,
+      "upgrade": "baseSpeed",
+      "newToasts": [
+        {
+          "t": 89982.5,
+          "id": "unlock-toast-1779627463713",
+          "text": "✨ NOUVEAU : Vitesse débloqué !",
+          "animation": "unlockFadeInOut 4s",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% / auto padding-box bo",
+          "color": "rgb(26, 26, 46)",
+          "position": "fixed",
+          "top": "80px",
+          "zIndex": "9999"
+        }
+      ],
+      "sfxCount": 0,
+      "sfx": [],
+      "btn": {
+        "exists": true,
+        "locked": "0",
+        "display": "grid",
+        "visibility": "visible",
+        "classes": "upg-btn upg-speed",
+        "ariaLabel": "Vitesse"
+      },
+      "toastsStillInDOM": [
+        {
+          "id": "unlock-toast-1779627463436",
+          "text": "✨ NOUVEAU : shop-premium débloqué !",
+          "ageMs": -1779627371417.7
+        },
+        {
+          "id": "unlock-toast-1779627463436",
+          "text": "✨ NOUVEAU : equip débloqué !",
+          "ageMs": -1779627371417.7
+        },
+        {
+          "id": "unlock-toast-1779627463713",
+          "text": "✨ NOUVEAU : Vitesse débloqué !",
+          "ageMs": -1779627371694.7
+        }
+      ],
+      "label_expected": "Vitesse"
+    },
+    {
+      "km": 30,
+      "upgrade": "cruiseControl",
+      "newToasts": [
+        {
+          "t": 94304.89999985695,
+          "id": "unlock-toast-1779627468035",
+          "text": "✨ NOUVEAU : Pilote automatique débloqué !",
+          "animation": "unlockFadeInOut 4s",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% / auto padding-box bo",
+          "color": "rgb(26, 26, 46)",
+          "position": "fixed",
+          "top": "80px",
+          "zIndex": "9999"
+        },
+        {
+          "t": 94307.79999995232,
+          "id": "unlock-toast-1779627468035",
+          "text": "✨ NOUVEAU : buy-doping débloqué !",
+          "animation": "unlockFadeInOut 4s",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% / auto padding-box bo",
+          "color": "rgb(26, 26, 46)",
+          "position": "fixed",
+          "top": "80px",
+          "zIndex": "9999"
+        },
+        {
+          "t": 94307.89999985695,
+          "id": "unlock-toast-1779627468035",
+          "text": "✨ NOUVEAU : wardrobe débloqué !",
+          "animation": "unlockFadeInOut 4s",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgb(255, 208, 96), rgb(255, 144, 32)) repeat scroll 0% 0% / auto padding-box bo",
+          "color": "rgb(26, 26, 46)",
+          "position": "fixed",
+          "top": "80px",
+          "zIndex": "9999"
+        }
+      ],
+      "sfxCount": 0,
+      "sfx": [],
+      "btn": {
+        "exists": true,
+        "locked": "0",
+        "display": "grid",
+        "visibility": "visible",
+        "classes": "upg-btn upg-cruise",
+        "ariaLabel": "Pilote automatique"
+      },
+      "toastsStillInDOM": [
+        {
+          "id": "unlock-toast-1779627468035",
+          "text": "✨ NOUVEAU : Pilote automatique débloqué !",
+          "ageMs": -1779627371689.1
+        },
+        {
+          "id": "unlock-toast-1779627468035",
+          "text": "✨ NOUVEAU : buy-doping débloqué !",
+          "ageMs": -1779627371689.1
+        },
+        {
+          "id": "unlock-toast-1779627468035",
+          "text": "✨ NOUVEAU : wardrobe débloqué !",
+          "ageMs": -1779627371689.1
+        }
+      ],
+      "label_expected": "Pilote automatique"
+    }
+  ],
+  "total_paliers": 8,
+  "paliers_with_toast": 8,
+  "paliers_with_sfx": 0,
+  "paliers_btn_unlocked": 8,
+  "last_btn_states": [
+    {
+      "upg": "tapValue",
+      "locked": "0",
+      "classes": "upg-btn upg-power affordable",
+      "animationName": "upgPulseV2",
+      "boxShadow": "rgba(232, 64, 48, 0.4) 0px 4px 12px 0px, rgba(255, 160, 120, 0.45) 0px 0px 0px 2"
+    },
+    {
+      "upg": "critChance",
+      "locked": "0",
+      "classes": "upg-btn upg-luck affordable",
+      "animationName": "upgPulseV2",
+      "boxShadow": "rgba(244, 184, 48, 0.4) 0px 4px 12px 0px, rgba(255, 220, 120, 0.5) 0px 0px 0px 2"
+    },
+    {
+      "upg": "autoTap",
+      "locked": "0",
+      "classes": "upg-btn upg-auto",
+      "animationName": "none",
+      "boxShadow": "rgba(0, 0, 0, 0.06) 0px 2px 6px 0px"
+    },
+    {
+      "upg": "lapBonus",
+      "locked": "0",
+      "classes": "upg-btn upg-trophy affordable",
+      "animationName": "upgPulseV2",
+      "boxShadow": "rgba(200, 112, 32, 0.4) 0px 4px 12px 0px, rgba(255, 180, 80, 0.5) 0px 0px 0px 2p"
+    },
+    {
+      "upg": "endurance",
+      "locked": "0",
+      "classes": "upg-btn upg-breath",
+      "animationName": "none",
+      "boxShadow": "rgba(0, 0, 0, 0.06) 0px 2px 6px 0px"
+    },
+    {
+      "upg": "baseSpeed",
+      "locked": "0",
+      "classes": "upg-btn upg-speed",
+      "animationName": "none",
+      "boxShadow": "rgba(0, 0, 0, 0.06) 0px 2px 6px 0px"
+    },
+    {
+      "upg": "eagleEye",
+      "locked": "0",
+      "classes": "upg-btn upg-eagle",
+      "animationName": "none",
+      "boxShadow": "rgba(0, 0, 0, 0.06) 0px 2px 6px 0px"
+    },
+    {
+      "upg": "cruiseControl",
+      "locked": "0",
+      "classes": "upg-btn upg-cruise",
+      "animationName": "none",
+      "boxShadow": "rgba(0, 196, 208, 0.3) 0px 3px 12px 0px"
+    }
+  ],
+  "console_errors": []
+}

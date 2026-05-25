@@ -1,0 +1,292 @@
+{
+  "errors": [],
+  "console_errors": [],
+  "console_warnings": [],
+  "paliers": {
+    "km001": {
+      "stacked_modals": {
+        "count": 0,
+        "ids": [],
+        "stacked": false
+      },
+      "overflow": {
+        "horizontal_overflow": false,
+        "doc_scrollW": 540,
+        "doc_clientW": 540,
+        "offscreen_count": 0,
+        "offscreen_sample": []
+      },
+      "undefined_count": 0,
+      "undefined_sample": [],
+      "errors_so_far": 0,
+      "console_errors_so_far": 0,
+      "console_warnings_so_far": 0
+    },
+    "km005": {
+      "stacked_modals": {
+        "count": 0,
+        "ids": [],
+        "stacked": false
+      },
+      "overflow": {
+        "horizontal_overflow": false,
+        "doc_scrollW": 540,
+        "doc_clientW": 540,
+        "offscreen_count": 0,
+        "offscreen_sample": []
+      },
+      "undefined_count": 0,
+      "undefined_sample": [],
+      "errors_so_far": 0,
+      "console_errors_so_far": 0,
+      "console_warnings_so_far": 0
+    },
+    "km012": {
+      "stacked_modals": {
+        "count": 0,
+        "ids": [],
+        "stacked": false
+      },
+      "overflow": {
+        "horizontal_overflow": false,
+        "doc_scrollW": 540,
+        "doc_clientW": 540,
+        "offscreen_count": 0,
+        "offscreen_sample": []
+      },
+      "undefined_count": 0,
+      "undefined_sample": [],
+      "errors_so_far": 0,
+      "console_errors_so_far": 0,
+      "console_warnings_so_far": 0
+    },
+    "km030": {
+      "stacked_modals": {
+        "count": 0,
+        "ids": [],
+        "stacked": false
+      },
+      "overflow": {
+        "horizontal_overflow": false,
+        "doc_scrollW": 540,
+        "doc_clientW": 540,
+        "offscreen_count": 0,
+        "offscreen_sample": []
+      },
+      "undefined_count": 0,
+      "undefined_sample": [],
+      "errors_so_far": 0,
+      "console_errors_so_far": 0,
+      "console_warnings_so_far": 0
+    },
+    "km050": {
+      "stacked_modals": {
+        "count": 0,
+        "ids": [],
+        "stacked": false
+      },
+      "overflow": {
+        "horizontal_overflow": false,
+        "doc_scrollW": 540,
+        "doc_clientW": 540,
+        "offscreen_count": 0,
+        "offscreen_sample": []
+      },
+      "undefined_count": 0,
+      "undefined_sample": [],
+      "errors_so_far": 0,
+      "console_errors_so_far": 0,
+      "console_warnings_so_far": 0
+    },
+    "km075": {
+      "stacked_modals": {
+        "count": 0,
+        "ids": [],
+        "stacked": false
+      },
+      "overflow": {
+        "horizontal_overflow": false,
+        "doc_scrollW": 540,
+        "doc_clientW": 540,
+        "offscreen_count": 0,
+        "offscreen_sample": []
+      },
+      "undefined_count": 0,
+      "undefined_sample": [],
+      "errors_so_far": 0,
+      "console_errors_so_far": 0,
+      "console_warnings_so_far": 0
+    },
+    "km099": {
+      "stacked_modals": {
+        "count": 0,
+        "ids": [],
+        "stacked": false
+      },
+      "overflow": {
+        "horizontal_overflow": false,
+        "doc_scrollW": 540,
+        "doc_clientW": 540,
+        "offscreen_count": 0,
+        "offscreen_sample": []
+      },
+      "undefined_count": 0,
+      "undefined_sample": [],
+      "errors_so_far": 0,
+      "console_errors_so_far": 0,
+      "console_warnings_so_far": 0
+    },
+    "km100": {
+      "stacked_modals": {
+        "count": 0,
+        "ids": [],
+        "stacked": false
+      },
+      "overflow": {
+        "horizontal_overflow": false,
+        "doc_scrollW": 540,
+        "doc_clientW": 540,
+        "offscreen_count": 0,
+        "offscreen_sample": []
+      },
+      "undefined_count": 0,
+      "undefined_sample": [],
+      "errors_so_far": 0,
+      "console_errors_so_far": 0,
+      "console_warnings_so_far": 0
+    },
+    "km105": {
+      "stacked_modals": {
+        "count": 0,
+        "ids": [],
+        "stacked": false
+      },
+      "overflow": {
+        "horizontal_overflow": false,
+        "doc_scrollW": 540,
+        "doc_clientW": 540,
+        "offscreen_count": 0,
+        "offscreen_sample": []
+      },
+      "undefined_count": 0,
+      "undefined_sample": [],
+      "errors_so_far": 0,
+      "console_errors_so_far": 0,
+      "console_warnings_so_far": 0
+    }
+  },
+  "stacked_modals_events": [],
+  "offscreen_events": [],
+  "undefined_events": [],
+  "npc_observation": {
+    "samples": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "max": null,
+    "min": null,
+    "first_nonnull": null
+  },
+  "pause_resume": {
+    "pre_pause": {
+      "lapsRun": 25,
+      "lapProgress": 0.06852655388993041,
+      "t": 96356.20000004768
+    },
+    "post_pause": {
+      "lapsRun": 25,
+      "lapProgress": 0.0926851745155464,
+      "t": 104516.40000009537
+    },
+    "delta_laps": 0,
+    "fps_after_resume": {
+      "fps": 50.6,
+      "elapsed": 1.5,
+      "frames": 76
+    }
+  },
+  "resize_tests": {
+    "320x480": {
+      "canvas": {
+        "present": true,
+        "cssW": 320,
+        "cssH": 480,
+        "attrW": 320,
+        "attrH": 480,
+        "dpr": 1,
+        "vw": 320,
+        "vh": 480
+      },
+      "overflow": {
+        "documentScrollW": 320,
+        "documentClientW": 320,
+        "bodyScrollW": 320,
+        "bodyClientW": 320,
+        "horizontalOverflow": false,
+        "offscreenElements": []
+      },
+      "stacked_modals": {
+        "count": 0,
+        "ids": [],
+        "stacked": false
+      }
+    },
+    "1024x768": {
+      "canvas": {
+        "present": true,
+        "cssW": 1024,
+        "cssH": 768,
+        "attrW": 1024,
+        "attrH": 768,
+        "dpr": 1,
+        "vw": 1024,
+        "vh": 768
+      },
+      "overflow": {
+        "documentScrollW": 1024,
+        "documentClientW": 1024,
+        "bodyScrollW": 1024,
+        "bodyClientW": 1024,
+        "horizontalOverflow": false,
+        "offscreenElements": []
+      },
+      "stacked_modals": {
+        "count": 0,
+        "ids": [],
+        "stacked": false
+      }
+    }
+  },
+  "notes": [],
+  "initial_canvas": {
+    "present": true,
+    "cssW": 540,
+    "cssH": 960,
+    "attrW": 540,
+    "attrH": 960,
+    "dpr": 1,
+    "vw": 540,
+    "vh": 960
+  },
+  "totals": {
+    "pageerrors": 0,
+    "console_errors": 0,
+    "console_warnings": 0,
+    "stacked_modals_events": 0,
+    "offscreen_events": 0,
+    "undefined_events": 0
+  }
+}

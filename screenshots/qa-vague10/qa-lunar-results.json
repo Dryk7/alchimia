@@ -1,0 +1,148 @@
+{
+  "results": [
+    {
+      "km": 50,
+      "state": {
+        "km": 50,
+        "saison": 2,
+        "chapter": 2,
+        "biome": "lunar",
+        "gold": 1000000500,
+        "stars": 10,
+        "ascensions": 1,
+        "chests": {
+          "wood": 0,
+          "iron": 0,
+          "gold": 0,
+          "legendary": 0
+        },
+        "upgradeTapValue": 0,
+        "achievements": 0
+      },
+      "bgm": null
+    },
+    {
+      "km": 99,
+      "state": {
+        "km": 99,
+        "saison": 2,
+        "chapter": 2,
+        "biome": "lunar",
+        "gold": 1000000000,
+        "stars": 10,
+        "ascensions": 1,
+        "chests": {
+          "wood": 0,
+          "iron": 0,
+          "gold": 0,
+          "legendary": 0
+        },
+        "upgradeTapValue": 0,
+        "achievements": 0
+      },
+      "bgm": null
+    },
+    {
+      "km": 105,
+      "state": {
+        "km": 105,
+        "saison": 2,
+        "chapter": 2,
+        "biome": "lunar",
+        "gold": 1000000000,
+        "stars": 10,
+        "ascensions": 1,
+        "chests": {
+          "wood": 0,
+          "iron": 0,
+          "gold": 0,
+          "legendary": 0
+        },
+        "upgradeTapValue": 0,
+        "achievements": 0
+      },
+      "state_after_taps": {
+        "km": 105,
+        "saison": 2,
+        "chapter": 2,
+        "biome": "lunar",
+        "gold": 999999944,
+        "stars": 10,
+        "ascensions": 1,
+        "chests": {
+          "wood": 0,
+          "iron": 0,
+          "gold": 0,
+          "legendary": 0
+        },
+        "upgradeTapValue": 0,
+        "achievements": 0
+      },
+      "bgm": null
+    },
+    {
+      "km": 130,
+      "state": {
+        "km": 130,
+        "saison": 2,
+        "chapter": 2,
+        "biome": "lunar",
+        "gold": 1000000000,
+        "stars": 10,
+        "ascensions": 1,
+        "chests": {
+          "wood": 0,
+          "iron": 0,
+          "gold": 1,
+          "legendary": 0
+        },
+        "upgradeTapValue": 0,
+        "achievements": 0
+      },
+      "hurdles": {
+        "hurdles": null
+      }
+    },
+    {
+      "km": 150,
+      "state": {
+        "km": 150,
+        "saison": 2,
+        "chapter": 2,
+        "biome": "lunar",
+        "gold": 1000000000,
+        "stars": 10,
+        "ascensions": 1,
+        "chests": {
+          "wood": 0,
+          "iron": 0,
+          "gold": 1,
+          "legendary": 0
+        },
+        "upgradeTapValue": 0,
+        "achievements": 18
+      }
+    },
+    {
+      "km": 200,
+      "state": {
+        "km": 200,
+        "saison": 2,
+        "chapter": 2,
+        "biome": "lunar",
+        "gold": 1000000000,
+        "stars": 10,
+        "ascensions": 1,
+        "chests": {
+          "wood": 0,
+          "iron": 0,
+          "gold": 1,
+          "legendary": 0
+        },
+        "upgradeTapValue": 0,
+        "achievements": 18
+      }
+    }
+  ],
+  "console": []
+}

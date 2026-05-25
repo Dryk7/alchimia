@@ -1,0 +1,98 @@
+{
+  "btn_info": {
+    "exists": true,
+    "visible": true,
+    "rect": {
+      "x": 9.031829833984375,
+      "y": 915.005126953125,
+      "w": 257.93634033203125,
+      "h": 77.72412109375
+    }
+  },
+  "state_before": {
+    "gold": 1000500,
+    "tapValue": 0,
+    "totalUpgradesBought": 0
+  },
+  "state_after": {
+    "gold": 1000420,
+    "tapValue": 1,
+    "totalUpgradesBought": 1
+  },
+  "gold_delta": 80,
+  "tapValue_delta": 1,
+  "css_immediate": {
+    "classes": "upg-btn upg-power affordable just-bought",
+    "animation": "0.6s ease-out upgBoughtFlash",
+    "animationName": "upgBoughtFlash",
+    "animationDuration": "0.6s",
+    "transform": "matrix(1.0594, 0, 0, 1.0594, 0, 0)",
+    "background": "linear-gradient(rgb(255, 255, 255), rgb(232, 64, 48))"
+  },
+  "css_mid": {
+    "classes": "upg-btn upg-power affordable locked",
+    "transform": "matrix(1.00056, 0, 0, 1.00056, 0, 0)",
+    "animationName": "upgPulseV2"
+  },
+  "css_end": {
+    "classes": "upg-btn upg-power affordable locked",
+    "transform": "matrix(1.01322, 0, 0, 1.01322, 0, 0)",
+    "animationName": "upgPulseV2"
+  },
+  "sfx_log": [
+    {
+      "fn": "vibrate",
+      "args": 1,
+      "t": 78846.5
+    },
+    {
+      "fn": "vibrate",
+      "args": 1,
+      "t": 78888
+    },
+    {
+      "fn": "particles",
+      "args": 4,
+      "t": 78889.40000009537
+    },
+    {
+      "fn": "setTimeout-fire",
+      "ms": 500,
+      "t": 79372.40000009537
+    },
+    {
+      "fn": "setTimeout-fire",
+      "ms": 700,
+      "t": 79716.20000004768
+    },
+    {
+      "fn": "setTimeout-fire",
+      "ms": 400,
+      "t": 79716.40000009537
+    },
+    {
+      "fn": "setTimeout-fire",
+      "ms": 436.7905945781197,
+      "t": 82766.30000019073
+    },
+    {
+      "fn": "setTimeout-fire",
+      "ms": 1955.6407587409985,
+      "t": 84326.5
+    }
+  ],
+  "particle_info": {
+    "canvasCount": 12,
+    "ids": [
+      "st-canvas",
+      "ascension-confetti",
+      "runner-canvas",
+      "gen-bubbles",
+      "gen-bubbles",
+      "gen-bubbles",
+      "dust",
+      "candles"
+    ]
+  },
+  "console_recent": []
+}

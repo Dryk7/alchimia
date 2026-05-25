@@ -1,0 +1,408 @@
+{
+  "state": {
+    "gold": 100812,
+    "lapsRun": 30
+  },
+  "results": [
+    {
+      "id": "tapValue",
+      "found": true,
+      "rect": {
+        "w": 251,
+        "h": 79,
+        "x": 18,
+        "y": 605
+      },
+      "visible": true,
+      "locked": false,
+      "affordable": true,
+      "opacity": "1",
+      "cursor": "pointer",
+      "filter": "none",
+      "name": {
+        "text": "PUISSANCE",
+        "fontSize": "12.5px",
+        "fontWeight": "900",
+        "color": "rgb(26, 26, 26)",
+        "textTransform": "none"
+      },
+      "desc": {
+        "text": "+1 goutte / tap",
+        "fontSize": "9.5px",
+        "color": "rgb(102, 102, 102)"
+      },
+      "lvl": {
+        "text": "Niv 8",
+        "fontSize": "9px",
+        "fontWeight": "900",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)"
+      },
+      "cost": {
+        "text": "2.7k",
+        "fontSize": "11px",
+        "fontWeight": "900",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)"
+      },
+      "bar": {
+        "barContainerW": 171,
+        "barContainerH": 5,
+        "barFillW": 46,
+        "pctFill": 26.7,
+        "fillBg": "rgb(232, 64, 48) none repeat scroll 0% 0% / auto padding-box border-box",
+        "contBg": "rgb(240, 240, 240)"
+      }
+    },
+    {
+      "id": "critChance",
+      "found": true,
+      "rect": {
+        "w": 251,
+        "h": 79,
+        "x": 272,
+        "y": 605
+      },
+      "visible": true,
+      "locked": false,
+      "affordable": true,
+      "opacity": "1",
+      "cursor": "pointer",
+      "filter": "none",
+      "name": {
+        "text": "CHANCE",
+        "fontSize": "12.5px",
+        "fontWeight": "900",
+        "color": "rgb(26, 26, 26)",
+        "textTransform": "none"
+      },
+      "desc": {
+        "text": "+1% chance ×5 gouttes",
+        "fontSize": "9.5px",
+        "color": "rgb(102, 102, 102)"
+      },
+      "lvl": {
+        "text": "Niv 12",
+        "fontSize": "9px",
+        "fontWeight": "900",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)"
+      },
+      "cost": {
+        "text": "99k",
+        "fontSize": "11px",
+        "fontWeight": "900",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)"
+      },
+      "bar": {
+        "barContainerW": 171,
+        "barContainerH": 5,
+        "barFillW": 37,
+        "pctFill": 21.8,
+        "fillBg": "rgb(244, 184, 48) none repeat scroll 0% 0% / auto padding-box border-box",
+        "contBg": "rgb(240, 240, 240)"
+      }
+    },
+    {
+      "id": "lapBonus",
+      "found": true,
+      "rect": {
+        "w": 251,
+        "h": 79,
+        "x": 272,
+        "y": 690
+      },
+      "visible": true,
+      "locked": false,
+      "affordable": true,
+      "opacity": "1",
+      "cursor": "pointer",
+      "filter": "none",
+      "name": {
+        "text": "TROPHÉE",
+        "fontSize": "12.5px",
+        "fontWeight": "900",
+        "color": "rgb(26, 26, 26)",
+        "textTransform": "none"
+      },
+      "desc": {
+        "text": "+2 gouttes à chaque km",
+        "fontSize": "9.5px",
+        "color": "rgb(102, 102, 102)"
+      },
+      "lvl": {
+        "text": "Niv 5",
+        "fontSize": "9px",
+        "fontWeight": "900",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)"
+      },
+      "cost": {
+        "text": "3.6k",
+        "fontSize": "11px",
+        "fontWeight": "900",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)"
+      },
+      "bar": {
+        "barContainerW": 171,
+        "barContainerH": 5,
+        "barFillW": 29,
+        "pctFill": 16.7,
+        "fillBg": "rgb(200, 112, 32) none repeat scroll 0% 0% / auto padding-box border-box",
+        "contBg": "rgb(240, 240, 240)"
+      }
+    },
+    {
+      "id": "autoTap",
+      "found": true,
+      "rect": {
+        "w": 251,
+        "h": 79,
+        "x": 18,
+        "y": 690
+      },
+      "visible": true,
+      "locked": false,
+      "affordable": true,
+      "opacity": "1",
+      "cursor": "pointer",
+      "filter": "none",
+      "name": {
+        "text": "AUTO-PILOTE",
+        "fontSize": "12.5px",
+        "fontWeight": "900",
+        "color": "rgb(26, 26, 26)",
+        "textTransform": "none"
+      },
+      "desc": {
+        "text": "+1 tap auto / seconde",
+        "fontSize": "9.5px",
+        "color": "rgb(102, 102, 102)"
+      },
+      "lvl": {
+        "text": "Niv 3",
+        "fontSize": "9px",
+        "fontWeight": "900",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)"
+      },
+      "cost": {
+        "text": "11k",
+        "fontSize": "11px",
+        "fontWeight": "900",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)"
+      },
+      "bar": {
+        "barContainerW": 171,
+        "barContainerH": 5,
+        "barFillW": 17,
+        "pctFill": 10,
+        "fillBg": "rgb(74, 159, 217) none repeat scroll 0% 0% / auto padding-box border-box",
+        "contBg": "rgb(240, 240, 240)"
+      }
+    },
+    {
+      "id": "endurance",
+      "found": true,
+      "rect": {
+        "w": 251,
+        "h": 79,
+        "x": 18,
+        "y": 775
+      },
+      "visible": true,
+      "locked": false,
+      "affordable": true,
+      "opacity": "1",
+      "cursor": "pointer",
+      "filter": "none",
+      "name": {
+        "text": "SOUFFLE",
+        "fontSize": "12.5px",
+        "fontWeight": "900",
+        "color": "rgb(26, 26, 26)",
+        "textTransform": "none"
+      },
+      "desc": {
+        "text": "Combo tient + longtemps",
+        "fontSize": "9.5px",
+        "color": "rgb(102, 102, 102)"
+      },
+      "lvl": {
+        "text": "Niv 10",
+        "fontSize": "9px",
+        "fontWeight": "900",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)"
+      },
+      "cost": {
+        "text": "88k",
+        "fontSize": "11px",
+        "fontWeight": "900",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)"
+      },
+      "bar": {
+        "barContainerW": 171,
+        "barContainerH": 5,
+        "barFillW": 86,
+        "pctFill": 50,
+        "fillBg": "rgb(126, 196, 106) none repeat scroll 0% 0% / auto padding-box border-box",
+        "contBg": "rgb(240, 240, 240)"
+      }
+    },
+    {
+      "id": "baseSpeed",
+      "found": true,
+      "rect": {
+        "w": 251,
+        "h": 79,
+        "x": 272,
+        "y": 775
+      },
+      "visible": true,
+      "locked": false,
+      "affordable": true,
+      "opacity": "1",
+      "cursor": "pointer",
+      "filter": "none",
+      "name": {
+        "text": "VITESSE DE CROISIÈRE",
+        "fontSize": "12.5px",
+        "fontWeight": "900",
+        "color": "rgb(26, 26, 26)",
+        "textTransform": "none"
+      },
+      "desc": {
+        "text": "+10% vitesse passive",
+        "fontSize": "9.5px",
+        "color": "rgb(102, 102, 102)"
+      },
+      "lvl": {
+        "text": "Niv 6",
+        "fontSize": "9px",
+        "fontWeight": "900",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)"
+      },
+      "cost": {
+        "text": "61k",
+        "fontSize": "11px",
+        "fontWeight": "900",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)"
+      },
+      "bar": {
+        "barContainerW": 171,
+        "barContainerH": 5,
+        "barFillW": 68,
+        "pctFill": 40,
+        "fillBg": "rgb(200, 154, 240) none repeat scroll 0% 0% / auto padding-box border-box",
+        "contBg": "rgb(240, 240, 240)"
+      }
+    },
+    {
+      "id": "eagleEye",
+      "found": true,
+      "rect": {
+        "w": 251,
+        "h": 81,
+        "x": 18,
+        "y": 860
+      },
+      "visible": true,
+      "locked": false,
+      "affordable": true,
+      "opacity": "1",
+      "cursor": "pointer",
+      "filter": "none",
+      "name": {
+        "text": "VISION D'AIGLE",
+        "fontSize": "12.5px",
+        "fontWeight": "900",
+        "color": "rgb(26, 26, 26)",
+        "textTransform": "none"
+      },
+      "desc": {
+        "text": "Haies visibles 2× plus loin",
+        "fontSize": "9.5px",
+        "color": "rgb(102, 102, 102)"
+      },
+      "lvl": {
+        "text": "Niv 0",
+        "fontSize": "9px",
+        "fontWeight": "900",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)"
+      },
+      "cost": {
+        "text": "1.5k",
+        "fontSize": "11px",
+        "fontWeight": "900",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)"
+      },
+      "bar": {
+        "barContainerW": 171,
+        "barContainerH": 5,
+        "barFillW": 0,
+        "pctFill": 0,
+        "fillBg": "rgb(200, 64, 48) none repeat scroll 0% 0% / auto padding-box border-box",
+        "contBg": "rgb(240, 240, 240)"
+      }
+    },
+    {
+      "id": "cruiseControl",
+      "found": true,
+      "rect": {
+        "w": 246,
+        "h": 79,
+        "x": 274,
+        "y": 861
+      },
+      "visible": true,
+      "locked": false,
+      "affordable": false,
+      "opacity": "1",
+      "cursor": "pointer",
+      "filter": "none",
+      "name": {
+        "text": "PILOTE AUTO",
+        "fontSize": "12.5px",
+        "fontWeight": "900",
+        "color": "rgb(26, 26, 26)",
+        "textTransform": "none"
+      },
+      "desc": {
+        "text": "+5% vitesse maintenue sans tap",
+        "fontSize": "9.5px",
+        "color": "rgb(102, 102, 102)"
+      },
+      "lvl": {
+        "text": "Niv 2",
+        "fontSize": "9px",
+        "fontWeight": "900",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)"
+      },
+      "cost": {
+        "text": "120k",
+        "fontSize": "11px",
+        "fontWeight": "800",
+        "color": "rgb(0, 196, 208)",
+        "bg": "rgba(255, 255, 255, 0.6)"
+      },
+      "bar": {
+        "barContainerW": 166,
+        "barContainerH": 5,
+        "barFillW": 22,
+        "pctFill": 13.3,
+        "fillBg": "rgb(0, 196, 208) none repeat scroll 0% 0% / auto padding-box border-box",
+        "contBg": "rgb(240, 240, 240)"
+      }
+    }
+  ]
+}

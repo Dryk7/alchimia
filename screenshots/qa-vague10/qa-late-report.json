@@ -1,0 +1,1226 @@
+{
+  "paliers": {
+    "49": {
+      "km": 49,
+      "gold": 5011325,
+      "totalTaps": 10000,
+      "stage": {
+        "idx": 4,
+        "name": "Avenue urbaine",
+        "km": 38,
+        "crowd": 0,
+        "floors": 0,
+        "projectors": 0,
+        "flags": 0,
+        "extras": []
+      },
+      "biome": "urban",
+      "cap": 3.5,
+      "baseSpeed": 0.4,
+      "speedMul": 0.39910062999999996,
+      "skills": [
+        {
+          "id": "sprint",
+          "name": "SPRINT",
+          "unlock": 0,
+          "unlocked": true,
+          "cd": 240,
+          "dur": 30
+        },
+        {
+          "id": "tailwind",
+          "name": "VENT",
+          "unlock": 5,
+          "unlocked": true,
+          "cd": 360,
+          "dur": 60
+        },
+        {
+          "id": "bounty",
+          "name": "PRIME",
+          "unlock": 20,
+          "unlocked": true,
+          "cd": 1800,
+          "dur": 0
+        },
+        {
+          "id": "breath",
+          "name": "SOUFFLE",
+          "unlock": 50,
+          "unlocked": false,
+          "cd": 450,
+          "dur": 45
+        }
+      ],
+      "upgrades": {
+        "tapValue": {
+          "lvl": 0,
+          "cost": 80,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "critChance": {
+          "lvl": 0,
+          "cost": 350,
+          "maxLevel": 55,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "lapBonus": {
+          "lvl": 0,
+          "cost": 400,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "autoTap": {
+          "lvl": 0,
+          "cost": 2500,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "endurance": {
+          "lvl": 0,
+          "cost": 800,
+          "maxLevel": 20,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "eagleEye": {
+          "lvl": 0,
+          "cost": 1500,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 8
+        },
+        "baseSpeed": {
+          "lvl": 0,
+          "cost": 3000,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "cruiseControl": {
+          "lvl": 0,
+          "cost": 50000,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 30
+        }
+      },
+      "equipBonus": {
+        "speed": 0,
+        "tap": 0,
+        "regen": 0,
+        "crit": 0
+      },
+      "achCount": 14,
+      "chests": {
+        "wood": 0,
+        "iron": 0,
+        "gold": 0,
+        "legendary": 0
+      },
+      "chestTotal": 0,
+      "stamina": 0.9950034999999998,
+      "chapter": 1,
+      "saison": 1
+    },
+    "50": {
+      "km": 50,
+      "gold": 5011325,
+      "totalTaps": 10000,
+      "stage": {
+        "idx": 4,
+        "name": "Avenue urbaine",
+        "km": 38,
+        "crowd": 0,
+        "floors": 0,
+        "projectors": 0,
+        "flags": 0,
+        "extras": []
+      },
+      "biome": "urban",
+      "cap": 3.5,
+      "baseSpeed": 0.4,
+      "speedMul": 0.39820045000000004,
+      "skills": [
+        {
+          "id": "sprint",
+          "name": "SPRINT",
+          "unlock": 0,
+          "unlocked": true,
+          "cd": 240,
+          "dur": 30
+        },
+        {
+          "id": "tailwind",
+          "name": "VENT",
+          "unlock": 5,
+          "unlocked": true,
+          "cd": 360,
+          "dur": 60
+        },
+        {
+          "id": "bounty",
+          "name": "PRIME",
+          "unlock": 20,
+          "unlocked": true,
+          "cd": 1800,
+          "dur": 0
+        },
+        {
+          "id": "breath",
+          "name": "SOUFFLE",
+          "unlock": 50,
+          "unlocked": true,
+          "cd": 450,
+          "dur": 45
+        }
+      ],
+      "upgrades": {
+        "tapValue": {
+          "lvl": 0,
+          "cost": 80,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "critChance": {
+          "lvl": 0,
+          "cost": 350,
+          "maxLevel": 55,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "lapBonus": {
+          "lvl": 0,
+          "cost": 400,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "autoTap": {
+          "lvl": 0,
+          "cost": 2500,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "endurance": {
+          "lvl": 0,
+          "cost": 800,
+          "maxLevel": 20,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "eagleEye": {
+          "lvl": 0,
+          "cost": 1500,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 8
+        },
+        "baseSpeed": {
+          "lvl": 0,
+          "cost": 3000,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "cruiseControl": {
+          "lvl": 0,
+          "cost": 50000,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 30
+        }
+      },
+      "equipBonus": {
+        "speed": 0,
+        "tap": 0,
+        "regen": 0,
+        "crit": 0
+      },
+      "achCount": 14,
+      "chests": {
+        "wood": 0,
+        "iron": 0,
+        "gold": 0,
+        "legendary": 0
+      },
+      "chestTotal": 0,
+      "stamina": 0.9900025,
+      "chapter": 1,
+      "saison": 1
+    },
+    "51": {
+      "km": 51,
+      "gold": 5011325,
+      "totalTaps": 10000,
+      "stage": {
+        "idx": 4,
+        "name": "Avenue urbaine",
+        "km": 38,
+        "crowd": 0,
+        "floors": 0,
+        "projectors": 0,
+        "flags": 0,
+        "extras": []
+      },
+      "biome": "urban",
+      "cap": 3.5,
+      "baseSpeed": 0.4,
+      "speedMul": 0.39910063000000007,
+      "skills": [
+        {
+          "id": "sprint",
+          "name": "SPRINT",
+          "unlock": 0,
+          "unlocked": true,
+          "cd": 240,
+          "dur": 30
+        },
+        {
+          "id": "tailwind",
+          "name": "VENT",
+          "unlock": 5,
+          "unlocked": true,
+          "cd": 360,
+          "dur": 60
+        },
+        {
+          "id": "bounty",
+          "name": "PRIME",
+          "unlock": 20,
+          "unlocked": true,
+          "cd": 1800,
+          "dur": 0
+        },
+        {
+          "id": "breath",
+          "name": "SOUFFLE",
+          "unlock": 50,
+          "unlocked": true,
+          "cd": 450,
+          "dur": 45
+        }
+      ],
+      "upgrades": {
+        "tapValue": {
+          "lvl": 0,
+          "cost": 80,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "critChance": {
+          "lvl": 0,
+          "cost": 350,
+          "maxLevel": 55,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "lapBonus": {
+          "lvl": 0,
+          "cost": 400,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "autoTap": {
+          "lvl": 0,
+          "cost": 2500,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "endurance": {
+          "lvl": 0,
+          "cost": 800,
+          "maxLevel": 20,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "eagleEye": {
+          "lvl": 0,
+          "cost": 1500,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 8
+        },
+        "baseSpeed": {
+          "lvl": 0,
+          "cost": 3000,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "cruiseControl": {
+          "lvl": 0,
+          "cost": 50000,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 30
+        }
+      },
+      "equipBonus": {
+        "speed": 0,
+        "tap": 0,
+        "regen": 0,
+        "crit": 0
+      },
+      "achCount": 14,
+      "chests": {
+        "wood": 0,
+        "iron": 0,
+        "gold": 0,
+        "legendary": 0
+      },
+      "chestTotal": 0,
+      "stamina": 0.9950035,
+      "chapter": 1,
+      "saison": 1
+    },
+    "55": {
+      "km": 55,
+      "gold": 5011325,
+      "totalTaps": 10000,
+      "stage": {
+        "idx": 5,
+        "name": "Approche du stade",
+        "km": 55,
+        "crowd": 0,
+        "floors": 0,
+        "projectors": 0,
+        "flags": 3,
+        "extras": []
+      },
+      "biome": "urban",
+      "cap": 3.5,
+      "baseSpeed": 0.4,
+      "speedMul": 0.3984259,
+      "skills": [
+        {
+          "id": "sprint",
+          "name": "SPRINT",
+          "unlock": 0,
+          "unlocked": true,
+          "cd": 240,
+          "dur": 30
+        },
+        {
+          "id": "tailwind",
+          "name": "VENT",
+          "unlock": 5,
+          "unlocked": true,
+          "cd": 360,
+          "dur": 60
+        },
+        {
+          "id": "bounty",
+          "name": "PRIME",
+          "unlock": 20,
+          "unlocked": true,
+          "cd": 1800,
+          "dur": 0
+        },
+        {
+          "id": "breath",
+          "name": "SOUFFLE",
+          "unlock": 50,
+          "unlocked": true,
+          "cd": 450,
+          "dur": 45
+        }
+      ],
+      "upgrades": {
+        "tapValue": {
+          "lvl": 0,
+          "cost": 80,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "critChance": {
+          "lvl": 0,
+          "cost": 350,
+          "maxLevel": 55,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "lapBonus": {
+          "lvl": 0,
+          "cost": 400,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "autoTap": {
+          "lvl": 0,
+          "cost": 2500,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "endurance": {
+          "lvl": 0,
+          "cost": 800,
+          "maxLevel": 20,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "eagleEye": {
+          "lvl": 0,
+          "cost": 1500,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 8
+        },
+        "baseSpeed": {
+          "lvl": 0,
+          "cost": 3000,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "cruiseControl": {
+          "lvl": 0,
+          "cost": 50000,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 30
+        }
+      },
+      "equipBonus": {
+        "speed": 0,
+        "tap": 0,
+        "regen": 0,
+        "crit": 0
+      },
+      "achCount": 14,
+      "chests": {
+        "wood": 0,
+        "iron": 0,
+        "gold": 0,
+        "legendary": 0
+      },
+      "chestTotal": 0,
+      "stamina": 0.9912549999999999,
+      "chapter": 1,
+      "saison": 1
+    },
+    "60": {
+      "km": 60,
+      "gold": 5011325,
+      "totalTaps": 10000,
+      "stage": {
+        "idx": 5,
+        "name": "Approche du stade",
+        "km": 55,
+        "crowd": 0,
+        "floors": 0,
+        "projectors": 0,
+        "flags": 3,
+        "extras": []
+      },
+      "biome": "urban",
+      "cap": 3.5,
+      "baseSpeed": 0.4,
+      "speedMul": 0.39950563000000006,
+      "skills": [
+        {
+          "id": "sprint",
+          "name": "SPRINT",
+          "unlock": 0,
+          "unlocked": true,
+          "cd": 240,
+          "dur": 30
+        },
+        {
+          "id": "tailwind",
+          "name": "VENT",
+          "unlock": 5,
+          "unlocked": true,
+          "cd": 360,
+          "dur": 60
+        },
+        {
+          "id": "bounty",
+          "name": "PRIME",
+          "unlock": 20,
+          "unlocked": true,
+          "cd": 1800,
+          "dur": 0
+        },
+        {
+          "id": "breath",
+          "name": "SOUFFLE",
+          "unlock": 50,
+          "unlocked": true,
+          "cd": 450,
+          "dur": 45
+        }
+      ],
+      "upgrades": {
+        "tapValue": {
+          "lvl": 0,
+          "cost": 80,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "critChance": {
+          "lvl": 0,
+          "cost": 350,
+          "maxLevel": 55,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "lapBonus": {
+          "lvl": 0,
+          "cost": 400,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "autoTap": {
+          "lvl": 0,
+          "cost": 2500,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "endurance": {
+          "lvl": 0,
+          "cost": 800,
+          "maxLevel": 20,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "eagleEye": {
+          "lvl": 0,
+          "cost": 1500,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 8
+        },
+        "baseSpeed": {
+          "lvl": 0,
+          "cost": 3000,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "cruiseControl": {
+          "lvl": 0,
+          "cost": 50000,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 30
+        }
+      },
+      "equipBonus": {
+        "speed": 0,
+        "tap": 0,
+        "regen": 0,
+        "crit": 0
+      },
+      "achCount": 14,
+      "chests": {
+        "wood": 0,
+        "iron": 0,
+        "gold": 0,
+        "legendary": 0
+      },
+      "chestTotal": 0,
+      "stamina": 0.9972535000000001,
+      "chapter": 1,
+      "saison": 1
+    },
+    "65": {
+      "km": 65,
+      "gold": 5011325,
+      "totalTaps": 10000,
+      "stage": {
+        "idx": 6,
+        "name": "Banderoles d'accueil",
+        "km": 65,
+        "crowd": 0,
+        "floors": 0,
+        "projectors": 0,
+        "flags": 5,
+        "extras": [
+          "bannieres"
+        ]
+      },
+      "biome": "urban",
+      "cap": 3.5,
+      "baseSpeed": 0.4,
+      "speedMul": 0.39774955,
+      "skills": [
+        {
+          "id": "sprint",
+          "name": "SPRINT",
+          "unlock": 0,
+          "unlocked": true,
+          "cd": 240,
+          "dur": 30
+        },
+        {
+          "id": "tailwind",
+          "name": "VENT",
+          "unlock": 5,
+          "unlocked": true,
+          "cd": 360,
+          "dur": 60
+        },
+        {
+          "id": "bounty",
+          "name": "PRIME",
+          "unlock": 20,
+          "unlocked": true,
+          "cd": 1800,
+          "dur": 0
+        },
+        {
+          "id": "breath",
+          "name": "SOUFFLE",
+          "unlock": 50,
+          "unlocked": true,
+          "cd": 450,
+          "dur": 45
+        }
+      ],
+      "upgrades": {
+        "tapValue": {
+          "lvl": 0,
+          "cost": 80,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "critChance": {
+          "lvl": 0,
+          "cost": 350,
+          "maxLevel": 55,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "lapBonus": {
+          "lvl": 0,
+          "cost": 400,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "autoTap": {
+          "lvl": 0,
+          "cost": 2500,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "endurance": {
+          "lvl": 0,
+          "cost": 800,
+          "maxLevel": 20,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "eagleEye": {
+          "lvl": 0,
+          "cost": 1500,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 8
+        },
+        "baseSpeed": {
+          "lvl": 0,
+          "cost": 3000,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "cruiseControl": {
+          "lvl": 0,
+          "cost": 50000,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 30
+        }
+      },
+      "equipBonus": {
+        "speed": 0,
+        "tap": 0,
+        "regen": 0,
+        "crit": 0
+      },
+      "achCount": 14,
+      "chests": {
+        "wood": 0,
+        "iron": 0,
+        "gold": 0,
+        "legendary": 0
+      },
+      "chestTotal": 0,
+      "stamina": 0.9874974999999999,
+      "chapter": 1,
+      "saison": 1
+    },
+    "70": {
+      "km": 70,
+      "gold": 5011325,
+      "totalTaps": 10000,
+      "stage": {
+        "idx": 7,
+        "name": "Stade municipal",
+        "km": 70,
+        "crowd": 0.4,
+        "floors": 1,
+        "projectors": 0,
+        "flags": 6,
+        "extras": [
+          "bannieres"
+        ]
+      },
+      "biome": "urban",
+      "cap": 3.5,
+      "baseSpeed": 0.4,
+      "speedMul": 0.3991457200000001,
+      "skills": [
+        {
+          "id": "sprint",
+          "name": "SPRINT",
+          "unlock": 0,
+          "unlocked": true,
+          "cd": 240,
+          "dur": 30
+        },
+        {
+          "id": "tailwind",
+          "name": "VENT",
+          "unlock": 5,
+          "unlocked": true,
+          "cd": 360,
+          "dur": 60
+        },
+        {
+          "id": "bounty",
+          "name": "PRIME",
+          "unlock": 20,
+          "unlocked": true,
+          "cd": 1800,
+          "dur": 0
+        },
+        {
+          "id": "breath",
+          "name": "SOUFFLE",
+          "unlock": 50,
+          "unlocked": true,
+          "cd": 450,
+          "dur": 45
+        }
+      ],
+      "upgrades": {
+        "tapValue": {
+          "lvl": 0,
+          "cost": 80,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "critChance": {
+          "lvl": 0,
+          "cost": 350,
+          "maxLevel": 55,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "lapBonus": {
+          "lvl": 0,
+          "cost": 400,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "autoTap": {
+          "lvl": 0,
+          "cost": 2500,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "endurance": {
+          "lvl": 0,
+          "cost": 800,
+          "maxLevel": 20,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "eagleEye": {
+          "lvl": 0,
+          "cost": 1500,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 8
+        },
+        "baseSpeed": {
+          "lvl": 0,
+          "cost": 3000,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "cruiseControl": {
+          "lvl": 0,
+          "cost": 50000,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 30
+        }
+      },
+      "equipBonus": {
+        "speed": 0,
+        "tap": 0,
+        "regen": 0,
+        "crit": 0
+      },
+      "achCount": 14,
+      "chests": {
+        "wood": 0,
+        "iron": 0,
+        "gold": 0,
+        "legendary": 0
+      },
+      "chestTotal": 0,
+      "stamina": 0.9952540000000002,
+      "chapter": 1,
+      "saison": 1
+    },
+    "74": {
+      "km": 74,
+      "gold": 5011325,
+      "totalTaps": 10000,
+      "stage": {
+        "idx": 8,
+        "name": "Tribune se remplit",
+        "km": 74,
+        "crowd": 0.7,
+        "floors": 2,
+        "projectors": 1,
+        "flags": 7,
+        "extras": [
+          "bannieres",
+          "screenboard"
+        ]
+      },
+      "biome": "urban",
+      "cap": 3.5,
+      "baseSpeed": 0.4,
+      "speedMul": 0.39869671000000007,
+      "skills": [
+        {
+          "id": "sprint",
+          "name": "SPRINT",
+          "unlock": 0,
+          "unlocked": true,
+          "cd": 240,
+          "dur": 30
+        },
+        {
+          "id": "tailwind",
+          "name": "VENT",
+          "unlock": 5,
+          "unlocked": true,
+          "cd": 360,
+          "dur": 60
+        },
+        {
+          "id": "bounty",
+          "name": "PRIME",
+          "unlock": 20,
+          "unlocked": true,
+          "cd": 1800,
+          "dur": 0
+        },
+        {
+          "id": "breath",
+          "name": "SOUFFLE",
+          "unlock": 50,
+          "unlocked": true,
+          "cd": 450,
+          "dur": 45
+        }
+      ],
+      "upgrades": {
+        "tapValue": {
+          "lvl": 0,
+          "cost": 80,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "critChance": {
+          "lvl": 0,
+          "cost": 350,
+          "maxLevel": 55,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "lapBonus": {
+          "lvl": 0,
+          "cost": 400,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "autoTap": {
+          "lvl": 0,
+          "cost": 2500,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "endurance": {
+          "lvl": 0,
+          "cost": 800,
+          "maxLevel": 20,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "eagleEye": {
+          "lvl": 0,
+          "cost": 1500,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 8
+        },
+        "baseSpeed": {
+          "lvl": 0,
+          "cost": 3000,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "cruiseControl": {
+          "lvl": 0,
+          "cost": 50000,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 30
+        }
+      },
+      "equipBonus": {
+        "speed": 0,
+        "tap": 0,
+        "regen": 0,
+        "crit": 0
+      },
+      "achCount": 14,
+      "chests": {
+        "wood": 0,
+        "iron": 0,
+        "gold": 0,
+        "legendary": 0
+      },
+      "chestTotal": 0,
+      "stamina": 0.9927594999999999,
+      "chapter": 1,
+      "saison": 1
+    },
+    "75": {
+      "km": 75,
+      "gold": 5016325,
+      "totalTaps": 10000,
+      "stage": {
+        "idx": 8,
+        "name": "Tribune se remplit",
+        "km": 74,
+        "crowd": 0.7,
+        "floors": 2,
+        "projectors": 1,
+        "flags": 7,
+        "extras": [
+          "bannieres",
+          "screenboard"
+        ]
+      },
+      "biome": "urban",
+      "cap": 3.5,
+      "baseSpeed": 0.4,
+      "speedMul": 0.39788482000000003,
+      "skills": [
+        {
+          "id": "sprint",
+          "name": "SPRINT",
+          "unlock": 0,
+          "unlocked": true,
+          "cd": 240,
+          "dur": 30
+        },
+        {
+          "id": "tailwind",
+          "name": "VENT",
+          "unlock": 5,
+          "unlocked": true,
+          "cd": 360,
+          "dur": 60
+        },
+        {
+          "id": "bounty",
+          "name": "PRIME",
+          "unlock": 20,
+          "unlocked": true,
+          "cd": 1800,
+          "dur": 0
+        },
+        {
+          "id": "breath",
+          "name": "SOUFFLE",
+          "unlock": 50,
+          "unlocked": true,
+          "cd": 450,
+          "dur": 45
+        }
+      ],
+      "upgrades": {
+        "tapValue": {
+          "lvl": 0,
+          "cost": 80,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "critChance": {
+          "lvl": 0,
+          "cost": 350,
+          "maxLevel": 55,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "lapBonus": {
+          "lvl": 0,
+          "cost": 400,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "autoTap": {
+          "lvl": 0,
+          "cost": 2500,
+          "maxLevel": null,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "endurance": {
+          "lvl": 0,
+          "cost": 800,
+          "maxLevel": 20,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "eagleEye": {
+          "lvl": 0,
+          "cost": 1500,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 8
+        },
+        "baseSpeed": {
+          "lvl": 0,
+          "cost": 3000,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 0
+        },
+        "cruiseControl": {
+          "lvl": 0,
+          "cost": 50000,
+          "maxLevel": 15,
+          "unlocked": true,
+          "unlockLaps": 30
+        }
+      },
+      "equipBonus": {
+        "speed": 0,
+        "tap": 0,
+        "regen": 0,
+        "crit": 0
+      },
+      "achCount": 15,
+      "chests": {
+        "wood": 0,
+        "iron": 0,
+        "gold": 0,
+        "legendary": 0
+      },
+      "chestTotal": 0,
+      "stamina": 0.988249,
+      "chapter": 1,
+      "saison": 1
+    }
+  },
+  "transitions": {
+    "49": {
+      "from": null,
+      "to": "urban",
+      "stageName": "Avenue urbaine"
+    }
+  },
+  "chest_at_km50_only": {
+    "wood": 0,
+    "iron": 0,
+    "gold": 0,
+    "legendary": 1
+  },
+  "chests_50_to_75_inclusive": {
+    "wood": 20,
+    "iron": 4,
+    "gold": 0,
+    "legendary": 2,
+    "_total": 26
+  },
+  "rival_calc": {
+    "k50": {
+      "scale": 1.75,
+      "idx": 4
+    },
+    "k75": {
+      "scale": 1.8,
+      "idx": 4
+    }
+  },
+  "cruise_costs": {
+    "progression": [
+      {
+        "lvl": 0,
+        "cost": 50000
+      },
+      {
+        "lvl": 1,
+        "cost": 72500
+      },
+      {
+        "lvl": 5,
+        "cost": 320486
+      },
+      {
+        "lvl": 10,
+        "cost": 2054234
+      },
+      {
+        "lvl": 14,
+        "cost": 9080756
+      },
+      {
+        "lvl": 15,
+        "cost": 13167097
+      }
+    ],
+    "totalToMax": 29149099
+  },
+  "console_errors": []
+}

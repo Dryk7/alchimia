@@ -1,0 +1,498 @@
+{
+  "url": "http://localhost:8770/index.html",
+  "viewport": "540x960",
+  "start_clicked": true,
+  "upgrade_count": 8,
+  "distinct_svg_signatures": 8,
+  "buttons": [
+    {
+      "upgrade": "tapValue",
+      "cls": "upg-btn upg-power affordable locked",
+      "visible": true,
+      "bg": "rgba(0, 0, 0, 0)",
+      "bgImage": "linear-gradient(rgb(255, 224, 160), rgb(255, 186, 96))",
+      "border": "1px solid rgb(232, 64, 48)",
+      "borderColor": "rgb(232, 64, 48)",
+      "padding": "8px 10px",
+      "radius": "12px",
+      "width": 258.34716796875,
+      "height": 77.847900390625,
+      "name": {
+        "text": "PUISSANCE",
+        "fontSize": "12.5px",
+        "color": "rgb(26, 26, 26)",
+        "weight": "900"
+      },
+      "cost": {
+        "text": "80",
+        "fontSize": "11px",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)"
+      },
+      "lvl": {
+        "text": "Niv 0",
+        "fontSize": "9px",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)"
+      },
+      "bar": {
+        "bg": "rgb(232, 64, 48)",
+        "bgImage": "none",
+        "widthCss": "0px",
+        "height": "5px",
+        "rect": {
+          "w": 0,
+          "h": 5.04583740234375
+        }
+      },
+      "svg": {
+        "viewBox": "0 0 24 24",
+        "pathCount": 1,
+        "circleCount": 0,
+        "polyCount": 0,
+        "totalShapes": 1,
+        "color": "rgb(232, 64, 48)",
+        "fill": "rgb(232, 64, 48)",
+        "width": "30px",
+        "outerHTML": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M7 12 L7 6 L10 6 L10 4 L14 4 L14 6 L17 6 L17 12 L20 12 L17 18 L14 16 L14 20 L10 20 L10 16 L7 18 L4 12 z\"></path></svg>"
+      },
+      "wrap": {
+        "bg": "rgb(248, 248, 248)",
+        "color": "rgb(26, 26, 26)",
+        "width": "48px",
+        "height": "48px"
+      },
+      "contrast_name_vs_bg": 16.71,
+      "contrast_cost_vs_costbg": 15.06,
+      "contrast_lvl_vs_lvlbg": 5.04
+    },
+    {
+      "upgrade": "critChance",
+      "cls": "upg-btn upg-luck affordable",
+      "visible": true,
+      "bg": "rgba(0, 0, 0, 0)",
+      "bgImage": "linear-gradient(rgb(255, 224, 160), rgb(255, 186, 96))",
+      "border": "1px solid rgb(244, 184, 48)",
+      "borderColor": "rgb(244, 184, 48)",
+      "padding": "8px 10px",
+      "radius": "12px",
+      "width": 258.34716796875,
+      "height": 77.847900390625,
+      "name": {
+        "text": "CHANCE",
+        "fontSize": "12.5px",
+        "color": "rgb(26, 26, 26)",
+        "weight": "900"
+      },
+      "cost": {
+        "text": "350",
+        "fontSize": "11px",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)"
+      },
+      "lvl": {
+        "text": "Niv 0",
+        "fontSize": "9px",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)"
+      },
+      "bar": {
+        "bg": "rgb(244, 184, 48)",
+        "bgImage": "none",
+        "widthCss": "0px",
+        "height": "5px",
+        "rect": {
+          "w": 0,
+          "h": 5.04583740234375
+        }
+      },
+      "svg": {
+        "viewBox": "0 0 24 24",
+        "pathCount": 0,
+        "circleCount": 0,
+        "polyCount": 1,
+        "totalShapes": 1,
+        "color": "rgb(244, 184, 48)",
+        "fill": "rgb(244, 184, 48)",
+        "width": "30px",
+        "outerHTML": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><polygon points=\"12,2 14.6,9 22,9 16,13.5 18.2,22 12,17 5.8,22 8,13.5 2,9 9.4,9\"></polygon></svg>"
+      },
+      "wrap": {
+        "bg": "rgb(248, 248, 248)",
+        "color": "rgb(26, 26, 26)",
+        "width": "48px",
+        "height": "48px"
+      },
+      "contrast_name_vs_bg": 16.71,
+      "contrast_cost_vs_costbg": 15.06,
+      "contrast_lvl_vs_lvlbg": 5.04
+    },
+    {
+      "upgrade": "autoTap",
+      "cls": "upg-btn upg-auto affordable locked",
+      "visible": true,
+      "bg": "rgba(0, 0, 0, 0)",
+      "bgImage": "linear-gradient(rgb(255, 224, 160), rgb(255, 186, 96))",
+      "border": "1px solid rgb(74, 159, 217)",
+      "borderColor": "rgb(74, 159, 217)",
+      "padding": "8px 10px",
+      "radius": "12px",
+      "width": 258.34716796875,
+      "height": 77.847900390625,
+      "name": {
+        "text": "AUTO-PILOTE",
+        "fontSize": "12.5px",
+        "color": "rgb(26, 26, 26)",
+        "weight": "900"
+      },
+      "cost": {
+        "text": "2.5k",
+        "fontSize": "11px",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)"
+      },
+      "lvl": {
+        "text": "Niv 0",
+        "fontSize": "9px",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)"
+      },
+      "bar": {
+        "bg": "rgb(74, 159, 217)",
+        "bgImage": "none",
+        "widthCss": "0px",
+        "height": "5px",
+        "rect": {
+          "w": 0,
+          "h": 5.04583740234375
+        }
+      },
+      "svg": {
+        "viewBox": "0 0 24 24",
+        "pathCount": 1,
+        "circleCount": 1,
+        "polyCount": 0,
+        "totalShapes": 2,
+        "color": "rgb(74, 159, 217)",
+        "fill": "rgb(74, 159, 217)",
+        "width": "30px",
+        "outerHTML": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><circle cx=\"12\" cy=\"12\" r=\"3\"></circle><path d=\"M12 2 v4 M12 18 v4 M2 12 h4 M18 12 h4 M5 5 l3 3 M16 16 l3 3 M5 19 l3 -3 M16 8 l3 -3\" stroke=\"currentColor\" stroke-width=\"2.5\" fill=\"none\" stroke-linecap=\"round\"></path></svg>"
+      },
+      "wrap": {
+        "bg": "rgb(248, 248, 248)",
+        "color": "rgb(26, 26, 26)",
+        "width": "48px",
+        "height": "48px"
+      },
+      "contrast_name_vs_bg": 16.71,
+      "contrast_cost_vs_costbg": 15.06,
+      "contrast_lvl_vs_lvlbg": 5.04
+    },
+    {
+      "upgrade": "lapBonus",
+      "cls": "upg-btn upg-trophy affordable locked",
+      "visible": true,
+      "bg": "rgba(0, 0, 0, 0)",
+      "bgImage": "linear-gradient(rgb(255, 224, 160), rgb(255, 186, 96))",
+      "border": "1px solid rgb(200, 112, 32)",
+      "borderColor": "rgb(200, 112, 32)",
+      "padding": "8px 10px",
+      "radius": "12px",
+      "width": 258.34716796875,
+      "height": 77.847900390625,
+      "name": {
+        "text": "TROPHÉE",
+        "fontSize": "12.5px",
+        "color": "rgb(26, 26, 26)",
+        "weight": "900"
+      },
+      "cost": {
+        "text": "400",
+        "fontSize": "11px",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)"
+      },
+      "lvl": {
+        "text": "Niv 0",
+        "fontSize": "9px",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)"
+      },
+      "bar": {
+        "bg": "rgb(200, 112, 32)",
+        "bgImage": "none",
+        "widthCss": "0px",
+        "height": "5px",
+        "rect": {
+          "w": 0,
+          "h": 5.04583740234375
+        }
+      },
+      "svg": {
+        "viewBox": "0 0 24 24",
+        "pathCount": 1,
+        "circleCount": 0,
+        "polyCount": 0,
+        "totalShapes": 1,
+        "color": "rgb(200, 112, 32)",
+        "fill": "rgb(200, 112, 32)",
+        "width": "30px",
+        "outerHTML": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M7 4 L17 4 L17 8 Q21 8 21 10 Q21 14 17 14 L17 15 Q17 17 14 17.5 L14 19 L17 21 L7 21 L10 19 L10 17.5 Q7 17 7 15 L7 14 Q3 14 3 10 Q3 8 7 8 z M5 10 Q5 12 7 12 L7 10 z M17 10 L17 12 Q19 12 19 10 z\"></path></svg>"
+      },
+      "wrap": {
+        "bg": "rgb(248, 248, 248)",
+        "color": "rgb(26, 26, 26)",
+        "width": "48px",
+        "height": "48px"
+      },
+      "contrast_name_vs_bg": 16.71,
+      "contrast_cost_vs_costbg": 15.06,
+      "contrast_lvl_vs_lvlbg": 5.04
+    },
+    {
+      "upgrade": "endurance",
+      "cls": "upg-btn upg-breath affordable",
+      "visible": true,
+      "bg": "rgba(0, 0, 0, 0)",
+      "bgImage": "linear-gradient(rgb(255, 224, 160), rgb(255, 186, 96))",
+      "border": "1px solid rgb(126, 196, 106)",
+      "borderColor": "rgb(126, 196, 106)",
+      "padding": "8px 10px",
+      "radius": "12px",
+      "width": 258.34716796875,
+      "height": 77.847900390625,
+      "name": {
+        "text": "SOUFFLE",
+        "fontSize": "12.5px",
+        "color": "rgb(26, 26, 26)",
+        "weight": "900"
+      },
+      "cost": {
+        "text": "800",
+        "fontSize": "11px",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)"
+      },
+      "lvl": {
+        "text": "Niv 0",
+        "fontSize": "9px",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)"
+      },
+      "bar": {
+        "bg": "rgb(126, 196, 106)",
+        "bgImage": "none",
+        "widthCss": "0px",
+        "height": "5px",
+        "rect": {
+          "w": 0,
+          "h": 5.04583740234375
+        }
+      },
+      "svg": {
+        "viewBox": "0 0 24 24",
+        "pathCount": 1,
+        "circleCount": 0,
+        "polyCount": 0,
+        "totalShapes": 1,
+        "color": "rgb(126, 196, 106)",
+        "fill": "rgb(126, 196, 106)",
+        "width": "30px",
+        "outerHTML": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M12 3 Q8 6 8 10 Q8 13 11 14 L11 18 Q9 18 8 20 L16 20 Q15 18 13 18 L13 14 Q16 13 16 10 Q16 6 12 3 z\"></path></svg>"
+      },
+      "wrap": {
+        "bg": "rgb(248, 248, 248)",
+        "color": "rgb(26, 26, 26)",
+        "width": "48px",
+        "height": "48px"
+      },
+      "contrast_name_vs_bg": 16.71,
+      "contrast_cost_vs_costbg": 15.06,
+      "contrast_lvl_vs_lvlbg": 5.04
+    },
+    {
+      "upgrade": "baseSpeed",
+      "cls": "upg-btn upg-speed affordable",
+      "visible": true,
+      "bg": "rgba(0, 0, 0, 0)",
+      "bgImage": "linear-gradient(rgb(255, 224, 160), rgb(255, 186, 96))",
+      "border": "1px solid rgb(200, 154, 240)",
+      "borderColor": "rgb(200, 154, 240)",
+      "padding": "8px 10px",
+      "radius": "12px",
+      "width": 258.34716796875,
+      "height": 77.847900390625,
+      "name": {
+        "text": "VITESSE DE CROISIÈRE",
+        "fontSize": "12.5px",
+        "color": "rgb(26, 26, 26)",
+        "weight": "900"
+      },
+      "cost": {
+        "text": "3.0k",
+        "fontSize": "11px",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)"
+      },
+      "lvl": {
+        "text": "Niv 0",
+        "fontSize": "9px",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)"
+      },
+      "bar": {
+        "bg": "rgb(200, 154, 240)",
+        "bgImage": "none",
+        "widthCss": "0px",
+        "height": "5px",
+        "rect": {
+          "w": 0,
+          "h": 5.04583740234375
+        }
+      },
+      "svg": {
+        "viewBox": "0 0 24 24",
+        "pathCount": 1,
+        "circleCount": 0,
+        "polyCount": 0,
+        "totalShapes": 1,
+        "color": "rgb(200, 154, 240)",
+        "fill": "rgb(200, 154, 240)",
+        "width": "30px",
+        "outerHTML": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M3 18 L8 13 L12 17 L21 8 L21 12 L23 10 L23 5 L18 5 L20 7 L12 15 L8 11 L1 18 z\"></path></svg>"
+      },
+      "wrap": {
+        "bg": "rgb(248, 248, 248)",
+        "color": "rgb(26, 26, 26)",
+        "width": "48px",
+        "height": "48px"
+      },
+      "contrast_name_vs_bg": 16.71,
+      "contrast_cost_vs_costbg": 15.06,
+      "contrast_lvl_vs_lvlbg": 5.04
+    },
+    {
+      "upgrade": "eagleEye",
+      "cls": "upg-btn upg-eagle affordable",
+      "visible": true,
+      "bg": "rgba(0, 0, 0, 0)",
+      "bgImage": "linear-gradient(rgb(255, 224, 160), rgb(255, 186, 96))",
+      "border": "1px solid rgb(200, 64, 48)",
+      "borderColor": "rgb(200, 64, 48)",
+      "padding": "8px 10px",
+      "radius": "12px",
+      "width": 258.34716796875,
+      "height": 79.8662109375,
+      "name": {
+        "text": "VISION D'AIGLE",
+        "fontSize": "12.5px",
+        "color": "rgb(26, 26, 26)",
+        "weight": "900"
+      },
+      "cost": {
+        "text": "1.5k",
+        "fontSize": "11px",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)"
+      },
+      "lvl": {
+        "text": "Niv 0",
+        "fontSize": "9px",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)"
+      },
+      "bar": {
+        "bg": "rgb(200, 64, 48)",
+        "bgImage": "none",
+        "widthCss": "0px",
+        "height": "5px",
+        "rect": {
+          "w": 0,
+          "h": 5.0458984375
+        }
+      },
+      "svg": {
+        "viewBox": "0 0 24 24",
+        "pathCount": 1,
+        "circleCount": 2,
+        "polyCount": 0,
+        "totalShapes": 3,
+        "color": "rgb(200, 64, 48)",
+        "fill": "rgb(200, 64, 48)",
+        "width": "30px",
+        "outerHTML": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M12 5 Q4 5 2 12 Q4 19 12 19 Q20 19 22 12 Q20 5 12 5 z\"></path><circle cx=\"12\" cy=\"12\" r=\"3.5\" fill=\"#fff\"></circle><circle cx=\"12\" cy=\"12\" r=\"2\" fill=\"#1a1a1a\"></circle></svg>"
+      },
+      "wrap": {
+        "bg": "rgb(248, 248, 248)",
+        "color": "rgb(26, 26, 26)",
+        "width": "48px",
+        "height": "48px"
+      },
+      "contrast_name_vs_bg": 16.71,
+      "contrast_cost_vs_costbg": 15.06,
+      "contrast_lvl_vs_lvlbg": 5.04
+    },
+    {
+      "upgrade": "cruiseControl",
+      "cls": "upg-btn upg-cruise affordable",
+      "visible": true,
+      "bg": "rgba(0, 0, 0, 0)",
+      "bgImage": "linear-gradient(rgb(255, 224, 160), rgb(255, 186, 96))",
+      "border": "2px solid rgb(0, 196, 208)",
+      "borderColor": "rgb(0, 196, 208)",
+      "padding": "8px 10px",
+      "radius": "12px",
+      "width": 258.34716796875,
+      "height": 79.8662109375,
+      "name": {
+        "text": "PILOTE AUTO",
+        "fontSize": "12.5px",
+        "color": "rgb(26, 26, 26)",
+        "weight": "900"
+      },
+      "cost": {
+        "text": "50k",
+        "fontSize": "11px",
+        "color": "rgb(58, 32, 16)",
+        "bg": "rgba(255, 255, 255, 0.9)"
+      },
+      "lvl": {
+        "text": "Niv 0",
+        "fontSize": "9px",
+        "color": "rgb(102, 102, 102)",
+        "bg": "rgb(240, 240, 240)"
+      },
+      "bar": {
+        "bg": "rgb(0, 196, 208)",
+        "bgImage": "none",
+        "widthCss": "0px",
+        "height": "5px",
+        "rect": {
+          "w": 0,
+          "h": 5.0458984375
+        }
+      },
+      "svg": {
+        "viewBox": "0 0 24 24",
+        "pathCount": 2,
+        "circleCount": 1,
+        "polyCount": 0,
+        "totalShapes": 3,
+        "color": "rgb(0, 196, 208)",
+        "fill": "rgb(0, 196, 208)",
+        "width": "30px",
+        "outerHTML": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M12 2 L12 4 M12 20 L12 22 M4 12 L2 12 M22 12 L20 12 M5 5 L7 7 M17 17 L19 19 M5 19 L7 17 M17 7 L19 5\"></path><circle cx=\"12\" cy=\"12\" r=\"5\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"></circle><path d=\"M12 9 L12 12 L15 12\" stroke=\"currentColor\" stroke-width=\"2\" fill=\"none\"></path></svg>"
+      },
+      "wrap": {
+        "bg": "rgb(248, 248, 248)",
+        "color": "rgb(26, 26, 26)",
+        "width": "48px",
+        "height": "48px"
+      },
+      "contrast_name_vs_bg": 16.71,
+      "contrast_cost_vs_costbg": 15.06,
+      "contrast_lvl_vs_lvlbg": 5.04
+    }
+  ],
+  "console_first_50": []
+}

@@ -1,0 +1,152 @@
+{
+  "trackDailyStat_exposed": true,
+  "getRecentDailyStats_exposed": true,
+  "openProgression_exposed": true,
+  "reset_initial": {
+    "ok": true,
+    "lifetimeStats": {
+      "totalKm": 0,
+      "totalGold": 0,
+      "totalTaps": 0,
+      "totalHurdles": 0,
+      "totalNpcs": 0,
+      "totalChests": 0
+    }
+  },
+  "baseline": {
+    "totalKm": 0,
+    "totalGold": 0,
+    "totalTaps": 0,
+    "totalHurdles": 0,
+    "totalNpcs": 0,
+    "totalChests": 0
+  },
+  "runner_canvas_exists": true,
+  "test1_tap": {
+    "method": "click_canvas",
+    "after_lifetime": {
+      "totalKm": 0,
+      "totalGold": 0,
+      "totalTaps": 0,
+      "totalHurdles": 0,
+      "totalNpcs": 0,
+      "totalChests": 0
+    },
+    "totalTaps": 0,
+    "pass": false
+  },
+  "test1_tap_fallback": {
+    "method": "direct_tapBoost",
+    "after_lifetime": {
+      "totalKm": 0,
+      "totalGold": 0,
+      "totalTaps": 1,
+      "totalHurdles": 0,
+      "totalNpcs": 0,
+      "totalChests": 0
+    },
+    "totalTaps": 1,
+    "pass": true
+  },
+  "test2_lap_complete": {
+    "call_result": {
+      "ok": true,
+      "lapsRun": 1,
+      "gold": 17
+    },
+    "before": {
+      "totalKm": 0,
+      "totalGold": 0,
+      "totalTaps": 0,
+      "totalHurdles": 0,
+      "totalNpcs": 0,
+      "totalChests": 0
+    },
+    "after_lifetime": {
+      "totalKm": 1,
+      "totalGold": 5,
+      "totalTaps": 0,
+      "totalHurdles": 0,
+      "totalNpcs": 0,
+      "totalChests": 0
+    },
+    "totalKm": 1,
+    "totalGold": 5,
+    "pass_km": true,
+    "pass_gold": true
+  },
+  "test4_hurdle": {
+    "call_result": {
+      "ok": true
+    },
+    "after_lifetime": {
+      "totalKm": 0,
+      "totalGold": 0,
+      "totalTaps": 0,
+      "totalHurdles": 1,
+      "totalNpcs": 0,
+      "totalChests": 0
+    },
+    "totalHurdles": 1,
+    "pass": true
+  },
+  "test4_hook_in_tick": true,
+  "test5_npc": {
+    "call_result": {
+      "ok": true
+    },
+    "after_lifetime": {
+      "totalKm": 0,
+      "totalGold": 0,
+      "totalTaps": 0,
+      "totalHurdles": 0,
+      "totalNpcs": 1,
+      "totalChests": 0
+    },
+    "totalNpcs": 1,
+    "pass": true
+  },
+  "test6_chest": {
+    "setup": {
+      "ok": true,
+      "chests_before": 1
+    },
+    "open_result": {
+      "ok": true,
+      "chests_after": 0
+    },
+    "after_lifetime": {
+      "totalKm": 0,
+      "totalGold": 0,
+      "totalTaps": 0,
+      "totalHurdles": 0,
+      "totalNpcs": 0,
+      "totalChests": 0
+    },
+    "totalChests": 0,
+    "pass": false
+  },
+  "test_progression_modal": {
+    "open": {
+      "ok": true
+    },
+    "content": {
+      "graph_exists": true,
+      "graph_html_len": 2518,
+      "lifetime_exists": true,
+      "lifetime_text": "LIFETIME\nKm parcourus\n42\nGouttes gagnées\n1 337\nTaps totaux\n888\nHaies réussies\n55\nPNJ dépassés\n33\nCoffres ouverts\n7",
+      "graph_visible": true
+    }
+  },
+  "test_progression_values": {
+    "has_42": true,
+    "has_1337": false,
+    "has_888": true,
+    "has_55": true,
+    "has_33": true,
+    "has_7": true,
+    "raw": "LIFETIME\nKm parcourus\n42\nGouttes gagnées\n1 337\nTaps totaux\n888\nHaies réussies\n55\nPNJ dépassés\n33\nCoffres ouverts\n7"
+  },
+  "page_errors": [],
+  "console_errors": []
+}

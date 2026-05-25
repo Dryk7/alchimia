@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
 <meta name="theme-color" content="#c84030">
 <meta name="description" content="FOULÉE — Idle-tap mobile : du chantier au stade olympique. Tape pour courir, saute les haies, deviens une légende. 100 km de progression.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="FOULÉE — Du chantier au stade olympique">
+<meta property="og:description" content="Idle-tap mobile : tape pour courir, saute les haies, deviens une légende. 100 km de progression.">
+<meta property="og:image" content="assets/icon-512.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="FOULÉE — Du chantier au stade olympique">
+<meta name="twitter:description" content="Idle-tap mobile : tape pour courir, saute les haies, deviens une légende. 100 km de progression.">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="assets/icon-192.png">
 <link rel="apple-touch-icon" href="assets/icon-192.png">
@@ -411,6 +418,9 @@ header .stats #stat-stars.hud-show{ display:flex; }
   gap:3px;
   padding:0;
   margin-top:0;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  white-space:nowrap;
 }
 .tab-btn{
   flex:1;
@@ -1423,9 +1433,11 @@ header .stats #stat-stars.hud-show{ display:flex; }
   border-top:6px solid #c84030;
   border-radius:18px;
   box-shadow:0 18px 50px rgba(0,0,0,.55);
-  padding:18px 22px 18px;
+  padding:18px 22px 14px;
   max-width:340px; width:100%;
-  min-height:440px;
+  min-height:380px;
+  max-height:calc(100dvh - 40px);
+  overflow-y:auto;
   text-align:center;
   font-family:"Nunito", sans-serif;
   color:#1a1a1a;
@@ -1494,6 +1506,7 @@ header .stats #stat-stars.hud-show{ display:flex; }
   flex:1;
   background:#c84030; color:#fff; border:none; border-radius:14px;
   padding:13px 22px;
+  min-height:44px;
   font-weight:900; font-size:14px; letter-spacing:.06em;
   cursor:pointer;
   font-family:"Nunito", sans-serif;
@@ -1502,13 +1515,17 @@ header .stats #stat-stars.hud-show{ display:flex; }
 }
 .giga-next-btn:active{ transform:translateY(2px); }
 .giga-skip-btn{
-  margin-top:10px;
+  margin-top:6px;
   background:transparent;
   border:none;
   color:#888; font-size:11px; font-weight:700;
   text-decoration:underline;
   cursor:pointer;
   font-family:"Nunito", sans-serif;
+  min-height:44px;
+  padding:12px 20px;
+  display:block;
+  width:100%;
 }
 .story-eyebrow{
   font-size:11px; font-weight:900; letter-spacing:.22em;
@@ -1616,6 +1633,12 @@ body.active-tuto-running .tuto-hint{ display:none !important; }
 body.tab-drawer-open .tuto-hint{
   opacity:0;
   transform:translateX(-50%) translateY(20px);
+  pointer-events:none;
+}
+/* Masquer le progress-map quand le tab-drawer est ouvert (évite chevauchement) */
+body.tab-drawer-open #progress-map{
+  opacity:0;
+  transition:opacity .25s;
   pointer-events:none;
 }
 @keyframes tutoBounce{
@@ -5070,7 +5093,7 @@ body.frenzy-on #grid-frame{
 
 .drawer-close{
   position:absolute; top:10px;
-  width:34px; height:34px; line-height:32px; text-align:center;
+  width:44px; height:44px; line-height:42px; text-align:center;
   font-family:"Nunito", sans-serif; font-weight:900;
   color:#fff; cursor:pointer;
   font-size:22px;
@@ -5120,7 +5143,7 @@ body.frenzy-on #grid-frame{
   width:60px; height:3px; background:var(--ember); border-radius:3px;
   opacity:.55;
 }
-.drawer-body{flex:1; overflow-y:auto; padding-right:4px}
+.drawer-body{flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding-right:4px}
 .drawer-body::-webkit-scrollbar{width:4px}
 .drawer-body::-webkit-scrollbar-thumb{background:#d0c8c0; border-radius:2px}
 
@@ -6068,15 +6091,18 @@ body.frenzy-on #grid-frame{
 #intro .intro-overlay{
   position:absolute; inset:0;
   display:flex; flex-direction:column; align-items:center;
-  padding:38px 24px 48px;
+  justify-content:center;
+  gap:14px;
+  padding:env(safe-area-inset-top,24px) 24px env(safe-area-inset-bottom,40px);
   pointer-events:none;
 }
 #intro .intro-overlay > *{ pointer-events:auto; }
 #intro .logo{
   font-family:"Nunito", system-ui, sans-serif; font-weight:900;
-  font-size:48px; letter-spacing:.06em;
+  font-size:52px; letter-spacing:.08em;
   color:#fff;
-  margin:0 0 6px;
+  margin:0;
+  text-align:center;
   animation:logoIn 1.4s ease-out;
   text-shadow:
     0 3px 0 #c84030,
@@ -6084,12 +6110,12 @@ body.frenzy-on #grid-frame{
 }
 #intro .tagline{
   font-family:"Nunito", sans-serif; font-weight:700;
-  color:#fff; font-size:22px;
+  color:#fff; font-size:18px;
   letter-spacing:0;
-  max-width:340px;
-  margin-bottom:auto;
+  max-width:320px;
+  margin:0;
   opacity:0; animation:fadeIn .8s ease-out .8s forwards;
-  line-height:1.2;
+  line-height:1.3;
   text-align:center;
   text-shadow:0 2px 6px rgba(0,0,0,.4);
 }
@@ -6099,8 +6125,9 @@ body.frenzy-on #grid-frame{
   color:#fff;
   background:#c84030;
   border:3px solid #fff;
-  padding:16px 36px;
-  border-radius:28px;
+  padding:16px 40px;
+  border-radius:14px;
+  min-width:220px;
   cursor:pointer; text-transform:uppercase;
   box-shadow:
     0 8px 22px rgba(200,64,48,.40),
@@ -6131,11 +6158,12 @@ body.frenzy-on #grid-frame{
 /* HUD chill : audio-toggle masqué (accessible via Paramètres). Help reste visible mais discret. */
 #audio-toggle{ display:none; }
 #help-toggle{
-  position:fixed; top:6px; right:8px; z-index:8;
-  background:transparent; border:none; padding:6px;
+  position:fixed; top:4px; right:4px; z-index:8;
+  background:transparent; border:none; padding:13px;
+  min-width:44px; min-height:44px;
   cursor:pointer;
   color:#c84030; opacity:.55;
-  display:flex; align-items:center; gap:3px;
+  display:flex; align-items:center; justify-content:center; gap:3px;
   transition:color .2s, opacity .2s, transform .15s;
 }
 #help-toggle:hover{opacity:1; color:#c84030}
@@ -7660,7 +7688,7 @@ body.shop-epic-flash::after{
 /* ═══ PROGRESS MAP — Road to the Moon ═══ */
 #progress-map {
   position: absolute;
-  bottom: 50px;
+  bottom: 58px;
   left: 12px;
   right: 12px;
   z-index: 9;
@@ -7668,8 +7696,8 @@ body.shop-epic-flash::after{
   user-select: none;
 }
 #pm-track {
-  height: 5px;
-  border-radius: 3px;
+  height: 8px;
+  border-radius: 4px;
   background: linear-gradient(90deg,
     #7a5a3a 0%, #7a5a3a 3%,
     #4a7a3a 3%, #4a7a3a 10%,
@@ -7684,15 +7712,15 @@ body.shop-epic-flash::after{
   position: absolute;
   left: 0; top: 0; bottom: 0;
   background: rgba(255,255,255,.30);
-  border-radius: 3px;
+  border-radius: 4px;
   transition: width .6s cubic-bezier(.2,.9,.2,1);
 }
 #pm-hero-dot {
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 11px;
-  height: 11px;
+  width: 13px;
+  height: 13px;
   background: #fff;
   border: 2.5px solid #c84030;
   border-radius: 50%;
@@ -7927,7 +7955,7 @@ body.shop-epic-flash::after{
 /* ═══ COMBO STREAK HUD ═══ */
 #combo-streak {
   position: absolute;
-  bottom: 80px;
+  bottom: 200px;
   right: 12px;
   z-index: 12;
   pointer-events: none;
@@ -7960,8 +7988,8 @@ body.shop-epic-flash::after{
   letter-spacing: .1em;
 }
 #combo-streak-bar {
-  width: 40px;
-  height: 3px;
+  width: 60px;
+  height: 4px;
   background: rgba(255,255,255,.2);
   border-radius: 2px;
   overflow: hidden;
@@ -7971,6 +7999,37 @@ body.shop-epic-flash::after{
   background: linear-gradient(90deg, #ffd060, #ff6020);
   border-radius: 2px;
   transition: width .1s;
+}
+/* === HUD pill central : km/vitesse/météo/stamina === */
+.hud-pill{
+  background:rgba(255,255,255,.85);
+  backdrop-filter:blur(4px);
+  -webkit-backdrop-filter:blur(4px);
+  color:#1a1a1a;
+  padding:5px 9px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  box-shadow:0 2px 6px rgba(0,0,0,.10);
+  pointer-events:none;
+  font-variant-numeric:tabular-nums;
+  font-family:Nunito,sans-serif;
+  line-height:1;
+}
+.hud-pill-sep{
+  width:1px;
+  height:11px;
+  background:#d8d8d8;
+  display:inline-block;
+  flex-shrink:0;
+}
+.hud-weather-text{
+  color:#888;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  max-width:64px;
 }
 </style>
 </head>
@@ -8105,7 +8164,7 @@ body.shop-epic-flash::after{
   <!-- ════════ ARBRE DE COMPÉTENCES (skill tree) ════════ -->
   <div id="skilltree-modal" class="modal skilltree-modal-wrap">
     <div class="modal-card skilltree-card">
-      <div class="modal-close" id="skilltree-close" aria-label="Fermer">×</div>
+      <button type="button" class="modal-close" id="skilltree-close" aria-label="Fermer">×</button>
       <div class="st-header">
         <h2 class="st-title">ARBRE DE COMPÉTENCES</h2>
         <div class="st-points-display">
@@ -8148,7 +8207,7 @@ body.shop-epic-flash::after{
   <!-- ════════ GUIDE COMPLET IN-GAME ════════ -->
   <div id="guide-modal" class="modal guide-modal-wrap">
     <div class="modal-card guide-card">
-      <div class="modal-close" id="guide-close" aria-label="Fermer">×</div>
+      <button type="button" class="modal-close" id="guide-close" aria-label="Fermer">×</button>
       <h2 class="guide-title">GUIDE DU COUREUR</h2>
       <div class="guide-sub">Toutes les mécaniques de FOULÉE expliquées</div>
       <div class="guide-tabs" id="guide-tabs">
@@ -8574,13 +8633,13 @@ body.shop-epic-flash::after{
         <!-- Spacer gauche -->
         <div style="flex:1"></div>
         <!-- Pill compacte centrée : KM total + km/h actuel (évite le widget GOUTTES à droite du header) -->
-        <div style="background:rgba(255,255,255,.85);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);color:#1a1a1a;padding:5px 9px;border-radius:14px;display:flex;align-items:center;gap:5px;box-shadow:0 2px 6px rgba(0,0,0,.10);pointer-events:none;font-variant-numeric:tabular-nums;font-family:Nunito,sans-serif;line-height:1">
+        <div class="hud-pill">
           <b id="runner-km" style="font-size:13px;color:#1a1a1a" aria-live="polite" aria-atomic="true">0.00</b>
           <span style="font-size:8px;color:#888;letter-spacing:.08em">km</span>
-          <span style="width:1px;height:11px;background:#d8d8d8;display:inline-block"></span>
+          <span class="hud-pill-sep"></span>
           <b id="runner-pace" style="font-size:11px;color:#c84030;font-weight:900" aria-live="polite" aria-atomic="true">0.0</b>
           <span style="font-size:8px;color:#888;letter-spacing:.04em">km/h</span>
-          <span style="width:1px;height:11px;background:#d8d8d8;display:inline-block;margin-left:2px"></span>
+          <span class="hud-pill-sep"></span>
           <div id="hud-stamina" style="display:flex;align-items:center;gap:4px;pointer-events:none" aria-label="Stamina">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="#7ec46a" aria-hidden="true"><path d="M13 2L4 14h7v8l9-12h-7z"/></svg>
             <div style="width:42px;height:5px;background:rgba(0,0,0,0.15);border-radius:3px;overflow:hidden">
@@ -8588,9 +8647,9 @@ body.shop-epic-flash::after{
             </div>
           </div>
           <!-- Vague 20 P3 : slot météo dynamique -->
-          <div id="hud-weather" style="display:flex; align-items:center; gap:4px; margin-left:8px; font-size:11px;" aria-label="Météo">
+          <div id="hud-weather" style="display:flex;align-items:center;gap:4px;font-size:11px;" aria-label="Météo">
             <svg id="hud-weather-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f0a030" stroke-width="2" style="flex-shrink:0"><circle cx="12" cy="12" r="4"/><line x1="12" y1="2" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="2" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="22" y2="12"/><line x1="4.22" y1="4.22" x2="6.34" y2="6.34"/><line x1="17.66" y1="17.66" x2="19.78" y2="19.78"/><line x1="4.22" y1="19.78" x2="6.34" y2="17.66"/><line x1="17.66" y1="6.34" x2="19.78" y2="4.22"/></svg>
-            <span style="color:#888;">Beau temps</span>
+            <span class="hud-weather-text">Beau temps</span>
           </div>
         </div>
         <!-- Pill ETOILES permanentes (prestige cross-runs) — affichee a cote -->
@@ -8905,7 +8964,7 @@ body.shop-epic-flash::after{
 <!-- CONFIRM RESET -->
 <div id="reset-confirm-modal" class="modal">
   <div class="modal-card" style="max-width:340px">
-    <div class="modal-close" id="reset-confirm-close" aria-label="Fermer">×</div>
+    <button type="button" class="modal-close" id="reset-confirm-close" aria-label="Fermer">×</button>
     <h2 style="color:#c84a2a">EFFACER ?</h2>
     <div class="modal-subtitle">— action irréversible —</div>
     <div class="divider">
@@ -9127,7 +9186,7 @@ body.shop-epic-flash::after{
 <!-- LE GRIMOIRE - manuel du jeu -->
 <div id="grimoire-modal" class="modal">
   <div class="modal-card">
-    <div class="modal-close" id="grimoire-close" aria-label="Fermer">×</div>
+    <button type="button" class="modal-close" id="grimoire-close" aria-label="Fermer">×</button>
     <h2>LE CARNET DU COUREUR</h2>
     <div class="modal-subtitle">— manuel de FOULÉE —</div>
     <div class="divider">
@@ -10520,7 +10579,7 @@ if(document.readyState === 'loading'){
 <!-- ASCENSION / SAISON -->
 <div id="saison-modal" class="modal">
   <div class="modal-card">
-    <div class="modal-close" id="saison-close" aria-label="Fermer">×</div>
+    <button type="button" class="modal-close" id="saison-close" aria-label="Fermer">×</button>
     <h2>ASCENSION</h2>
     <div class="divider"></div>
     <div class="saison-body" id="saison-body"></div>
@@ -10530,7 +10589,7 @@ if(document.readyState === 'loading'){
 <!-- CARTE DES STADES (multi locations) -->
 <div id="map-stadiums-modal" class="modal">
   <div class="modal-card">
-    <div class="modal-close" id="map-stadiums-close" aria-label="Fermer">×</div>
+    <button type="button" class="modal-close" id="map-stadiums-close" aria-label="Fermer">×</button>
     <h2>CARTE DES STADES</h2>
     <div class="divider"></div>
     <div class="map-stadiums-body" id="map-stadiums-body"></div>
@@ -10549,7 +10608,7 @@ if(document.readyState === 'loading'){
 <!-- COLLECTION CARTES -->
 <div id="cards-modal" class="modal">
   <div class="modal-card">
-    <div class="modal-close" id="cards-close" aria-label="Fermer">×</div>
+    <button type="button" class="modal-close" id="cards-close" aria-label="Fermer">×</button>
     <h2>CARTES STAR</h2>
     <div class="divider"></div>
     <div class="cards-body" id="cards-body"></div>
@@ -10559,7 +10618,7 @@ if(document.readyState === 'loading'){
 <!-- COFFRES (loot box style) -->
 <div id="chests-modal" class="modal">
   <div class="modal-card">
-    <div class="modal-close" id="chests-close" aria-label="Fermer">×</div>
+    <button type="button" class="modal-close" id="chests-close" aria-label="Fermer">×</button>
     <h2>COFFRES</h2>
     <div class="divider"></div>
     <div class="chests-body" id="chests-body"></div>
@@ -10569,7 +10628,7 @@ if(document.readyState === 'loading'){
 <!-- ÉQUIPEMENT (loot RPG) -->
 <div id="equip-modal" class="modal">
   <div class="modal-card">
-    <div class="modal-close" id="equip-close" aria-label="Fermer">×</div>
+    <button type="button" class="modal-close" id="equip-close" aria-label="Fermer">×</button>
     <h2>ÉQUIPEMENT</h2>
     <div class="divider"></div>
     <div class="equip-body" id="equip-body"></div>
@@ -10579,7 +10638,7 @@ if(document.readyState === 'loading'){
 <!-- STADIUM PICKER -->
 <div id="stadium-modal" class="modal">
   <div class="modal-card">
-    <div class="modal-close" id="stadium-close" aria-label="Fermer">×</div>
+    <button type="button" class="modal-close" id="stadium-close" aria-label="Fermer">×</button>
     <h2>STADES</h2>
     <div class="divider"></div>
     <div class="stadium-body" id="stadium-body"></div>
@@ -10589,7 +10648,7 @@ if(document.readyState === 'loading'){
 <!-- QUÊTES QUOTIDIENNES -->
 <div id="quests-daily-modal" class="modal">
   <div class="modal-card">
-    <div class="modal-close" id="quests-daily-close" aria-label="Fermer">×</div>
+    <button type="button" class="modal-close" id="quests-daily-close" aria-label="Fermer">×</button>
     <h2>OBJECTIFS DU JOUR</h2>
     <div class="divider"></div>
     <div class="quests-daily-body" id="quests-daily-body"></div>
@@ -10609,7 +10668,7 @@ if(document.readyState === 'loading'){
 <!-- VESTIAIRE (skins coureur) -->
 <div id="wardrobe-modal" class="modal">
   <div class="modal-card">
-    <div class="modal-close" id="wardrobe-close" aria-label="Fermer">×</div>
+    <button type="button" class="modal-close" id="wardrobe-close" aria-label="Fermer">×</button>
     <h2>VESTIAIRE</h2>
     <div class="divider"></div>
     <div class="wardrobe-body" id="wardrobe-body"></div>
@@ -10619,7 +10678,7 @@ if(document.readyState === 'loading'){
 <!-- STARTER PACK (one-time offer pour nouveaux joueurs) -->
 <div id="starter-modal" class="modal">
   <div class="modal-card starter-card">
-    <div class="modal-close" id="starter-close" aria-label="Fermer">×</div>
+    <button type="button" class="modal-close" id="starter-close" aria-label="Fermer">×</button>
     <div class="starter-ribbon">⏰ OFFRE DE BIENVENUE</div>
     <h2>STARTER PACK</h2>
     <div class="starter-hero">
@@ -10640,7 +10699,7 @@ if(document.readyState === 'loading'){
 <!-- SHOP PREMIUM (gemmes) -->
 <div id="shop-premium-modal" class="modal">
   <div class="modal-card">
-    <div class="modal-close" id="shop-premium-close" aria-label="Fermer">×</div>
+    <button type="button" class="modal-close" id="shop-premium-close" aria-label="Fermer">×</button>
     <h2>BOUTIQUE</h2>
     <div class="divider"></div>
     <div class="shop-premium-body" id="shop-premium-body"></div>
@@ -10650,7 +10709,7 @@ if(document.readyState === 'loading'){
 <!-- OFFLINE REWARD POPUP (au retour du joueur) -->
 <div id="offline-modal" class="modal">
   <div class="modal-card offline-card">
-    <div class="modal-close" id="offline-close" aria-label="Fermer">×</div>
+    <button type="button" class="modal-close" id="offline-close" aria-label="Fermer">×</button>
     <div class="offline-hero">
       <div class="offline-emoji">Bien joué</div>
       <h2>BIEN JOUÉ COACH !</h2>
@@ -20047,7 +20106,7 @@ function showSkillActiveBanner(s){
   // BANNER COMPACT v3 : empilage vertical → chaque nouveau banner se cale SOUS les précédents
   // Hauteur estimée ~26px + 4px gap = 30px de décalage par banner déjà présent.
   const existingBanners = document.querySelectorAll('.skill-active-banner').length;
-  const topOffset = 50 + existingBanners * 30;
+  const topOffset = 62 + existingBanners * 30;
   banner.style.cssText = `position:fixed;top:${topOffset}px;right:10px;z-index:9985;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#1a1a1a;font-family:Nunito,sans-serif;font-weight:900;font-size:10px;letter-spacing:.06em;padding:5px 9px 5px 6px;border-radius:10px;border:none;border-left:3px solid ${s.color};box-shadow:0 3px 10px rgba(20,20,20,.18);display:flex;align-items:center;gap:5px;animation:skillBannerIn .35s cubic-bezier(.34,1.56,.64,1) forwards;pointer-events:none;transition:top .25s ease;`;
   let mulText = '';
   if(s.id === 'sprint')   mulText = '×10';
@@ -20077,7 +20136,7 @@ function showSkillActiveBanner(s){
 function repositionSkillBanners(){
   const banners = document.querySelectorAll('.skill-active-banner');
   banners.forEach((b, i) => {
-    b.style.top = (50 + i * 30) + 'px';
+    b.style.top = (62 + i * 30) + 'px';
   });
 }
 /* Multiplicateurs actifs des skills */

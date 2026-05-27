@@ -11889,12 +11889,9 @@ function alchProgress(){
   return { pct: Math.min(100, (xpInLvl/xpNeeded)*100), inLvl: xpInLvl, need: xpNeeded };
 }
 function alchGoldMul(){
-  // REBALANCE v45 : +5% gold par niveau (au lieu de +1%) — niveau a un VRAI impact
-  // + bonus palier : tous les 10 niveaux, +5% supplémentaire (stack permanent)
-  const lvl = alchLevel();
-  const base = 1 + (lvl - 1) * 0.05;
-  const palier = Math.floor(lvl / 10) * 0.05;
-  return base + palier;
+  // REBALANCE v46 ÉCONOMIE EXIGEANTE : +1.5% gold par niveau (plus subtil)
+  // Niv 50 = ×1.74, Niv 100 = ×2.49 — niveau aide mais ne dispense pas du grind
+  return 1 + (alchLevel() - 1) * 0.015;
 }
 function gainXp(amount){
   if(!amount) return;
@@ -20082,7 +20079,7 @@ function tapBoost(e){
   const _starTapPower = 1 + (STATE.starTree?.tapPower || 0) * 0.10 * (typeof hybridStarMul==='function' ? hybridStarMul() : 1);
   // === Relique MédailleCassée : ×2 gouttes par tap ===
   const _medCasseMul = (typeof hasRelic==='function' && hasRelic('medCasse')) ? 2 : 1;
-  const perTap = (1 + (STATE.upgradeTapValue||0) * 1.5) * comboMul * tapMul * shopMul * eTapMul * eGoldMul * skillTap * equipMul * cardTap * cardAll * bigBangBonus * mapTapMul * starsBoost * (typeof saisonGoldMul==='function'?saisonGoldMul():1) * _buffMul * _stTapMul * _starTapPower * _medCasseMul;
+  const perTap = (1 + (STATE.upgradeTapValue||0) * 0.5) * comboMul * tapMul * shopMul * eTapMul * eGoldMul * skillTap * equipMul * cardTap * cardAll * bigBangBonus * mapTapMul * starsBoost * (typeof saisonGoldMul==='function'?saisonGoldMul():1) * _buffMul * _stTapMul * _starTapPower * _medCasseMul;
   // Crit chance plafonné à 60% + équipement + cartes
   const equipCrit = (typeof equipBonus === 'function') ? equipBonus('critRate') : 0;
   const cardCrit = (typeof deckBonus === 'function') ? deckBonus('crit') : 0;
@@ -20227,7 +20224,7 @@ function updateTapStrip(){
   if(boostPerTap) boostPerTap.textContent = tapValue;
   if(perLap){
     // Récolte gouttes logarithmique : km 1 = 5, km 10 = 16, km 50 = 35, km 100 = 50, km 200 = 71
-    const lapBonus = Math.floor(Math.pow(STATE.upgradeLapBonus||0, 1.5) * 5);
+    const lapBonus = Math.floor(Math.pow(STATE.upgradeLapBonus||0, 1.5) * 2);
     const lapReward = Math.floor(5 * Math.sqrt(((STATE.lapsRun||0) + 1))) + lapBonus;
     perLap.textContent = '+' + lapReward;
   }
@@ -20307,56 +20304,52 @@ function updateComboDisplay(){
 /* Phase A rebalance : factors normalisés 1.40-1.50 (au lieu de 1.55-1.80).
    Fin du mur inflationniste qui rendait AUTO inatteignable. */
 const UPGRADES_TAP = {
+  // REBALANCE v46 ÉCONOMIE EXIGEANTE : factor 1.55-1.65 → 1.85 (courbe vraiment exponentielle)
+  // Cible : chaque niveau d'upgrade demande un investissement temps réel, pas 1 min de tap
   tapValue: {
-    nameKey: 'upg_tapValue', base: 80, factor: 1.55,
+    nameKey: 'upg_tapValue', base: 80, factor: 1.85,
     state: 'upgradeTapValue',
     unlockLaps: 1,
   },
   critChance: {
-    nameKey: 'upg_critChance', base: 350, factor: 1.60,
+    nameKey: 'upg_critChance', base: 350, factor: 1.85,
     state: 'upgradeCritChance',
-    maxLevel: 55, // crit cap 60% (5% base + 55%) — pas plus pour pas OP
+    maxLevel: 55,
     unlockLaps: 5,
   },
   lapBonus: {
-    nameKey: 'upg_lapBonus', base: 400, factor: 1.55,
+    nameKey: 'upg_lapBonus', base: 400, factor: 1.85,
     state: 'upgradeLapBonus',
     unlockLaps: 3,
   },
   autoTap: {
-    nameKey: 'upg_autoTap', base: 2500, factor: 1.65,
+    nameKey: 'upg_autoTap', base: 2500, factor: 1.90,
     state: 'upgradeAutoTap',
     unlockLaps: 18,
   },
   endurance: {
-    nameKey: 'upg_endurance', base: 800, factor: 1.60,
+    nameKey: 'upg_endurance', base: 800, factor: 1.85,
     state: 'upgradeEndurance',
     maxLevel: 20,
     unlockLaps: 12,
   },
-  // === VISION D'AIGLE : voir les haies plus tôt → vraie compétence gameplay ===
-  // Chaque niveau augmente la distance d'apparition des warnings haies de 15%
-  // Lvl 5 = ×1.75 (75% plus loin), Lvl 10 = ×2.50, Lvl 15 = ×3.25
   eagleEye: {
-    nameKey: 'upg_eagleEye', base: 1500, factor: 1.55,
+    nameKey: 'upg_eagleEye', base: 1500, factor: 1.85,
     state: 'upgradeEagleEye',
     maxLevel: 15,
-    unlockLaps: 8, // visible à partir du km 8 (1ères haies)
+    unlockLaps: 8,
   },
   baseSpeed: {
-    nameKey: 'upg_baseSpeed', base: 3000, factor: 1.65,
+    nameKey: 'upg_baseSpeed', base: 3000, factor: 1.90,
     state: 'upgradeBaseSpeed',
     maxLevel: 15,
     unlockLaps: 25,
   },
-  // === ULTIMATE : Pilote Automatique — débloque km 30 ===
-  // Chaque niveau +5% au baseline tapBoost passif. Lvl 20 = 100% = auto-sprint complet.
-  // Coût massif (500k → 1.8x/lvl) pour que ce soit une vraie quête long-terme.
   cruiseControl: {
-    nameKey: 'upg_cruiseControl', base: 50000, factor: 1.55,
+    nameKey: 'upg_cruiseControl', base: 50000, factor: 1.85,
     state: 'upgradeCruiseControl',
     maxLevel: 15,
-    unlockLaps: 30, // visible uniquement à partir du km 30
+    unlockLaps: 30,
   },
 };
 // Helper pour récupérer le nom localisé (fallback FR si i18n pas encore chargé)
@@ -20466,7 +20459,7 @@ function _upgradeEffectAtLvl(id, lvl){
   switch(id){
     case 'tapValue':     return '+' + (1 + lvl * 1.5).toFixed(1) + ' g/tap';
     case 'critChance':   return ((5 + lvl) | 0) + '% chance crit';
-    case 'lapBonus':     return '+' + Math.floor(Math.pow(lvl, 1.5) * 5) + ' g/km';
+    case 'lapBonus':     return '+' + Math.floor(Math.pow(lvl, 1.5) * 2) + ' g/km';
     case 'autoTap':      return (lvl * 1.5).toFixed(1) + ' tap/s automatique';
     case 'endurance':    return '+' + (lvl * 10) + ' stamina max';
     case 'baseSpeed':    return '×' + Math.pow(1.15, lvl).toFixed(2) + ' vitesse passive';
@@ -23389,7 +23382,7 @@ function _previewUpgradeEffect(id){
     switch(id){
       case 'tapValue':     return '+' + (1 + l * 1.5).toFixed(1) + ' g/tap';
       case 'critChance':   return (5 + l) + '% crit';
-      case 'lapBonus':     return '+' + Math.floor(Math.pow(l, 1.5) * 5) + ' g/km';
+      case 'lapBonus':     return '+' + Math.floor(Math.pow(l, 1.5) * 2) + ' g/km';
       case 'autoTap':      return '+' + (l * 1.5).toFixed(1) + ' tap/s';
       case 'endurance':    return '+' + (l * 10) + ' stamina';
       case 'baseSpeed':    return '×' + Math.pow(1.15, l).toFixed(2) + ' vitesse';
@@ -23501,7 +23494,7 @@ function tickAutoTap(dt){
     const _atStTapMul = STATE._stTapMul || 1; // skill tree tap multiplier
     // Star tree bonus
     const _atStarTapPower = 1 + (STATE.starTree?.tapPower || 0) * 0.10 * (typeof hybridStarMul==='function' ? hybridStarMul() : 1);
-    const perTap = (1 + (STATE.upgradeTapValue||0) * 1.5)
+    const perTap = (1 + (STATE.upgradeTapValue||0) * 0.5)
       * _atShopMul * _atTapMul * _atETapMul * _atEGoldMul
       * _atEquipMul * _atCardTap * _atCardAll * _atMapMul
       * _atStars * (typeof saisonGoldMul==='function'?saisonGoldMul():1) * _atBuffMul * _atStTapMul * _atStarTapPower;
@@ -23612,7 +23605,7 @@ function completeLap(){
   // ÉCO ULTRA-SIMPLIFIÉE : gains réduits encore ×2.5 (base 3 + km 2 + upgrade scale 1.5 par niveau)
   // Au km 100 : 3 + 200 + bonus ≈ 250 gouttes par km (vs 510 avant, 2700 il y a 3 push)
   // Rebalance lapBonus : scaling exponentiel doux pour rendre l'upgrade vraiment rentable
-  const upgradeBonus = Math.floor(Math.pow(STATE.upgradeLapBonus||0, 1.5) * 5);
+  const upgradeBonus = Math.floor(Math.pow(STATE.upgradeLapBonus||0, 1.5) * 2);
   let baseReward = 3 + lapNum * 2 + upgradeBonus;
   // Bonus carte "Champion National" → +30% lap gold
   if(typeof deckBonus === 'function') baseReward = Math.floor(baseReward * (1 + deckBonus('lapGold') + deckBonus('goldAll')));

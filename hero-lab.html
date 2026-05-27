@@ -174,20 +174,33 @@
   }
   .preset-buttons{
     display:flex;
-    gap:6px;
+    gap:5px;
     flex-wrap:wrap;
-    margin-top:8px;
+    margin-top:6px;
+    margin-bottom:8px;
   }
   .preset-btn{
-    background:#eee;
-    border:1px solid #ccc;
+    background:#fff;
+    border:1px solid #e0d8c0;
     border-radius:6px;
-    padding:5px 10px;
+    padding:6px 10px;
     font-size:11px;
     cursor:pointer;
     font-family:inherit;
+    transition:all .12s;
   }
-  .preset-btn:hover{background:var(--brand-gold);color:#fff;border-color:var(--brand-gold-dark)}
+  .preset-btn:hover{background:var(--brand-gold);color:#fff;border-color:var(--brand-gold-dark);transform:translateY(-1px)}
+  .preset-category{
+    font-size:10px;
+    font-weight:800;
+    color:#888;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    margin-top:14px;
+    margin-bottom:2px;
+    padding-left:4px;
+  }
+  .preset-category:first-of-type{margin-top:6px}
 </style>
 </head>
 <body>
@@ -209,14 +222,69 @@
 <!-- RIGHT: sliders & color pickers -->
 <div id="controls">
 
-  <h2>🎭 Presets visuels</h2>
+  <h2>🎭 Bibliothèque de presets</h2>
+  <div class="preset-buttons" style="margin-top:6px;margin-bottom:0">
+    <button class="preset-btn" data-preset="reset" style="background:var(--brand-gold);color:#fff;border-color:var(--brand-gold-dark);font-weight:800">↺ Défaut</button>
+  </div>
+
+  <div class="preset-category">🏃 Sport pro</div>
   <div class="preset-buttons">
-    <button class="preset-btn" data-preset="reset">↺ Défaut</button>
-    <button class="preset-btn" data-preset="sprinter">⚡ Sprinter Olympics</button>
+    <button class="preset-btn" data-preset="sprinter">⚡ Sprinter</button>
     <button class="preset-btn" data-preset="marathonien">🏃 Marathonien</button>
-    <button class="preset-btn" data-preset="chibi">🌸 Chibi Cute</button>
-    <button class="preset-btn" data-preset="crossy">🟦 Crossy Style</button>
+    <button class="preset-btn" data-preset="boxer">🥊 Boxeur</button>
+    <button class="preset-btn" data-preset="skater">🛹 Skateur</button>
+    <button class="preset-btn" data-preset="cyclist">🚴 Cycliste</button>
+    <button class="preset-btn" data-preset="basketballer">🏀 Basketteur</button>
+  </div>
+
+  <div class="preset-category">⚔️ Fantasy</div>
+  <div class="preset-buttons">
+    <button class="preset-btn" data-preset="knight">🛡 Chevalier</button>
+    <button class="preset-btn" data-preset="wizard">🧙 Sorcier</button>
+    <button class="preset-btn" data-preset="elf">🧝 Elfe</button>
+    <button class="preset-btn" data-preset="pirate">🏴‍☠️ Pirate</button>
+    <button class="preset-btn" data-preset="ninja">🥷 Ninja</button>
+    <button class="preset-btn" data-preset="viking">⚔️ Viking</button>
+    <button class="preset-btn" data-preset="samurai">🗡 Samurai</button>
+    <button class="preset-btn" data-preset="pharaoh">𓂀 Pharaon</button>
+  </div>
+
+  <div class="preset-category">🤖 Sci-Fi</div>
+  <div class="preset-buttons">
+    <button class="preset-btn" data-preset="robot">🤖 Robot</button>
+    <button class="preset-btn" data-preset="astronaut">🚀 Astronaute</button>
+    <button class="preset-btn" data-preset="alien">👽 Alien</button>
+    <button class="preset-btn" data-preset="cyber">🌐 Cyberpunk</button>
+    <button class="preset-btn" data-preset="ghost">👻 Fantôme</button>
+  </div>
+
+  <div class="preset-category">🌸 Cute / Mascotte</div>
+  <div class="preset-buttons">
+    <button class="preset-btn" data-preset="chibi">🌸 Chibi</button>
+    <button class="preset-btn" data-preset="bunny">🐰 Lapin</button>
+    <button class="preset-btn" data-preset="cat">🐱 Chat</button>
+    <button class="preset-btn" data-preset="panda">🐼 Panda</button>
+    <button class="preset-btn" data-preset="bear">🐻 Ours</button>
+    <button class="preset-btn" data-preset="fox">🦊 Renard</button>
+  </div>
+
+  <div class="preset-category">🎨 Styles graphiques</div>
+  <div class="preset-buttons">
+    <button class="preset-btn" data-preset="crossy">🟦 Crossy</button>
     <button class="preset-btn" data-preset="bouncy">🎈 Bouncy</button>
+    <button class="preset-btn" data-preset="retro8bit">👾 8-bit Retro</button>
+    <button class="preset-btn" data-preset="neon">💫 Néon</button>
+    <button class="preset-btn" data-preset="mono">🖤 Monochrome</button>
+    <button class="preset-btn" data-preset="shadow">⚫ Silhouette</button>
+  </div>
+
+  <div class="preset-category">🎭 Persos fun</div>
+  <div class="preset-buttons">
+    <button class="preset-btn" data-preset="superhero">🦸 Super-héros</button>
+    <button class="preset-btn" data-preset="clown">🤡 Clown</button>
+    <button class="preset-btn" data-preset="grandpa">👴 Grand-père</button>
+    <button class="preset-btn" data-preset="baby">👶 Bébé</button>
+    <button class="preset-btn" data-preset="zombie">🧟 Zombie</button>
   </div>
 
   <h2>📐 Proportions</h2>
@@ -344,6 +412,7 @@ const DEFAULTS = JSON.parse(JSON.stringify(params));
 // PRESETS — full visual identities
 // =========================================================
 const PRESETS = {
+  // ==================== SPORT PRO ====================
   sprinter: {
     scale: 1.1, headH: 16, headW: 16, bodyH: 36, shoulderW: 26, torsoW: 16,
     bodyV: 0.7, chibi: 0, legH: 42, legW: 6, calfDef: 0.5, armL: 26, armW: 5, bicepDef: 0.5,
@@ -358,6 +427,154 @@ const PRESETS = {
     jersey: '#4a9fd9', short: '#1a2b4d', shoes: '#ff6060',
     hairStyle: 'headband', expression: 'neutral',
   },
+  boxer: {
+    scale: 1.05, headH: 16, headW: 18, bodyH: 30, shoulderW: 30, torsoW: 20,
+    bodyV: 0.8, chibi: 0.1, legH: 30, legW: 8, calfDef: 0.7, armL: 24, armW: 7, bicepDef: 0.9,
+    runBpm: 160, legSwing: 28, armSwing: 50, bodyBounce: 3, leanFwd: 4, elbowBend: 80,
+    jersey: '#e62e2e', jerseyBand: '#fff', short: '#1a1a1a', shortBand: '#FFB030',
+    shoes: '#1a1a1a', sole: '#fff',
+    hairStyle: 'short', expression: 'focus',
+  },
+  skater: {
+    scale: 1, headH: 18, headW: 18, bodyH: 28, shoulderW: 22, torsoW: 18,
+    bodyV: 0.2, chibi: 0.2, legH: 30, legW: 6, armL: 22, armW: 5,
+    runBpm: 100, legSwing: 18, armSwing: 35, bodyBounce: 1, leanFwd: 12, elbowBend: 35,
+    jersey: '#9070d0', short: '#3a2818', shoes: '#fff',
+    hairStyle: 'long', hair: '#3a2410', expression: 'neutral',
+  },
+  cyclist: {
+    scale: 1, headH: 16, headW: 16, bodyH: 30, shoulderW: 22, torsoW: 16,
+    bodyV: 0.4, legH: 36, legW: 5, calfDef: 0.6, armL: 22, armW: 4,
+    runBpm: 180, legSwing: 38, armSwing: 18, bodyBounce: 1, leanFwd: 22, elbowBend: 50,
+    jersey: '#00c853', jerseyBand: '#000', short: '#000', shortBand: '#fff',
+    shoes: '#1a1a1a',
+    hairStyle: 'cap', hair: '#000', expression: 'focus',
+  },
+  basketballer: {
+    scale: 1.15, headH: 16, headW: 16, bodyH: 38, shoulderW: 24, torsoW: 16,
+    bodyV: 0.5, legH: 50, legW: 6, calfDef: 0.4, armL: 32, armW: 5, bicepDef: 0.4,
+    runBpm: 170, legSwing: 36, armSwing: 50, bodyBounce: 3, leanFwd: 6, elbowBend: 45,
+    jersey: '#FF6020', short: '#1a1a1a', shoes: '#fff', sole: '#FF6020',
+    hairStyle: 'bald', expression: 'focus',
+  },
+
+  // ==================== FANTASY ====================
+  knight: {
+    scale: 1.05, headH: 18, headW: 20, neckH: 1, bodyH: 32, shoulderW: 28, torsoW: 22,
+    bodyV: 0.4, legH: 30, legW: 8, armL: 22, armW: 7,
+    runBpm: 110, legSwing: 25, armSwing: 28, bodyBounce: 2.5, leanFwd: 4, elbowBend: 50,
+    jersey: '#a0a8b0', jerseyBand: '#FFB030', short: '#404850', shortBand: '#a0a8b0',
+    shoes: '#1a1a1a', sole: '#000',
+    hairStyle: 'cap', hair: '#808890', expression: 'focus', showBrows: false,
+    eyeY: 0.55,
+  },
+  wizard: {
+    scale: 1.05, headH: 18, headW: 18, bodyH: 38, shoulderW: 20, torsoW: 18,
+    bodyV: 0.2, chibi: 0.15, legH: 26, legW: 5, armL: 24, armW: 4,
+    runBpm: 100, legSwing: 20, armSwing: 40, bodyBounce: 2, leanFwd: 5, elbowBend: 30,
+    jersey: '#5030a0', jerseyBand: '#ffd060', short: '#2a1850', shortBand: '#ffd060',
+    shoes: '#3a2010', sole: '#000', skin: '#e0b890',
+    hairStyle: 'long', hair: '#e0e0e0', expression: 'focus',
+  },
+  elf: {
+    scale: 1.05, headH: 17, headW: 16, bodyH: 34, shoulderW: 20, torsoW: 14,
+    bodyV: 0.3, legH: 38, legW: 5, armL: 24, armW: 4, calfDef: 0.3,
+    runBpm: 180, legSwing: 38, armSwing: 42, bodyBounce: 1.5, leanFwd: 8, elbowBend: 40,
+    jersey: '#2a8050', jerseyBand: '#a0e0a0', short: '#3a2818', shortBand: '#2a8050',
+    shoes: '#5a3818', sole: '#3a2010',
+    hairStyle: 'long', hair: '#f0e0a0', skin: '#f8d8b0', expression: 'neutral',
+  },
+  pirate: {
+    scale: 1.05, headH: 18, headW: 18, bodyH: 32, shoulderW: 26, torsoW: 22,
+    bodyV: 0.4, legH: 28, legW: 7, armL: 24, armW: 6, bicepDef: 0.4,
+    runBpm: 130, legSwing: 28, armSwing: 38, bodyBounce: 3, leanFwd: 6, elbowBend: 40,
+    jersey: '#fff', jerseyBand: '#e62e2e', short: '#2a1810', shortBand: '#fff',
+    shoes: '#1a0a08', sole: '#000',
+    hairStyle: 'headband', hair: '#e62e2e', expression: 'focus',
+  },
+  ninja: {
+    scale: 1.05, headH: 17, headW: 16, bodyH: 32, shoulderW: 22, torsoW: 16,
+    bodyV: 0.5, legH: 36, legW: 5, armL: 24, armW: 4,
+    runBpm: 220, legSwing: 45, armSwing: 50, bodyBounce: 1, leanFwd: 15, elbowBend: 60,
+    jersey: '#1a1a1a', jerseyBand: '#e62e2e', short: '#1a1a1a', shortBand: '#1a1a1a',
+    shoes: '#1a1a1a', sole: '#1a1a1a', skin: '#1a1a1a',
+    hairStyle: 'cap', hair: '#000', expression: 'focus', mouthW: 0, showBrows: false,
+    eyeSize: 1.2,
+  },
+  viking: {
+    scale: 1.1, headH: 18, headW: 20, bodyH: 32, shoulderW: 30, torsoW: 22,
+    bodyV: 0.6, legH: 32, legW: 8, armL: 24, armW: 7, bicepDef: 0.7,
+    runBpm: 130, legSwing: 30, armSwing: 40, bodyBounce: 3.5, leanFwd: 5, elbowBend: 45,
+    jersey: '#7a4530', jerseyBand: '#c8a060', short: '#3a2010', shortBand: '#7a4530',
+    shoes: '#3a2010', sole: '#000',
+    hairStyle: 'long', hair: '#e8b850', expression: 'focus',
+  },
+  samurai: {
+    scale: 1.05, headH: 17, headW: 17, bodyH: 34, shoulderW: 26, torsoW: 18,
+    bodyV: 0.5, legH: 32, legW: 6, armL: 24, armW: 5,
+    runBpm: 170, legSwing: 34, armSwing: 40, bodyBounce: 2, leanFwd: 8, elbowBend: 50,
+    jersey: '#1a1a1a', jerseyBand: '#e62e2e', short: '#1a1a1a', shortBand: '#a0a0a8',
+    shoes: '#3a2818', sole: '#000', skin: '#f4d8a0',
+    hairStyle: 'ponytail', hair: '#000', expression: 'focus',
+  },
+  pharaoh: {
+    scale: 1.05, headH: 17, headW: 18, bodyH: 30, shoulderW: 24, torsoW: 18,
+    bodyV: 0.4, legH: 34, legW: 6, armL: 22, armW: 5,
+    runBpm: 130, legSwing: 28, armSwing: 32, bodyBounce: 2, leanFwd: 4, elbowBend: 35,
+    jersey: '#ffd060', jerseyBand: '#0a4060', short: '#fff', shortBand: '#ffd060',
+    shoes: '#ffd060', sole: '#000', skin: '#c89060',
+    hairStyle: 'cap', hair: '#ffd060', expression: 'neutral',
+    eyeY: 0.50,
+  },
+
+  // ==================== SCI-FI ====================
+  robot: {
+    scale: 1.1, headH: 20, headW: 20, neckH: 0, bodyH: 30, shoulderW: 26, torsoW: 22,
+    bodyV: 0.1, chibi: 0.2, legH: 28, legW: 9, armL: 22, armW: 8, footL: 11, footH: 6,
+    calfDef: 0, bicepDef: 0,
+    runBpm: 120, legSwing: 22, armSwing: 26, bodyBounce: 1, leanFwd: 0, elbowBend: 0, kneeBend: 0,
+    jersey: '#a8b0c0', jerseyBand: '#e62e2e', short: '#606870', shortBand: '#a8b0c0',
+    shoes: '#404850', sole: '#1a1a1a', skin: '#909090',
+    hairStyle: 'bald', expression: 'neutral', mouthW: 5,
+    eyeSize: 2.5, eyeY: 0.45,
+  },
+  astronaut: {
+    scale: 1.1, headH: 22, headW: 22, neckH: 0, bodyH: 32, shoulderW: 28, torsoW: 24,
+    bodyV: 0.1, chibi: 0.3, legH: 26, legW: 9, armL: 22, armW: 8,
+    runBpm: 110, legSwing: 22, armSwing: 28, bodyBounce: 1.5, leanFwd: 2, elbowBend: 20,
+    jersey: '#fff', jerseyBand: '#FFB030', short: '#fff', shortBand: '#FFB030',
+    shoes: '#fff', sole: '#404850', skin: '#fff',
+    hairStyle: 'bald', expression: 'neutral', eyeY: 0.45,
+  },
+  alien: {
+    scale: 1.05, headH: 22, headW: 24, bodyH: 26, shoulderW: 22, torsoW: 18,
+    bodyV: 0.3, chibi: 0.4, legH: 26, legW: 5, armL: 24, armW: 4,
+    runBpm: 140, legSwing: 28, armSwing: 38, bodyBounce: 3, leanFwd: 4,
+    jersey: '#7030a0', jerseyBand: '#a0e0a0', short: '#5030a0',
+    shoes: '#3a1850', sole: '#000', skin: '#a0e070',
+    hairStyle: 'bald', expression: 'focus', eyeSize: 3, eyeY: 0.45, eyeX: 0.32,
+    mouthW: 1,
+  },
+  cyber: {
+    scale: 1.05, headH: 18, headW: 18, bodyH: 32, shoulderW: 24, torsoW: 18,
+    bodyV: 0.5, legH: 36, legW: 6, armL: 24, armW: 5,
+    runBpm: 180, legSwing: 38, armSwing: 48, bodyBounce: 2, leanFwd: 10, elbowBend: 50,
+    jersey: '#e0177e', jerseyBand: '#00ffff', short: '#1a0830', shortBand: '#00ffff',
+    shoes: '#00ffff', sole: '#1a0830',
+    hairStyle: 'short', hair: '#00ffff', expression: 'focus',
+    outline: '#00ffff', outlineW: 1.5,
+  },
+  ghost: {
+    scale: 1.05, headH: 20, headW: 20, bodyH: 32, shoulderW: 24, torsoW: 20,
+    bodyV: 0.2, chibi: 0.3, legH: 22, legW: 7, armL: 22, armW: 6,
+    runBpm: 100, legSwing: 18, armSwing: 30, bodyBounce: 4, leanFwd: 0,
+    jersey: '#e8ecf0', jerseyBand: '#a0a8b0', short: '#a0a8b0', shortBand: '#a0a8b0',
+    shoes: '#a0a8b0', sole: '#808890', skin: '#f0f4f8',
+    hairStyle: 'bald', expression: 'neutral', eyeSize: 2, mouthW: 5,
+    outline: '#a0a8b0',
+  },
+
+  // ==================== CUTE / MASCOTTE ====================
   chibi: {
     scale: 1.05, headH: 26, headW: 28, bodyH: 22, shoulderW: 20, torsoW: 18,
     bodyV: 0.2, chibi: 0.7, legH: 18, legW: 7, armL: 16, armW: 6, footL: 13, footH: 5,
@@ -366,13 +583,60 @@ const PRESETS = {
     jersey: '#FFB030', short: '#e6557a',
     hairStyle: 'cap', expression: 'happy',
   },
+  bunny: {
+    scale: 1.05, headH: 22, headW: 22, bodyH: 22, shoulderW: 20, torsoW: 18,
+    bodyV: 0.2, chibi: 0.5, legH: 24, legW: 7, armL: 16, armW: 6,
+    runBpm: 180, legSwing: 38, armSwing: 28, bodyBounce: 8, leanFwd: 2,
+    jumpHeight: 110,
+    jersey: '#ff8090', short: '#fff', shortBand: '#ff8090',
+    hair: '#fff', skin: '#fff5e8',
+    hairStyle: 'long', expression: 'happy', eyeSize: 2, eyeY: 0.5,
+  },
+  cat: {
+    scale: 1, headH: 22, headW: 24, bodyH: 22, shoulderW: 20, torsoW: 18,
+    bodyV: 0.2, chibi: 0.5, legH: 24, legW: 6, armL: 16, armW: 5,
+    runBpm: 200, legSwing: 32, armSwing: 30, bodyBounce: 4, leanFwd: 4,
+    jersey: '#FFB030', short: '#1a1a1a',
+    hair: '#1a1a1a', skin: '#fff5e8',
+    hairStyle: 'short', expression: 'happy', eyeSize: 2.2, eyeY: 0.48,
+    mouthW: 4,
+  },
+  panda: {
+    scale: 1.05, headH: 24, headW: 26, bodyH: 24, shoulderW: 22, torsoW: 20,
+    bodyV: 0.1, chibi: 0.5, legH: 22, legW: 8, armL: 18, armW: 7,
+    runBpm: 110, legSwing: 22, armSwing: 26, bodyBounce: 6, leanFwd: 2,
+    jersey: '#fff', jerseyBand: '#1a1a1a', short: '#1a1a1a', shortBand: '#fff',
+    shoes: '#1a1a1a', sole: '#1a1a1a', skin: '#fff',
+    hair: '#1a1a1a', hairStyle: 'short', expression: 'happy',
+    eyeSize: 2.5, eyeY: 0.48,
+  },
+  bear: {
+    scale: 1.05, headH: 22, headW: 24, bodyH: 26, shoulderW: 26, torsoW: 22,
+    bodyV: 0.15, chibi: 0.4, legH: 22, legW: 9, armL: 20, armW: 8,
+    runBpm: 100, legSwing: 22, armSwing: 28, bodyBounce: 5, leanFwd: 3,
+    jersey: '#8b4513', short: '#6a3818', shortBand: '#8b4513',
+    shoes: '#3a2010', sole: '#000', skin: '#cd853f',
+    hair: '#5a2a08', hairStyle: 'short', expression: 'happy',
+    eyeSize: 1.5,
+  },
+  fox: {
+    scale: 1, headH: 21, headW: 22, bodyH: 24, shoulderW: 20, torsoW: 16,
+    bodyV: 0.3, chibi: 0.4, legH: 26, legW: 5, armL: 18, armW: 4,
+    runBpm: 220, legSwing: 38, armSwing: 36, bodyBounce: 3, leanFwd: 8,
+    jersey: '#FF6020', jerseyBand: '#fff', short: '#fff', shortBand: '#FF6020',
+    shoes: '#FF6020', sole: '#000', skin: '#FF8040',
+    hair: '#FF6020', hairStyle: 'short', expression: 'focus',
+    eyeSize: 2,
+  },
+
+  // ==================== STYLES GRAPHIQUES ====================
   crossy: {
     scale: 1.1, headH: 22, headW: 22, neckH: 0, bodyH: 26, shoulderW: 22, torsoW: 22,
     bodyV: 0, chibi: 0.2, legH: 22, legW: 9, armL: 18, armW: 8, footL: 10, footH: 5,
     calfDef: 0, bicepDef: 0,
-    eyeSize: 1.6, eyeY: 0.45, mouthW: 0, // bouche cachée style mascot
+    eyeSize: 1.6, eyeY: 0.45, mouthW: 0,
     runBpm: 130, legSwing: 22, armSwing: 24, bodyBounce: 6, leanFwd: 0, elbowBend: 0, kneeBend: 0,
-    outlineW: 0, // crisp voxel sans contour
+    outlineW: 0,
     jersey: '#FFB030', jerseyBand: '#fff', short: '#1a2b4d', shortBand: '#fff',
     hairStyle: 'cap',
   },
@@ -383,6 +647,88 @@ const PRESETS = {
     jumpHeight: 105, jumpDur: 1.1, jumpTuck: 0.8,
     jersey: '#ff6090', short: '#1a2b4d',
     hairStyle: 'long', expression: 'happy',
+  },
+  retro8bit: {
+    scale: 1, headH: 16, headW: 16, neckH: 0, bodyH: 20, shoulderW: 18, torsoW: 18,
+    bodyV: 0, chibi: 0.2, legH: 16, legW: 6, armL: 14, armW: 5, footL: 8, footH: 3,
+    calfDef: 0, bicepDef: 0,
+    eyeSize: 2, mouthW: 0,
+    runBpm: 100, legSwing: 18, armSwing: 18, bodyBounce: 4, leanFwd: 0, elbowBend: 0, kneeBend: 0,
+    outlineW: 0,
+    jersey: '#e62e2e', jerseyBand: '#FFB030', short: '#1040c0', shortBand: '#e62e2e',
+    shoes: '#FFB030', sole: '#1040c0', skin: '#FFB030',
+    hairStyle: 'cap', hair: '#1040c0', expression: 'neutral',
+  },
+  neon: {
+    scale: 1, headH: 18, headW: 18, bodyH: 30, shoulderW: 22, torsoW: 16,
+    bodyV: 0.5, legH: 32, legW: 6, armL: 22, armW: 5,
+    runBpm: 180, legSwing: 38, armSwing: 48, bodyBounce: 2, leanFwd: 8, elbowBend: 45,
+    jersey: '#ff00ff', jerseyBand: '#00ffff', short: '#1a0030', shortBand: '#ff00ff',
+    shoes: '#00ffff', sole: '#1a0030', skin: '#fff0ff',
+    hairStyle: 'short', hair: '#00ffff', expression: 'focus',
+    outline: '#ff00ff', outlineW: 1.5,
+  },
+  mono: {
+    scale: 1, headH: 18, headW: 18, bodyH: 32, shoulderW: 22, torsoW: 16,
+    bodyV: 0.4, legH: 32, legW: 6, armL: 22, armW: 5,
+    runBpm: 170, legSwing: 36, armSwing: 44, bodyBounce: 3, leanFwd: 8, elbowBend: 40,
+    jersey: '#fff', jerseyBand: '#000', short: '#000', shortBand: '#fff',
+    shoes: '#000', sole: '#fff', skin: '#fff',
+    hairStyle: 'short', hair: '#000', expression: 'neutral',
+    outline: '#000', outlineW: 1.5,
+  },
+  shadow: {
+    scale: 1, headH: 18, headW: 18, bodyH: 32, shoulderW: 22, torsoW: 16,
+    bodyV: 0.4, legH: 32, legW: 6, armL: 22, armW: 5,
+    runBpm: 170, legSwing: 36, armSwing: 44, bodyBounce: 3, leanFwd: 8, elbowBend: 40,
+    jersey: '#1a1a1a', jerseyBand: '#1a1a1a', short: '#1a1a1a', shortBand: '#1a1a1a',
+    shoes: '#1a1a1a', sole: '#1a1a1a', skin: '#1a1a1a', hair: '#1a1a1a',
+    hairStyle: 'short', expression: 'neutral', mouthW: 0, showBrows: false,
+    outline: '#1a1a1a', outlineW: 0, eyeSize: 1,
+  },
+
+  // ==================== PERSOS FUN ====================
+  superhero: {
+    scale: 1.1, headH: 16, headW: 16, bodyH: 36, shoulderW: 30, torsoW: 18,
+    bodyV: 0.8, legH: 40, legW: 7, armL: 26, armW: 6, bicepDef: 0.7,
+    runBpm: 180, legSwing: 42, armSwing: 50, bodyBounce: 2.5, leanFwd: 12, elbowBend: 50,
+    jersey: '#1040c0', jerseyBand: '#e62e2e', short: '#1040c0', shortBand: '#FFB030',
+    shoes: '#e62e2e', sole: '#FFB030',
+    hairStyle: 'cap', hair: '#FFB030', expression: 'focus',
+  },
+  clown: {
+    scale: 1, headH: 22, headW: 22, bodyH: 28, shoulderW: 26, torsoW: 24,
+    bodyV: 0.05, chibi: 0.3, legH: 28, legW: 8, armL: 20, armW: 7, footL: 16, footH: 5,
+    runBpm: 140, legSwing: 28, armSwing: 38, bodyBounce: 7, leanFwd: 3, elbowBend: 35,
+    jersey: '#ff8080', jerseyBand: '#80ff80', short: '#8080ff', shortBand: '#FFB030',
+    shoes: '#e62e2e', sole: '#FFB030', skin: '#fff5e8',
+    hairStyle: 'long', hair: '#ff4080', expression: 'happy',
+    mouthW: 6,
+  },
+  grandpa: {
+    scale: 0.95, headH: 18, headW: 18, bodyH: 30, shoulderW: 20, torsoW: 22,
+    bodyV: 0, legH: 28, legW: 6, armL: 22, armW: 5,
+    runBpm: 90, legSwing: 16, armSwing: 22, bodyBounce: 2, leanFwd: 8, elbowBend: 25,
+    jersey: '#5a4830', jerseyBand: '#3a2810', short: '#3a2818', shortBand: '#5a4830',
+    shoes: '#1a0a08', sole: '#000', skin: '#e8c8a8',
+    hairStyle: 'short', hair: '#e0e0e0', expression: 'neutral',
+  },
+  baby: {
+    scale: 0.85, headH: 26, headW: 28, bodyH: 18, shoulderW: 16, torsoW: 18,
+    bodyV: 0, chibi: 0.85, legH: 12, legW: 7, armL: 12, armW: 6, footL: 10, footH: 5,
+    runBpm: 130, legSwing: 22, armSwing: 30, bodyBounce: 5, leanFwd: 0,
+    jersey: '#a0e0ff', jerseyBand: '#fff', short: '#fff', shortBand: '#a0e0ff',
+    shoes: '#fff', skin: '#ffc8a0',
+    hairStyle: 'short', hair: '#e8a060', expression: 'happy',
+    eyeSize: 3, eyeY: 0.55, mouthY: 0.85,
+  },
+  zombie: {
+    scale: 1, headH: 18, headW: 18, bodyH: 32, shoulderW: 22, torsoW: 18,
+    bodyV: 0.3, legH: 30, legW: 6, armL: 26, armW: 5,
+    runBpm: 70, legSwing: 14, armSwing: 30, bodyBounce: 2, leanFwd: -3, elbowBend: -10, kneeBend: 0.5,
+    jersey: '#5a6840', jerseyBand: '#3a4020', short: '#3a2818', shortBand: '#5a6840',
+    shoes: '#1a0a08', sole: '#000', skin: '#a0c090',
+    hairStyle: 'long', hair: '#3a2010', expression: 'focus', mouthW: 5,
   },
 };
 

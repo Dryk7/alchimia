@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v53 : bump pour invalider cache de l'ancien renderer + livrer voxel hero-lab
-const CACHE = 'foulee-v53';
+// v54 : bump pour livrer voxel splash (drawHeroIdle + drawPnjRunner également voxelisés)
+const CACHE = 'foulee-v54';
 const ASSETS = [
   './',
   './index.html',

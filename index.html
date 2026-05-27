@@ -10797,6 +10797,15 @@ if(document.readyState === 'loading'){
   let stopped = false;
 
   function drawHeroIdle(x, y, scale){
+    // V53 : délègue au voxel renderer hero-lab (idle stationnaire = phase nulle)
+    if(typeof drawVoxelRunner === 'function'){
+      drawVoxelRunner(x, y + 24 * scale, scale * 1.5, {
+        jersey: '#e62e2e', short: '#1040c0', hair: '#1040c0', skin: '#f4c890',
+        accent: '#FFB030', hairStyle: 'cap', faceExpr: 'smile',
+        headExtra: 'headband_gold',
+      }, 0, true, 0, undefined);
+      return;
+    }
     const s = scale;
     const bob = Math.floor(Math.sin(t * 0.04) * 1.5);
     const bodyY = y - bob;
@@ -10868,6 +10877,18 @@ if(document.readyState === 'loading'){
 
   // === PNJ de course (couleur custom) — PIXEL ART, sens gauche→droite ===
   function drawPnjRunner(x, y, scale, time, jerseyColor, skinColor, hairColor, shoeColor){
+    // V53 : délègue au voxel renderer hero-lab (PNJ courant sur le splash)
+    if(typeof drawVoxelRunner === 'function'){
+      drawVoxelRunner(x, y + 24 * scale, scale * 1.4, {
+        jersey: jerseyColor || '#4a9fd9',
+        skin: skinColor || '#d0a880',
+        hair: hairColor || '#3a2418',
+        short: '#1a2b4d',
+        accent: '#FFB030',
+        hairStyle: 'short', faceExpr: 'neutral',
+      }, time * 0.22, false, 0, undefined);
+      return;
+    }
     const s = scale;
     const phase = time * 0.22;
     const swing = Math.sin(phase);

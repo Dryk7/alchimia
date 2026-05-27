@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>FOULÉE — Catalogue complet du jeu</title>
+<style>
+:root {
+  --brand-gold: #FFB030;
+  --brand-gold-dark: #c88810;
+  --brand-navy: #1a2b4d;
+  --brand-charcoal: #1f1f24;
+  --brand-red: #e62e2e;
+  --brand-cream: #f5f1e8;
+  --bg: #f5f1e8;
+  --card: #fff;
+  --ink: #1f1f24;
+  --ink-mute: #6a6a72;
+  --line: #e6dfd0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:"Nunito",system-ui,-apple-system,sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  display:flex;
+  min-height:100vh;
+}
+
+/* === SIDEBAR === */
+.sidebar{
+  width:240px;
+  background:var(--brand-navy);
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  flex-shrink:0;
+  position:sticky;
+  top:0;
+  height:100vh;
+  overflow-y:auto;
+}
+.sidebar h1{
+  font-family:"Bebas Neue",Impact,sans-serif;
+  color:var(--brand-gold);
+  font-size:24px;
+  letter-spacing:1.5px;
+  padding:18px 16px 8px;
+  transform:skew(-6deg);
+  text-shadow:0 2px 0 var(--brand-gold-dark);
+}
+.sidebar .sub{
+  font-size:10px;
+  color:rgba(255,255,255,.6);
+  padding:0 16px 14px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+.sidebar nav{flex:1;padding:8px 0}
+.nav-item{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 16px;
+  cursor:pointer;
+  font-weight:700;font-size:13px;
+  color:rgba(255,255,255,.78);
+  border-left:3px solid transparent;
+  transition:background .15s, color .15s, border-color .15s;
+}
+.nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav-item.active{
+  background:rgba(255,176,48,.12);
+  color:var(--brand-gold);
+  border-left-color:var(--brand-gold);
+}
+.nav-item .ico{font-size:16px;width:18px;text-align:center}
+.nav-item .count{
+  margin-left:auto;
+  background:rgba(255,255,255,.10);
+  border-radius:10px;
+  padding:1px 7px;
+  font-size:10px;
+  color:rgba(255,255,255,.7);
+}
+.nav-item.active .count{background:rgba(255,176,48,.25);color:var(--brand-gold)}
+.sidebar footer{
+  padding:12px 16px;
+  font-size:10px;
+  color:rgba(255,255,255,.45);
+  border-top:1px solid rgba(255,255,255,.08);
+}
+
+/* === MAIN === */
+.main{
+  flex:1;
+  padding:24px 32px;
+  max-width:calc(100vw - 240px);
+  overflow-x:hidden;
+}
+.section{display:none}
+.section.active{display:block}
+.section-header{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:18px;
+  padding-bottom:14px;
+  border-bottom:2px solid var(--line);
+}
+.section-header h2{
+  font-family:"Bebas Neue",Impact,sans-serif;
+  font-size:32px;
+  letter-spacing:1.5px;
+  color:var(--brand-navy);
+}
+.section-header .desc{
+  color:var(--ink-mute);
+  font-size:13px;
+  max-width:480px;
+}
+.search-box{
+  background:var(--card);
+  border:1.5px solid var(--line);
+  border-radius:24px;
+  padding:8px 14px;
+  font-family:inherit;
+  font-size:13px;
+  width:240px;
+}
+.search-box:focus{outline:none;border-color:var(--brand-gold)}
+
+/* === GRID & CARDS === */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:16px;
+}
+.card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:14px;
+  position:relative;
+  transition:transform .15s, box-shadow .15s;
+}
+.card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 20px rgba(20,20,20,.08);
+}
+.card.featured{
+  border-color:var(--brand-gold);
+  background:linear-gradient(180deg,#fff 0%,#fff8eb 100%);
+}
+.card-preview{
+  height:120px;
+  background:linear-gradient(180deg,#e8e1cf 0%,#d4c8a8 100%);
+  border-radius:10px;
+  margin-bottom:10px;
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+}
+.card-preview canvas{display:block}
+.card-title{
+  font-size:14px;
+  font-weight:900;
+  color:var(--brand-navy);
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.card-tag{
+  display:inline-block;
+  font-size:10px;
+  padding:2px 7px;
+  border-radius:8px;
+  background:rgba(255,176,48,.18);
+  color:var(--brand-gold-dark);
+  margin-left:auto;
+  font-weight:800;
+  letter-spacing:.4px;
+  text-transform:uppercase;
+}
+.card-desc{
+  font-size:12px;
+  color:var(--ink-mute);
+  margin-top:6px;
+  line-height:1.45;
+}
+.card-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:10px;
+  font-size:11px;
+}
+.card-meta .chip{
+  background:#f0e8d8;
+  border-radius:6px;
+  padding:3px 7px;
+  color:var(--ink);
+  font-weight:700;
+}
+.card-meta .chip.gold{background:rgba(255,176,48,.20);color:var(--brand-gold-dark)}
+.card-meta .chip.navy{background:rgba(26,43,77,.10);color:var(--brand-navy)}
+.card-meta .chip.red{background:rgba(230,46,46,.15);color:var(--brand-red)}
+
+.color-swatches{
+  display:flex;
+  gap:4px;
+  margin-top:8px;
+}
+.color-swatch{
+  width:18px;height:18px;border-radius:4px;border:1px solid rgba(0,0,0,.10);
+}
+
+/* === TIMELINE for stadiums === */
+.timeline{
+  position:relative;
+  padding-left:18px;
+  border-left:3px solid var(--brand-gold);
+}
+.timeline-item{
+  position:relative;
+  padding:10px 16px 16px 16px;
+  margin-bottom:8px;
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:10px;
+}
+.timeline-item::before{
+  content:"";
+  position:absolute;
+  left:-26px;top:18px;
+  width:12px;height:12px;
+  border-radius:50%;
+  background:var(--brand-gold);
+  border:3px solid var(--card);
+  box-shadow:0 0 0 1px var(--brand-gold);
+}
+.timeline-km{
+  font-family:"Bebas Neue",Impact,sans-serif;
+  font-size:20px;
+  color:var(--brand-gold-dark);
+  letter-spacing:1px;
+}
+.timeline-name{font-weight:900;color:var(--brand-navy);font-size:14px;margin-top:2px}
+.timeline-msg{color:var(--ink-mute);font-size:12px;font-style:italic;margin-top:4px}
+
+/* === BIOME PALETTE PREVIEW === */
+.biome-sky{
+  height:140px;
+  position:relative;
+  display:flex;align-items:flex-end;
+  border-radius:10px;
+  margin-bottom:10px;
+  overflow:hidden;
+}
+.biome-track{
+  height:32px;
+  background:#8b4513;
+  position:absolute;
+  bottom:0;left:0;right:0;
+}
+.biome-track::after{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:2px;
+  background:#fff;
+}
+.biome-signature{
+  position:absolute;
+  font-size:48px;
+  bottom:10px;left:50%;
+  transform:translateX(-50%);
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.25));
+  z-index:1;
+}
+
+/* === LORE === */
+.lore-entry{
+  background:var(--card);
+  border-left:4px solid var(--brand-gold);
+  border-radius:0 10px 10px 0;
+  padding:14px 18px;
+  margin-bottom:10px;
+}
+.lore-id{
+  font-family:"Bebas Neue",Impact,sans-serif;
+  font-size:14px;
+  color:var(--brand-gold-dark);
+  letter-spacing:1.5px;
+}
+.lore-title{font-weight:900;font-size:15px;color:var(--brand-navy);margin-top:2px}
+.lore-unlock{font-size:11px;color:var(--ink-mute);margin-top:2px}
+.lore-text{font-size:13px;margin-top:8px;line-height:1.6;color:var(--ink)}
+
+/* === OVERVIEW === */
+.overview-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:14px;
+  margin-bottom:24px;
+}
+.stat-card{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:16px;
+  text-align:center;
+}
+.stat-val{
+  font-family:"Bebas Neue",Impact,sans-serif;
+  font-size:36px;
+  color:var(--brand-gold);
+  letter-spacing:1px;
+  line-height:1;
+}
+.stat-label{
+  font-size:11px;
+  color:var(--ink-mute);
+  letter-spacing:.5px;
+  text-transform:uppercase;
+  margin-top:4px;
+}
+
+.intro-block{
+  background:var(--card);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:20px 22px;
+  margin-bottom:20px;
+}
+.intro-block h3{
+  font-family:"Bebas Neue",Impact,sans-serif;
+  font-size:20px;
+  color:var(--brand-navy);
+  letter-spacing:1px;
+  margin-bottom:8px;
+}
+.intro-block p{font-size:13px;line-height:1.6;color:var(--ink)}
+.intro-block a{color:var(--brand-gold-dark);font-weight:700}
+
+/* === MOBILE === */
+@media (max-width:780px){
+  body{flex-direction:column}
+  .sidebar{
+    width:100%;
+    height:auto;
+    position:sticky;
+    top:0;
+    z-index:10;
+  }
+  .sidebar h1{padding:12px 14px 4px;font-size:20px}
+  .sidebar .sub{padding:0 14px 8px}
+  .sidebar nav{
+    display:flex;
+    overflow-x:auto;
+    padding:4px;
+    gap:2px;
+  }
+  .nav-item{
+    padding:8px 10px;
+    border-left:none;
+    border-bottom:3px solid transparent;
+    font-size:12px;
+    white-space:nowrap;
+  }
+  .nav-item.active{border-bottom-color:var(--brand-gold);border-left-color:transparent}
+  .nav-item .count{display:none}
+  .sidebar footer{display:none}
+  .main{max-width:100vw;padding:16px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+  .section-header{flex-direction:column;align-items:flex-start}
+  .search-box{width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- SIDEBAR NAV                                                  -->
+<!-- ============================================================ -->
+<aside class="sidebar">
+  <h1>FOULÉE</h1>
+  <div class="sub">Catalogue v1 · encyclopédie complète</div>
+  <nav id="nav">
+    <div class="nav-item active" data-section="overview"><span class="ico">📊</span>Vue d'ensemble</div>
+    <div class="nav-item" data-section="skins"><span class="ico">👤</span>Skins héros<span class="count">11</span></div>
+    <div class="nav-item" data-section="biomes"><span class="ico">🌍</span>Biomes<span class="count">10</span></div>
+    <div class="nav-item" data-section="npc"><span class="ico">🏃</span>PNJ Tiers<span class="count">7</span></div>
+    <div class="nav-item" data-section="biome_npc"><span class="ico">👽</span>PNJ par biome<span class="count">9</span></div>
+    <div class="nav-item" data-section="stadiums"><span class="ico">🏟</span>Stades<span class="count">19</span></div>
+    <div class="nav-item" data-section="bosses"><span class="ico">👑</span>Bosses<span class="count">5</span></div>
+    <div class="nav-item" data-section="rivals"><span class="ico">⚔️</span>Rivaux<span class="count">5</span></div>
+    <div class="nav-item" data-section="quests"><span class="ico">🎯</span>Quêtes saison<span class="count">5</span></div>
+    <div class="nav-item" data-section="team"><span class="ico">💧</span>Équipe AFK<span class="count">6</span></div>
+    <div class="nav-item" data-section="lore"><span class="ico">📖</span>Codex lore<span class="count">20</span></div>
+    <div class="nav-item" data-section="music"><span class="ico">🎵</span>Musique<span class="count">10</span></div>
+  </nav>
+  <footer>
+    Données extraites de index.html<br>
+    Snapshot 2026-05-27 · v54
+  </footer>
+</aside>
+
+<!-- ============================================================ -->
+<!-- MAIN CONTENT                                                 -->
+<!-- ============================================================ -->
+<main class="main">
+
+  <!-- ====================================================== -->
+  <!-- 1. OVERVIEW                                            -->
+  <!-- ====================================================== -->
+  <section class="section active" data-section="overview">
+    <div class="section-header">
+      <div>
+        <h2>VUE D'ENSEMBLE</h2>
+        <div class="desc">Inventaire complet du contenu du jeu Foulée — idle running aux 10 biomes.</div>
+      </div>
+    </div>
+
+    <div class="intro-block">
+      <h3>🏃 LE JEU EN BREF</h3>
+      <p><strong>Foulée</strong> est un idle running mobile single-HTML. Le joueur tap pour faire courir un coureur sur une piste qui traverse 10 biomes saisonniers (chantier → urbain → lune → jungle → désert → arctique → océan → volcan → forêt → galaxie → olympe). Chaque saison fait 100 km. Boss tous les 20 km, mécaniques uniques par biome, méta-progression via couronnes.</p>
+      <p style="margin-top:8px"><strong>Style :</strong> Sport pro doré (gold #FFB030 + navy #1a2b4d) — voxel Crossy Road. Voir <a href="hero-lab.html">hero-lab</a> pour designer un perso, <a href="scene-mockup.html">scene-mockup</a> pour le test visuel piste.</p>
+    </div>
+
+    <div class="overview-grid">
+      <div class="stat-card"><div class="stat-val">10</div><div class="stat-label">Biomes</div></div>
+      <div class="stat-card"><div class="stat-val">11</div><div class="stat-label">Skins héros</div></div>
+      <div class="stat-card"><div class="stat-val">19</div><div class="stat-label">Stades km 0→100</div></div>
+      <div class="stat-card"><div class="stat-val">7</div><div class="stat-label">Tiers PNJ</div></div>
+      <div class="stat-card"><div class="stat-val">5</div><div class="stat-label">Bosses</div></div>
+      <div class="stat-card"><div class="stat-val">5</div><div class="stat-label">Rivaux</div></div>
+      <div class="stat-card"><div class="stat-val">6</div><div class="stat-label">Coureurs AFK</div></div>
+      <div class="stat-card"><div class="stat-val">20</div><div class="stat-label">Entrées lore</div></div>
+    </div>
+
+    <div class="intro-block">
+      <h3>🎨 IDENTITÉ VISUELLE</h3>
+      <p><strong>Palette signature :</strong> Doré chaud <code>#FFB030</code> (brand-gold) + Navy profond <code>#1a2b4d</code> + Crème <code>#f5f1e8</code>. Typo <strong>Bebas Neue</strong> (titres) + <strong>Nunito</strong> (corps).</p>
+      <p style="margin-top:8px"><strong>Style coureurs :</strong> Voxel Crossy Road (cubes pixelisés, animation BPM contrôlable). Hero 8-bit retro Mario-style (maillot rouge, shorts bleu, casquette dorée).</p>
+    </div>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 2. SKINS                                               -->
+  <!-- ====================================================== -->
+  <section class="section" data-section="skins">
+    <div class="section-header">
+      <div>
+        <h2>SKINS HÉROS</h2>
+        <div class="desc">6 skins gratuits + 5 premium achetables en gemmes. Cosmétiques pur, n'affecte pas le gameplay.</div>
+      </div>
+      <input class="search-box" placeholder="🔍 Rechercher un skin…" data-search="skins">
+    </div>
+    <div class="grid" id="grid-skins"></div>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 3. BIOMES                                              -->
+  <!-- ====================================================== -->
+  <section class="section" data-section="biomes">
+    <div class="section-header">
+      <div>
+        <h2>BIOMES (10 SAISONS)</h2>
+        <div class="desc">Chaque saison = 100 km dans un biome unique avec sa palette, ambiance et mécanique signature.</div>
+      </div>
+    </div>
+    <div class="grid" id="grid-biomes"></div>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 4. NPC TIERS                                           -->
+  <!-- ====================================================== -->
+  <section class="section" data-section="npc">
+    <div class="section-header">
+      <div>
+        <h2>TIERS PNJ</h2>
+        <div class="desc">7 niveaux d'apparence pour les coureurs PNJ. Plus la saison avance, plus le tier moyen monte.</div>
+      </div>
+    </div>
+    <div class="grid" id="grid-npc"></div>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 5. PNJ par biome                                       -->
+  <!-- ====================================================== -->
+  <section class="section" data-section="biome_npc">
+    <div class="section-header">
+      <div>
+        <h2>PNJ PAR BIOME</h2>
+        <div class="desc">Pour chaque biome, les PNJ adoptent une apparence thématique (astronautes sur la lune, aliens dans la galaxie…).</div>
+      </div>
+    </div>
+    <div class="grid" id="grid-biome-npc"></div>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 6. STADIUMS                                            -->
+  <!-- ====================================================== -->
+  <section class="section" data-section="stadiums">
+    <div class="section-header">
+      <div>
+        <h2>STADES (KM 0 → 100)</h2>
+        <div class="desc">19 paliers de progression dans la saison 1, du chantier brut au stade olympique légendaire.</div>
+      </div>
+    </div>
+    <div class="timeline" id="timeline-stadiums"></div>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 7. BOSSES                                              -->
+  <!-- ====================================================== -->
+  <section class="section" data-section="bosses">
+    <div class="section-header">
+      <div>
+        <h2>BOSSES</h2>
+        <div class="desc">5 boss majeurs : 4 bosses km 20/40/60/80 + 1 finale (Olympus). Chacun a un coup spécial et un taunt.</div>
+      </div>
+    </div>
+    <div class="grid" id="grid-bosses"></div>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 8. RIVALS                                              -->
+  <!-- ====================================================== -->
+  <section class="section" data-section="rivals">
+    <div class="section-header">
+      <div>
+        <h2>RIVAUX</h2>
+        <div class="desc">5 rivaux récurrents qui apparaissent à intervalles dans tes courses. Battez-les pour gagner des bonus.</div>
+      </div>
+    </div>
+    <div class="grid" id="grid-rivals"></div>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 9. QUESTS                                              -->
+  <!-- ====================================================== -->
+  <section class="section" data-section="quests">
+    <div class="section-header">
+      <div>
+        <h2>QUÊTES DE SAISON</h2>
+        <div class="desc">5 objectifs principaux par saison. À terminer dans une saison unique pour le claim.</div>
+      </div>
+    </div>
+    <div class="grid" id="grid-quests"></div>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 10. TEAM RUNNERS (AFK)                                 -->
+  <!-- ====================================================== -->
+  <section class="section" data-section="team">
+    <div class="section-header">
+      <div>
+        <h2>ÉQUIPE AFK</h2>
+        <div class="desc">6 coureurs collecteurs qui génèrent des gouttes en arrière-plan. Manager = auto-collect.</div>
+      </div>
+    </div>
+    <div class="grid" id="grid-team"></div>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 11. LORE                                               -->
+  <!-- ====================================================== -->
+  <section class="section" data-section="lore">
+    <div class="section-header">
+      <div>
+        <h2>CODEX / LORE</h2>
+        <div class="desc">20 entrées de lore narratif qui se débloquent au fil de la progression (km / bosses / saisons).</div>
+      </div>
+    </div>
+    <div id="list-lore"></div>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 12. MUSIC                                              -->
+  <!-- ====================================================== -->
+  <section class="section" data-section="music">
+    <div class="section-header">
+      <div>
+        <h2>MUSIQUE PROCÉDURALE</h2>
+        <div class="desc">Système ProcBGM WebAudio : presets dynamiques par biome qui s'adaptent à l'intensité du tap.</div>
+      </div>
+    </div>
+    <div class="grid" id="grid-music"></div>
+  </section>
+
+</main>
+
+<script>
+'use strict';
+
+// ============================================================
+// === DATA : extrait de index.html (snapshot 2026-05-27 v54) =
+// ============================================================
+
+const SKINS = [
+  // Gratuits
+  { id:'base',      name:'Débutant',      jersey:'#e85a30', accent:'#1a2b4d', hair:'#3a2418', tag:'GRATUIT', desc:'Skin de départ. Maillot orange chantier.' },
+  { id:'gold',      name:'Champion doré', jersey:'#FFB030', accent:'#c88810', hair:'#3a2418', tag:'GRATUIT', desc:'Le skin signature Foulée. Débloqué tôt.' },
+  { id:'silver',    name:'Médaillé',      jersey:'#c0c8d0', accent:'#1a2b4d', hair:'#3a2418', tag:'GRATUIT', desc:'Argent olympique. Saison 5+.' },
+  { id:'bronze',    name:'Vétéran bronze',jersey:'#a86838', accent:'#1a2b4d', hair:'#3a2418', tag:'GRATUIT', desc:'Médaille de bronze.' },
+  { id:'navy',      name:'Marine',        jersey:'#1a2b4d', accent:'#FFB030', hair:'#3a2418', tag:'GRATUIT', desc:'Maillot navy avec accent doré.' },
+  { id:'red',       name:'Rouge feu',     jersey:'#e62e2e', accent:'#FFB030', hair:'#1a2b4d', tag:'GRATUIT', desc:'8-bit retro Mario-style.' },
+  // Premium
+  { id:'pink',      name:'Flamingo',      jersey:'#ee5a9a', accent:'#fff',    hair:'#5a2a48', tag:'PREMIUM 50💎', desc:'Rose flamboyant. Pour les rebels.' },
+  { id:'cyber',     name:'Cyberpunk',     jersey:'#e0177e', accent:'#00ffff', hair:'#00ffff', tag:'PREMIUM 150💎', desc:'Avec aura cyan + outline néon. Special: glow.' },
+  { id:'galaxy',    name:'Cosmonaute',    jersey:'#7030a0', accent:'#a0e0a0', hair:'#a0e0a0', tag:'PREMIUM 200💎', desc:'Tenue spatiale. Special: stars.' },
+  { id:'shadow',    name:'Ombre',         jersey:'#1a1a1a', accent:'#FFB030', hair:'#1a1a1a', tag:'PREMIUM 300💎', desc:'Silhouette mystérieuse. Special: trail.' },
+  { id:'rainbow',   name:'Arc-en-ciel',   jersey:'gradient',accent:'#fff',    hair:'#fff',    tag:'PREMIUM 500💎', desc:'Couleurs qui changent. Special: cycle.' },
+];
+
+const BIOMES = [
+  { id:'urban',    saison:1, emoji:'🏟', name:'Stade urbain',   sky:['#e8ecf0','#a8c8e0'], track:'#a8553f', desc:'Stade en bord de ville. Le départ.',           mecanique:'Apprentissage rythme tap', signature:'🗼' },
+  { id:'lunar',    saison:2, emoji:'🌙', name:'La Lune',        sky:['#1a1840','#4a3070'], track:'#909090', desc:'Gravité réduite, sauts hauts.',                 mecanique:'Gravité ×0.55 — sauts longs', signature:'🌕' },
+  { id:'jungle',   saison:3, emoji:'🌴', name:'Jungle amazonienne', sky:['#3a8030','#8aa850'], track:'#5a3818', desc:'Canopée dense, brume verte.',           mecanique:'Lianes à esquiver', signature:'🌴' },
+  { id:'desert',   saison:4, emoji:'🏜', name:'Sahara',         sky:['#e8c068','#c89048'], track:'#d4a070', desc:'Soleil de plomb, mirages.',                    mecanique:'Stamina ×0.8 (chaleur)', signature:'🏛' },
+  { id:'arctic',   saison:5, emoji:'❄️', name:'Banquise',       sky:['#90c8e8','#a0e0f0'], track:'#e8f4f8', desc:'Glace partout, aurores boréales.',             mecanique:'Glissade ×1.5 distance', signature:'🌌' },
+  { id:'ocean',    saison:6, emoji:'🌊', name:'Fond marin',     sky:['#0a4060','#1a7090'], track:'#3a6080', desc:'Sous l\'eau, oxygène limité.',                  mecanique:'Oxygène starving = malus', signature:'🪼' },
+  { id:'volcano',  saison:7, emoji:'🌋', name:'Volcan',         sky:['#5a1010','#a0301a'], track:'#3a1810', desc:'Lave coulante, ciel rougeoyant.',             mecanique:'Éruptions à éviter', signature:'🌋' },
+  { id:'forest',   saison:8, emoji:'🌲', name:'Forêt enchantée',sky:['#1a3a30','#3a7050'], track:'#3a2818', desc:'Lucioles, brume mystique.',                    mecanique:'Lucioles bonus gouttes', signature:'🌲' },
+  { id:'galaxy',   saison:9, emoji:'🪐', name:'Galaxie',        sky:['#1a0030','#5030a0'], track:'#2a1850', desc:'Espace profond, étoiles partout.',             mecanique:'Apesanteur — saut infini', signature:'🪐' },
+  { id:'olympe',   saison:10,emoji:'⚡', name:'L\'Olympe',      sky:['#ffd060','#fff5e8'], track:'#f0e0a0', desc:'Cieux des dieux. Saison finale.',              mecanique:'Vent + Lyre de l\'Olympe', signature:'⚡' },
+];
+
+const NPC_TIERS = [
+  { tier:0, label:'Promeneur du dimanche', baseSpeed:0.30, jerseys:['#888','#999','#aaa'],          desc:'Lent, tenue civile.', tag:'KM 0-15' },
+  { tier:1, label:'Jogger occasionnel',    baseSpeed:0.55, jerseys:['#4a9fd9','#6a8b5a','#a8553f'], desc:'Tenue sport basique.', tag:'KM 5-30' },
+  { tier:2, label:'Coureur du club',       baseSpeed:0.75, jerseys:['#e62e2e','#0080a0','#2a8050'], desc:'Tenue de club amateur.', tag:'KM 20-50' },
+  { tier:3, label:'Compétiteur',           baseSpeed:0.95, jerseys:['#FFB030','#1a2b4d','#7030a0'], desc:'Tenue technique.', tag:'KM 40-70' },
+  { tier:4, label:'Athlète régional',      baseSpeed:1.15, jerseys:['#e0177e','#00c853','#FF6020'], desc:'Tenue sponsorisée.', tag:'KM 60-85' },
+  { tier:5, label:'Pro national',          baseSpeed:1.35, jerseys:['#1040c0','#e62e2e','#FFB030'], desc:'Élite nationale.', tag:'KM 75-90' },
+  { tier:6, label:'Champion olympique',    baseSpeed:1.55, jerseys:['#FFB030'],                     desc:'Médaille + drapeau pays.', tag:'KM 85+', special:'flag' },
+];
+
+const BIOME_NPC_THEMES = [
+  { biome:'lunar',   icon:'🌙', name:'Astronautes',     jersey:'#f0f4f8', short:'#a0a8b0', accessory:'Casque dôme transparent' },
+  { biome:'jungle',  icon:'🌴', name:'Explorateurs',    jersey:'#2a8050', short:'#3a2818', accessory:'Couronne de feuilles' },
+  { biome:'desert',  icon:'🏜', name:'Bédouins',        jersey:'#f0d098', short:'#c8a060', accessory:'Turban blanc' },
+  { biome:'arctic',  icon:'❄️', name:'Skieurs',         jersey:'#4080d0', short:'#fff',    accessory:'Bonnet rouge + pompon' },
+  { biome:'ocean',   icon:'🌊', name:'Plongeurs',       jersey:'#0090b0', short:'#1a4060', accessory:'Masque + tuba' },
+  { biome:'volcano', icon:'🌋', name:'Créatures de lave',jersey:'#c83020',short:'#3a1810', accessory:'Cheveux en flammes' },
+  { biome:'forest',  icon:'🌲', name:'Druides',         jersey:'#4a7030', short:'#3a2818', accessory:'Couronne de feuilles' },
+  { biome:'galaxy',  icon:'👽', name:'Aliens',          jersey:'#7030a0', short:'#2a1850', accessory:'Antennes vertes + boules' },
+  { biome:'olympe',  icon:'⚡', name:'Héros antiques',  jersey:'#fff',    short:'#fff',    accessory:'Couronne de laurier doré' },
+];
+
+const STADIUMS = [
+  { km:0,   name:'Chantier brut',      msg:'Le départ. Tu n\'es personne encore.' },
+  { km:5,   name:'Quartier ouvrier',   msg:'Premiers spectateurs : ouvriers curieux.' },
+  { km:10,  name:'Route périphérique', msg:'La ville commence à te voir.' },
+  { km:15,  name:'Parc municipal',     msg:'Joggeurs du dimanche te dépassent.' },
+  { km:20,  name:'⚔ BOSS — Nico le Rapide', msg:'Premier challenger.' },
+  { km:25,  name:'Centre ville',       msg:'Les passants applaudissent.' },
+  { km:30,  name:'Stade municipal',    msg:'D\'abord stade officiel.' },
+  { km:35,  name:'Avenue commerciale', msg:'Foule excitée.' },
+  { km:40,  name:'⚔ BOSS — Marie Tempête', msg:'Sprint contre la championne régionale.' },
+  { km:50,  name:'Quartier d\'affaires',msg:'Costumes-cravates t\'ovationnent.' },
+  { km:55,  name:'Centre sportif',     msg:'Pros du club te regardent.' },
+  { km:60,  name:'⚔ BOSS — Karim Endurance', msg:'L\'homme qui ne s\'arrête jamais.' },
+  { km:70,  name:'Stade régional',     msg:'Tribunes massives.' },
+  { km:75,  name:'Couloir d\'entrée',  msg:'L\'élite t\'attend.' },
+  { km:80,  name:'⚔ BOSS — Lucia Vent',msg:'Vitesse pure. Tenir le rythme.' },
+  { km:85,  name:'Stade national',     msg:'Champion olympique aperçu.' },
+  { km:90,  name:'Couloir final',      msg:'Plus que 10 km avant la légende.' },
+  { km:95,  name:'Tunnel des héros',   msg:'Le silence avant l\'apothéose.' },
+  { km:100, name:'🏆 STADE OLYMPIQUE', msg:'Ligne d\'arrivée légendaire.' },
+];
+
+const BOSSES = [
+  { km:20,  name:'Nico le Rapide',      color:'#e85040', speed:18, surgeBonus:1.3, rewardMul:1.5, taunt:'Trop lent pour moi.', desc:'Premier challenger. Sprint au km 18.' },
+  { km:40,  name:'Marie Tempête',       color:'#9070d0', speed:22, surgeBonus:1.5, rewardMul:2.0, taunt:'Le vent ne s\'arrête jamais.', desc:'Championne régionale. Vagues de surge.' },
+  { km:60,  name:'Karim Endurance',     color:'#2a8050', speed:25, surgeBonus:1.2, rewardMul:3.0, taunt:'Je ne fatigue pas.', desc:'Marathon man. Tient la distance.' },
+  { km:80,  name:'Lucia Vent',          color:'#4a9fd9', speed:30, surgeBonus:2.0, rewardMul:5.0, taunt:'Tu vois juste mon sillage.', desc:'Vitesse pure. Dur à doubler.' },
+  { km:100, name:'Olympus',             color:'#FFB030', speed:35, surgeBonus:3.0, rewardMul:10,  taunt:'Tu approches du divin.', desc:'BOSS FINAL. Apothéose olympique.' },
+];
+
+const RIVALS = [
+  { id:'nico',   name:'Nico le Rapide',    color:'#e84030', firstKm:5,  desc:'Sprinter explosif. Apparaît dès le quartier ouvrier.' },
+  { id:'marie',  name:'Marie Tempête',     color:'#9070d0', firstKm:15, desc:'Coureuse de vent. Apparaît au parc.' },
+  { id:'karim',  name:'Karim Endurance',   color:'#2a8050', firstKm:30, desc:'Marathonien. Stades urbains.' },
+  { id:'lucia',  name:'Lucia Vent',        color:'#4a9fd9', firstKm:50, desc:'Reine des avenues.' },
+  { id:'olympus',name:'Olympus le Légendaire', color:'#FFB030', firstKm:85, desc:'Apparaît seulement au stade olympique.' },
+];
+
+const QUESTS = [
+  { id:'marathonien', name:'Marathonien',    target:100, reward:'500 💧 + 1 couronne', desc:'Atteindre km 100 dans une seule saison sans Doping.' },
+  { id:'funambule',   name:'Funambule',      target:50,  reward:'300 💧',              desc:'Sauter 50 haies parfaites dans la saison.' },
+  { id:'econome',     name:'Économe',        target:1,   reward:'200 💧 + 1 gemme',    desc:'Atteindre km 100 sans acheter un seul upgrade.' },
+  { id:'sprinter',    name:'Sprinter',       target:30,  reward:'400 💧',              desc:'30 sprints (tap × rythme) parfaits.' },
+  { id:'collector',   name:'Collectionneur', target:20,  reward:'1 gemme',             desc:'Débloquer 20 entrées du codex lore.' },
+];
+
+const TEAM_RUNNERS = [
+  { id:'sprinter',  name:'Sprinter',   emoji:'⚡', color:'#e62e2e', role:'TAP',   base:8,        factor:1.10, cycleTime:1.5,  managerCost:'500 💎',  unlock:'km 5',  desc:'Génère des gouttes par cycle court. Pour démarrer fort.' },
+  { id:'fondeur',   name:'Fondeur',    emoji:'🏃', color:'#4a9fd9', role:'CYCLE', base:24,       factor:1.13, cycleTime:3,    managerCost:'2k 💎',   unlock:'km 15', desc:'Cycle moyen. Régulier.' },
+  { id:'marcheur',  name:'Marcheur',   emoji:'🚶', color:'#6a8b5a', role:'BATCH', base:80,       factor:1.16, cycleTime:8,    managerCost:'10k 💎',  unlock:'km 30', desc:'Grand batch. Lent mais lourd.' },
+  { id:'cycliste',  name:'Cycliste',   emoji:'🚴', color:'#FFB030', role:'CYCLE', base:300,      factor:1.18, cycleTime:15,   managerCost:'50k 💎',  unlock:'km 50', desc:'Production constante.' },
+  { id:'champion',  name:'Champion',   emoji:'🏆', color:'#1a2b4d', role:'BATCH', base:2000,     factor:1.20, cycleTime:30,   managerCost:'200k 💎', unlock:'km 75', desc:'Endgame. Production massive.' },
+  { id:'legende',   name:'Légende',    emoji:'⭐', color:'#FFB030', role:'BATCH', base:2000000,  factor:1.25, cycleTime:120,  managerCost:'10M 💎',  unlock:'Saison 2', desc:'Post-game. Production exponentielle.' },
+];
+
+const LORE = [
+  { id:'l01', title:'Le Premier Souffle',     unlock:'km 1',    text:'Tu ne sais pas pourquoi tu cours. Mais tu cours. C\'est tout.' },
+  { id:'l02', title:'L\'Ouvrier Curieux',     unlock:'km 5',    text:'Un ouvrier lève la tête. "Encore un cinglé." Mais il sourit.' },
+  { id:'l03', title:'Première Rencontre',     unlock:'boss_nico', text:'Nico te dépasse. "Trop lent." Il a raison. Pour l\'instant.' },
+  { id:'l04', title:'Le Parc Municipal',      unlock:'km 15',   text:'Les joggers du dimanche s\'écartent. Tu cours différemment.' },
+  { id:'l05', title:'Le Stade Officiel',      unlock:'km 30',   text:'Les jurés notent ton style. "Brut, mais quelque chose là."' },
+  { id:'l06', title:'Marie Tempête',          unlock:'boss_marie', text:'Elle court avec le vent. Toi, contre.' },
+  { id:'l07', title:'L\'Avenue Commerciale',  unlock:'km 35',   text:'Première pancarte avec ton prénom. Tu ralentis 0.1s. Tu reprends.' },
+  { id:'l08', title:'Karim l\'Inarrêtable',   unlock:'boss_karim', text:'Il sourit en courant. C\'est terrifiant.' },
+  { id:'l09', title:'Le Stade Régional',      unlock:'km 70',   text:'Tribunes massives. Tu ne les entends pas. Tu cours.' },
+  { id:'l10', title:'Lucia Vent',             unlock:'boss_lucia', text:'Tu vois juste son dos. Et ça suffit pour comprendre.' },
+  { id:'l11', title:'Stade National',         unlock:'km 85',   text:'Des champions olympiques observent. L\'un d\'eux hoche la tête.' },
+  { id:'l12', title:'Le Tunnel',              unlock:'km 95',   text:'Silence. Tu n\'entends que ton souffle. C\'est le moment.' },
+  { id:'l13', title:'L\'Apothéose',           unlock:'km 100',  text:'Olympique. La foule explose. Tu ne ralentis pas. Tu accélères.' },
+  { id:'l14', title:'L\'Ascension',           unlock:'ascend1', text:'Tu pars. Personne ne t\'arrête. La Lune t\'attend.' },
+  { id:'l15', title:'La Gravité Disparue',    unlock:'km 105 lunar', text:'Tes sauts durent une éternité. Tu apprends à atterrir.' },
+  { id:'l16', title:'La Jungle Verte',        unlock:'km 200 jungle', text:'Lianes, brume, cris d\'oiseaux. Ta foulée change.' },
+  { id:'l17', title:'Le Désert Ardent',       unlock:'km 300 desert', text:'Le soleil pèse. Tu apprends à économiser le souffle.' },
+  { id:'l18', title:'La Banquise',            unlock:'km 400 arctic', text:'Tu glisses. Tu profites. Tu accélères.' },
+  { id:'l19', title:'L\'Apesanteur Galactique', unlock:'km 800 galaxy', text:'Les étoiles défilent. Plus de poids. Juste la course.' },
+  { id:'l20', title:'L\'Olympe Final',        unlock:'final',   text:'Tu n\'as plus rien à prouver. Tu cours pour le plaisir. Enfin.' },
+];
+
+const MUSIC = [
+  { biome:'urban',   name:'Stadium Energy',  bpm:120, desc:'Synth bright + kick punchy. Énergie sport pro.' },
+  { biome:'lunar',   name:'Cosmic Dream',    bpm:90,  desc:'Pads aériens, kick lent. Sensation d\'apesanteur.' },
+  { biome:'jungle',  name:'Tribal Rush',     bpm:140, desc:'Percus tribales, marimba, cris d\'oiseaux.' },
+  { biome:'desert',  name:'Sahara Heat',     bpm:100, desc:'Oud + nappe ocre. Chaleur lourde.' },
+  { biome:'arctic',  name:'Glacier Pulse',   bpm:110, desc:'Cloches glacées + bass profonde.' },
+  { biome:'ocean',   name:'Deep Current',    bpm:80,  desc:'Underwater filtered + pulse organique.' },
+  { biome:'volcano', name:'Lava Storm',      bpm:150, desc:'Distortion + bass drop. Urgence.' },
+  { biome:'forest',  name:'Mystic Trail',    bpm:105, desc:'Flûte + harpe + clochettes. Enchanté.' },
+  { biome:'galaxy',  name:'Stellar Drift',   bpm:115, desc:'Synthwave cosmique. Pad infini.' },
+  { biome:'olympe',  name:'Apotheose',       bpm:130, desc:'Cordes épiques + chorale. Final triomphe.' },
+];
+
+// ============================================================
+// === VOXEL RENDERER (réduit, depuis hero-lab.html) ===========
+// ============================================================
+let _voxP = null;
+function _voxRect(ctx, x, y, w, h, color){
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, w, h);
+}
+function _voxHair(ctx, p, hx, hy, hw, hh){
+  if(p.hairStyle === 'bald') return;
+  ctx.fillStyle = p.hair;
+  if(p.hairStyle === 'cap'){
+    ctx.fillRect(hx - 1, hy - 4, hw + 2, 6);
+    ctx.fillRect(hx + hw - 2, hy + 2, 6, 2);
+  } else if(p.hairStyle === 'long'){
+    ctx.fillRect(hx - 2, hy - 3, hw + 4, hh * 0.7);
+  } else {
+    ctx.fillRect(hx, hy - 3, hw, 5);
+  }
+}
+function _voxFace(ctx, p, hx, hy, hw, hh){
+  const eyeS = 2;
+  const eyeY = hy + hh * 0.5;
+  const eyeX1 = hx + hw * 0.2;
+  const eyeX2 = hx + hw * 0.8;
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fillRect(eyeX1 - eyeS, eyeY - eyeS, eyeS * 2, eyeS * 2);
+  ctx.fillRect(eyeX2 - eyeS, eyeY - eyeS, eyeS * 2, eyeS * 2);
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(eyeX1 - eyeS + 0.8, eyeY - eyeS + 0.4, 1, 1);
+  ctx.fillRect(eyeX2 - eyeS + 0.8, eyeY - eyeS + 0.4, 1, 1);
+}
+function _voxHeadExtra(ctx, extra, hx, hy, hw, hh){
+  if(!extra) return;
+  const cx = hx + hw/2;
+  if(extra === 'headband_gold'){
+    ctx.fillStyle = '#FFB030';
+    ctx.fillRect(hx, hy + hh * 0.30, hw, 3);
+    ctx.fillStyle = '#1a2b4d';
+    ctx.fillRect(hx, hy + hh * 0.30, hw, 0.7);
+    ctx.fillRect(hx, hy + hh * 0.30 + 2.3, hw, 0.7);
+  } else if(extra === 'astro_helmet'){
+    ctx.fillStyle = 'rgba(180,210,240,0.25)';
+    ctx.beginPath(); ctx.arc(cx, hy + hh*0.5, hw*0.7, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = 'rgba(200,220,255,0.85)'; ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.arc(cx, hy + hh*0.5, hw*0.7, 0, Math.PI*2); ctx.stroke();
+  } else if(extra === 'antennas_alien'){
+    ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(cx - hw*0.25, hy); ctx.lineTo(cx - hw*0.4, hy - hw*0.6); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + hw*0.25, hy); ctx.lineTo(cx + hw*0.4, hy - hw*0.6); ctx.stroke();
+    ctx.fillStyle = '#a0e070';
+    ctx.beginPath(); ctx.arc(cx - hw*0.4, hy - hw*0.6, 1.8, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx + hw*0.4, hy - hw*0.6, 1.8, 0, Math.PI*2); ctx.fill();
+  } else if(extra === 'turban'){
+    ctx.fillStyle = '#f8f4e8';
+    ctx.fillRect(hx - 1, hy - 4, hw + 2, 6);
+  } else if(extra === 'beanie'){
+    ctx.fillStyle = '#c83020';
+    ctx.fillRect(hx, hy - 4, hw, 5);
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(hx, hy, hw, 2);
+    ctx.beginPath(); ctx.arc(cx, hy - 4, 2, 0, Math.PI*2); ctx.fill();
+  } else if(extra === 'mask_diver'){
+    ctx.fillStyle = '#1a4060';
+    ctx.fillRect(hx, hy + hh*0.30, hw, hh*0.30);
+  } else if(extra === 'flame_hair'){
+    ctx.fillStyle = '#ff6020';
+    ctx.beginPath();
+    ctx.moveTo(hx, hy); ctx.lineTo(cx - hw*0.2, hy - hh*0.6); ctx.lineTo(cx, hy);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(cx, hy); ctx.lineTo(cx + hw*0.2, hy - hh*0.7); ctx.lineTo(hx + hw, hy);
+    ctx.fill();
+  } else if(extra === 'leaves'){
+    ctx.fillStyle = '#3a8030';
+    for(let i = 0; i < 5; i++){
+      const a = -Math.PI + (i / 4) * Math.PI;
+      const lx = cx + Math.cos(a) * hw * 0.55;
+      const ly = hy + hh * 0.10 + Math.sin(a) * hw * 0.25;
+      ctx.beginPath(); ctx.ellipse(lx, ly, 3, 1.5, a + Math.PI/2, 0, Math.PI*2); ctx.fill();
+    }
+  } else if(extra === 'laurel'){
+    ctx.fillStyle = '#7aa040';
+    for(let i = 0; i < 6; i++){
+      const a = -Math.PI + (i / 5) * Math.PI;
+      const lx = cx + Math.cos(a) * hw * 0.58;
+      const ly = hy + hh * 0.10 + Math.sin(a) * hw * 0.25;
+      ctx.beginPath(); ctx.ellipse(lx, ly, 3.4, 1.6, a + Math.PI/2, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.fillStyle = '#FFB030';
+    for(let i = 0; i < 3; i++){
+      const a = -Math.PI * 0.75 + (i / 2) * Math.PI * 0.5;
+      const lx = cx + Math.cos(a) * hw * 0.5;
+      const ly = hy + hh * 0.10 + Math.sin(a) * hw * 0.25;
+      ctx.beginPath(); ctx.arc(lx, ly, 1.4, 0, Math.PI*2); ctx.fill();
+    }
+  }
+}
+
+// Draw a single voxel runner in a canvas (static pose for preview cards)
+function drawVoxelPreview(canvas, params){
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+  const p = Object.assign({
+    jersey:'#e62e2e', short:'#1040c0', skin:'#f4c890', hair:'#1040c0',
+    accent:'#FFB030', hairStyle:'cap', headExtra:null,
+  }, params);
+  _voxP = p;
+  const sc = 1.3;
+  const groundY = H - 12;
+  const legH = 18 * sc;
+  const bodyH = 22 * sc;
+  const headH = 16 * sc;
+  const cx = W / 2;
+  const hipY = groundY - legH;
+
+  // Legs (static, slight A-pose)
+  ctx.save();
+  ctx.translate(cx, hipY);
+  ctx.save(); ctx.rotate(-0.1);
+  _voxRect(ctx, -3.5 * sc, 0, 6 * sc, legH, p.short);
+  ctx.restore();
+  ctx.save(); ctx.rotate(0.1);
+  _voxRect(ctx, -2.5 * sc, 0, 6 * sc, legH, p.short);
+  ctx.restore();
+  ctx.restore();
+
+  // Torso (trapeze)
+  const tw = 9 * sc;
+  const sw = 10 * sc;
+  ctx.beginPath();
+  ctx.moveTo(cx - tw, hipY);
+  ctx.lineTo(cx + tw, hipY);
+  ctx.lineTo(cx + sw, hipY - bodyH);
+  ctx.lineTo(cx - sw, hipY - bodyH);
+  ctx.closePath();
+  ctx.fillStyle = p.jersey;
+  ctx.fill();
+  // Jersey band
+  ctx.fillStyle = p.accent;
+  ctx.fillRect(cx - 1, hipY - bodyH, 2, bodyH);
+
+  // Arms
+  ctx.fillStyle = p.jersey;
+  ctx.fillRect(cx - sw - 2, hipY - bodyH * 0.9, 4 * sc, 8 * sc);
+  ctx.fillRect(cx + sw - 2, hipY - bodyH * 0.9, 4 * sc, 8 * sc);
+  ctx.fillStyle = p.skin;
+  ctx.fillRect(cx - sw - 1.5, hipY - bodyH * 0.9 + 8 * sc, 3.5 * sc, 6 * sc);
+  ctx.fillRect(cx + sw - 1.5, hipY - bodyH * 0.9 + 8 * sc, 3.5 * sc, 6 * sc);
+
+  // Head
+  const headW = 16 * sc;
+  const hx = cx - headW / 2;
+  const hy = hipY - bodyH - headH;
+  _voxRect(ctx, hx, hy, headW, headH, p.skin);
+  _voxHair(ctx, p, hx, hy, headW, headH);
+  _voxFace(ctx, p, hx, hy, headW, headH);
+  _voxHeadExtra(ctx, p.headExtra, hx, hy, headW, headH);
+}
+
+// ============================================================
+// === RENDER SECTIONS =========================================
+// ============================================================
+
+function renderSkins(){
+  const grid = document.getElementById('grid-skins');
+  grid.innerHTML = SKINS.map((s, i) => {
+    const isPrem = s.tag.includes('PREMIUM');
+    return `
+      <div class="card ${isPrem ? 'featured' : ''}" data-name="${s.name.toLowerCase()}">
+        <div class="card-preview">
+          <canvas id="skin-canvas-${i}" width="100" height="110"></canvas>
+        </div>
+        <div class="card-title">${s.name}<span class="card-tag">${s.tag}</span></div>
+        <div class="card-desc">${s.desc}</div>
+        <div class="color-swatches">
+          <div class="color-swatch" style="background:${s.jersey === 'gradient' ? 'linear-gradient(45deg,red,orange,yellow,green,blue,violet)' : s.jersey}" title="Maillot"></div>
+          <div class="color-swatch" style="background:${s.accent}" title="Accent"></div>
+          <div class="color-swatch" style="background:${s.hair}" title="Cheveux"></div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  // Draw canvases
+  SKINS.forEach((s, i) => {
+    const c = document.getElementById('skin-canvas-' + i);
+    if(c){
+      drawVoxelPreview(c, {
+        jersey: s.jersey === 'gradient' ? '#e0177e' : s.jersey,
+        accent: s.accent,
+        hair: s.hair,
+        hairStyle: 'cap',
+        headExtra: s.id === 'base' || s.id === 'gold' ? 'headband_gold' : null,
+      });
+    }
+  });
+}
+
+function renderBiomes(){
+  const grid = document.getElementById('grid-biomes');
+  grid.innerHTML = BIOMES.map(b => `
+    <div class="card">
+      <div class="biome-sky" style="background:linear-gradient(180deg,${b.sky[0]} 0%,${b.sky[1]} 100%)">
+        <div class="biome-track" style="background:${b.track}"></div>
+        <div class="biome-signature">${b.signature}</div>
+      </div>
+      <div class="card-title">${b.emoji} ${b.name}<span class="card-tag">SAISON ${b.saison}</span></div>
+      <div class="card-desc">${b.desc}</div>
+      <div class="card-meta">
+        <span class="chip gold">${b.mecanique}</span>
+      </div>
+      <div class="color-swatches">
+        <div class="color-swatch" style="background:${b.sky[0]}" title="Ciel haut"></div>
+        <div class="color-swatch" style="background:${b.sky[1]}" title="Ciel bas"></div>
+        <div class="color-swatch" style="background:${b.track}" title="Piste"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderNpcTiers(){
+  const grid = document.getElementById('grid-npc');
+  grid.innerHTML = NPC_TIERS.map((t, i) => `
+    <div class="card ${t.tier === 6 ? 'featured' : ''}">
+      <div class="card-preview">
+        <canvas id="npc-canvas-${i}" width="100" height="110"></canvas>
+      </div>
+      <div class="card-title">T${t.tier} ${t.label}<span class="card-tag">${t.tag}</span></div>
+      <div class="card-desc">${t.desc}</div>
+      <div class="card-meta">
+        <span class="chip navy">Vitesse ${t.baseSpeed}</span>
+        ${t.special === 'flag' ? '<span class="chip gold">🏅 + Drapeau</span>' : ''}
+      </div>
+      <div class="color-swatches">
+        ${t.jerseys.map(j => `<div class="color-swatch" style="background:${j}"></div>`).join('')}
+      </div>
+    </div>
+  `).join('');
+  NPC_TIERS.forEach((t, i) => {
+    const c = document.getElementById('npc-canvas-' + i);
+    if(c){
+      drawVoxelPreview(c, {
+        jersey: t.jerseys[0],
+        accent: '#fff',
+        hair: '#3a2410',
+        hairStyle: 'short',
+        skin: '#d0a880',
+        short: '#3a2818',
+      });
+    }
+  });
+}
+
+function renderBiomeNpc(){
+  const grid = document.getElementById('grid-biome-npc');
+  grid.innerHTML = BIOME_NPC_THEMES.map((t, i) => `
+    <div class="card">
+      <div class="card-preview">
+        <canvas id="bnpc-canvas-${i}" width="100" height="110"></canvas>
+      </div>
+      <div class="card-title">${t.icon} ${t.name}<span class="card-tag">${t.biome}</span></div>
+      <div class="card-desc"><strong>Accessoire :</strong> ${t.accessory}</div>
+      <div class="color-swatches">
+        <div class="color-swatch" style="background:${t.jersey}" title="Maillot"></div>
+        <div class="color-swatch" style="background:${t.short}" title="Short"></div>
+      </div>
+    </div>
+  `).join('');
+  const headExtraMap = {
+    lunar:'astro_helmet', jungle:'leaves', desert:'turban', arctic:'beanie',
+    ocean:'mask_diver', volcano:'flame_hair', forest:'leaves',
+    galaxy:'antennas_alien', olympe:'laurel'
+  };
+  BIOME_NPC_THEMES.forEach((t, i) => {
+    const c = document.getElementById('bnpc-canvas-' + i);
+    if(c){
+      drawVoxelPreview(c, {
+        jersey: t.jersey,
+        short: t.short,
+        accent: '#fff',
+        hair: '#3a2410',
+        skin: t.biome === 'galaxy' ? '#90d090' : (t.biome === 'volcano' ? '#e0a060' : '#d0a880'),
+        hairStyle: 'short',
+        headExtra: headExtraMap[t.biome],
+      });
+    }
+  });
+}
+
+function renderStadiums(){
+  const list = document.getElementById('timeline-stadiums');
+  list.innerHTML = STADIUMS.map(s => `
+    <div class="timeline-item">
+      <div class="timeline-km">KM ${s.km}</div>
+      <div class="timeline-name">${s.name}</div>
+      <div class="timeline-msg">${s.msg}</div>
+    </div>
+  `).join('');
+}
+
+function renderBosses(){
+  const grid = document.getElementById('grid-bosses');
+  grid.innerHTML = BOSSES.map((b, i) => `
+    <div class="card featured">
+      <div class="card-preview" style="background:linear-gradient(180deg,${b.color}33 0%,${b.color}66 100%)">
+        <canvas id="boss-canvas-${i}" width="100" height="110"></canvas>
+      </div>
+      <div class="card-title">${b.name}<span class="card-tag">KM ${b.km}</span></div>
+      <div class="card-desc">${b.desc}</div>
+      <div class="card-meta">
+        <span class="chip red">Vitesse ${b.speed}</span>
+        <span class="chip gold">×${b.rewardMul} reward</span>
+        <span class="chip navy">Surge ×${b.surgeBonus}</span>
+      </div>
+      <div class="card-desc" style="margin-top:8px;font-style:italic">&ldquo;${b.taunt}&rdquo;</div>
+    </div>
+  `).join('');
+  BOSSES.forEach((b, i) => {
+    const c = document.getElementById('boss-canvas-' + i);
+    if(c){
+      drawVoxelPreview(c, {
+        jersey: b.color,
+        accent: '#fff',
+        hair: '#1a1a1a',
+        hairStyle: 'cap',
+        skin: '#e8c890',
+        short: '#1a2b4d',
+        headExtra: b.km === 100 ? 'laurel' : null,
+      });
+    }
+  });
+}
+
+function renderRivals(){
+  const grid = document.getElementById('grid-rivals');
+  grid.innerHTML = RIVALS.map((r, i) => `
+    <div class="card">
+      <div class="card-preview" style="background:linear-gradient(180deg,${r.color}22 0%,${r.color}55 100%)">
+        <canvas id="rival-canvas-${i}" width="100" height="110"></canvas>
+      </div>
+      <div class="card-title">${r.name}<span class="card-tag">${r.firstKm < 50 ? 'TÔT' : 'TARD'}</span></div>
+      <div class="card-desc">${r.desc}</div>
+      <div class="card-meta">
+        <span class="chip navy">Dès km ${r.firstKm}</span>
+        <div class="color-swatch" style="background:${r.color};margin-left:auto"></div>
+      </div>
+    </div>
+  `).join('');
+  RIVALS.forEach((r, i) => {
+    const c = document.getElementById('rival-canvas-' + i);
+    if(c){
+      drawVoxelPreview(c, {
+        jersey: r.color,
+        accent: '#fff',
+        hair: '#3a2410',
+        hairStyle: 'short',
+        skin: '#d0a880',
+        short: '#1a2b4d',
+      });
+    }
+  });
+}
+
+function renderQuests(){
+  const grid = document.getElementById('grid-quests');
+  grid.innerHTML = QUESTS.map(q => `
+    <div class="card">
+      <div class="card-title">🎯 ${q.name}<span class="card-tag">Saison</span></div>
+      <div class="card-desc">${q.desc}</div>
+      <div class="card-meta">
+        <span class="chip navy">Cible : ${q.target}</span>
+        <span class="chip gold">${q.reward}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderTeam(){
+  const grid = document.getElementById('grid-team');
+  grid.innerHTML = TEAM_RUNNERS.map(r => `
+    <div class="card">
+      <div class="card-preview" style="background:linear-gradient(180deg,${r.color}22 0%,${r.color}55 100%);align-items:center">
+        <div style="font-size:64px">${r.emoji}</div>
+      </div>
+      <div class="card-title">${r.name}<span class="card-tag">${r.role}</span></div>
+      <div class="card-desc">${r.desc}</div>
+      <div class="card-meta">
+        <span class="chip navy">Base ${r.base}</span>
+        <span class="chip gold">Cycle ${r.cycleTime}s</span>
+        <span class="chip">×${r.factor}/niv</span>
+      </div>
+      <div class="card-desc" style="margin-top:6px;font-size:11px">
+        <strong>Débloque :</strong> ${r.unlock} · <strong>Manager :</strong> ${r.managerCost}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderLore(){
+  const list = document.getElementById('list-lore');
+  list.innerHTML = LORE.map(l => `
+    <div class="lore-entry">
+      <div class="lore-id">#${l.id}</div>
+      <div class="lore-title">${l.title}</div>
+      <div class="lore-unlock">🔓 Débloque à : ${l.unlock}</div>
+      <div class="lore-text">${l.text}</div>
+    </div>
+  `).join('');
+}
+
+function renderMusic(){
+  const grid = document.getElementById('grid-music');
+  grid.innerHTML = MUSIC.map(m => {
+    const biome = BIOMES.find(b => b.id === m.biome);
+    return `
+      <div class="card">
+        <div class="card-preview" style="background:linear-gradient(180deg,${biome.sky[0]} 0%,${biome.sky[1]} 100%);align-items:center">
+          <div style="font-size:48px">${biome.emoji}</div>
+        </div>
+        <div class="card-title">${m.name}<span class="card-tag">${m.bpm} BPM</span></div>
+        <div class="card-desc">${m.desc}</div>
+        <div class="card-meta">
+          <span class="chip navy">Biome ${biome.name}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// === NAV ====================================================
+// ============================================================
+
+const sections = document.querySelectorAll('.section');
+const navItems = document.querySelectorAll('.nav-item');
+
+navItems.forEach(item => {
+  item.addEventListener('click', () => {
+    const target = item.dataset.section;
+    navItems.forEach(n => n.classList.toggle('active', n === item));
+    sections.forEach(s => s.classList.toggle('active', s.dataset.section === target));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+});
+
+// Search box (skins only for now)
+document.querySelectorAll('.search-box').forEach(box => {
+  box.addEventListener('input', () => {
+    const q = box.value.toLowerCase().trim();
+    const grid = document.getElementById('grid-' + box.dataset.search);
+    if(!grid) return;
+    grid.querySelectorAll('.card').forEach(card => {
+      const name = (card.dataset.name || card.textContent).toLowerCase();
+      card.style.display = (q === '' || name.includes(q)) ? '' : 'none';
+    });
+  });
+});
+
+// ============================================================
+// === BOOT ===================================================
+// ============================================================
+renderSkins();
+renderBiomes();
+renderNpcTiers();
+renderBiomeNpc();
+renderStadiums();
+renderBosses();
+renderRivals();
+renderQuests();
+renderTeam();
+renderLore();
+renderMusic();
+</script>
+</body>
+</html>

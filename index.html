@@ -29022,6 +29022,20 @@ function _drawBirds(ctx, W, H, dt){
   }
   const npcs = [];
   const HERO_LANE_IDX = 2; // couloir du héros (le milieu) — interdit aux NPC
+  // === THÈMES PNJ PAR BIOME — chaque biome a sa propre palette + accessoire ===
+  // Override appliqué AU-DESSUS du tier pour garder la progression visuelle (T6 reste champion etc.)
+  const BIOME_NPC_THEMES = {
+    lunar:   { jersey:'#f0f4f8', short:'#a0a8b0', skin:'#f4d8b0', hair:'#404850', headExtra:'astro_helmet' }, // astronautes
+    jungle:  { jersey:'#2a8050', short:'#3a2818', skin:'#c89060', hair:'#3a2410', headExtra:'leaves'       }, // explorateurs
+    desert:  { jersey:'#f0d098', short:'#c8a060', skin:'#d4a070', hair:'#3a2410', headExtra:'turban'       }, // bédouins
+    arctic:  { jersey:'#4080d0', short:'#fff',    skin:'#f8e0c8', hair:'#3a2410', headExtra:'beanie'       }, // skieurs
+    ocean:   { jersey:'#0090b0', short:'#1a4060', skin:'#a8d0d8', hair:'#1a4060', headExtra:'mask_diver'   }, // plongeurs
+    volcano: { jersey:'#c83020', short:'#3a1810', skin:'#e0a060', hair:'#ff6020', headExtra:'flame_hair'   }, // créatures de lave
+    forest:  { jersey:'#4a7030', short:'#3a2818', skin:'#e8c890', hair:'#3a2410', headExtra:'leaves'       }, // druides
+    galaxy:  { jersey:'#7030a0', short:'#2a1850', skin:'#90d090', hair:'#3a1850', headExtra:'antennas_alien' }, // 👽 ALIENS
+    olympe:  { jersey:'#fff',    short:'#fff',    skin:'#e8c890', hair:'#f0e0a0', headExtra:'laurel'       }, // héros antiques
+  };
+
   function spawnNpc(opts){
     // opts.fromBehind = true → spawn DERRIÈRE le joueur, vitesse boostée (= il te double)
     // opts.forceTier = number → force ce tier (debug/test uniquement)
@@ -29076,6 +29090,21 @@ function _drawBirds(ctx, W, H, dt){
       bobPhase: 0,
       fromBehind: !!opts.fromBehind, // marque pour effet visuel (audio "swoosh" quand il passe)
     });
+    // === BIOME THEME OVERRIDE — applique palette + accessoire selon biome courant ===
+    // Boss et T6 Champion conservent leurs couleurs signature (drapeau, médaille)
+    const _curBiome = (typeof _lastBiomeName !== 'undefined' && _lastBiomeName) || null;
+    const _biomeTheme = _curBiome && BIOME_NPC_THEMES[_curBiome];
+    if(_biomeTheme && !_bossIdForSpawn && tierIdx < 6){
+      const _lastN = npcs[npcs.length - 1];
+      if(_lastN){
+        _lastN.jersey    = _biomeTheme.jersey;
+        _lastN.short     = _biomeTheme.short;
+        _lastN.skin      = _biomeTheme.skin;
+        _lastN.hair      = _biomeTheme.hair;
+        _lastN.headExtra = _biomeTheme.headExtra;
+        _lastN.biomeTheme = _curBiome;
+      }
+    }
     // Vague 21 : attribuer bossId au dernier npc spawned
     if(_bossIdForSpawn){
       const _lastNpc = npcs[npcs.length - 1];
@@ -30286,6 +30315,126 @@ function _drawBirds(ctx, W, H, dt){
     } else if(headExtra === 'bandana'){
       ctx.fillStyle = '#e85040';
       ctx.fillRect(headX - hr, headY - hr * 0.6, hr * 2, 4 * s);
+    } else if(headExtra === 'astro_helmet'){
+      // === CASQUE ASTRONAUTE (biome lunar) — dôme transparent + reflets ===
+      ctx.save();
+      ctx.fillStyle = 'rgba(180,210,240,0.20)';
+      ctx.beginPath(); ctx.arc(headX, headY - 0.1 * s, hr * 1.25, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = 'rgba(200,220,255,0.85)';
+      ctx.lineWidth = 1.6 * s;
+      ctx.beginPath(); ctx.arc(headX, headY - 0.1 * s, hr * 1.25, 0, Math.PI * 2); ctx.stroke();
+      // Reflet en haut à gauche
+      ctx.fillStyle = 'rgba(255,255,255,0.55)';
+      ctx.beginPath(); ctx.arc(headX - hr * 0.5, headY - hr * 0.5, hr * 0.28, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    } else if(headExtra === 'antennas_alien'){
+      // === ANTENNES ALIEN 👽 (biome galaxy) — deux tiges + boules vertes ===
+      ctx.strokeStyle = '#1a1a1a';
+      ctx.lineWidth = 1.2 * s;
+      ctx.beginPath();
+      ctx.moveTo(headX - hr * 0.45, headY - hr * 0.65);
+      ctx.lineTo(headX - hr * 0.7, headY - hr * 1.5);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(headX + hr * 0.45, headY - hr * 0.65);
+      ctx.lineTo(headX + hr * 0.7, headY - hr * 1.5);
+      ctx.stroke();
+      ctx.fillStyle = '#a0e070';
+      ctx.beginPath(); ctx.arc(headX - hr * 0.7, headY - hr * 1.5, 1.8 * s, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(headX + hr * 0.7, headY - hr * 1.5, 1.8 * s, 0, Math.PI * 2); ctx.fill();
+      // Petit highlight
+      ctx.fillStyle = '#d0ffa0';
+      ctx.beginPath(); ctx.arc(headX - hr * 0.75, headY - hr * 1.55, 0.7 * s, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(headX + hr * 0.65, headY - hr * 1.55, 0.7 * s, 0, Math.PI * 2); ctx.fill();
+    } else if(headExtra === 'turban'){
+      // === TURBAN (biome desert) — gros enroulement blanc/ocre ===
+      ctx.fillStyle = '#f8f4e8';
+      ctx.fillRect(headX - hr * 1.05, headY - hr * 1.1, hr * 2.1, hr * 0.8);
+      ctx.fillStyle = '#d4c098';
+      ctx.fillRect(headX - hr * 1.05, headY - hr * 0.55, hr * 2.1, 1.5 * s);
+      // Petite bosse au sommet
+      ctx.fillStyle = '#f0e8d0';
+      ctx.beginPath(); ctx.arc(headX, headY - hr * 1.15, hr * 0.5, 0, Math.PI * 2); ctx.fill();
+    } else if(headExtra === 'beanie'){
+      // === BONNET (biome arctic) — bonnet rouge + pompon blanc ===
+      ctx.fillStyle = '#c83020';
+      ctx.fillRect(headX - hr, headY - hr * 1.05, hr * 2, hr * 0.65);
+      // Bandeau blanc replié
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(headX - hr, headY - hr * 0.55, hr * 2, 2 * s);
+      // Pompon
+      ctx.beginPath(); ctx.arc(headX, headY - hr * 1.25, 2.2 * s, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff'; ctx.fill();
+    } else if(headExtra === 'mask_diver'){
+      // === MASQUE DE PLONGÉE (biome ocean) — bandeau bleu sur les yeux ===
+      ctx.fillStyle = '#1a4060';
+      ctx.fillRect(headX - hr * 0.9, headY - hr * 0.25, hr * 1.8, hr * 0.7);
+      ctx.fillStyle = 'rgba(180,220,240,0.55)';
+      ctx.fillRect(headX - hr * 0.8, headY - hr * 0.15, hr * 0.7, hr * 0.5);
+      ctx.fillRect(headX + hr * 0.1, headY - hr * 0.15, hr * 0.7, hr * 0.5);
+      // Tuba (petit tube qui dépasse)
+      ctx.fillStyle = '#ffd060';
+      ctx.fillRect(headX + hr * 0.6, headY - hr * 0.9, 1.5 * s, hr * 0.7);
+    } else if(headExtra === 'flame_hair'){
+      // === CHEVEUX EN FLAMMES (biome volcano) — 3 pointes orange/jaune ===
+      ctx.fillStyle = '#ff6020';
+      ctx.beginPath();
+      ctx.moveTo(headX - hr * 0.85, headY - hr * 0.45);
+      ctx.lineTo(headX - hr * 0.45, headY - hr * 1.4);
+      ctx.lineTo(headX - hr * 0.05, headY - hr * 0.45);
+      ctx.closePath(); ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(headX - hr * 0.2, headY - hr * 0.45);
+      ctx.lineTo(headX + hr * 0.15, headY - hr * 1.65);
+      ctx.lineTo(headX + hr * 0.6, headY - hr * 0.45);
+      ctx.closePath(); ctx.fill();
+      // Cœur jaune (chaud)
+      ctx.fillStyle = '#ffd060';
+      ctx.beginPath();
+      ctx.moveTo(headX - hr * 0.3, headY - hr * 0.45);
+      ctx.lineTo(headX + hr * 0.05, headY - hr * 1.3);
+      ctx.lineTo(headX + hr * 0.35, headY - hr * 0.45);
+      ctx.closePath(); ctx.fill();
+    } else if(headExtra === 'leaves'){
+      // === FEUILLES (biome jungle/forest) — 5 petites feuilles vertes en couronne ===
+      ctx.fillStyle = '#3a8030';
+      for(let i = 0; i < 5; i++){
+        const a = -Math.PI + (i / 4) * Math.PI;
+        const lx = headX + Math.cos(a) * hr * 0.95;
+        const ly = headY - hr * 0.4 + Math.sin(a) * hr * 0.35;
+        ctx.beginPath();
+        ctx.ellipse(lx, ly, 3 * s, 1.5 * s, a + Math.PI / 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      // Petite nervure plus claire
+      ctx.fillStyle = '#5aa850';
+      for(let i = 0; i < 5; i++){
+        const a = -Math.PI + (i / 4) * Math.PI;
+        const lx = headX + Math.cos(a) * hr * 0.95;
+        const ly = headY - hr * 0.4 + Math.sin(a) * hr * 0.35;
+        ctx.beginPath();
+        ctx.ellipse(lx, ly, 1.4 * s, 0.6 * s, a + Math.PI / 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else if(headExtra === 'laurel'){
+      // === COURONNE DE LAURIER (biome olympe) — feuilles vertes + accents dorés ===
+      ctx.fillStyle = '#7aa040';
+      for(let i = 0; i < 6; i++){
+        const a = -Math.PI + (i / 5) * Math.PI;
+        const lx = headX + Math.cos(a) * hr * 1.0;
+        const ly = headY - hr * 0.4 + Math.sin(a) * hr * 0.35;
+        ctx.beginPath();
+        ctx.ellipse(lx, ly, 3.6 * s, 1.6 * s, a + Math.PI / 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      // Accents dorés (3 petites perles)
+      ctx.fillStyle = '#FFB030';
+      for(let i = 0; i < 3; i++){
+        const a = -Math.PI * 0.75 + (i / 2) * Math.PI * 0.5;
+        const lx = headX + Math.cos(a) * hr * 0.9;
+        const ly = headY - hr * 0.4 + Math.sin(a) * hr * 0.35;
+        ctx.beginPath(); ctx.arc(lx, ly, 1.4 * s, 0, Math.PI * 2); ctx.fill();
+      }
     }
     // === BANDEAU équipé — bandeau coloré + petit pendentif au milieu si rare+ ===
     if(spec.equipped?.headband?.color){
@@ -38080,20 +38229,20 @@ function _drawBirds(ctx, W, H, dt){
     for(const slot of ['shoes','jersey','headband','watch','wristband']){
       _equippedHero[slot] = _equipWithColor(_rawEquip[slot]);
     }
-    // === SKIN DORÉ SIGNATURE : héros principal en doré chaud + navy (palette Foulée Sport Pro) ===
-    // Si l'utilisateur a un skin custom autre que 'base', on respecte son choix. Sinon doré signature.
+    // === HERO 8-BIT RETRO : palette Mario-style (rouge maillot, shorts bleus, accent doré signature) ===
+    // Si l'utilisateur a un skin custom autre que 'base', on respecte son choix. Sinon retro 8-bit.
     const _isCustomSkin = _selSkinId && _selSkinId !== 'base';
     const heroSpec = {
-      jersey: _isCustomSkin ? (_skin.jersey || '#FFB030') : '#FFB030', // doré chaud signature
-      skin: '#f0d4b0',
-      hair: _skin.hair || '#7a5838',
-      hairStyle:'dome', faceExpr:'focus', build:'normal',
+      jersey: _isCustomSkin ? (_skin.jersey || '#e62e2e') : '#e62e2e', // rouge retro 8-bit
+      skin: '#f0c890',                                                  // peau ocre simple
+      hair: _skin.hair || '#1a2b4d',                                    // cheveux navy
+      hairStyle:'dome', faceExpr:'smile', build:'small',                // chibi 8-bit
       tenue:'plain',
-      // Headband doré signature uniquement sur le skin de base (jeu propre, pas de double-équipement)
+      // Casquette dorée signature (headband_gold) : iconique brand Foulée
       headExtra: _isCustomSkin ? null : 'headband_gold',
       bibNum:1,
-      accent: _isCustomSkin ? (_skin.accent || '#1a2b4d') : '#1a2b4d', // accent navy (bande shorts contraste)
-      short: '#1a2b4d', // shorts navy foncé pour contraste avec maillot doré
+      accent: _isCustomSkin ? (_skin.accent || '#FFB030') : '#FFB030',  // accent doré (bande shorts)
+      short: '#1040c0',                                                  // shorts bleu retro
       skinSpecial: _skin.special || null,
       accessory: { bib: true },
       equipped: _equippedHero,

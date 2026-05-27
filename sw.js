@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v54 : bump pour livrer voxel splash (drawHeroIdle + drawPnjRunner également voxelisés)
-const CACHE = 'foulee-v54';
+// v56 : identités PNJ (noms, drapeaux, dossards visibles, personnalités)
+const CACHE = 'foulee-v56';
 const ASSETS = [
   './',
   './index.html',

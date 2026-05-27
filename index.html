@@ -29063,6 +29063,56 @@ function _drawBirds(ctx, W, H, dt){
   }
   const npcs = [];
   const HERO_LANE_IDX = 2; // couloir du héros (le milieu) — interdit aux NPC
+  // === V56 : POOL D'IDENTITÉS POUR LES PNJ ===
+  // Noms + nicknames + nationalités → chaque coureur autour devient un vrai personnage
+  const NPC_NAMES = [
+    // FR
+    { first:'Lucas',   last:'M.',    nick:'Le Sprinter', flag:'🇫🇷' },
+    { first:'Emma',    last:'V.',    nick:'La Flèche',   flag:'🇫🇷' },
+    { first:'Hugo',    last:'D.',    nick:'Endurance',   flag:'🇫🇷' },
+    { first:'Léa',     last:'P.',    nick:'Tempête',     flag:'🇫🇷' },
+    { first:'Théo',    last:'R.',    nick:'Le Bûcheron', flag:'🇫🇷' },
+    { first:'Chloé',   last:'B.',    nick:'Vif-Argent',  flag:'🇫🇷' },
+    { first:'Maxime',  last:'L.',    nick:'Bull-Dozer',  flag:'🇫🇷' },
+    { first:'Jules',   last:'T.',    nick:'Casquette',   flag:'🇫🇷' },
+    { first:'Manon',   last:'F.',    nick:'La Foulée',   flag:'🇫🇷' },
+    // International
+    { first:'Kenji',   last:'T.',    nick:'Le Samouraï', flag:'🇯🇵' },
+    { first:'Yuki',    last:'S.',    nick:'Neige',       flag:'🇯🇵' },
+    { first:'Diego',   last:'R.',    nick:'El Toro',     flag:'🇪🇸' },
+    { first:'Sofia',   last:'M.',    nick:'Bailadora',   flag:'🇪🇸' },
+    { first:'Luca',    last:'B.',    nick:'Il Fulmine',  flag:'🇮🇹' },
+    { first:'Giulia',  last:'V.',    nick:'La Vespa',    flag:'🇮🇹' },
+    { first:'Hans',    last:'K.',    nick:'Der Wolf',    flag:'🇩🇪' },
+    { first:'Greta',   last:'M.',    nick:'Eisig',       flag:'🇩🇪' },
+    { first:'Mike',    last:'J.',    nick:'Lightning',   flag:'🇺🇸' },
+    { first:'Sarah',   last:'K.',    nick:'Storm',       flag:'🇺🇸' },
+    { first:'Ravi',    last:'P.',    nick:'Tigre',       flag:'🇮🇳' },
+    { first:'Amira',   last:'B.',    nick:'Faucon',      flag:'🇲🇦' },
+    { first:'Olu',     last:'A.',    nick:'Cheetah',     flag:'🇰🇪' },
+    { first:'Mei',     last:'L.',    nick:'Dragon',      flag:'🇨🇳' },
+    { first:'Pablo',   last:'G.',    nick:'El Loco',     flag:'🇲🇽' },
+    { first:'Anya',    last:'P.',    nick:'Сила',        flag:'🇷🇺' },
+    // Surnoms cool sans prénom
+    { first:'Doc',     last:'',      nick:'Le Scientifique', flag:'🇫🇷' },
+    { first:'Pépé',    last:'',      nick:'Grand-Père',  flag:'🇫🇷' },
+    { first:'Bambi',   last:'',      nick:'Le Yougster', flag:'🇫🇷' },
+    { first:'Bizarro', last:'',      nick:'???',          flag:'🛸' },
+    { first:'Zephyr',  last:'',      nick:'Le Vent',      flag:'🌀' },
+  ];
+
+  // Personnalités : comportements spéciaux qui se déclenchent parfois
+  // (visuel uniquement pour l'instant — pourrait piloter aussi vitesse/anim)
+  const NPC_PERSONALITIES = [
+    { id:'sprinter',  label:'Le Sprinter',   color:'#e62e2e', quirk:'Boost rapide' },
+    { id:'steady',    label:'Le Régulier',   color:'#4a9fd9', quirk:'Constant' },
+    { id:'showoff',   label:'Le Frimeur',    color:'#FFB030', quirk:'Frime au passage' },
+    { id:'grumpy',    label:'Le Grognon',    color:'#6a5848', quirk:'Râle quand doublé' },
+    { id:'badass',    label:'Le Badass',     color:'#1a1a1a', quirk:'Indifférent' },
+    { id:'noob',      label:'Le Novice',     color:'#a8c890', quirk:'Trébuche parfois' },
+    { id:'pro',       label:'Le Pro',        color:'#1a2b4d', quirk:'Tempo parfait' },
+  ];
+
   // === THÈMES PNJ PAR BIOME — chaque biome a sa propre palette + accessoire ===
   // Override appliqué AU-DESSUS du tier pour garder la progression visuelle (T6 reste champion etc.)
   const BIOME_NPC_THEMES = {
@@ -29145,6 +29195,24 @@ function _drawBirds(ctx, W, H, dt){
         _lastN.headExtra = _biomeTheme.headExtra;
         _lastN.biomeTheme = _curBiome;
       }
+    }
+    // === V56 : IDENTITÉ COMPLÈTE — Nom + nickname + personnalité ===
+    // Chaque PNJ devient un personnage unique avec son identité visible
+    const _identNpc = npcs[npcs.length - 1];
+    if(_identNpc){
+      const _ident = NPC_NAMES[Math.floor(Math.random() * NPC_NAMES.length)];
+      _identNpc.firstName = _ident.first;
+      _identNpc.lastName  = _ident.last;
+      _identNpc.nickname  = _ident.nick;
+      _identNpc.flag      = _ident.flag;
+      // Personnalité — influencée par tier (les tiers élevés = pros/badass)
+      let persoCandidates;
+      if(tierIdx >= 5)      persoCandidates = ['pro','badass','sprinter'];
+      else if(tierIdx >= 3) persoCandidates = ['sprinter','steady','showoff','pro'];
+      else if(tierIdx >= 1) persoCandidates = ['steady','showoff','grumpy','noob'];
+      else                  persoCandidates = ['noob','grumpy','steady'];
+      const _perso = persoCandidates[Math.floor(Math.random() * persoCandidates.length)];
+      _identNpc.personality = _perso;
     }
     // Vague 21 : attribuer bossId au dernier npc spawned
     if(_bossIdForSpawn){
@@ -37914,6 +37982,52 @@ function _drawBirds(ctx, W, H, dt){
       const laneCenter = LANES_TOP + (npc.laneIdx + 0.5) * LANE_H;
       const y = laneCenter;
       drawRunner(x, y, scale, npc, npc.bobPhase);
+      // === V56 : ÉTIQUETTE D'IDENTITÉ FLOTTANTE ===
+      // Affiche prénom + drapeau + dossard au-dessus du PNJ — seulement si visible
+      // (pas trop loin du joueur pour rester lisible mobile)
+      if(npc.firstName && Math.abs(pixAhead) < 250 && laneFrac >= 0.5){
+        const labelY = y - 56 * scale;
+        const labelText = (npc.flag || '') + ' ' + npc.firstName + (npc.lastName ? ' ' + npc.lastName : '');
+        ctx.font = `900 ${Math.round(10 * scale)}px Nunito, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        // Mesure pour fond pill
+        const tw = ctx.measureText(labelText).width;
+        const padX = 4 * scale;
+        const padY = 2 * scale;
+        // Pill background
+        ctx.fillStyle = 'rgba(255,255,255,.92)';
+        const pillW = tw + padX * 2;
+        const pillH = 12 * scale + padY;
+        ctx.beginPath();
+        const rx = x - pillW / 2;
+        const ry = labelY - pillH / 2;
+        const radius = 6 * scale;
+        ctx.moveTo(rx + radius, ry);
+        ctx.lineTo(rx + pillW - radius, ry);
+        ctx.quadraticCurveTo(rx + pillW, ry, rx + pillW, ry + radius);
+        ctx.lineTo(rx + pillW, ry + pillH - radius);
+        ctx.quadraticCurveTo(rx + pillW, ry + pillH, rx + pillW - radius, ry + pillH);
+        ctx.lineTo(rx + radius, ry + pillH);
+        ctx.quadraticCurveTo(rx, ry + pillH, rx, ry + pillH - radius);
+        ctx.lineTo(rx, ry + radius);
+        ctx.quadraticCurveTo(rx, ry, rx + radius, ry);
+        ctx.closePath();
+        ctx.fill();
+        // Dossard à gauche (couleur tier)
+        if(npc.bibNum){
+          const bibW = 14 * scale;
+          ctx.fillStyle = npc.jersey || '#1a2b4d';
+          ctx.fillRect(rx - bibW + 2, ry, bibW, pillH);
+          ctx.fillStyle = '#fff';
+          ctx.font = `900 ${Math.round(9 * scale)}px Nunito, sans-serif`;
+          ctx.fillText(npc.bibNum, rx - bibW / 2 + 2, ry + pillH / 2);
+        }
+        // Texte nom (sombre sur fond clair)
+        ctx.font = `900 ${Math.round(10 * scale)}px Nunito, sans-serif`;
+        ctx.fillStyle = '#1f1f24';
+        ctx.fillText(labelText, x, labelY);
+      }
     }
 
     // ═══ HAIES À SAUTER (style Idle Slayer) ═══

@@ -1154,14 +1154,186 @@ function renderLore(){
   `).join('');
 }
 
+// ============================================================
+// === PROCBGM MINI : générateur audio WebAudio par biome ======
+// ============================================================
+// Chaque biome a sa "recette" musicale (gamme, instrument lead, drums, mood).
+// Click Play sur une carte → loop infini jusqu'à click stop (ou autre piste).
+let _audioCtx = null;
+let _currentPlayer = null; // { id, stop() }
+
+function _getAudioCtx(){
+  if(!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if(_audioCtx.state === 'suspended') _audioCtx.resume();
+  return _audioCtx;
+}
+
+// Recettes par biome — chaque ligne : [notes bass, notes lead, drum pattern]
+// Notes en MIDI (60 = C4)
+const BGM_RECIPES = {
+  urban:   { bass:[36,36,38,36], lead:[60,64,67,72,67,64,67,60], drum:'kick4',  bass_w:'square',  lead_w:'square', bpm:120, mood:'energetic' },
+  lunar:   { bass:[33,33,33,35], lead:[60,67,72,76,72,67,72,60], drum:'soft',   bass_w:'sine',    lead_w:'sine',   bpm:90,  mood:'dreamy' },
+  jungle:  { bass:[38,38,41,43], lead:[62,65,69,72,69,65,69,62], drum:'tribal', bass_w:'sawtooth',lead_w:'triangle',bpm:140, mood:'urgent' },
+  desert:  { bass:[34,34,36,39], lead:[58,61,65,68,65,61,65,58], drum:'kick4',  bass_w:'sawtooth',lead_w:'sawtooth',bpm:100, mood:'lourd' },
+  arctic:  { bass:[37,37,40,42], lead:[61,64,68,73,68,64,68,61], drum:'tick',   bass_w:'sine',    lead_w:'sine',   bpm:110, mood:'crystallin' },
+  ocean:   { bass:[30,30,33,35], lead:[54,57,61,66,61,57,61,54], drum:'soft',   bass_w:'sine',    lead_w:'sine',   bpm:80,  mood:'profond' },
+  volcano: { bass:[35,35,35,38], lead:[59,62,65,70,65,62,65,59], drum:'tribal', bass_w:'sawtooth',lead_w:'square', bpm:150, mood:'urgence' },
+  forest:  { bass:[36,36,40,43], lead:[60,64,67,72,67,64,67,60], drum:'soft',   bass_w:'triangle',lead_w:'sine',   bpm:105, mood:'mystique' },
+  galaxy:  { bass:[34,34,36,39], lead:[58,62,65,70,65,62,65,58], drum:'tick',   bass_w:'sawtooth',lead_w:'triangle',bpm:115, mood:'cosmique' },
+  olympe:  { bass:[36,36,41,43], lead:[60,64,67,72,76,72,67,60], drum:'kick4',  bass_w:'sawtooth',lead_w:'square', bpm:130, mood:'triomphal' },
+};
+
+function _midiToFreq(midi){ return 440 * Math.pow(2, (midi - 69) / 12); }
+
+// Joue une note : oscillateur + envelope ADSR simple
+function _playNote(ctx, time, freq, dur, type, vol, lp){
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.type = type;
+  o.frequency.setValueAtTime(freq, time);
+  // Envelope
+  g.gain.setValueAtTime(0, time);
+  g.gain.linearRampToValueAtTime(vol, time + 0.01);
+  g.gain.linearRampToValueAtTime(vol * 0.6, time + dur * 0.4);
+  g.gain.linearRampToValueAtTime(0, time + dur);
+  // Filter ?
+  if(lp){
+    const f = ctx.createBiquadFilter();
+    f.type = 'lowpass';
+    f.frequency.value = lp;
+    o.connect(f); f.connect(g);
+  } else {
+    o.connect(g);
+  }
+  g.connect(ctx.destination);
+  o.start(time);
+  o.stop(time + dur + 0.1);
+}
+
+// Joue un kick (drum graveux)
+function _playKick(ctx, time, vol){
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.type = 'sine';
+  o.frequency.setValueAtTime(80, time);
+  o.frequency.exponentialRampToValueAtTime(30, time + 0.1);
+  g.gain.setValueAtTime(vol, time);
+  g.gain.exponentialRampToValueAtTime(0.001, time + 0.18);
+  o.connect(g); g.connect(ctx.destination);
+  o.start(time);
+  o.stop(time + 0.2);
+}
+// Tick aigu (high hat)
+function _playTick(ctx, time, vol){
+  const bufferSize = ctx.sampleRate * 0.04;
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for(let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
+  const source = ctx.createBufferSource();
+  source.buffer = buffer;
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'highpass';
+  filter.frequency.value = 6000;
+  const g = ctx.createGain();
+  g.gain.value = vol;
+  source.connect(filter); filter.connect(g); g.connect(ctx.destination);
+  source.start(time);
+}
+// Tribal (low tom)
+function _playTom(ctx, time, vol){
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.type = 'sine';
+  o.frequency.setValueAtTime(140, time);
+  o.frequency.exponentialRampToValueAtTime(60, time + 0.15);
+  g.gain.setValueAtTime(vol, time);
+  g.gain.exponentialRampToValueAtTime(0.001, time + 0.25);
+  o.connect(g); g.connect(ctx.destination);
+  o.start(time);
+  o.stop(time + 0.3);
+}
+
+function _playDrum(ctx, time, drumType, beat, vol){
+  if(drumType === 'kick4'){
+    if(beat % 2 === 0) _playKick(ctx, time, vol);
+  } else if(drumType === 'tribal'){
+    if(beat % 4 === 0) _playKick(ctx, time, vol * 1.1);
+    else _playTom(ctx, time, vol * 0.6);
+  } else if(drumType === 'tick'){
+    _playTick(ctx, time, vol * 0.4);
+  } else if(drumType === 'soft'){
+    if(beat % 4 === 0) _playKick(ctx, time, vol * 0.5);
+  }
+}
+
+function playBiomeBGM(biomeId){
+  // Stop current if any
+  if(_currentPlayer){
+    _currentPlayer.stop();
+    const oldId = _currentPlayer.id;
+    _currentPlayer = null;
+    if(oldId === biomeId) return null; // toggle off
+  }
+  const recipe = BGM_RECIPES[biomeId];
+  if(!recipe) return null;
+  const ctx = _getAudioCtx();
+  const beatDur = 60 / recipe.bpm / 2; // 8th notes
+  const loopLen = recipe.lead.length * beatDur;
+  let scheduled = 0;
+  let stopped = false;
+
+  function scheduleLoop(){
+    if(stopped) return;
+    const now = ctx.currentTime;
+    const startTime = Math.max(now, scheduled);
+    // Schedule next 2 loops worth
+    for(let loop = 0; loop < 2; loop++){
+      const t0 = startTime + loop * loopLen;
+      // Bass on each quarter (every 2 beats)
+      for(let i = 0; i < recipe.bass.length; i++){
+        const t = t0 + i * (loopLen / recipe.bass.length);
+        _playNote(ctx, t, _midiToFreq(recipe.bass[i]), beatDur * 1.8, recipe.bass_w, 0.18, 600);
+      }
+      // Lead melody
+      for(let i = 0; i < recipe.lead.length; i++){
+        const t = t0 + i * beatDur;
+        _playNote(ctx, t, _midiToFreq(recipe.lead[i]), beatDur * 0.9, recipe.lead_w, 0.10, 2400);
+      }
+      // Drums on each 8th
+      for(let i = 0; i < recipe.lead.length; i++){
+        const t = t0 + i * beatDur;
+        _playDrum(ctx, t, recipe.drum, i, 0.4);
+      }
+    }
+    scheduled = startTime + loopLen * 2;
+    // Re-schedule ahead of time
+    setTimeout(scheduleLoop, loopLen * 1000);
+  }
+  scheduleLoop();
+
+  return {
+    id: biomeId,
+    stop(){ stopped = true; }
+  };
+}
+
 function renderMusic(){
   const grid = document.getElementById('grid-music');
   grid.innerHTML = MUSIC.map(m => {
     const biome = BIOMES.find(b => b.id === m.biome);
     return `
-      <div class="card">
-        <div class="card-preview" style="background:linear-gradient(180deg,${biome.sky[0]} 0%,${biome.sky[1]} 100%);align-items:center">
+      <div class="card" data-bgm="${m.biome}">
+        <div class="card-preview" style="background:linear-gradient(180deg,${biome.sky[0]} 0%,${biome.sky[1]} 100%);align-items:center;position:relative">
           <div style="font-size:48px">${biome.emoji}</div>
+          <button class="music-play-btn" data-bgm-btn="${m.biome}" style="
+            position:absolute;bottom:8px;right:8px;
+            width:38px;height:38px;border-radius:50%;
+            background:var(--brand-gold);color:var(--brand-navy);
+            border:none;font-size:18px;font-weight:900;cursor:pointer;
+            box-shadow:0 3px 10px rgba(0,0,0,.20);
+            display:flex;align-items:center;justify-content:center;
+            transition:transform .15s, background .15s;
+          ">▶</button>
         </div>
         <div class="card-title">${m.name}<span class="card-tag">${m.bpm} BPM</span></div>
         <div class="card-desc">${m.desc}</div>
@@ -1171,6 +1343,25 @@ function renderMusic(){
       </div>
     `;
   }).join('');
+
+  // Wire play buttons
+  document.querySelectorAll('.music-play-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = btn.dataset.bgmBtn;
+      const wasPlaying = _currentPlayer && _currentPlayer.id === id;
+      // Reset all buttons
+      document.querySelectorAll('.music-play-btn').forEach(b => {
+        b.textContent = '▶';
+        b.style.background = 'var(--brand-gold)';
+      });
+      _currentPlayer = playBiomeBGM(id);
+      if(_currentPlayer && !wasPlaying){
+        btn.textContent = '■';
+        btn.style.background = 'var(--brand-red)';
+      }
+    });
+  });
 }
 
 // ============================================================

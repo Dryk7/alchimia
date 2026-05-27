@@ -8679,25 +8679,41 @@ body{
   animation:mascotRun 0.55s ease-in-out infinite;
   transform-origin:50% 60%;
 }
-/* Intro : mascotte positionnée en HAUT-DROITE (signature flottante visible) */
+/* Intro : mascotte positionnée en HAUT-DROITE (signature flottante visible)
+   v2 : agrandie + halo doré circulaire pour mieux distinguer la silhouette
+   sur fond bleu/montagnes du splash. */
 #intro > .intro-mascot{
   position:absolute !important;
-  right:24px !important;
-  top:24px !important;
+  right:20px !important;
+  top:20px !important;
   bottom:auto !important;
   left:auto !important;
   z-index:200 !important;
   pointer-events:none;
   animation:fadeIn .9s ease-out .2s both;
-  width:auto; height:auto;
+  /* Fond circulaire doré subtil pour faire ressortir la silhouette */
+  width:108px; height:108px;
+  display:flex; align-items:center; justify-content:center;
+  background:radial-gradient(circle, rgba(255,176,48,.22) 0%, rgba(255,176,48,.10) 55%, rgba(255,176,48,0) 78%);
+  border-radius:50%;
+}
+#intro > .intro-mascot::before{
+  /* Anneau doré subtil pour cadrer la mascotte */
+  content:"";
+  position:absolute; inset:6px;
+  border-radius:50%;
+  border:1.5px solid rgba(255,212,80,.42);
+  box-shadow:inset 0 0 12px rgba(255,176,48,.18);
+  pointer-events:none;
 }
 #intro > .intro-mascot svg{
-  width:84px !important; height:84px !important;
-  filter:drop-shadow(0 4px 14px rgba(0,0,0,.45));
+  width:96px !important; height:96px !important;
+  filter:drop-shadow(0 4px 14px rgba(0,0,0,.55));
+  position:relative; z-index:2;
 }
 @media (max-width: 480px){
-  #intro > .intro-mascot{ right:14px !important; top:14px !important; }
-  #intro > .intro-mascot svg{ width:64px !important; height:64px !important; }
+  #intro > .intro-mascot{ right:12px !important; top:12px !important; width:88px; height:88px; }
+  #intro > .intro-mascot svg{ width:76px !important; height:76px !important; }
 }
 /* Records modal : mascotte hero centrée au-dessus du titre */
 #records-modal .records-hero{
@@ -10745,11 +10761,12 @@ if(document.readyState === 'loading'){
     const bob = Math.floor(Math.sin(t * 0.04) * 1.5);
     const bodyY = y - bob;
     // === PIXEL ART : pure fillRect, palette sport DA cohérente avec in-game ===
+    // v2 : maillot DORÉ (#FFB030 brand-gold) sur short NAVY, identité FOULÉE
     const SKIN = '#f0c890';
     const HAIR = '#3a2418';
-    const JERSEY = '#c84030';
-    const ACCENT = '#ffd060';
-    const SHORT = '#fff';
+    const JERSEY = '#FFB030';        // doré brand (au lieu de rouge #c84030)
+    const ACCENT = '#1a2b4d';        // navy en accent contraste sur top maillot
+    const SHORT = '#1a2b4d';         // navy au lieu de blanc (skin doré complet)
     const SHOE = '#1f3548';
     // Ombre sous le coureur (rectangle aplati)
     ctx.fillStyle = 'rgba(0,0,0,.30)';
@@ -10771,16 +10788,16 @@ if(document.readyState === 'loading'){
     // Cou
     ctx.fillStyle = SKIN;
     ctx.fillRect(Math.floor(x - 3*s), Math.floor(bodyY - 24*s), Math.floor(6*s), Math.floor(2*s));
-    // Maillot rouge marathon (rectangle pixel)
+    // Maillot doré FOULÉE (rectangle pixel)
     ctx.fillStyle = JERSEY;
     ctx.fillRect(Math.floor(x - 11*s), Math.floor(bodyY - 22*s), Math.floor(22*s), Math.floor(16*s));
-    // Bandeau accent or sur top maillot
+    // Bandeau accent navy sur top maillot (contraste brand-navy sur brand-gold)
     ctx.fillStyle = ACCENT;
     ctx.fillRect(Math.floor(x - 11*s), Math.floor(bodyY - 22*s), Math.floor(22*s), Math.floor(3*s));
-    // Dossard blanc avec "F" rouge
+    // Dossard blanc avec "F" navy (contraste fort sur fond blanc, cohérent brand-navy)
     ctx.fillStyle = '#fff';
     ctx.fillRect(Math.floor(x - 4*s), Math.floor(bodyY - 16*s), Math.floor(8*s), Math.floor(8*s));
-    ctx.fillStyle = JERSEY;
+    ctx.fillStyle = '#1a2b4d';
     ctx.font = `900 ${Math.floor(8*s)}px Nunito, sans-serif`;
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText('F', x, Math.floor(bodyY - 12*s));
@@ -10788,10 +10805,10 @@ if(document.readyState === 'loading'){
     ctx.fillStyle = SKIN;
     ctx.fillRect(Math.floor(x - 14*s), Math.floor(bodyY - 18*s), Math.floor(3*s), Math.floor(12*s));
     ctx.fillRect(Math.floor(x + 11*s), Math.floor(bodyY - 18*s), Math.floor(3*s), Math.floor(12*s));
-    // Short blanc
+    // Short navy
     ctx.fillStyle = SHORT;
     ctx.fillRect(Math.floor(x - 10*s), Math.floor(bodyY - 6*s), Math.floor(20*s), Math.floor(8*s));
-    // Bande latérale rouge sur short
+    // Bande latérale dorée sur short (cohérence brand)
     ctx.fillStyle = JERSEY;
     ctx.fillRect(Math.floor(x - 10*s), Math.floor(bodyY - 6*s), Math.floor(2*s), Math.floor(8*s));
     ctx.fillRect(Math.floor(x + 8*s), Math.floor(bodyY - 6*s), Math.floor(2*s), Math.floor(8*s));
@@ -14395,12 +14412,34 @@ function _renderWeatherHud(type){
     }
   } catch(e){}
 }
+// FIX BUG A : biomes sans atmosphère terrestre → pas de météo (pluie/brouillard/etc.)
+// L'overlay canvas est déjà fixé pour les exclure ; on aligne le HUD top + STATE.
+const NO_WEATHER_BIOMES = new Set(['lunar','ocean','volcano','galaxy','olympe']);
+function _currentBiomeForWeather(){
+  try {
+    if(typeof currentStage === 'function'){
+      const s = currentStage();
+      if(s && s.biome) return s.biome;
+    }
+  } catch(e){}
+  return null;
+}
 function updateWeather(){
   const km = STATE.lapsRun || 0;
   if(!STATE.weather){
     STATE.weather = { type:'clear', startedAtKm:0, endsAtKm:3 };
     _renderWeatherHud('clear');
     _syncWeatherToCanvas('clear');
+  }
+  // FIX BUG A : si biome sans atmosphère, on force 'clear' et on saute le tirage.
+  const _bi = _currentBiomeForWeather();
+  if(_bi && NO_WEATHER_BIOMES.has(_bi)){
+    if(STATE.weather.type !== 'clear'){
+      STATE.weather = { type:'clear', startedAtKm: km, endsAtKm: km + 3 };
+    }
+    _renderWeatherHud('clear');
+    _syncWeatherToCanvas('clear');
+    return;
   }
   if(km >= STATE.weather.endsAtKm){
     const seed = _weatherSeed(km);
@@ -14461,7 +14500,14 @@ window.forceWeather = forceWeather;
 // FIX QA : Re-sync HUD+canvas au chargement si STATE.weather a été restauré depuis save
 try {
   if(STATE && STATE.weather && STATE.weather.type){
-    _renderWeatherHud(STATE.weather.type);
+    // FIX BUG A : si on charge dans un biome sans atmosphère avec une météo stale (ex. rain), on force clear.
+    let _initType = STATE.weather.type;
+    const _initBi = _currentBiomeForWeather();
+    if(_initBi && NO_WEATHER_BIOMES.has(_initBi)){
+      STATE.weather.type = 'clear';
+      _initType = 'clear';
+    }
+    _renderWeatherHud(_initType);
     // Le canvas n'existe pas encore au moment du load STATE, on retry quelques ms après
     setTimeout(() => _syncWeatherToCanvas(STATE.weather && STATE.weather.type || 'clear'), 250);
     setTimeout(() => _syncWeatherToCanvas(STATE.weather && STATE.weather.type || 'clear'), 1500);
@@ -21466,7 +21512,7 @@ function renderBossModal(){
     return;
   }
   // Race screen — header + canvas + TAP button
-  modal.innerHTML='<div style="width:100%;max-width:420px;color:#fff;position:relative"><div style="text-align:center;margin-bottom:8px"><div style="color:#ffaa60;font-size:11px;letter-spacing:2px;margin-bottom:2px">DUEL — 100 MÈTRES — KM '+s.km+'</div><div style="font-size:26px;font-weight:900;color:'+def.color+';text-shadow:0 0 20px '+def.color+'66">'+def.name+'</div><div style="color:#fff;opacity:.65;font-size:11px;font-style:italic;margin-bottom:8px">« '+def.taunt+' »</div></div><div style="position:relative;background:#0a0a14;border-radius:12px;overflow:hidden;box-shadow:inset 0 0 30px rgba(0,0,0,.5);margin-bottom:14px"><canvas id="boss-race-canvas" width="400" height="220" style="width:100%;height:auto;display:block"></canvas><div id="boss-countdown" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:64px;font-weight:900;color:#ffd060;text-shadow:0 0 30px rgba(255,210,60,.8);pointer-events:none"></div><div id="boss-deadheat" style="position:absolute;top:6px;left:50%;transform:translateX(-50%);font-size:18px;font-weight:900;color:#ff4040;text-shadow:0 0 12px rgba(255,40,40,.9);letter-spacing:3px;pointer-events:none;display:none;animation:deadHeatBlink .3s ease-in-out infinite alternate">DEAD HEAT</div><div id="boss-photofinish" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:900;color:#fff;text-shadow:0 0 24px rgba(255,255,255,.9),0 0 40px rgba(255,210,60,.8);letter-spacing:4px;pointer-events:none;display:none">PHOTO FINISH !</div></div><div style="display:flex;gap:8px;margin-bottom:14px"><div style="flex:1;background:rgba(80,140,255,.15);border:1px solid rgba(80,140,255,.4);border-radius:10px;padding:8px;font-size:11px"><div style="color:#80a0ff;font-weight:700;letter-spacing:1px">TOI</div><div id="boss-player-meters" style="color:#fff;font-size:18px;font-weight:800">0m</div></div><div style="flex:1;background:rgba('+parseInt(def.color.slice(1,3),16)+','+parseInt(def.color.slice(3,5),16)+','+parseInt(def.color.slice(5,7),16)+',.15);border:1px solid '+def.color+'55;border-radius:10px;padding:8px;font-size:11px;text-align:right"><div style="color:'+def.color+';font-weight:700;letter-spacing:1px">'+def.name.toUpperCase()+'</div><div id="boss-boss-meters" style="color:#fff;font-size:18px;font-weight:800">0m</div></div></div><button id="boss-tap-btn" style="display:block;width:100%;height:96px;border-radius:14px;border:none;background:linear-gradient(135deg,#80a0ff,#4060c0);color:#fff;font-size:24px;font-weight:900;letter-spacing:3px;cursor:pointer;box-shadow:0 6px 20px rgba(80,140,255,.4),inset 0 -4px 0 rgba(0,0,0,.2);user-select:none;-webkit-user-select:none;touch-action:manipulation">TAP POUR COURIR</button><div id="boss-intro-overlay" style="position:absolute;inset:-20px;background:radial-gradient(ellipse at center,rgba(20,5,10,.7),rgba(0,0,0,.95));display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;border-radius:18px;overflow:hidden"><div id="boss-intro-vs" style="font-size:14px;font-weight:700;color:#ffaa60;letter-spacing:8px;opacity:0;transform:translateY(-20px);transition:all .5s ease-out;margin-bottom:8px">— DUEL KM '+s.km+' —</div><div id="boss-intro-name" style="font-size:72px;font-weight:900;color:'+def.color+';text-shadow:0 0 40px '+def.color+',0 0 80px '+def.color+'88;letter-spacing:4px;opacity:0;transform:scale(2);transition:all .9s cubic-bezier(.2,.8,.2,1);text-align:center;line-height:1">'+def.name.toUpperCase()+'</div><div id="boss-intro-tag" style="margin-top:14px;font-size:20px;font-weight:800;color:#fff;letter-spacing:3px;opacity:0;transform:translateY(40px);transition:all .6s ease-out;text-shadow:0 2px 12px rgba(0,0,0,.9)">AFFRONTE '+def.name.toUpperCase()+'</div></div><style>@keyframes deadHeatBlink{from{opacity:.4;transform:translateX(-50%) scale(1)}to{opacity:1;transform:translateX(-50%) scale(1.1)}}</style></div>';
+  modal.innerHTML='<div style="width:100%;max-width:420px;color:#fff;position:relative"><div style="text-align:center;margin-bottom:8px"><div style="color:#ffaa60;font-size:11px;letter-spacing:2px;margin-bottom:2px">DUEL — 100 MÈTRES — KM '+s.km+'</div><div style="font-size:26px;font-weight:900;color:'+def.color+';text-shadow:0 0 20px '+def.color+'66">'+def.name+'</div><div style="color:#fff;opacity:.65;font-size:11px;font-style:italic;margin-bottom:8px">« '+def.taunt+' »</div></div><div style="position:relative;background:#0a0a14;border-radius:12px;overflow:hidden;box-shadow:inset 0 0 30px rgba(0,0,0,.5);margin-bottom:14px"><canvas id="boss-race-canvas" width="400" height="220" style="width:100%;height:auto;display:block"></canvas><div id="boss-countdown" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:64px;font-weight:900;color:#ffd060;text-shadow:0 0 30px rgba(255,210,60,.8);pointer-events:none"></div><div id="boss-deadheat" style="position:absolute;top:6px;left:50%;transform:translateX(-50%);font-size:18px;font-weight:900;color:#ff4040;text-shadow:0 0 12px rgba(255,40,40,.9);letter-spacing:3px;pointer-events:none;display:none;animation:deadHeatBlink .3s ease-in-out infinite alternate">DEAD HEAT</div><div id="boss-photofinish" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:900;color:#fff;text-shadow:0 0 24px rgba(255,255,255,.9),0 0 40px rgba(255,210,60,.8);letter-spacing:4px;pointer-events:none;display:none">PHOTO FINISH !</div></div><div style="display:flex;gap:8px;margin-bottom:14px"><div style="flex:1;background:rgba(80,140,255,.15);border:1px solid rgba(80,140,255,.4);border-radius:10px;padding:8px;font-size:11px"><div style="color:#80a0ff;font-weight:700;letter-spacing:1px">TOI</div><div id="boss-player-meters" style="color:#fff;font-size:18px;font-weight:800">0m</div></div><div style="flex:1;background:rgba('+parseInt(def.color.slice(1,3),16)+','+parseInt(def.color.slice(3,5),16)+','+parseInt(def.color.slice(5,7),16)+',.15);border:1px solid '+def.color+'55;border-radius:10px;padding:8px;font-size:11px;text-align:right"><div style="color:'+def.color+';font-weight:700;letter-spacing:1px">'+def.name.toUpperCase()+'</div><div id="boss-boss-meters" style="color:#fff;font-size:18px;font-weight:800">0m</div></div></div><button id="boss-tap-btn" style="display:block;width:100%;height:96px;border-radius:14px;border:none;background:linear-gradient(135deg,#80a0ff,#4060c0);color:#fff;font-size:24px;font-weight:900;letter-spacing:3px;cursor:pointer;box-shadow:0 4px 12px rgba(80,140,255,.35),inset 0 -4px 0 rgba(0,0,0,.2);user-select:none;-webkit-user-select:none;touch-action:manipulation">TAP POUR COURIR</button><div id="boss-intro-overlay" style="position:absolute;inset:-20px;background:radial-gradient(ellipse at center,rgba(20,5,10,.7),rgba(0,0,0,.95));display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;border-radius:18px;overflow:hidden"><div id="boss-intro-vs" style="font-size:14px;font-weight:700;color:#ffaa60;letter-spacing:8px;opacity:0;transform:translateY(-20px);transition:all .5s ease-out;margin-bottom:8px">— DUEL KM '+s.km+' —</div><div id="boss-intro-name" style="font-size:72px;font-weight:900;color:'+def.color+';text-shadow:0 0 40px '+def.color+',0 0 80px '+def.color+'88;letter-spacing:4px;opacity:0;transform:scale(2);transition:all .9s cubic-bezier(.2,.8,.2,1);text-align:center;line-height:1">'+def.name.toUpperCase()+'</div><div id="boss-intro-tag" style="margin-top:14px;font-size:20px;font-weight:800;color:#fff;letter-spacing:3px;opacity:0;transform:translateY(40px);transition:all .6s ease-out;text-shadow:0 2px 12px rgba(0,0,0,.9)">AFFRONTE '+def.name.toUpperCase()+'</div></div><style>@keyframes deadHeatBlink{from{opacity:.4;transform:translateX(-50%) scale(1)}to{opacity:1;transform:translateX(-50%) scale(1.1)}}</style></div>';
   document.getElementById('boss-tap-btn').addEventListener('pointerdown',onBossTap,{passive:true});
   // Intro cinematic : enchaîne les apparitions
   if(s.inIntro){
@@ -21551,8 +21597,8 @@ function drawBossRace(){
       grad.addColorStop(1,color+'00');
       ctx.fillStyle=grad;ctx.beginPath();ctx.arc(x,y,auraR,0,Math.PI*2);ctx.fill();
     }
-    // Trail vitesse (amélioré)
-    for(let t=0;t<5;t++){ctx.fillStyle=`${color}${Math.floor((4-t)*20).toString(16).padStart(2,'0')}`;ctx.fillRect(x-14-t*6*speed,y-bodyH/2,4,bodyH);}
+    // Trail vitesse (3 blocks max, plus transparents et espacés)
+    for(let t=0;t<3;t++){ctx.fillStyle=`${color}${Math.floor((2-t)*16).toString(16).padStart(2,'0')}`;ctx.fillRect(x-14-t*10*speed,y-bodyH/2,4,bodyH);}
     ctx.fillStyle='rgba(0,0,0,.3)';ctx.beginPath();ctx.ellipse(x,y+bodyH/2+3,9,2,0,0,Math.PI*2);ctx.fill();
     ctx.fillStyle=color;ctx.fillRect(x-6,y-bodyH/2,12,bodyH);
     ctx.beginPath();ctx.arc(x,y-bodyH/2-5,5,0,Math.PI*2);ctx.fill();
@@ -21617,7 +21663,13 @@ function drawBossRace(){
   requestAnimationFrame(drawBossRace);
 }
 function tickBossBattle(){
-  if(!_bossState||_bossState.won||_bossState.lost||_bossState.inCountdown||_bossState.inIntro)return;
+  if(!_bossState||_bossState.won||_bossState.lost||_bossState.inCountdown||_bossState.inIntro){
+    // Garantir que rien n'avance pendant intro/countdown
+    if(_bossState&&(_bossState.inIntro||_bossState.inCountdown)){
+      _bossState.bossPos=0;_bossState.playerPos=0;
+    }
+    return;
+  }
   const now=performance.now();
   // Slow motion pendant photo finish
   let dt=0.1*(_bossState.timeScale||1);
@@ -26177,6 +26229,40 @@ function applyProgressiveDisclosure(){
       window._revealedUnlocks.delete(id);
     }
   });
+  // === MENU SECTIONS : cache un header .menu-sec si tous les .menu-item qui le suivent
+  //     (jusqu'au prochain .menu-sec) sont data-locked="1" ou masqués via style display:none ===
+  try {
+    const menuList = document.querySelector('.menu-list');
+    if(menuList){
+      const children = Array.from(menuList.children);
+      let currentSec = null;
+      let currentItems = [];
+      const sections = [];
+      children.forEach(node => {
+        if(node.classList && node.classList.contains('menu-sec')){
+          if(currentSec) sections.push({ sec: currentSec, items: currentItems });
+          currentSec = node;
+          currentItems = [];
+        } else if(currentSec && node.classList && node.classList.contains('menu-item')){
+          currentItems.push(node);
+        }
+      });
+      if(currentSec) sections.push({ sec: currentSec, items: currentItems });
+      sections.forEach(({ sec, items }) => {
+        if(items.length === 0){
+          sec.setAttribute('data-locked', '1');
+          return;
+        }
+        const allHidden = items.every(it => {
+          if(it.getAttribute('data-locked') === '1') return true;
+          // transcend-btn: caché via style.display:none tant que canTranscend() == false
+          if(it.style && it.style.display === 'none') return true;
+          return false;
+        });
+        sec.setAttribute('data-locked', allHidden ? '1' : '0');
+      });
+    }
+  } catch(e){}
   // === HUD : cache aussi les stats gems/étoiles si pas encore gagnées ===
   const gems = STATE.gems || 0;
   const stars = STATE.stars || 0;
@@ -26459,9 +26545,47 @@ const ActiveTuto = (() => {
     }
   }
 
+  // === FIX P0 : détection d'overlays bloquants ===
+  // La modal ActiveTuto (z-index 9996/9999) passait par-dessus l'ascension/transition
+  // de saison/cinematic/pioche/menu/boss. On bloque le rendu si l'un d'eux est ouvert.
+  function _isBlockedByOverlay(){
+    try {
+      const asc = document.querySelector('#ascension-overlay');
+      if(asc && asc.classList.contains('show')) return 'ascension';
+      const st = document.querySelector('#season-transition-overlay');
+      if(st && st.classList.contains('show')) return 'season';
+      const oc = document.getElementById('opening-cinematic');
+      if(oc && oc.style.display !== 'none' && oc.offsetParent !== null) return 'cinematic';
+      const pioche = document.getElementById('card-pick-modal');
+      if(pioche && pioche.classList.contains('show')) return 'pioche';
+      const menu = document.querySelector('#menu-modal.show, #menu-modal.open');
+      if(menu) return 'menu';
+      const boss = document.getElementById('boss-modal');
+      if(boss && (boss.classList.contains('show') || boss.style.display === 'block' || boss.style.display === 'flex')) return 'boss';
+    } catch(e){ /* silent */ }
+    return null;
+  }
+
+  // Masque temporairement la bulle/spot/flèche sans démonter le tuto
+  function _hideUI(){
+    if(_bubble) _bubble.style.display = 'none';
+    if(_arrow) _arrow.style.display = 'none';
+    if(_overlay) _overlay.style.display = 'none';
+  }
+  function _showUI(){
+    if(_bubble) _bubble.style.display = '';
+    if(_arrow) _arrow.style.display = '';
+    if(_overlay) _overlay.style.display = '';
+  }
+
   function _renderStep(){
     const step = STEPS[_currentStep];
     if(!step){ _finish(); return; }
+    // FIX P0 : si overlay critique ouvert, reporter le rendu
+    if(_isBlockedByOverlay()){
+      setTimeout(() => { if(_started) _renderStep(); }, 1500);
+      return;
+    }
     _createOverlay();
     const targetInfo = _positionSpot(step.target);
     _showBubble(step, targetInfo);
@@ -26474,6 +26598,19 @@ const ActiveTuto = (() => {
         if(cur && cur.target) _positionSpot(cur.target);
       };
       window.addEventListener('resize', window._activeTutoResize);
+    }
+    // Surveille l'apparition d'overlays critiques pendant qu'un step est affiché
+    // pour cacher temporairement la bulle (ascension qui se déclenche pendant tuto).
+    if(!window._activeTutoBlockWatcher){
+      window._activeTutoBlockWatcher = setInterval(() => {
+        if(!_started) return;
+        const blocking = _isBlockedByOverlay();
+        if(blocking && _bubble && _bubble.style.display !== 'none'){
+          _hideUI();
+        } else if(!blocking && _bubble && _bubble.style.display === 'none'){
+          _showUI();
+        }
+      }, 500);
     }
   }
 
@@ -26495,6 +26632,10 @@ const ActiveTuto = (() => {
       window.removeEventListener('resize', window._activeTutoResize);
       window._activeTutoResize = null;
     }
+    if(window._activeTutoBlockWatcher){
+      clearInterval(window._activeTutoBlockWatcher);
+      window._activeTutoBlockWatcher = null;
+    }
     _removeOverlay();
     document.body.classList.remove('active-tuto-running');
     localStorage.setItem(STORAGE_KEY, 'done');
@@ -26505,6 +26646,20 @@ const ActiveTuto = (() => {
   function start(){
     if(_started) return;
     if(localStorage.getItem(STORAGE_KEY)) return; // déjà vu / skip
+    // FIX P0 : gate "joueurs expérimentés" — pas de tuto si déjà ascensionné ou >5 km bouclés
+    try {
+      if(typeof STATE !== 'undefined'){
+        if((STATE.ascensions || 0) > 0 || (STATE.lapsRun || 0) > 5){
+          localStorage.setItem(STORAGE_KEY, 'skipped-experienced');
+          return;
+        }
+      }
+    } catch(e){ /* silent */ }
+    // FIX P0 : ne pas démarrer si un overlay critique est ouvert (cinematic, ascension...)
+    if(_isBlockedByOverlay()){
+      setTimeout(() => start(), 1500);
+      return;
+    }
     _started = true;
     _currentStep = 0;
     document.body.classList.add('active-tuto-running');

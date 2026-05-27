@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v5 : retrait MP3 ambient (-19 MB, ProcBGM gère la BGM réelle)
-const CACHE = 'foulee-v5';
+// v53 : bump pour invalider cache de l'ancien renderer + livrer voxel hero-lab
+const CACHE = 'foulee-v53';
 const ASSETS = [
   './',
   './index.html',

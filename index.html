@@ -7164,12 +7164,14 @@ body.frenzy-on #grid-frame{
   background:rgba(60,40,20,.55);
   display:flex; align-items:center; justify-content:center;
   padding:18px;
-  opacity:0; pointer-events:none;
+  opacity:0; pointer-events:none !important;
   /* visibility:hidden quand pas .show → évite que le GPU calcule backdrop-filter sur des couches invisibles */
   visibility:hidden;
   transition:opacity .35s, visibility 0s linear .35s;
   /* backdrop-filter UNIQUEMENT quand .show pour libérer le GPU au démarrage */
 }
+/* V64 défensif : si une modal a .show MAIS opacity:0 (transition bloquée), elle reste cliquable */
+.modal.show{ pointer-events:auto !important; }
 .modal.show{
   opacity:1; pointer-events:auto;
   visibility:visible;

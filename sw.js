@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v63 : auto-quality enrichi + @media 320px exhaustif + scores 86→90/100
-const CACHE = 'foulee-v63';
+// v64 : modals défensifs + roadmap honest 90→100
+const CACHE = 'foulee-v64';
 const ASSETS = [
   './',
   './index.html',

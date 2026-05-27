@@ -403,11 +403,11 @@ body{
     <div class="nav-item" data-section="lore"><span class="ico">📖</span>Codex lore<span class="count">20</span></div>
     <div class="nav-item" data-section="music"><span class="ico">🎵</span>Musique<span class="count">10</span></div>
     <div class="nav-item" data-section="eval"><span class="ico">⭐</span>Évaluation<span class="count">90</span></div>
-    <div class="nav-item" data-section="changelog"><span class="ico">📝</span>Changelog<span class="count">v63</span></div>
+    <div class="nav-item" data-section="changelog"><span class="ico">📝</span>Changelog<span class="count">v64</span></div>
   </nav>
   <footer>
     Données extraites de index.html<br>
-    Snapshot 2026-05-27 · v63 (latest)<br>
+    Snapshot 2026-05-27 · v64 (latest)<br>
     <strong>Note globale : 90/100 🏆</strong>
   </footer>
 </aside>
@@ -646,13 +646,29 @@ body{
     <div class="intro-block" style="margin-top:12px;border-left:4px solid var(--brand-red)">
       <h3>⚠️ POINTS À AMÉLIORER</h3>
       <ul style="margin:8px 0 0 22px;font-size:13px;line-height:1.7">
-        <li><strong>Dead code drawRunner</strong> (~400 lignes) — cosmétique, à nettoyer</li>
-        <li><strong>Intro splash</strong> : peut rester collée dans certains cas edge (fallback défensif v61 en place)</li>
-        <li><strong>Pas de tutorial interactif obligatoire</strong> : nouveau joueur peut être perdu</li>
-        <li><strong>Pas d'équipement visuel</strong> sur splash : chaussures/montres invisibles avant la course</li>
-        <li><strong>BGM procédurale</strong> : robuste mais peut paraître répétitive sur sessions longues</li>
+        <li><strong>Dead code drawRunner</strong> (1186 lignes) — cosmétique, refacto risquée à faire avec backup</li>
+        <li><strong>Pas de tutorial interactif obligatoire</strong> plein écran : nouveau joueur peut être perdu</li>
+        <li><strong>BGM procédurale</strong> répétitive sur sessions >30min — manque variations mélodiques aléatoires</li>
         <li><strong>Localization</strong> : FR primaire, EN partiel — autres langues manquent</li>
+        <li><strong>Endgame post-saison 10</strong> : pas de mode infini / leaderboard global / événements limités</li>
+        <li><strong>Pas d'équipement visuel</strong> sur splash : chaussures/montres invisibles avant la course</li>
       </ul>
+    </div>
+
+    <div class="intro-block" style="margin-top:12px;background:linear-gradient(135deg,#1a2b4d 0%,#3a4868 100%);color:#fff;border:none">
+      <h3 style="color:#FFB030">🎯 ROADMAP 90 → 100</h3>
+      <p style="color:rgba(255,255,255,.95);font-size:13px;line-height:1.6">Chaque point gagné après 90 coûte cher en effort. Voici les chantiers pour atteindre 100 :</p>
+      <ul style="margin:8px 0 0 22px;font-size:13px;line-height:1.7;color:rgba(255,255,255,.92)">
+        <li><strong>+3 Audio</strong> : ProcBGM variations mélodiques aléatoires par loop (~2h)</li>
+        <li><strong>+3 UX</strong> : Tutorial interactif plein écran 5 étapes (~3h)</li>
+        <li><strong>+2 Polish</strong> : Cleanup dead code drawRunner avec backup git (~1h + tests)</li>
+        <li><strong>+2 Gameplay</strong> : Endless mode post-saison 10 avec scaling (~3h)</li>
+        <li><strong>+1 Mobile</strong> : Tests sur 5+ devices physiques différents</li>
+        <li><strong>+1 Identité visuelle</strong> : Équipement visible sur splash + cinematics</li>
+      </ul>
+      <p style="color:rgba(255,255,255,.85);font-size:12px;font-style:italic;margin-top:10px">
+        À 90/100 le jeu est <strong>déjà excellent</strong> et <strong>shippable</strong>. Les 10 derniers points sont du polish marginal.
+      </p>
     </div>
   </section>
 
@@ -834,6 +850,7 @@ const EVAL_DIMENSIONS = [
 ];
 
 const CHANGELOG = [
+  { v:'v64', date:'2026-05-27', title:'Polish défensif modals + roadmap 90→100', tags:['polish','meta'], notes:'pointer-events !important sur .modal et .modal.show (anti-clic phantom). Section ROADMAP 90→100 dans Évaluation : audio variations +3, tuto plein écran +3, dead code cleanup +2, endless mode +2.' },
   { v:'v63', date:'2026-05-27', title:'Push 100/100 : auto-quality enrichi + @media 320px + score +4', tags:['perf','ux','meta'], notes:'_PERF.isVeryLowEnd via deviceMemory + connection type. @media 340px exhaustif (modal padding, skills bar, HUD fonts). Note globale 86→90/100.' },
   { v:'v62', date:'2026-05-27', title:'Final fix + éval + catalogue update', tags:['perf','meta'], notes:'localStorage debounce via requestIdleCallback. Section Évaluation + Changelog dans catalogue.' },
   { v:'v61', date:'2026-05-27', title:'Playthrough QA fixes (perf + défensif)', tags:['perf','fix'], notes:'Intro fallback défensif (1.2s). NPC collision O(n+k²) via bucket par lane. measureText cache labels PNJ.' },

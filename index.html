@@ -27592,11 +27592,13 @@ function load(){
     if(offlineMs > 30*1000){ // au-delà de 30s on déclenche un récap
       STATE.lastOfflineMs = offlineMs;
       STATE.essence = STATE.essenceMax;
-      // === OFFLINE REWARDS v5 : team production avec cap 16h et efficacité 70% ===
+      // === OFFLINE REWARDS v6 : AFK incitatif mais pas game-ending ===
+      // Avant : 16h / 80km / 5km·h / 0.7 → on revenait à un jeu "avancé tout seul"
+      // Maintenant : 3h cap / 8km max / 2km·h footing / 35% efficacité gold
       _ensureTeamShape();
-      const OFFLINE_CAP_HOURS = 16;
-      const OFFLINE_EFFICIENCY = 0.7;
-      const OFFLINE_KM_CAP = 80;
+      const OFFLINE_CAP_HOURS = 3;       // (était 16) — au-delà, plus de gain
+      const OFFLINE_EFFICIENCY = 0.35;   // (était 0.7) — 35% du gain actif
+      const OFFLINE_KM_CAP = 8;          // (était 80) — gain max km par session AFK
       const cappedSec = Math.min(OFFLINE_CAP_HOURS*3600, offlineMs / 1000);
       STATE.lastOfflineCappedMs = cappedSec * 1000; // pour affichage transparence
       let offlineGold = 0;
@@ -27621,9 +27623,9 @@ function load(){
       }
       // Efficacité offline : 70% du gain normal (équilibre fidélisation/incitation)
       offlineGold = Math.floor(offlineGold * OFFLINE_EFFICIENCY);
-      // Progression km offline : ~5 km/h footing passif, cap 80 km par session
-      const hoursOffline = offlineMs / 3600000;
-      const offlineKm = Math.min(OFFLINE_KM_CAP, hoursOffline * 5);
+      // Progression km offline : ~2 km/h footing passif léger (était 5), cap dur 8 km
+      const hoursOffline = Math.min(OFFLINE_CAP_HOURS, offlineMs / 3600000);
+      const offlineKm = Math.min(OFFLINE_KM_CAP, hoursOffline * 2);
       if(offlineKm > 0.01){
         const totalKmBefore = (STATE.lapsRun || 0) + (STATE.lapProgress || 0);
         const totalKmAfter = totalKmBefore + offlineKm;

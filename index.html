@@ -26018,7 +26018,15 @@ function save(){
       totalGemsEarned: STATE.totalGemsEarned || 0,
     };
     const json = JSON.stringify(s);
-    localStorage.setItem("alchimia.save", json);
+    // V62 OPTI : defer setItem au prochain idle frame (évite jank mobile sur la boucle)
+    // setItem peut bloquer 50-200ms sur Android bas de gamme — on le sort de la frame courante
+    if(typeof requestIdleCallback === 'function'){
+      requestIdleCallback(() => {
+        try { localStorage.setItem("alchimia.save", json); } catch(e){}
+      }, { timeout: 300 });
+    } else {
+      setTimeout(() => { try { localStorage.setItem("alchimia.save", json); } catch(e){} }, 0);
+    }
     // Backup IndexedDB en parallèle (redondance contre localStorage flush)
     if(typeof CloudSave !== 'undefined' && CloudSave.backup){
       CloudSave.backup(json).catch(()=>{});

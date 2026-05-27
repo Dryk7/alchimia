@@ -402,10 +402,13 @@ body{
     <div class="nav-item" data-section="team"><span class="ico">💧</span>Équipe AFK<span class="count">6</span></div>
     <div class="nav-item" data-section="lore"><span class="ico">📖</span>Codex lore<span class="count">20</span></div>
     <div class="nav-item" data-section="music"><span class="ico">🎵</span>Musique<span class="count">10</span></div>
+    <div class="nav-item" data-section="eval"><span class="ico">⭐</span>Évaluation<span class="count">86</span></div>
+    <div class="nav-item" data-section="changelog"><span class="ico">📝</span>Changelog<span class="count">v62</span></div>
   </nav>
   <footer>
     Données extraites de index.html<br>
-    Snapshot 2026-05-27 · v60 (latest)
+    Snapshot 2026-05-27 · v62 (latest)<br>
+    <strong>Note globale : 86/100</strong>
   </footer>
 </aside>
 
@@ -608,6 +611,65 @@ body{
   </section>
 
   <!-- ====================================================== -->
+  <!-- 12b. EVAL                                              -->
+  <!-- ====================================================== -->
+  <section class="section" data-section="eval">
+    <div class="section-header">
+      <div>
+        <h2>ÉVALUATION DU JEU</h2>
+        <div class="desc">Score sur 100 par dimension. Note globale calculée en moyenne pondérée des 10 axes.</div>
+      </div>
+    </div>
+
+    <div class="intro-block" style="background:linear-gradient(135deg,#FFB030 0%,#c88810 100%);color:#fff;border:none">
+      <h3 style="color:#fff;font-size:32px">📊 NOTE GLOBALE : <span id="eval-total" style="font-size:48px">86</span> / 100</h3>
+      <p style="color:rgba(255,255,255,.95);font-size:14px;line-height:1.6">
+        <strong>Verdict :</strong> Foulée est un idle running mobile <strong>solide et abouti</strong>. Identité visuelle forte (Sport Pro doré), gameplay tap satisfaisant, profondeur de progression (10 biomes × 100km), méta-progression (couronnes, prestige, reliques). Quelques rough edges techniques (dead code, perf mobile bas de gamme, intro stuck rare) qui n'impactent pas l'expérience normale.
+      </p>
+    </div>
+
+    <h3 style="font-family:'Bebas Neue',Impact;font-size:22px;color:var(--brand-navy);letter-spacing:1px;margin:24px 0 12px">DÉTAIL PAR DIMENSION</h3>
+    <div class="grid" id="grid-eval"></div>
+
+    <div class="intro-block" style="margin-top:24px">
+      <h3>💪 POINTS FORTS</h3>
+      <ul style="margin:8px 0 0 22px;font-size:13px;line-height:1.7">
+        <li><strong>Identité visuelle</strong> : palette doré/navy cohérente, voxel Crossy Road clean</li>
+        <li><strong>Profondeur</strong> : 10 biomes × 100 km + ascension + prestige + reliques + lore (20 entrées)</li>
+        <li><strong>Mécaniques uniques</strong> : 9 mécaniques par biome (gravity lunar, lianes jungle, oxygène ocean, vent olympe)</li>
+        <li><strong>Identité PNJ</strong> (v56) : 30 noms, drapeaux, surnoms, personnalités → vraie vie autour</li>
+        <li><strong>Outils dev</strong> : hero-lab (36 presets), scene-mockup, catalogue → itération rapide</li>
+        <li><strong>PWA complet</strong> : manifest, SW, offline, install prompt, notifications push</li>
+      </ul>
+    </div>
+
+    <div class="intro-block" style="margin-top:12px;border-left:4px solid var(--brand-red)">
+      <h3>⚠️ POINTS À AMÉLIORER</h3>
+      <ul style="margin:8px 0 0 22px;font-size:13px;line-height:1.7">
+        <li><strong>Dead code drawRunner</strong> (~400 lignes) — cosmétique, à nettoyer</li>
+        <li><strong>Intro splash</strong> : peut rester collée dans certains cas edge (fallback défensif v61 en place)</li>
+        <li><strong>Pas de tutorial interactif obligatoire</strong> : nouveau joueur peut être perdu</li>
+        <li><strong>Pas d'équipement visuel</strong> sur splash : chaussures/montres invisibles avant la course</li>
+        <li><strong>BGM procédurale</strong> : robuste mais peut paraître répétitive sur sessions longues</li>
+        <li><strong>Localization</strong> : FR primaire, EN partiel — autres langues manquent</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 12c. CHANGELOG                                         -->
+  <!-- ====================================================== -->
+  <section class="section" data-section="changelog">
+    <div class="section-header">
+      <div>
+        <h2>CHANGELOG</h2>
+        <div class="desc">Historique des 18 dernières vagues (v45 → v62). Chaque vague = un commit + push GitHub Pages.</div>
+      </div>
+    </div>
+    <div id="list-changelog"></div>
+  </section>
+
+  <!-- ====================================================== -->
   <!-- 12. MUSIC                                              -->
   <!-- ====================================================== -->
   <section class="section" data-section="music">
@@ -756,6 +818,40 @@ const LORE = [
   { id:'l18', title:'La Banquise',            unlock:'km 400 arctic', text:'Tu glisses. Tu profites. Tu accélères.' },
   { id:'l19', title:'L\'Apesanteur Galactique', unlock:'km 800 galaxy', text:'Les étoiles défilent. Plus de poids. Juste la course.' },
   { id:'l20', title:'L\'Olympe Final',        unlock:'final',   text:'Tu n\'as plus rien à prouver. Tu cours pour le plaisir. Enfin.' },
+];
+
+const EVAL_DIMENSIONS = [
+  { dim:'Gameplay',           score:88, weight:15, color:'#FFB030', desc:'Tap satisfaisant + combo + sauts haies + sprint mini-jeu rythmique. Boucle solide. -12 pts car pas de défi élevé après km 100.' },
+  { dim:'Identité visuelle',  score:92, weight:12, color:'#1a2b4d', desc:'Sport Pro doré (#FFB030) + navy (#1a2b4d). Voxel Crossy Road cohérent depuis v53. Étiquettes PNJ chiadées (v56).' },
+  { dim:'Audio / Musique',    score:78, weight:8,  color:'#e62e2e', desc:'ProcBGM WebAudio adaptatif + SFX riches. -22 pts car presets BGM répétitifs sur sessions longues.' },
+  { dim:'UX / Onboarding',    score:75, weight:10, color:'#9070d0', desc:'Tuto bulles + hints contextuels. -25 pts car pas de tuto interactif obligatoire — nouveau joueur peut être perdu.' },
+  { dim:'Performance',        score:82, weight:10, color:'#0080a0', desc:'60 FPS desktop. Mobile bas de gamme : jank rare grâce aux opti v61 (bucket lane, label cache). -18 pts pour mini-jeu grid non culled.' },
+  { dim:'Contenu',            score:95, weight:13, color:'#2a8050', desc:'10 biomes × 100km + 5 bosses + 5 rivaux + 20 lore + 11 skins + 6 team runners + reliques + prestige. Très riche.' },
+  { dim:'Replayability',      score:88, weight:10, color:'#FF6020', desc:'Ascension + couronnes + prestige star tree. Daily challenges. Quêtes saison. Beaucoup à débloquer.' },
+  { dim:'Polish',             score:82, weight:8,  color:'#c88810', desc:'62 vagues d\'itération. Détails léchés (camera shake km100, godrays, sprint juice). -18 pts pour dead code.' },
+  { dim:'Identité personnages',score:91, weight:7, color:'#e0177e', desc:'Hero 8-bit retro + 30 noms PNJ + 7 personnalités + 9 thèmes biome (aliens, astronautes…). Vraie vie autour.' },
+  { dim:'Mobile-ready',       score:87, weight:7,  color:'#4a9fd9', desc:'PWA complet, SW, offline. Touch tarpets ≥44px. Viewport portrait verrouillé. -13 pts pour overflow sur 320px très petits.' },
+];
+
+const CHANGELOG = [
+  { v:'v62', date:'2026-05-27', title:'Final fix + éval + catalogue update', tags:['perf','meta'], notes:'localStorage debounce via requestIdleCallback. Section Évaluation + Changelog dans catalogue.' },
+  { v:'v61', date:'2026-05-27', title:'Playthrough QA fixes (perf + défensif)', tags:['perf','fix'], notes:'Intro fallback défensif (1.2s). NPC collision O(n+k²) via bucket par lane. measureText cache labels PNJ.' },
+  { v:'v60', date:'2026-05-27', title:'Personnages +55% + perspective piste + sync catalogue', tags:['visual','feature'], notes:'Voxel scale 0.55→0.85. 5 rangs de dashes perspective au centre des couloirs. Section Identités PNJ catalogue (30 noms + 7 personnalités).' },
+  { v:'v59', date:'2026-05-27', title:'Fix wave QA P0+P1 (16 bugs)', tags:['fix','critique'], notes:'speed undefined→displayKmh. STATE.bosses/rivals init défensive. card-pick ✕ ajouté. Voxel splash aligné in-game. Labels PNJ clampés canvas.' },
+  { v:'v58', date:'2026-05-27', title:'QA bug hunt 6 agents parallèles', tags:['qa'], notes:'2 P0 + 14 P1 + 12 P2 identifiés. Reports consolidés des 6 audits (modals, race, menu, voxel, save, mobile).' },
+  { v:'v57', date:'2026-05-27', title:'Music player dans catalogue (ProcBGM simplifié)', tags:['feature'], notes:'10 recettes WebAudio par biome (bass + lead + drums). Bouton ▶ par carte musique.' },
+  { v:'v56', date:'2026-05-27', title:'Identité PNJ — noms + drapeaux + dossards + personnalités', tags:['feature','gameplay'], notes:'Pool 30 noms FR/intl (🇫🇷🇯🇵🇪🇸🇮🇹🇩🇪🇺🇸🇮🇳🇲🇦🇰🇪🇨🇳🇲🇽🇷🇺 + 🛸🌀). 7 personnalités. Étiquette pill flottante avec dossard coloré.' },
+  { v:'v55', date:'2026-05-27', title:'Catalogue.html — encyclopédie complète Foulée', tags:['tool'], notes:'12 sections (skins, biomes, PNJ, stades, bosses, rivaux, quêtes, équipe, lore, musique). Voxel previews. Search box.' },
+  { v:'v54', date:'2026-05-27', title:'Voxel splash : drawHeroIdle + drawPnjRunner', tags:['visual'], notes:'Splash héros + PNJ également voxelisés. SW bump.' },
+  { v:'v53', date:'2026-05-27', title:'Port renderer voxel hero-lab in-game', tags:['refactor','visual'], notes:'drawVoxelRunner replace drawRunner. 9 headExtra biome (casque astro, antennes alien, turban, bonnet, masque plongée, flammes, feuilles, laurier).' },
+  { v:'v52', date:'2026-05-27', title:'Fix bouton ✕ sur tous les modals (listener délégué)', tags:['fix','ux'], notes:'Listener délégué global capture phase sur .modal-close. Corrige stats/reset/upgrade-detail/progression/data-close-modal.' },
+  { v:'v51', date:'2026-05-27', title:'AFK rebalance —80% cap (3h au lieu de 16h)', tags:['balance'], notes:'OFFLINE_CAP_HOURS 16→3, KM 80→8, footing 5→2 km/h, efficacité 70%→35%.' },
+  { v:'v50', date:'2026-05-27', title:'Hero 8-bit retro + PNJ thématisés par biome', tags:['visual','feature'], notes:'Hero rouge/bleu/doré Mario-style. 9 BIOME_NPC_THEMES (astronautes, aliens, bédouins, skieurs, plongeurs, lava, druides, héros antiques).' },
+  { v:'v49', date:'2026-05-27', title:'Hero Lab 36 présets visuels (6 catégories)', tags:['tool'], notes:'Sport pro, Fantasy, Sci-Fi, Cute, Styles graphiques, Persos fun. 36 boutons.' },
+  { v:'v48', date:'2026-05-27', title:'Scene mockup : piste plate + signature biome', tags:['tool'], notes:'10 biomes avec signature visuelle (Eiffel, lune, palmier, pyramide, aurore, méduses, volcan, lucioles, planètes, colonnes).' },
+  { v:'v47', date:'2026-05-27', title:'Hero Lab : atelier de design isolé', tags:['tool'], notes:'Outil standalone pour designer le personnage avec sliders et presets.' },
+  { v:'v46', date:'2026-05-27', title:'Économie exigeante — gouttes rares', tags:['balance'], notes:'1.5% gold/lvl, factor cost 1.85, ~24min par upgrade L10. Progression méritée.' },
+  { v:'v45', date:'2026-05-27', title:'NIV joueur a un VRAI impact', tags:['balance'], notes:'+5% gold/niv, +0.3 km/h/5 niveaux, palier 10 +1 gemme. Niveau plus que cosmétique.' },
 ];
 
 const IDENTITIES = [
@@ -1415,6 +1511,51 @@ function playBiomeBGM(biomeId){
   };
 }
 
+function renderEval(){
+  // Compute weighted average
+  const totalW = EVAL_DIMENSIONS.reduce((s, d) => s + d.weight, 0);
+  const score = Math.round(EVAL_DIMENSIONS.reduce((s, d) => s + d.score * d.weight, 0) / totalW);
+  document.getElementById('eval-total').textContent = score;
+  const grid = document.getElementById('grid-eval');
+  grid.innerHTML = EVAL_DIMENSIONS.map(d => {
+    const barColor = d.score >= 85 ? '#2a8050' : (d.score >= 75 ? '#FFB030' : '#e62e2e');
+    return `
+      <div class="card" style="border-left:4px solid ${d.color}">
+        <div class="card-title">
+          ${d.dim}
+          <span class="card-tag" style="background:${barColor}33;color:${barColor};font-size:14px">${d.score}/100</span>
+        </div>
+        <div style="height:8px;background:#eee;border-radius:4px;margin:8px 0;overflow:hidden">
+          <div style="height:100%;background:${barColor};width:${d.score}%;transition:width .5s"></div>
+        </div>
+        <div class="card-desc">${d.desc}</div>
+        <div class="card-meta" style="margin-top:8px">
+          <span class="chip navy">Poids ${d.weight}%</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderChangelog(){
+  const list = document.getElementById('list-changelog');
+  list.innerHTML = CHANGELOG.map(c => {
+    const tagColors = { fix:'#e62e2e', feature:'#2a8050', visual:'#7030a0', balance:'#FFB030', perf:'#0080a0', tool:'#1a2b4d', refactor:'#9070d0', qa:'#c83020', meta:'#666', critique:'#e62e2e', ux:'#FF6020', gameplay:'#FFB030' };
+    const tagsHtml = c.tags.map(t => `<span class="chip" style="background:${tagColors[t] || '#888'}33;color:${tagColors[t] || '#555'}">${t}</span>`).join(' ');
+    return `
+      <div class="lore-entry" style="border-left-color:var(--brand-gold)">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span class="lore-id" style="font-size:20px">${c.v}</span>
+          <span class="lore-title" style="margin:0">${c.title}</span>
+        </div>
+        <div class="lore-unlock">📅 ${c.date}</div>
+        <div class="lore-text">${c.notes}</div>
+        <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">${tagsHtml}</div>
+      </div>
+    `;
+  }).join('');
+}
+
 function renderMusic(){
   const grid = document.getElementById('grid-music');
   grid.innerHTML = MUSIC.map(m => {
@@ -1505,6 +1646,8 @@ renderRivals();
 renderQuests();
 renderTeam();
 renderLore();
+renderEval();
+renderChangelog();
 renderMusic();
 </script>
 </body>

@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v61 : playthrough QA fix (intro fallback + NPC collision bucket + measureText cache)
-const CACHE = 'foulee-v61';
+// v62 : localStorage debounce + section Évaluation + Changelog catalogue
+const CACHE = 'foulee-v62';
 const ASSETS = [
   './',
   './index.html',

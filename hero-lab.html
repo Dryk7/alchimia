@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Foulée — Hero Lab</title>
+<style>
+  :root {
+    --brand-gold:#FFB030;
+    --brand-gold-dark:#c88810;
+    --brand-navy:#1a2b4d;
+    --brand-charcoal:#1f1f24;
+    --bg:#f5f1e8;
+    --panel:#fff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"Nunito",system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--brand-charcoal);
+    min-height:100vh;
+    display:flex;
+    flex-direction:row;
+    overflow-x:hidden;
+  }
+  @media(max-width:900px){ body{flex-direction:column} }
+
+  /* === LEFT: Canvas + anim controls === */
+  #stage{
+    flex:0 0 460px;
+    background:linear-gradient(180deg,#a8d8f0 0%,#d0e8f0 60%,#e8d8a0 60%,#c0a070 100%);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:24px 16px;
+    border-right:2px solid rgba(255,176,48,.3);
+    box-shadow:inset -4px 0 12px rgba(0,0,0,.06);
+    min-height:100vh;
+  }
+  @media(max-width:900px){ #stage{flex:0 0 auto;border-right:none;border-bottom:2px solid rgba(255,176,48,.3)} }
+  #stage h1{
+    font-family:"Bebas Neue",Impact,sans-serif;
+    color:var(--brand-gold);
+    font-size:34px;
+    letter-spacing:2px;
+    transform:skew(-6deg);
+    text-shadow:0 2px 0 var(--brand-gold-dark);
+    margin-bottom:12px;
+  }
+  #hero-canvas{
+    background:transparent;
+    display:block;
+    border-radius:8px;
+  }
+  #anim-buttons{
+    display:flex;gap:6px;flex-wrap:wrap;justify-content:center;
+    margin-top:16px;
+  }
+  .anim-btn{
+    background:var(--brand-navy);
+    color:#fff;
+    border:none;
+    border-radius:8px;
+    padding:8px 14px;
+    font-weight:800;
+    font-size:11px;
+    letter-spacing:1px;
+    cursor:pointer;
+    transition:all .15s;
+    text-transform:uppercase;
+    font-family:inherit;
+  }
+  .anim-btn:hover{background:var(--brand-charcoal)}
+  .anim-btn.active{background:var(--brand-gold);color:var(--brand-charcoal);transform:scale(1.05)}
+  #live-stats{
+    margin-top:12px;
+    font-size:11px;
+    color:#666;
+    font-family:monospace;
+    background:rgba(255,255,255,.7);
+    padding:6px 10px;
+    border-radius:6px;
+  }
+
+  /* === RIGHT: Controls === */
+  #controls{
+    flex:1;
+    padding:20px;
+    background:var(--panel);
+    overflow-y:auto;
+    max-height:100vh;
+  }
+  @media(max-width:900px){ #controls{max-height:none} }
+  #controls h2{
+    font-family:"Bebas Neue",Impact,sans-serif;
+    color:var(--brand-charcoal);
+    font-size:20px;
+    letter-spacing:1.5px;
+    margin-bottom:6px;
+    padding-bottom:4px;
+    border-bottom:2px solid var(--brand-gold);
+    margin-top:18px;
+  }
+  #controls h2:first-of-type{margin-top:0}
+  .ctrl{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:8px 0;
+    font-size:12px;
+  }
+  .ctrl label{
+    flex:0 0 130px;
+    color:#444;
+    font-weight:600;
+  }
+  .ctrl input[type=range]{flex:1;accent-color:var(--brand-gold)}
+  .ctrl input[type=color]{width:42px;height:30px;border:1px solid #ddd;border-radius:6px;cursor:pointer;background:none}
+  .ctrl .val{
+    flex:0 0 56px;
+    text-align:right;
+    font-family:monospace;
+    font-size:11px;
+    color:var(--brand-gold-dark);
+    font-weight:700;
+  }
+  .actions{
+    margin-top:24px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    padding:16px;
+    background:#fafaf2;
+    border-radius:10px;
+    border:1px solid #eee;
+  }
+  .btn-primary{
+    background:linear-gradient(135deg,#ffd060,var(--brand-gold));
+    color:var(--brand-charcoal);
+    border:none;
+    border-radius:8px;
+    padding:12px 16px;
+    font-weight:900;
+    font-size:13px;
+    letter-spacing:1px;
+    cursor:pointer;
+    text-transform:uppercase;
+    font-family:inherit;
+  }
+  .btn-secondary{
+    background:#fff;
+    color:var(--brand-charcoal);
+    border:1.5px solid var(--brand-gold);
+    border-radius:8px;
+    padding:10px 16px;
+    font-weight:700;
+    font-size:12px;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  textarea{
+    width:100%;
+    min-height:120px;
+    border:1px solid #ddd;
+    border-radius:6px;
+    padding:8px;
+    font-family:monospace;
+    font-size:11px;
+    margin-top:8px;
+    background:#fafaf2;
+  }
+  .preset-buttons{
+    display:flex;
+    gap:6px;
+    flex-wrap:wrap;
+    margin-top:8px;
+  }
+  .preset-btn{
+    background:#eee;
+    border:1px solid #ccc;
+    border-radius:6px;
+    padding:5px 10px;
+    font-size:11px;
+    cursor:pointer;
+    font-family:inherit;
+  }
+  .preset-btn:hover{background:#ddd}
+</style>
+</head>
+<body>
+
+<!-- LEFT: scene avec le héros animé -->
+<div id="stage">
+  <h1>HERO LAB · FOULÉE</h1>
+  <canvas id="hero-canvas" width="380" height="440"></canvas>
+  <div id="anim-buttons">
+    <button class="anim-btn active" data-anim="run">RUN</button>
+    <button class="anim-btn" data-anim="sprint">SPRINT</button>
+    <button class="anim-btn" data-anim="idle">IDLE</button>
+    <button class="anim-btn" data-anim="jump">JUMP</button>
+    <button class="anim-btn" data-anim="victory">VICTORY</button>
+  </div>
+  <div id="live-stats">FPS: -- | frame: 0 | t: 0.00s</div>
+</div>
+
+<!-- RIGHT: sliders & color pickers -->
+<div id="controls">
+
+  <h2>📐 Proportions</h2>
+  <div class="ctrl"><label>Scale global</label><input type="range" data-param="scale" min="0.5" max="2" step="0.02" value="1"><span class="val">1.00×</span></div>
+  <div class="ctrl"><label>Hauteur corps</label><input type="range" data-param="bodyH" min="30" max="80" step="1" value="48"><span class="val">48</span></div>
+  <div class="ctrl"><label>Largeur épaules</label><input type="range" data-param="shoulderW" min="14" max="32" step="1" value="22"><span class="val">22</span></div>
+  <div class="ctrl"><label>Largeur torse</label><input type="range" data-param="torsoW" min="12" max="28" step="1" value="18"><span class="val">18</span></div>
+  <div class="ctrl"><label>Hauteur tête</label><input type="range" data-param="headH" min="12" max="24" step="1" value="16"><span class="val">16</span></div>
+  <div class="ctrl"><label>Cou</label><input type="range" data-param="neckH" min="0" max="8" step="0.5" value="3"><span class="val">3</span></div>
+  <div class="ctrl"><label>Longueur jambe</label><input type="range" data-param="legH" min="20" max="60" step="1" value="38"><span class="val">38</span></div>
+  <div class="ctrl"><label>Largeur jambe</label><input type="range" data-param="legW" min="3" max="10" step="0.5" value="5"><span class="val">5</span></div>
+  <div class="ctrl"><label>Longueur bras</label><input type="range" data-param="armL" min="14" max="40" step="1" value="26"><span class="val">26</span></div>
+  <div class="ctrl"><label>Largeur bras</label><input type="range" data-param="armW" min="3" max="9" step="0.5" value="4"><span class="val">4</span></div>
+  <div class="ctrl"><label>Pied (long.)</label><input type="range" data-param="footL" min="6" max="18" step="1" value="11"><span class="val">11</span></div>
+
+  <h2>🎨 Couleurs</h2>
+  <div class="ctrl"><label>Peau</label><input type="color" data-param="skin" value="#f4c89b"><span class="val">peau</span></div>
+  <div class="ctrl"><label>Maillot</label><input type="color" data-param="jersey" value="#FFB030"><span class="val">maillot</span></div>
+  <div class="ctrl"><label>Maillot ombrage</label><input type="color" data-param="jerseyDark" value="#c88810"><span class="val">ombre</span></div>
+  <div class="ctrl"><label>Short</label><input type="color" data-param="short" value="#1a2b4d"><span class="val">short</span></div>
+  <div class="ctrl"><label>Cheveux/casquette</label><input type="color" data-param="hair" value="#2a1810"><span class="val">tête</span></div>
+  <div class="ctrl"><label>Chaussures</label><input type="color" data-param="shoes" value="#ffd060"><span class="val">shoes</span></div>
+  <div class="ctrl"><label>Semelles</label><input type="color" data-param="sole" value="#1a2b4d"><span class="val">sole</span></div>
+  <div class="ctrl"><label>Contour</label><input type="color" data-param="outline" value="#1a1a1a"><span class="val">outline</span></div>
+  <div class="ctrl"><label>Épaisseur contour</label><input type="range" data-param="outlineW" min="0" max="3" step="0.25" value="1.25"><span class="val">1.25</span></div>
+
+  <h2>🏃 Animation RUN/SPRINT</h2>
+  <div class="ctrl"><label>Cadence (BPM jambe)</label><input type="range" data-param="runBpm" min="60" max="280" step="5" value="170"><span class="val">170</span></div>
+  <div class="ctrl"><label>Amplitude jambes</label><input type="range" data-param="legSwing" min="10" max="55" step="1" value="32"><span class="val">32°</span></div>
+  <div class="ctrl"><label>Amplitude bras</label><input type="range" data-param="armSwing" min="10" max="60" step="1" value="38"><span class="val">38°</span></div>
+  <div class="ctrl"><label>Bounce corps (px)</label><input type="range" data-param="bodyBounce" min="0" max="12" step="0.5" value="3"><span class="val">3</span></div>
+  <div class="ctrl"><label>Penché avant (°)</label><input type="range" data-param="leanFwd" min="-5" max="20" step="1" value="6"><span class="val">6°</span></div>
+  <div class="ctrl"><label>Pas (px)</label><input type="range" data-param="strideLen" min="0" max="30" step="1" value="12"><span class="val">12</span></div>
+
+  <h2>⬆️ Saut JUMP</h2>
+  <div class="ctrl"><label>Hauteur saut (px)</label><input type="range" data-param="jumpHeight" min="20" max="120" step="2" value="70"><span class="val">70</span></div>
+  <div class="ctrl"><label>Durée saut (s)</label><input type="range" data-param="jumpDur" min="0.4" max="1.6" step="0.05" value="0.9"><span class="val">0.9</span></div>
+  <div class="ctrl"><label>Tuck (jambes pliées)</label><input type="range" data-param="jumpTuck" min="0" max="1" step="0.05" value="0.55"><span class="val">0.55</span></div>
+
+  <h2>😶 IDLE</h2>
+  <div class="ctrl"><label>Respiration (px)</label><input type="range" data-param="idleBreathe" min="0" max="6" step="0.25" value="1.75"><span class="val">1.75</span></div>
+  <div class="ctrl"><label>Vitesse resp.</label><input type="range" data-param="idleBreatheSpd" min="0.2" max="3" step="0.05" value="0.9"><span class="val">0.9</span></div>
+
+  <h2>🌍 Scène & display</h2>
+  <div class="ctrl"><label>Afficher piste</label><input type="checkbox" data-param="showTrack" checked><span class="val">on</span></div>
+  <div class="ctrl"><label>Afficher grille</label><input type="checkbox" data-param="showGrid"><span class="val">off</span></div>
+  <div class="ctrl"><label>Speed mult (anim)</label><input type="range" data-param="globalSpeed" min="0.1" max="3" step="0.05" value="1"><span class="val">1.00×</span></div>
+  <div class="ctrl"><label>Vitesse simulée (km/h)</label><input type="range" data-param="simKmh" min="0" max="40" step="1" value="15"><span class="val">15</span></div>
+
+  <div class="actions">
+    <h2 style="margin:0;border:none">📤 Export / Presets</h2>
+    <div class="preset-buttons">
+      <button class="preset-btn" data-preset="current">Actuel (jeu)</button>
+      <button class="preset-btn" data-preset="athlete">Athlète épuré</button>
+      <button class="preset-btn" data-preset="bouncy">Bouncy cartoon</button>
+      <button class="preset-btn" data-preset="reset">Reset défaut</button>
+    </div>
+    <button class="btn-primary" id="btn-export">EXPORT JSON</button>
+    <button class="btn-secondary" id="btn-copy">COPIER DANS LE PRESSE-PAPIER</button>
+    <textarea id="export-out" placeholder="Le JSON exporté apparaîtra ici…" readonly></textarea>
+  </div>
+
+</div>
+
+<script>
+'use strict';
+
+// =========================================================
+// PARAMS — sliders/inputs default values
+// =========================================================
+const params = {
+  // proportions
+  scale: 1, bodyH: 48, shoulderW: 22, torsoW: 18, headH: 16, neckH: 3,
+  legH: 38, legW: 5, armL: 26, armW: 4, footL: 11,
+  // colors
+  skin:'#f4c89b', jersey:'#FFB030', jerseyDark:'#c88810',
+  short:'#1a2b4d', hair:'#2a1810', shoes:'#ffd060', sole:'#1a2b4d',
+  outline:'#1a1a1a', outlineW: 1.25,
+  // run
+  runBpm: 170, legSwing: 32, armSwing: 38, bodyBounce: 3, leanFwd: 6, strideLen: 12,
+  // jump
+  jumpHeight: 70, jumpDur: 0.9, jumpTuck: 0.55,
+  // idle
+  idleBreathe: 1.75, idleBreatheSpd: 0.9,
+  // scene
+  showTrack: true, showGrid: false, globalSpeed: 1, simKmh: 15,
+  // misc internal
+  animMode: 'run',
+};
+
+// =========================================================
+// PRESETS
+// =========================================================
+const PRESETS = {
+  current: { /* defaults */ },
+  athlete: {
+    bodyH: 52, shoulderW: 24, torsoW: 16, headH: 14, legH: 44, legW: 5, armL: 28, armW: 4,
+    runBpm: 180, legSwing: 42, armSwing: 48, bodyBounce: 2, leanFwd: 10, strideLen: 16,
+    jumpHeight: 85, jumpDur: 0.85,
+  },
+  bouncy: {
+    bodyH: 42, shoulderW: 26, torsoW: 22, headH: 20, legH: 32, legW: 7, armL: 22, armW: 6, footL: 13,
+    runBpm: 150, legSwing: 25, armSwing: 30, bodyBounce: 8, leanFwd: 2, strideLen: 8,
+    jumpHeight: 100, jumpDur: 1.1, jumpTuck: 0.75,
+  },
+  reset: null, // marker → reset to defaults
+};
+const DEFAULTS = { ...params };
+
+// =========================================================
+// CANVAS SETUP
+// =========================================================
+const canvas = document.getElementById('hero-canvas');
+const ctx = canvas.getContext('2d');
+const CW = canvas.width;
+const CH = canvas.height;
+
+// =========================================================
+// CONTROLS WIRING
+// =========================================================
+function setupControl(el){
+  const key = el.dataset.param;
+  if(!key) return;
+  const valEl = el.parentElement.querySelector('.val');
+  function update(){
+    if(el.type === 'range'){
+      const v = parseFloat(el.value);
+      params[key] = v;
+      if(valEl){
+        if(key === 'scale' || key === 'globalSpeed') valEl.textContent = v.toFixed(2)+'×';
+        else if(key === 'legSwing' || key === 'armSwing' || key === 'leanFwd') valEl.textContent = v+'°';
+        else valEl.textContent = (Number.isInteger(v) ? v : v.toFixed(2)) + '';
+      }
+    } else if(el.type === 'color'){
+      params[key] = el.value;
+    } else if(el.type === 'checkbox'){
+      params[key] = el.checked;
+      if(valEl) valEl.textContent = el.checked ? 'on' : 'off';
+    }
+  }
+  el.addEventListener('input', update);
+  update(); // init affichage
+}
+document.querySelectorAll('input[data-param]').forEach(setupControl);
+
+// Anim buttons
+document.querySelectorAll('.anim-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.anim-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    params.animMode = btn.dataset.anim;
+    _animStart = performance.now();
+  });
+});
+
+// Presets
+document.querySelectorAll('.preset-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const presetKey = btn.dataset.preset;
+    if(presetKey === 'reset' || PRESETS[presetKey] === null){
+      Object.assign(params, DEFAULTS);
+    } else {
+      Object.assign(params, PRESETS[presetKey] || {});
+    }
+    syncSlidersFromParams();
+  });
+});
+
+function syncSlidersFromParams(){
+  document.querySelectorAll('input[data-param]').forEach(el => {
+    const k = el.dataset.param;
+    if(params[k] === undefined) return;
+    if(el.type === 'range') el.value = params[k];
+    else if(el.type === 'color') el.value = params[k];
+    else if(el.type === 'checkbox') el.checked = params[k];
+    el.dispatchEvent(new Event('input'));
+  });
+}
+
+// Export
+document.getElementById('btn-export').addEventListener('click', () => {
+  const out = JSON.stringify(params, null, 2);
+  document.getElementById('export-out').value = out;
+});
+document.getElementById('btn-copy').addEventListener('click', async () => {
+  const txt = document.getElementById('export-out').value || JSON.stringify(params, null, 2);
+  try { await navigator.clipboard.writeText(txt); alert('Copié !'); }
+  catch(e){ alert('Copie échouée — sélectionne manuellement le JSON.'); }
+});
+
+// =========================================================
+// HERO RENDER
+// =========================================================
+let _animStart = performance.now();
+let _frameCount = 0;
+let _fpsLast = performance.now();
+let _fpsAcc = 0;
+let _fpsDisplay = 60;
+
+function drawTrack(ctx, p){
+  if(!p.showTrack) return;
+  // Sky/floor déjà gradient du body, on dessine juste les rails
+  const groundY = CH - 60;
+  // Track surface
+  ctx.fillStyle = '#a8553f';
+  ctx.fillRect(0, groundY, CW, CH - groundY);
+  // Lane lines blanches
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(0, groundY); ctx.lineTo(CW, groundY);
+  ctx.stroke();
+  for(let i = 1; i < 3; i++){
+    ctx.beginPath();
+    ctx.moveTo(0, groundY + i*15);
+    ctx.lineTo(CW, groundY + i*15);
+    ctx.strokeStyle = 'rgba(255,255,255,.5)';
+    ctx.stroke();
+  }
+  // Stripe défilant pour mesurer la vitesse perceptible
+  const scrollSpeedPx = (p.simKmh / 35) * 200; // px/sec à la vitesse simulée
+  const t = (performance.now() - _animStart) / 1000;
+  const dashOffset = (t * scrollSpeedPx) % 40;
+  ctx.fillStyle = '#fff';
+  for(let x = -dashOffset; x < CW + 40; x += 40){
+    ctx.fillRect(x, groundY + 7, 22, 3);
+  }
+}
+
+function drawGrid(ctx, p){
+  if(!p.showGrid) return;
+  ctx.strokeStyle = 'rgba(0,0,0,.08)';
+  ctx.lineWidth = 1;
+  for(let x = 0; x < CW; x += 20){
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, CH); ctx.stroke();
+  }
+  for(let y = 0; y < CH; y += 20){
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(CW, y); ctx.stroke();
+  }
+}
+
+// Helper : trace une forme avec contour
+function shape(ctx, fillStyle, drawFn){
+  ctx.beginPath();
+  drawFn();
+  ctx.fillStyle = fillStyle;
+  ctx.fill();
+  if(params.outlineW > 0){
+    ctx.strokeStyle = params.outline;
+    ctx.lineWidth = params.outlineW;
+    ctx.stroke();
+  }
+}
+function ellipsePath(cx, cy, rx, ry, rot){
+  ctx.beginPath();
+  ctx.ellipse(cx, cy, rx, ry, rot||0, 0, Math.PI*2);
+}
+
+// === HÉROS RUN/SPRINT ===
+function drawHeroRun(ctx, t, p, isSprint){
+  // t en secondes
+  const sc = p.scale;
+  const groundY = CH - 60;
+  // Cadence : BPM jambe → pulse par seconde = BPM/60
+  const bpmMul = isSprint ? 1.4 : 1.0;
+  const cad = (p.runBpm * bpmMul / 60) * p.globalSpeed;
+  const phase = (t * cad) * Math.PI; // un cycle complet = 2 pas
+
+  // Body bounce (down when both feet planted, up between)
+  const bounce = Math.abs(Math.sin(phase)) * p.bodyBounce;
+  // Body lean forward
+  const lean = p.leanFwd * (isSprint ? 1.3 : 1) * Math.PI/180;
+
+  // Body center (hips)
+  const cx = CW * 0.5;
+  const hipY = groundY - p.legH * sc - bounce;
+
+  ctx.save();
+  ctx.translate(cx, hipY);
+  ctx.rotate(lean);
+
+  // === Jambes (derrière le corps) ===
+  const legSwing = p.legSwing * Math.PI / 180;
+  const ang1 = Math.sin(phase) * legSwing;
+  const ang2 = Math.sin(phase + Math.PI) * legSwing;
+
+  drawLeg(ctx, p, sc, ang1, p.legH * sc, 'back');
+  drawLeg(ctx, p, sc, ang2, p.legH * sc, 'back');
+
+  // === Torse ===
+  shape(ctx, p.jersey, () => {
+    // forme conique épaule-taille
+    const sw = p.shoulderW * sc / 2;
+    const tw = p.torsoW * sc / 2;
+    const h = p.bodyH * sc;
+    ctx.moveTo(-tw, 0);
+    ctx.lineTo(tw, 0);
+    ctx.lineTo(sw, -h);
+    ctx.lineTo(-sw, -h);
+    ctx.closePath();
+  });
+  // ombrage maillot (côté gauche)
+  ctx.save();
+  ctx.clip();
+  ctx.fillStyle = p.jerseyDark + '99';
+  ctx.fillRect(-p.shoulderW * sc / 2, -p.bodyH * sc, p.shoulderW * sc / 3, p.bodyH * sc);
+  ctx.restore();
+
+  // === Bras ===
+  const armSwing = p.armSwing * Math.PI / 180;
+  const armAng1 = Math.sin(phase + Math.PI) * armSwing;
+  const armAng2 = Math.sin(phase) * armSwing;
+  const shoulderH = -p.bodyH * sc * 0.92;
+
+  drawArm(ctx, p, sc, armAng1, p.armL * sc, p.shoulderW * sc / 2 - 1, shoulderH);
+  drawArm(ctx, p, sc, armAng2, p.armL * sc, -p.shoulderW * sc / 2 + 1, shoulderH);
+
+  // === Tête + cou ===
+  const neckTop = -p.bodyH * sc - p.neckH * sc;
+  // cou (skin)
+  if(p.neckH > 0){
+    shape(ctx, p.skin, () => {
+      ctx.rect(-p.headH * sc * 0.18, -p.bodyH * sc - p.neckH * sc, p.headH * sc * 0.36, p.neckH * sc);
+    });
+  }
+  // tête (cercle / arrondi)
+  const headR = p.headH * sc / 2;
+  shape(ctx, p.skin, () => {
+    ellipsePath(0, neckTop - headR, headR * 0.85, headR);
+  });
+  // cheveux / casquette
+  shape(ctx, p.hair, () => {
+    ctx.ellipse(0, neckTop - headR - headR * 0.15, headR * 0.95, headR * 0.55, 0, Math.PI, 0);
+  });
+  // Œil
+  ctx.fillStyle = '#1a1a1a';
+  ctx.beginPath();
+  ctx.arc(headR * 0.45, neckTop - headR + 1, 1.4, 0, Math.PI*2);
+  ctx.fill();
+
+  ctx.restore();
+}
+
+function drawLeg(ctx, p, sc, ang, legLen, side){
+  ctx.save();
+  ctx.rotate(ang);
+  // cuisse + tibia (rectangle stylisé)
+  shape(ctx, p.short, () => {
+    ctx.rect(-p.legW * sc / 2, 0, p.legW * sc, legLen * 0.55);
+  });
+  // tibia (légèrement plus fin) — peau
+  shape(ctx, p.skin, () => {
+    ctx.rect(-p.legW * sc * 0.45, legLen * 0.55, p.legW * sc * 0.9, legLen * 0.45);
+  });
+  // chaussure
+  ctx.save();
+  ctx.translate(0, legLen);
+  // rotate pied pour rester ~horizontal malgré la jambe inclinée
+  ctx.rotate(-ang * 0.55);
+  shape(ctx, p.shoes, () => {
+    ctx.beginPath();
+    ctx.moveTo(-p.footL * sc * 0.25, 0);
+    ctx.lineTo(p.footL * sc * 0.75, 0);
+    ctx.lineTo(p.footL * sc * 0.85, 3.5);
+    ctx.lineTo(-p.footL * sc * 0.35, 3.5);
+    ctx.closePath();
+  });
+  // semelle
+  ctx.fillStyle = p.sole;
+  ctx.fillRect(-p.footL * sc * 0.32, 3, p.footL * sc * 1.1, 1.5);
+  ctx.restore();
+  ctx.restore();
+}
+
+function drawArm(ctx, p, sc, ang, armLen, anchorX, anchorY){
+  ctx.save();
+  ctx.translate(anchorX, anchorY);
+  ctx.rotate(ang);
+  // bras (peau)
+  shape(ctx, p.skin, () => {
+    ctx.rect(-p.armW * sc / 2, 0, p.armW * sc, armLen);
+  });
+  // main (cercle)
+  shape(ctx, p.skin, () => {
+    ctx.arc(0, armLen + p.armW * sc * 0.5, p.armW * sc * 0.55, 0, Math.PI*2);
+  });
+  ctx.restore();
+}
+
+function drawHeroIdle(ctx, t, p){
+  const sc = p.scale;
+  const groundY = CH - 60;
+  const breathe = Math.sin(t * p.idleBreatheSpd * Math.PI * 2) * p.idleBreathe;
+  const cx = CW * 0.5;
+  const hipY = groundY - p.legH * sc + breathe * 0.4;
+
+  ctx.save();
+  ctx.translate(cx, hipY);
+  // jambes droites
+  drawLeg(ctx, p, sc, 0, p.legH * sc);
+  // torse
+  shape(ctx, p.jersey, () => {
+    const sw = p.shoulderW * sc / 2;
+    const tw = p.torsoW * sc / 2;
+    const h = p.bodyH * sc;
+    ctx.moveTo(-tw, 0);
+    ctx.lineTo(tw, 0);
+    ctx.lineTo(sw, -h);
+    ctx.lineTo(-sw, -h);
+    ctx.closePath();
+  });
+  // bras le long du corps
+  const armAng = Math.PI / 2; // bras vers le bas
+  const shoulderH = -p.bodyH * sc * 0.92;
+  drawArm(ctx, p, sc, 0.1, p.armL * sc * 0.9, p.shoulderW * sc / 2 - 1, shoulderH);
+  drawArm(ctx, p, sc, -0.1, p.armL * sc * 0.9, -p.shoulderW * sc / 2 + 1, shoulderH);
+  // tête
+  const neckTop = -p.bodyH * sc - p.neckH * sc;
+  if(p.neckH > 0){
+    shape(ctx, p.skin, () => { ctx.rect(-p.headH * sc * 0.18, -p.bodyH * sc - p.neckH * sc, p.headH * sc * 0.36, p.neckH * sc); });
+  }
+  const headR = p.headH * sc / 2;
+  shape(ctx, p.skin, () => { ellipsePath(0, neckTop - headR, headR * 0.85, headR); });
+  shape(ctx, p.hair, () => { ctx.ellipse(0, neckTop - headR - headR * 0.15, headR * 0.95, headR * 0.55, 0, Math.PI, 0); });
+  ctx.fillStyle = '#1a1a1a';
+  ctx.beginPath(); ctx.arc(headR * 0.45, neckTop - headR + 1, 1.4, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
+function drawHeroJump(ctx, t, p){
+  const sc = p.scale;
+  const groundY = CH - 60;
+  // cycle du saut basé sur jumpDur
+  const dur = p.jumpDur;
+  const phase = ((t / dur) % 1);
+  // courbe : arc (sin)
+  const lift = Math.sin(phase * Math.PI) * p.jumpHeight;
+  // jambes pliées au pic
+  const tuck = Math.sin(phase * Math.PI) * p.jumpTuck;
+  const cx = CW * 0.5;
+  const legCurrentLen = p.legH * sc * (1 - tuck * 0.5);
+  const hipY = groundY - legCurrentLen - lift;
+
+  ctx.save();
+  ctx.translate(cx, hipY);
+  // lean back un peu
+  ctx.rotate(-0.1);
+  // jambes pliées (angle vers l'avant)
+  const legAng = tuck * 0.6;
+  drawLeg(ctx, p, sc, legAng, legCurrentLen);
+  drawLeg(ctx, p, sc, -legAng, legCurrentLen);
+  // torse
+  shape(ctx, p.jersey, () => {
+    const sw = p.shoulderW * sc / 2;
+    const tw = p.torsoW * sc / 2;
+    const h = p.bodyH * sc;
+    ctx.moveTo(-tw, 0);
+    ctx.lineTo(tw, 0);
+    ctx.lineTo(sw, -h);
+    ctx.lineTo(-sw, -h);
+    ctx.closePath();
+  });
+  // bras vers le haut/avant
+  const shoulderH = -p.bodyH * sc * 0.92;
+  drawArm(ctx, p, sc, -0.7 + tuck * 0.3, p.armL * sc, p.shoulderW * sc / 2 - 1, shoulderH);
+  drawArm(ctx, p, sc, -0.5 - tuck * 0.3, p.armL * sc, -p.shoulderW * sc / 2 + 1, shoulderH);
+  // tête
+  const neckTop = -p.bodyH * sc - p.neckH * sc;
+  if(p.neckH > 0){ shape(ctx, p.skin, () => { ctx.rect(-p.headH * sc * 0.18, -p.bodyH * sc - p.neckH * sc, p.headH * sc * 0.36, p.neckH * sc); }); }
+  const headR = p.headH * sc / 2;
+  shape(ctx, p.skin, () => { ellipsePath(0, neckTop - headR, headR * 0.85, headR); });
+  shape(ctx, p.hair, () => { ctx.ellipse(0, neckTop - headR - headR * 0.15, headR * 0.95, headR * 0.55, 0, Math.PI, 0); });
+  ctx.fillStyle = '#1a1a1a';
+  ctx.beginPath(); ctx.arc(headR * 0.45, neckTop - headR + 1, 1.4, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
+function drawHeroVictory(ctx, t, p){
+  const sc = p.scale;
+  const groundY = CH - 60;
+  // bounce mode "yeah"
+  const bounce = Math.abs(Math.sin(t * 4)) * 8;
+  const cx = CW * 0.5;
+  const hipY = groundY - p.legH * sc - bounce;
+  const armUp = -Math.PI * 0.85 - Math.sin(t * 3) * 0.15;
+
+  ctx.save();
+  ctx.translate(cx, hipY);
+  drawLeg(ctx, p, sc, 0, p.legH * sc);
+  shape(ctx, p.jersey, () => {
+    const sw = p.shoulderW * sc / 2;
+    const tw = p.torsoW * sc / 2;
+    const h = p.bodyH * sc;
+    ctx.moveTo(-tw, 0); ctx.lineTo(tw, 0); ctx.lineTo(sw, -h); ctx.lineTo(-sw, -h); ctx.closePath();
+  });
+  const shoulderH = -p.bodyH * sc * 0.92;
+  drawArm(ctx, p, sc, armUp, p.armL * sc, p.shoulderW * sc / 2 - 1, shoulderH);
+  drawArm(ctx, p, sc, armUp + 0.1, p.armL * sc, -p.shoulderW * sc / 2 + 1, shoulderH);
+  const neckTop = -p.bodyH * sc - p.neckH * sc;
+  const headR = p.headH * sc / 2;
+  shape(ctx, p.skin, () => { ellipsePath(0, neckTop - headR, headR * 0.85, headR); });
+  shape(ctx, p.hair, () => { ctx.ellipse(0, neckTop - headR - headR * 0.15, headR * 0.95, headR * 0.55, 0, Math.PI, 0); });
+  ctx.fillStyle = '#1a1a1a';
+  ctx.beginPath(); ctx.arc(headR * 0.45, neckTop - headR + 1, 1.4, 0, Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+
+// =========================================================
+// LOOP
+// =========================================================
+const statsEl = document.getElementById('live-stats');
+function loop(){
+  const now = performance.now();
+  const t = (now - _animStart) / 1000;
+  _frameCount++;
+  _fpsAcc++;
+  if(now - _fpsLast > 500){
+    _fpsDisplay = (_fpsAcc / ((now - _fpsLast)/1000)) | 0;
+    _fpsLast = now;
+    _fpsAcc = 0;
+  }
+  statsEl.textContent = `FPS: ${_fpsDisplay} | frame: ${_frameCount} | t: ${t.toFixed(2)}s | anim: ${params.animMode}`;
+
+  // clear
+  ctx.clearRect(0, 0, CW, CH);
+
+  // grille debug
+  drawGrid(ctx, params);
+  // piste
+  drawTrack(ctx, params);
+
+  // hero
+  switch(params.animMode){
+    case 'idle':    drawHeroIdle(ctx, t, params); break;
+    case 'run':     drawHeroRun(ctx, t, params, false); break;
+    case 'sprint':  drawHeroRun(ctx, t, params, true); break;
+    case 'jump':    drawHeroJump(ctx, t, params); break;
+    case 'victory': drawHeroVictory(ctx, t, params); break;
+  }
+
+  requestAnimationFrame(loop);
+}
+loop();
+
+</script>
+</body>
+</html>

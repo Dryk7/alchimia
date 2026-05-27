@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-<title>Foulée — Hero Lab</title>
+<title>Foulée — Hero Lab v2 (Voxel)</title>
 <style>
   :root {
     --brand-gold:#FFB030;
@@ -28,7 +28,7 @@
   /* === LEFT: Canvas + anim controls === */
   #stage{
     flex:0 0 460px;
-    background:linear-gradient(180deg,#a8d8f0 0%,#d0e8f0 60%,#e8d8a0 60%,#c0a070 100%);
+    background:linear-gradient(180deg,#a8d8f0 0%,#d0e8f0 55%,#e8d8a0 55%,#c0a070 100%);
     display:flex;
     flex-direction:column;
     align-items:center;
@@ -36,8 +36,9 @@
     border-right:2px solid rgba(255,176,48,.3);
     box-shadow:inset -4px 0 12px rgba(0,0,0,.06);
     min-height:100vh;
+    position:sticky;top:0;
   }
-  @media(max-width:900px){ #stage{flex:0 0 auto;border-right:none;border-bottom:2px solid rgba(255,176,48,.3)} }
+  @media(max-width:900px){ #stage{flex:0 0 auto;border-right:none;border-bottom:2px solid rgba(255,176,48,.3);position:static} }
   #stage h1{
     font-family:"Bebas Neue",Impact,sans-serif;
     color:var(--brand-gold);
@@ -51,6 +52,7 @@
     background:transparent;
     display:block;
     border-radius:8px;
+    image-rendering: pixelated; /* CRISP voxel rendering */
   }
   #anim-buttons{
     display:flex;gap:6px;flex-wrap:wrap;justify-content:center;
@@ -110,12 +112,13 @@
     font-size:12px;
   }
   .ctrl label{
-    flex:0 0 130px;
+    flex:0 0 140px;
     color:#444;
     font-weight:600;
   }
-  .ctrl input[type=range]{flex:1;accent-color:var(--brand-gold)}
-  .ctrl input[type=color]{width:42px;height:30px;border:1px solid #ddd;border-radius:6px;cursor:pointer;background:none}
+  .ctrl input[type=range]{flex:1;accent-color:var(--brand-gold);min-width:0}
+  .ctrl input[type=color]{width:42px;height:30px;border:1px solid #ddd;border-radius:6px;cursor:pointer;background:none;padding:0}
+  .ctrl select{flex:1;padding:5px 8px;border:1px solid #ddd;border-radius:6px;font-family:inherit;font-size:12px}
   .ctrl .val{
     flex:0 0 56px;
     text-align:right;
@@ -184,14 +187,14 @@
     cursor:pointer;
     font-family:inherit;
   }
-  .preset-btn:hover{background:#ddd}
+  .preset-btn:hover{background:var(--brand-gold);color:#fff;border-color:var(--brand-gold-dark)}
 </style>
 </head>
 <body>
 
 <!-- LEFT: scene avec le héros animé -->
 <div id="stage">
-  <h1>HERO LAB · FOULÉE</h1>
+  <h1>HERO LAB · VOXEL</h1>
   <canvas id="hero-canvas" width="380" height="440"></canvas>
   <div id="anim-buttons">
     <button class="anim-btn active" data-anim="run">RUN</button>
@@ -206,24 +209,63 @@
 <!-- RIGHT: sliders & color pickers -->
 <div id="controls">
 
-  <h2>📐 Proportions</h2>
-  <div class="ctrl"><label>Scale global</label><input type="range" data-param="scale" min="0.5" max="2" step="0.02" value="1"><span class="val">1.00×</span></div>
-  <div class="ctrl"><label>Hauteur corps</label><input type="range" data-param="bodyH" min="30" max="80" step="1" value="48"><span class="val">48</span></div>
-  <div class="ctrl"><label>Largeur épaules</label><input type="range" data-param="shoulderW" min="14" max="32" step="1" value="22"><span class="val">22</span></div>
-  <div class="ctrl"><label>Largeur torse</label><input type="range" data-param="torsoW" min="12" max="28" step="1" value="18"><span class="val">18</span></div>
-  <div class="ctrl"><label>Hauteur tête</label><input type="range" data-param="headH" min="12" max="24" step="1" value="16"><span class="val">16</span></div>
-  <div class="ctrl"><label>Cou</label><input type="range" data-param="neckH" min="0" max="8" step="0.5" value="3"><span class="val">3</span></div>
-  <div class="ctrl"><label>Longueur jambe</label><input type="range" data-param="legH" min="20" max="60" step="1" value="38"><span class="val">38</span></div>
-  <div class="ctrl"><label>Largeur jambe</label><input type="range" data-param="legW" min="3" max="10" step="0.5" value="5"><span class="val">5</span></div>
-  <div class="ctrl"><label>Longueur bras</label><input type="range" data-param="armL" min="14" max="40" step="1" value="26"><span class="val">26</span></div>
-  <div class="ctrl"><label>Largeur bras</label><input type="range" data-param="armW" min="3" max="9" step="0.5" value="4"><span class="val">4</span></div>
-  <div class="ctrl"><label>Pied (long.)</label><input type="range" data-param="footL" min="6" max="18" step="1" value="11"><span class="val">11</span></div>
+  <h2>🎭 Presets visuels</h2>
+  <div class="preset-buttons">
+    <button class="preset-btn" data-preset="reset">↺ Défaut</button>
+    <button class="preset-btn" data-preset="sprinter">⚡ Sprinter Olympics</button>
+    <button class="preset-btn" data-preset="marathonien">🏃 Marathonien</button>
+    <button class="preset-btn" data-preset="chibi">🌸 Chibi Cute</button>
+    <button class="preset-btn" data-preset="crossy">🟦 Crossy Style</button>
+    <button class="preset-btn" data-preset="bouncy">🎈 Bouncy</button>
+  </div>
 
-  <h2>🎨 Couleurs</h2>
+  <h2>📐 Proportions</h2>
+  <div class="ctrl"><label>Scale global</label><input type="range" data-param="scale" min="0.5" max="2.5" step="0.02" value="1"><span class="val">1.00×</span></div>
+  <div class="ctrl"><label>Hauteur tête</label><input type="range" data-param="headH" min="10" max="32" step="1" value="18"><span class="val">18</span></div>
+  <div class="ctrl"><label>Largeur tête</label><input type="range" data-param="headW" min="10" max="32" step="1" value="18"><span class="val">18</span></div>
+  <div class="ctrl"><label>Cou</label><input type="range" data-param="neckH" min="0" max="8" step="0.5" value="2"><span class="val">2</span></div>
+  <div class="ctrl"><label>Hauteur torse</label><input type="range" data-param="bodyH" min="20" max="70" step="1" value="32"><span class="val">32</span></div>
+  <div class="ctrl"><label>Largeur épaules</label><input type="range" data-param="shoulderW" min="14" max="40" step="1" value="22"><span class="val">22</span></div>
+  <div class="ctrl"><label>Largeur taille</label><input type="range" data-param="torsoW" min="10" max="34" step="1" value="18"><span class="val">18</span></div>
+  <div class="ctrl"><label>Forme corps V</label><input type="range" data-param="bodyV" min="0" max="1" step="0.05" value="0.4"><span class="val">0.4</span></div>
+  <div class="ctrl"><label>Chibi (tête XL)</label><input type="range" data-param="chibi" min="0" max="1" step="0.05" value="0"><span class="val">0</span></div>
+  <div class="ctrl"><label>Hauteur jambe</label><input type="range" data-param="legH" min="16" max="60" step="1" value="32"><span class="val">32</span></div>
+  <div class="ctrl"><label>Largeur jambe</label><input type="range" data-param="legW" min="3" max="14" step="0.5" value="6"><span class="val">6</span></div>
+  <div class="ctrl"><label>Mollets (galbe)</label><input type="range" data-param="calfDef" min="0" max="1" step="0.05" value="0.25"><span class="val">0.25</span></div>
+  <div class="ctrl"><label>Longueur bras</label><input type="range" data-param="armL" min="12" max="40" step="1" value="22"><span class="val">22</span></div>
+  <div class="ctrl"><label>Largeur bras</label><input type="range" data-param="armW" min="3" max="12" step="0.5" value="5"><span class="val">5</span></div>
+  <div class="ctrl"><label>Biceps (galbe)</label><input type="range" data-param="bicepDef" min="0" max="1" step="0.05" value="0.2"><span class="val">0.2</span></div>
+  <div class="ctrl"><label>Pied (long.)</label><input type="range" data-param="footL" min="6" max="20" step="1" value="11"><span class="val">11</span></div>
+  <div class="ctrl"><label>Pied (haut.)</label><input type="range" data-param="footH" min="2" max="8" step="0.5" value="4"><span class="val">4</span></div>
+
+  <h2>🧑 Visage</h2>
+  <div class="ctrl"><label>Style cheveux</label><select data-param="hairStyle">
+    <option value="cap">Casquette</option>
+    <option value="short">Courts</option>
+    <option value="long">Longs</option>
+    <option value="ponytail">Queue de cheval</option>
+    <option value="headband">Bandeau</option>
+    <option value="bald">Chauve</option>
+  </select><span class="val">cap</span></div>
+  <div class="ctrl"><label>Œil — taille</label><input type="range" data-param="eyeSize" min="0.5" max="3" step="0.1" value="1.4"><span class="val">1.4</span></div>
+  <div class="ctrl"><label>Œil — position X</label><input type="range" data-param="eyeX" min="0.1" max="0.7" step="0.02" value="0.30"><span class="val">0.30</span></div>
+  <div class="ctrl"><label>Œil — position Y</label><input type="range" data-param="eyeY" min="0" max="1" step="0.05" value="0.50"><span class="val">0.50</span></div>
+  <div class="ctrl"><label>Bouche — largeur</label><input type="range" data-param="mouthW" min="0" max="10" step="0.5" value="3.5"><span class="val">3.5</span></div>
+  <div class="ctrl"><label>Bouche — position Y</label><input type="range" data-param="mouthY" min="0.5" max="1" step="0.02" value="0.78"><span class="val">0.78</span></div>
+  <div class="ctrl"><label>Expression</label><select data-param="expression">
+    <option value="neutral">Neutre</option>
+    <option value="smile">Sourire</option>
+    <option value="focus">Concentré</option>
+    <option value="happy">Heureux</option>
+  </select><span class="val">neutral</span></div>
+  <div class="ctrl"><label>Sourcils visibles</label><input type="checkbox" data-param="showBrows" checked><span class="val">on</span></div>
+
+  <h2>🎨 Couleurs (voxel solid)</h2>
   <div class="ctrl"><label>Peau</label><input type="color" data-param="skin" value="#f4c89b"><span class="val">peau</span></div>
   <div class="ctrl"><label>Maillot</label><input type="color" data-param="jersey" value="#FFB030"><span class="val">maillot</span></div>
-  <div class="ctrl"><label>Maillot ombrage</label><input type="color" data-param="jerseyDark" value="#c88810"><span class="val">ombre</span></div>
+  <div class="ctrl"><label>Maillot bande</label><input type="color" data-param="jerseyBand" value="#1a2b4d"><span class="val">bande</span></div>
   <div class="ctrl"><label>Short</label><input type="color" data-param="short" value="#1a2b4d"><span class="val">short</span></div>
+  <div class="ctrl"><label>Short bande</label><input type="color" data-param="shortBand" value="#FFB030"><span class="val">bande</span></div>
   <div class="ctrl"><label>Cheveux/casquette</label><input type="color" data-param="hair" value="#2a1810"><span class="val">tête</span></div>
   <div class="ctrl"><label>Chaussures</label><input type="color" data-param="shoes" value="#ffd060"><span class="val">shoes</span></div>
   <div class="ctrl"><label>Semelles</label><input type="color" data-param="sole" value="#1a2b4d"><span class="val">sole</span></div>
@@ -232,16 +274,17 @@
 
   <h2>🏃 Animation RUN/SPRINT</h2>
   <div class="ctrl"><label>Cadence (BPM jambe)</label><input type="range" data-param="runBpm" min="60" max="280" step="5" value="170"><span class="val">170</span></div>
-  <div class="ctrl"><label>Amplitude jambes</label><input type="range" data-param="legSwing" min="10" max="55" step="1" value="32"><span class="val">32°</span></div>
-  <div class="ctrl"><label>Amplitude bras</label><input type="range" data-param="armSwing" min="10" max="60" step="1" value="38"><span class="val">38°</span></div>
-  <div class="ctrl"><label>Bounce corps (px)</label><input type="range" data-param="bodyBounce" min="0" max="12" step="0.5" value="3"><span class="val">3</span></div>
-  <div class="ctrl"><label>Penché avant (°)</label><input type="range" data-param="leanFwd" min="-5" max="20" step="1" value="6"><span class="val">6°</span></div>
-  <div class="ctrl"><label>Pas (px)</label><input type="range" data-param="strideLen" min="0" max="30" step="1" value="12"><span class="val">12</span></div>
+  <div class="ctrl"><label>Amplitude jambes</label><input type="range" data-param="legSwing" min="10" max="65" step="1" value="38"><span class="val">38°</span></div>
+  <div class="ctrl"><label>Amplitude bras</label><input type="range" data-param="armSwing" min="10" max="80" step="1" value="48"><span class="val">48°</span></div>
+  <div class="ctrl"><label>Bounce corps (px)</label><input type="range" data-param="bodyBounce" min="0" max="14" step="0.5" value="3.5"><span class="val">3.5</span></div>
+  <div class="ctrl"><label>Penché avant (°)</label><input type="range" data-param="leanFwd" min="-5" max="25" step="1" value="8"><span class="val">8°</span></div>
+  <div class="ctrl"><label>Coude plié (°)</label><input type="range" data-param="elbowBend" min="0" max="90" step="2" value="40"><span class="val">40°</span></div>
+  <div class="ctrl"><label>Genou plié</label><input type="range" data-param="kneeBend" min="0" max="1" step="0.05" value="0.3"><span class="val">0.3</span></div>
 
   <h2>⬆️ Saut JUMP</h2>
-  <div class="ctrl"><label>Hauteur saut (px)</label><input type="range" data-param="jumpHeight" min="20" max="120" step="2" value="70"><span class="val">70</span></div>
+  <div class="ctrl"><label>Hauteur saut (px)</label><input type="range" data-param="jumpHeight" min="20" max="140" step="2" value="80"><span class="val">80</span></div>
   <div class="ctrl"><label>Durée saut (s)</label><input type="range" data-param="jumpDur" min="0.4" max="1.6" step="0.05" value="0.9"><span class="val">0.9</span></div>
-  <div class="ctrl"><label>Tuck (jambes pliées)</label><input type="range" data-param="jumpTuck" min="0" max="1" step="0.05" value="0.55"><span class="val">0.55</span></div>
+  <div class="ctrl"><label>Tuck (jambes pliées)</label><input type="range" data-param="jumpTuck" min="0" max="1" step="0.05" value="0.6"><span class="val">0.6</span></div>
 
   <h2>😶 IDLE</h2>
   <div class="ctrl"><label>Respiration (px)</label><input type="range" data-param="idleBreathe" min="0" max="6" step="0.25" value="1.75"><span class="val">1.75</span></div>
@@ -254,14 +297,8 @@
   <div class="ctrl"><label>Vitesse simulée (km/h)</label><input type="range" data-param="simKmh" min="0" max="40" step="1" value="15"><span class="val">15</span></div>
 
   <div class="actions">
-    <h2 style="margin:0;border:none">📤 Export / Presets</h2>
-    <div class="preset-buttons">
-      <button class="preset-btn" data-preset="current">Actuel (jeu)</button>
-      <button class="preset-btn" data-preset="athlete">Athlète épuré</button>
-      <button class="preset-btn" data-preset="bouncy">Bouncy cartoon</button>
-      <button class="preset-btn" data-preset="reset">Reset défaut</button>
-    </div>
-    <button class="btn-primary" id="btn-export">EXPORT JSON</button>
+    <h2 style="margin:0;border:none">📤 Export</h2>
+    <button class="btn-primary" id="btn-export">GÉNÉRER LE JSON</button>
     <button class="btn-secondary" id="btn-copy">COPIER DANS LE PRESSE-PAPIER</button>
     <textarea id="export-out" placeholder="Le JSON exporté apparaîtra ici…" readonly></textarea>
   </div>
@@ -272,20 +309,27 @@
 'use strict';
 
 // =========================================================
-// PARAMS — sliders/inputs default values
+// PARAMS — defaults
 // =========================================================
 const params = {
-  // proportions
-  scale: 1, bodyH: 48, shoulderW: 22, torsoW: 18, headH: 16, neckH: 3,
-  legH: 38, legW: 5, armL: 26, armW: 4, footL: 11,
+  // proportions voxel
+  scale: 1, headH: 18, headW: 18, neckH: 2, bodyH: 32, shoulderW: 22, torsoW: 18,
+  bodyV: 0.4, chibi: 0,
+  legH: 32, legW: 6, calfDef: 0.25, armL: 22, armW: 5, bicepDef: 0.2,
+  footL: 11, footH: 4,
+  // visage
+  hairStyle: 'cap', eyeSize: 1.4, eyeX: 0.30, eyeY: 0.50,
+  mouthW: 3.5, mouthY: 0.78, expression: 'neutral', showBrows: true,
   // colors
-  skin:'#f4c89b', jersey:'#FFB030', jerseyDark:'#c88810',
-  short:'#1a2b4d', hair:'#2a1810', shoes:'#ffd060', sole:'#1a2b4d',
+  skin:'#f4c89b', jersey:'#FFB030', jerseyBand:'#1a2b4d',
+  short:'#1a2b4d', shortBand:'#FFB030',
+  hair:'#2a1810', shoes:'#ffd060', sole:'#1a2b4d',
   outline:'#1a1a1a', outlineW: 1.25,
   // run
-  runBpm: 170, legSwing: 32, armSwing: 38, bodyBounce: 3, leanFwd: 6, strideLen: 12,
+  runBpm: 170, legSwing: 38, armSwing: 48, bodyBounce: 3.5,
+  leanFwd: 8, elbowBend: 40, kneeBend: 0.3,
   // jump
-  jumpHeight: 70, jumpDur: 0.9, jumpTuck: 0.55,
+  jumpHeight: 80, jumpDur: 0.9, jumpTuck: 0.6,
   // idle
   idleBreathe: 1.75, idleBreatheSpd: 0.9,
   // scene
@@ -294,24 +338,53 @@ const params = {
   animMode: 'run',
 };
 
+const DEFAULTS = JSON.parse(JSON.stringify(params));
+
 // =========================================================
-// PRESETS
+// PRESETS — full visual identities
 // =========================================================
 const PRESETS = {
-  current: { /* defaults */ },
-  athlete: {
-    bodyH: 52, shoulderW: 24, torsoW: 16, headH: 14, legH: 44, legW: 5, armL: 28, armW: 4,
-    runBpm: 180, legSwing: 42, armSwing: 48, bodyBounce: 2, leanFwd: 10, strideLen: 16,
-    jumpHeight: 85, jumpDur: 0.85,
+  sprinter: {
+    scale: 1.1, headH: 16, headW: 16, bodyH: 36, shoulderW: 26, torsoW: 16,
+    bodyV: 0.7, chibi: 0, legH: 42, legW: 6, calfDef: 0.5, armL: 26, armW: 5, bicepDef: 0.5,
+    runBpm: 200, legSwing: 48, armSwing: 58, bodyBounce: 2, leanFwd: 14, elbowBend: 60,
+    jersey: '#FFB030', short: '#1a2b4d', shoes: '#ffe080',
+    hairStyle: 'short', expression: 'focus',
+  },
+  marathonien: {
+    scale: 1, headH: 17, headW: 16, bodyH: 36, shoulderW: 20, torsoW: 14,
+    bodyV: 0.3, chibi: 0, legH: 44, legW: 5, armL: 24, armW: 4,
+    runBpm: 140, legSwing: 30, armSwing: 35, bodyBounce: 1.5, leanFwd: 5, elbowBend: 30,
+    jersey: '#4a9fd9', short: '#1a2b4d', shoes: '#ff6060',
+    hairStyle: 'headband', expression: 'neutral',
+  },
+  chibi: {
+    scale: 1.05, headH: 26, headW: 28, bodyH: 22, shoulderW: 20, torsoW: 18,
+    bodyV: 0.2, chibi: 0.7, legH: 18, legW: 7, armL: 16, armW: 6, footL: 13, footH: 5,
+    eyeSize: 2.6, eyeY: 0.55, mouthY: 0.82,
+    runBpm: 160, legSwing: 26, armSwing: 32, bodyBounce: 5, leanFwd: 3,
+    jersey: '#FFB030', short: '#e6557a',
+    hairStyle: 'cap', expression: 'happy',
+  },
+  crossy: {
+    scale: 1.1, headH: 22, headW: 22, neckH: 0, bodyH: 26, shoulderW: 22, torsoW: 22,
+    bodyV: 0, chibi: 0.2, legH: 22, legW: 9, armL: 18, armW: 8, footL: 10, footH: 5,
+    calfDef: 0, bicepDef: 0,
+    eyeSize: 1.6, eyeY: 0.45, mouthW: 0, // bouche cachée style mascot
+    runBpm: 130, legSwing: 22, armSwing: 24, bodyBounce: 6, leanFwd: 0, elbowBend: 0, kneeBend: 0,
+    outlineW: 0, // crisp voxel sans contour
+    jersey: '#FFB030', jerseyBand: '#fff', short: '#1a2b4d', shortBand: '#fff',
+    hairStyle: 'cap',
   },
   bouncy: {
-    bodyH: 42, shoulderW: 26, torsoW: 22, headH: 20, legH: 32, legW: 7, armL: 22, armW: 6, footL: 13,
-    runBpm: 150, legSwing: 25, armSwing: 30, bodyBounce: 8, leanFwd: 2, strideLen: 8,
-    jumpHeight: 100, jumpDur: 1.1, jumpTuck: 0.75,
+    scale: 1, headH: 22, headW: 22, bodyH: 26, shoulderW: 26, torsoW: 22,
+    bodyV: 0.1, chibi: 0.3, legH: 22, legW: 8, armL: 18, armW: 7, footL: 12,
+    runBpm: 130, legSwing: 22, armSwing: 28, bodyBounce: 9, leanFwd: 2, elbowBend: 20,
+    jumpHeight: 105, jumpDur: 1.1, jumpTuck: 0.8,
+    jersey: '#ff6090', short: '#1a2b4d',
+    hairStyle: 'long', expression: 'happy',
   },
-  reset: null, // marker → reset to defaults
 };
-const DEFAULTS = { ...params };
 
 // =========================================================
 // CANVAS SETUP
@@ -334,7 +407,7 @@ function setupControl(el){
       params[key] = v;
       if(valEl){
         if(key === 'scale' || key === 'globalSpeed') valEl.textContent = v.toFixed(2)+'×';
-        else if(key === 'legSwing' || key === 'armSwing' || key === 'leanFwd') valEl.textContent = v+'°';
+        else if(key === 'legSwing' || key === 'armSwing' || key === 'leanFwd' || key === 'elbowBend') valEl.textContent = v+'°';
         else valEl.textContent = (Number.isInteger(v) ? v : v.toFixed(2)) + '';
       }
     } else if(el.type === 'color'){
@@ -342,12 +415,16 @@ function setupControl(el){
     } else if(el.type === 'checkbox'){
       params[key] = el.checked;
       if(valEl) valEl.textContent = el.checked ? 'on' : 'off';
+    } else if(el.tagName === 'SELECT'){
+      params[key] = el.value;
+      if(valEl) valEl.textContent = el.value;
     }
   }
   el.addEventListener('input', update);
-  update(); // init affichage
+  el.addEventListener('change', update);
+  update();
 }
-document.querySelectorAll('input[data-param]').forEach(setupControl);
+document.querySelectorAll('input[data-param], select[data-param]').forEach(setupControl);
 
 // Anim buttons
 document.querySelectorAll('.anim-btn').forEach(btn => {
@@ -362,23 +439,20 @@ document.querySelectorAll('.anim-btn').forEach(btn => {
 // Presets
 document.querySelectorAll('.preset-btn').forEach(btn => {
   btn.addEventListener('click', () => {
-    const presetKey = btn.dataset.preset;
-    if(presetKey === 'reset' || PRESETS[presetKey] === null){
-      Object.assign(params, DEFAULTS);
-    } else {
-      Object.assign(params, PRESETS[presetKey] || {});
-    }
+    const k = btn.dataset.preset;
+    if(k === 'reset'){ Object.assign(params, DEFAULTS); }
+    else { Object.assign(params, DEFAULTS, PRESETS[k] || {}); }
     syncSlidersFromParams();
   });
 });
 
 function syncSlidersFromParams(){
-  document.querySelectorAll('input[data-param]').forEach(el => {
+  document.querySelectorAll('input[data-param], select[data-param]').forEach(el => {
     const k = el.dataset.param;
     if(params[k] === undefined) return;
-    if(el.type === 'range') el.value = params[k];
-    else if(el.type === 'color') el.value = params[k];
+    if(el.type === 'range' || el.type === 'color') el.value = params[k];
     else if(el.type === 'checkbox') el.checked = params[k];
+    else if(el.tagName === 'SELECT') el.value = params[k];
     el.dispatchEvent(new Event('input'));
   });
 }
@@ -391,11 +465,11 @@ document.getElementById('btn-export').addEventListener('click', () => {
 document.getElementById('btn-copy').addEventListener('click', async () => {
   const txt = document.getElementById('export-out').value || JSON.stringify(params, null, 2);
   try { await navigator.clipboard.writeText(txt); alert('Copié !'); }
-  catch(e){ alert('Copie échouée — sélectionne manuellement le JSON.'); }
+  catch(e){ document.getElementById('export-out').value = txt; alert('Copie clipboard échouée — sélectionne manuellement le JSON.'); }
 });
 
 // =========================================================
-// HERO RENDER
+// === VOXEL DRAW HELPERS ===
 // =========================================================
 let _animStart = performance.now();
 let _frameCount = 0;
@@ -403,53 +477,30 @@ let _fpsLast = performance.now();
 let _fpsAcc = 0;
 let _fpsDisplay = 60;
 
-function drawTrack(ctx, p){
-  if(!p.showTrack) return;
-  // Sky/floor déjà gradient du body, on dessine juste les rails
-  const groundY = CH - 60;
-  // Track surface
-  ctx.fillStyle = '#a8553f';
-  ctx.fillRect(0, groundY, CW, CH - groundY);
-  // Lane lines blanches
-  ctx.strokeStyle = '#fff';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(0, groundY); ctx.lineTo(CW, groundY);
-  ctx.stroke();
-  for(let i = 1; i < 3; i++){
-    ctx.beginPath();
-    ctx.moveTo(0, groundY + i*15);
-    ctx.lineTo(CW, groundY + i*15);
-    ctx.strokeStyle = 'rgba(255,255,255,.5)';
-    ctx.stroke();
-  }
-  // Stripe défilant pour mesurer la vitesse perceptible
-  const scrollSpeedPx = (p.simKmh / 35) * 200; // px/sec à la vitesse simulée
-  const t = (performance.now() - _animStart) / 1000;
-  const dashOffset = (t * scrollSpeedPx) % 40;
-  ctx.fillStyle = '#fff';
-  for(let x = -dashOffset; x < CW + 40; x += 40){
-    ctx.fillRect(x, groundY + 7, 22, 3);
+// dessine un rectangle plein avec contour (voxel block)
+function vox(x, y, w, h, color){
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, w, h);
+  if(params.outlineW > 0){
+    ctx.strokeStyle = params.outline;
+    ctx.lineWidth = params.outlineW;
+    ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
   }
 }
 
-function drawGrid(ctx, p){
-  if(!p.showGrid) return;
-  ctx.strokeStyle = 'rgba(0,0,0,.08)';
-  ctx.lineWidth = 1;
-  for(let x = 0; x < CW; x += 20){
-    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, CH); ctx.stroke();
-  }
-  for(let y = 0; y < CH; y += 20){
-    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(CW, y); ctx.stroke();
-  }
-}
-
-// Helper : trace une forme avec contour
-function shape(ctx, fillStyle, drawFn){
+// dessine un rectangle plein avec un bord cassé en haut (trapèze) — pour épaules
+function trapezeVox(xCenter, y, wTop, wBot, h, color){
+  const x1 = xCenter - wTop/2;
+  const x2 = xCenter + wTop/2;
+  const x3 = xCenter + wBot/2;
+  const x4 = xCenter - wBot/2;
   ctx.beginPath();
-  drawFn();
-  ctx.fillStyle = fillStyle;
+  ctx.moveTo(x1, y);
+  ctx.lineTo(x2, y);
+  ctx.lineTo(x3, y + h);
+  ctx.lineTo(x4, y + h);
+  ctx.closePath();
+  ctx.fillStyle = color;
   ctx.fill();
   if(params.outlineW > 0){
     ctx.strokeStyle = params.outline;
@@ -457,27 +508,244 @@ function shape(ctx, fillStyle, drawFn){
     ctx.stroke();
   }
 }
-function ellipsePath(cx, cy, rx, ry, rot){
-  ctx.beginPath();
-  ctx.ellipse(cx, cy, rx, ry, rot||0, 0, Math.PI*2);
+
+// =========================================================
+// HERO DRAW (voxel style)
+// =========================================================
+function drawTrack(p){
+  if(!p.showTrack) return;
+  const groundY = CH - 60;
+  ctx.fillStyle = '#a8553f';
+  ctx.fillRect(0, groundY, CW, CH - groundY);
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, groundY, CW, 2);
+  const scrollSpeedPx = (p.simKmh / 35) * 200;
+  const t = (performance.now() - _animStart) / 1000;
+  const dashOffset = (t * scrollSpeedPx) % 40;
+  ctx.fillStyle = '#fff';
+  for(let x = -dashOffset; x < CW + 40; x += 40){
+    ctx.fillRect(x, groundY + 14, 22, 3);
+  }
 }
 
-// === HÉROS RUN/SPRINT ===
-function drawHeroRun(ctx, t, p, isSprint){
-  // t en secondes
+function drawGrid(p){
+  if(!p.showGrid) return;
+  ctx.strokeStyle = 'rgba(0,0,0,.08)';
+  ctx.lineWidth = 1;
+  for(let x = 0; x < CW; x += 20){ ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, CH); ctx.stroke(); }
+  for(let y = 0; y < CH; y += 20){ ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(CW, y); ctx.stroke(); }
+}
+
+// === FACE ===
+function drawFace(p, hx, hy, hw, hh){
+  // hx,hy = top-left of head box
+  // Yeux
+  const eyeS = p.eyeSize;
+  const eyeY = hy + hh * p.eyeY;
+  const eyeX1 = hx + hw * (0.5 - p.eyeX);
+  const eyeX2 = hx + hw * (0.5 + p.eyeX);
+
+  // Sourcils (au dessus des yeux)
+  if(p.showBrows){
+    ctx.fillStyle = p.outline;
+    let browTilt = 0;
+    if(p.expression === 'focus') browTilt = 1;
+    if(p.expression === 'happy') browTilt = -0.5;
+    const browY = eyeY - eyeS - 1.5;
+    // Sourcil gauche (descend vers center si focus)
+    ctx.fillRect(eyeX1 - eyeS - 1, browY + browTilt, eyeS * 2 + 2, 1.5);
+    ctx.fillRect(eyeX2 - eyeS - 1, browY + browTilt, eyeS * 2 + 2, 1.5);
+  }
+
+  // Yeux (carrés voxel)
+  ctx.fillStyle = p.outline;
+  ctx.fillRect(eyeX1 - eyeS, eyeY - eyeS, eyeS * 2, eyeS * 2);
+  ctx.fillRect(eyeX2 - eyeS, eyeY - eyeS, eyeS * 2, eyeS * 2);
+  // Reflet blanc dans œil (pour donner du vivant)
+  if(eyeS >= 1.5){
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(eyeX1 - eyeS + eyeS * 0.4, eyeY - eyeS + eyeS * 0.2, eyeS * 0.5, eyeS * 0.5);
+    ctx.fillRect(eyeX2 - eyeS + eyeS * 0.4, eyeY - eyeS + eyeS * 0.2, eyeS * 0.5, eyeS * 0.5);
+  }
+
+  // Bouche
+  if(p.mouthW > 0){
+    const mouthCenterY = hy + hh * p.mouthY;
+    const mw = p.mouthW;
+    if(p.expression === 'smile' || p.expression === 'happy'){
+      // sourire courbé : 3 rectangles formant un V renversé
+      ctx.fillStyle = p.outline;
+      ctx.fillRect(hx + hw/2 - mw/2, mouthCenterY, mw, 1.5);
+      ctx.fillRect(hx + hw/2 - mw/2 - 1, mouthCenterY - 1, 1.5, 1.5);
+      ctx.fillRect(hx + hw/2 + mw/2 - 0.5, mouthCenterY - 1, 1.5, 1.5);
+    } else if(p.expression === 'focus'){
+      // ligne fine droite
+      ctx.fillStyle = p.outline;
+      ctx.fillRect(hx + hw/2 - mw/2, mouthCenterY, mw, 1);
+    } else {
+      // neutre : petit rectangle
+      ctx.fillStyle = p.outline;
+      ctx.fillRect(hx + hw/2 - mw/2, mouthCenterY, mw, 1.5);
+    }
+  }
+}
+
+// === HAIR/CAP ===
+function drawHair(p, hx, hy, hw, hh){
+  const style = p.hairStyle;
+  if(style === 'bald') return;
+  if(style === 'cap'){
+    // casquette : block au-dessus + visière qui dépasse à droite
+    vox(hx - 1, hy - 4, hw + 2, 6, p.hair);
+    // visière
+    vox(hx + hw - 2, hy + 2, 6, 2, p.hair);
+  } else if(style === 'short'){
+    // cheveux courts : block fin au-dessus + côtés
+    vox(hx, hy - 3, hw, 5, p.hair);
+  } else if(style === 'long'){
+    // cheveux longs : grand block + descend sur le cou
+    vox(hx - 2, hy - 3, hw + 4, hh * 0.7, p.hair);
+    vox(hx - 1, hy + hh * 0.7 - 3, hw + 2, hh * 0.5, p.hair);
+  } else if(style === 'ponytail'){
+    // queue de cheval : block normal + queue derrière
+    vox(hx, hy - 3, hw, 5, p.hair);
+    vox(hx - 4, hy + 2, 4, hh * 0.8, p.hair);
+  } else if(style === 'headband'){
+    // bandeau : juste une bande au front
+    vox(hx, hy + 2, hw, 3, p.hair);
+  }
+}
+
+// === LEG ===
+function drawLeg(p, sc, ang, legH, kneeBend){
+  // ang en radians, depuis la hanche
+  // dessine cuisse + tibia + pied
+  const cuisseH = legH * (0.5 + (1 - kneeBend) * 0.1);
+  const tibiaH = legH - cuisseH;
+  const legWpx = p.legW * sc;
+  ctx.save();
+  ctx.rotate(ang);
+  // CUISSE (short)
+  vox(-legWpx/2, 0, legWpx, cuisseH, p.short);
+  // bande short (bas)
+  vox(-legWpx/2, cuisseH - 2, legWpx, 1.5, p.shortBand);
+  ctx.translate(0, cuisseH);
+  ctx.rotate(kneeBend * 0.8); // genou plié
+  // TIBIA (peau) — galbé selon calfDef
+  const calfBulge = p.calfDef * 1.5;
+  ctx.beginPath();
+  ctx.moveTo(-legWpx/2, 0);
+  ctx.lineTo(legWpx/2, 0);
+  ctx.lineTo(legWpx/2 + calfBulge, tibiaH * 0.55);
+  ctx.lineTo(legWpx/2, tibiaH);
+  ctx.lineTo(-legWpx/2, tibiaH);
+  ctx.lineTo(-legWpx/2 - calfBulge * 0.5, tibiaH * 0.55);
+  ctx.closePath();
+  ctx.fillStyle = p.skin;
+  ctx.fill();
+  if(p.outlineW > 0){ ctx.strokeStyle = p.outline; ctx.lineWidth = p.outlineW; ctx.stroke(); }
+  // PIED
+  ctx.translate(0, tibiaH);
+  ctx.rotate(-(ang + kneeBend * 0.8) * 0.55); // pied ~horizontal
+  vox(-p.footL * sc * 0.35, 0, p.footL * sc, p.footH, p.shoes);
+  // semelle
+  ctx.fillStyle = p.sole;
+  ctx.fillRect(-p.footL * sc * 0.35, p.footH, p.footL * sc, 1.5);
+  ctx.restore();
+}
+
+// === ARM ===
+function drawArm(p, sc, ang, armL, elbowBend, anchorX, anchorY){
+  ctx.save();
+  ctx.translate(anchorX, anchorY);
+  ctx.rotate(ang);
+  const armWpx = p.armW * sc;
+  const biceps = armL * 0.5;
+  const forearm = armL * 0.5;
+  // BICEP (maillot couleur)
+  const bicepBulge = p.bicepDef * 1.2;
+  ctx.beginPath();
+  ctx.moveTo(-armWpx/2, 0);
+  ctx.lineTo(armWpx/2, 0);
+  ctx.lineTo(armWpx/2 + bicepBulge, biceps * 0.5);
+  ctx.lineTo(armWpx/2, biceps);
+  ctx.lineTo(-armWpx/2, biceps);
+  ctx.lineTo(-armWpx/2 - bicepBulge * 0.5, biceps * 0.5);
+  ctx.closePath();
+  ctx.fillStyle = p.jersey;
+  ctx.fill();
+  if(p.outlineW > 0){ ctx.strokeStyle = p.outline; ctx.lineWidth = p.outlineW; ctx.stroke(); }
+  // COUDE PLIE
+  ctx.translate(0, biceps);
+  ctx.rotate(elbowBend * Math.PI / 180);
+  // AVANT-BRAS (skin)
+  vox(-armWpx/2, 0, armWpx, forearm, p.skin);
+  // MAIN (carré)
+  vox(-armWpx/2 - 0.5, forearm, armWpx + 1, armWpx + 1, p.skin);
+  ctx.restore();
+}
+
+// === BODY (TORSE) ===
+function drawTorso(p, sc, hipY){
+  // bodyV : 0 = carré (égal sw/torsoW), 1 = V (épaules très larges, taille fine)
+  const sw = p.shoulderW * sc / 2;
+  const tw = p.torsoW * sc / 2;
+  const h = p.bodyH * sc;
+  // chibi : aplati le torse
+  const hMul = 1 - p.chibi * 0.5;
+  const torsoTopY = -h * hMul;
+  // trapèze épaules-taille
+  ctx.beginPath();
+  ctx.moveTo(-tw, 0);
+  ctx.lineTo(tw, 0);
+  ctx.lineTo(sw, torsoTopY);
+  ctx.lineTo(-sw, torsoTopY);
+  ctx.closePath();
+  ctx.fillStyle = p.jersey;
+  ctx.fill();
+  if(p.outlineW > 0){ ctx.strokeStyle = p.outline; ctx.lineWidth = p.outlineW; ctx.stroke(); }
+  // Bande maillot (centre vertical)
+  ctx.fillStyle = p.jerseyBand;
+  ctx.fillRect(-1, torsoTopY, 2, -torsoTopY);
+  // Numéro F sur le dossard (lettrage simple)
+  if(p.chibi < 0.6){
+    ctx.fillStyle = p.jerseyBand;
+    ctx.font = `bold ${Math.max(8, 10 * sc)}px "Bebas Neue", monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('F', 0, torsoTopY * 0.5);
+  }
+}
+
+// === HEAD ===
+function drawHead(p, sc, neckTopY){
+  const headW = p.headW * sc * (1 + p.chibi * 0.4);
+  const headH = p.headH * sc * (1 + p.chibi * 0.4);
+  const headX = -headW / 2;
+  const headY = neckTopY - headH;
+  // Cou (skin)
+  if(p.neckH > 0){
+    vox(-headW * 0.18, neckTopY, headW * 0.36, p.neckH * sc, p.skin);
+  }
+  // Visage (skin) — rectangle voxel
+  vox(headX, headY, headW, headH, p.skin);
+  // Hair par dessus
+  drawHair(p, headX, headY, headW, headH);
+  // Face features
+  drawFace(p, headX, headY, headW, headH);
+}
+
+// =========================================================
+// ANIMS
+// =========================================================
+function drawHeroRun(t, p, isSprint){
   const sc = p.scale;
   const groundY = CH - 60;
-  // Cadence : BPM jambe → pulse par seconde = BPM/60
   const bpmMul = isSprint ? 1.4 : 1.0;
   const cad = (p.runBpm * bpmMul / 60) * p.globalSpeed;
-  const phase = (t * cad) * Math.PI; // un cycle complet = 2 pas
-
-  // Body bounce (down when both feet planted, up between)
+  const phase = (t * cad) * Math.PI;
   const bounce = Math.abs(Math.sin(phase)) * p.bodyBounce;
-  // Body lean forward
-  const lean = p.leanFwd * (isSprint ? 1.3 : 1) * Math.PI/180;
-
-  // Body center (hips)
+  const lean = p.leanFwd * (isSprint ? 1.3 : 1) * Math.PI / 180;
   const cx = CW * 0.5;
   const hipY = groundY - p.legH * sc - bounce;
 
@@ -485,115 +753,34 @@ function drawHeroRun(ctx, t, p, isSprint){
   ctx.translate(cx, hipY);
   ctx.rotate(lean);
 
-  // === Jambes (derrière le corps) ===
-  const legSwing = p.legSwing * Math.PI / 180;
-  const ang1 = Math.sin(phase) * legSwing;
-  const ang2 = Math.sin(phase + Math.PI) * legSwing;
+  // Jambes (derrière)
+  const legSwingRad = p.legSwing * Math.PI / 180;
+  const ang1 = Math.sin(phase) * legSwingRad;
+  const ang2 = Math.sin(phase + Math.PI) * legSwingRad;
+  // Genou plié dynamique : plus fort quand jambe est devant
+  const knee1 = p.kneeBend * Math.max(0, Math.sin(phase));
+  const knee2 = p.kneeBend * Math.max(0, Math.sin(phase + Math.PI));
+  drawLeg(p, sc, ang1, p.legH * sc, knee1);
+  drawLeg(p, sc, ang2, p.legH * sc, knee2);
 
-  drawLeg(ctx, p, sc, ang1, p.legH * sc, 'back');
-  drawLeg(ctx, p, sc, ang2, p.legH * sc, 'back');
+  // Torse
+  drawTorso(p, sc, 0);
 
-  // === Torse ===
-  shape(ctx, p.jersey, () => {
-    // forme conique épaule-taille
-    const sw = p.shoulderW * sc / 2;
-    const tw = p.torsoW * sc / 2;
-    const h = p.bodyH * sc;
-    ctx.moveTo(-tw, 0);
-    ctx.lineTo(tw, 0);
-    ctx.lineTo(sw, -h);
-    ctx.lineTo(-sw, -h);
-    ctx.closePath();
-  });
-  // ombrage maillot (côté gauche)
-  ctx.save();
-  ctx.clip();
-  ctx.fillStyle = p.jerseyDark + '99';
-  ctx.fillRect(-p.shoulderW * sc / 2, -p.bodyH * sc, p.shoulderW * sc / 3, p.bodyH * sc);
-  ctx.restore();
+  // Bras (swing opposé aux jambes)
+  const armSwingRad = p.armSwing * Math.PI / 180;
+  const shoulderY = -p.bodyH * sc * (1 - p.chibi * 0.5) * 0.92;
+  const armAng1 = Math.sin(phase + Math.PI) * armSwingRad;
+  const armAng2 = Math.sin(phase) * armSwingRad;
+  drawArm(p, sc, armAng1, p.armL * sc, p.elbowBend, p.shoulderW * sc / 2 - 1, shoulderY);
+  drawArm(p, sc, armAng2, p.armL * sc, p.elbowBend, -p.shoulderW * sc / 2 + 1, shoulderY);
 
-  // === Bras ===
-  const armSwing = p.armSwing * Math.PI / 180;
-  const armAng1 = Math.sin(phase + Math.PI) * armSwing;
-  const armAng2 = Math.sin(phase) * armSwing;
-  const shoulderH = -p.bodyH * sc * 0.92;
-
-  drawArm(ctx, p, sc, armAng1, p.armL * sc, p.shoulderW * sc / 2 - 1, shoulderH);
-  drawArm(ctx, p, sc, armAng2, p.armL * sc, -p.shoulderW * sc / 2 + 1, shoulderH);
-
-  // === Tête + cou ===
-  const neckTop = -p.bodyH * sc - p.neckH * sc;
-  // cou (skin)
-  if(p.neckH > 0){
-    shape(ctx, p.skin, () => {
-      ctx.rect(-p.headH * sc * 0.18, -p.bodyH * sc - p.neckH * sc, p.headH * sc * 0.36, p.neckH * sc);
-    });
-  }
-  // tête (cercle / arrondi)
-  const headR = p.headH * sc / 2;
-  shape(ctx, p.skin, () => {
-    ellipsePath(0, neckTop - headR, headR * 0.85, headR);
-  });
-  // cheveux / casquette
-  shape(ctx, p.hair, () => {
-    ctx.ellipse(0, neckTop - headR - headR * 0.15, headR * 0.95, headR * 0.55, 0, Math.PI, 0);
-  });
-  // Œil
-  ctx.fillStyle = '#1a1a1a';
-  ctx.beginPath();
-  ctx.arc(headR * 0.45, neckTop - headR + 1, 1.4, 0, Math.PI*2);
-  ctx.fill();
-
+  // Tête
+  const neckTopY = -p.bodyH * sc * (1 - p.chibi * 0.5) - p.neckH * sc;
+  drawHead(p, sc, neckTopY);
   ctx.restore();
 }
 
-function drawLeg(ctx, p, sc, ang, legLen, side){
-  ctx.save();
-  ctx.rotate(ang);
-  // cuisse + tibia (rectangle stylisé)
-  shape(ctx, p.short, () => {
-    ctx.rect(-p.legW * sc / 2, 0, p.legW * sc, legLen * 0.55);
-  });
-  // tibia (légèrement plus fin) — peau
-  shape(ctx, p.skin, () => {
-    ctx.rect(-p.legW * sc * 0.45, legLen * 0.55, p.legW * sc * 0.9, legLen * 0.45);
-  });
-  // chaussure
-  ctx.save();
-  ctx.translate(0, legLen);
-  // rotate pied pour rester ~horizontal malgré la jambe inclinée
-  ctx.rotate(-ang * 0.55);
-  shape(ctx, p.shoes, () => {
-    ctx.beginPath();
-    ctx.moveTo(-p.footL * sc * 0.25, 0);
-    ctx.lineTo(p.footL * sc * 0.75, 0);
-    ctx.lineTo(p.footL * sc * 0.85, 3.5);
-    ctx.lineTo(-p.footL * sc * 0.35, 3.5);
-    ctx.closePath();
-  });
-  // semelle
-  ctx.fillStyle = p.sole;
-  ctx.fillRect(-p.footL * sc * 0.32, 3, p.footL * sc * 1.1, 1.5);
-  ctx.restore();
-  ctx.restore();
-}
-
-function drawArm(ctx, p, sc, ang, armLen, anchorX, anchorY){
-  ctx.save();
-  ctx.translate(anchorX, anchorY);
-  ctx.rotate(ang);
-  // bras (peau)
-  shape(ctx, p.skin, () => {
-    ctx.rect(-p.armW * sc / 2, 0, p.armW * sc, armLen);
-  });
-  // main (cercle)
-  shape(ctx, p.skin, () => {
-    ctx.arc(0, armLen + p.armW * sc * 0.5, p.armW * sc * 0.55, 0, Math.PI*2);
-  });
-  ctx.restore();
-}
-
-function drawHeroIdle(ctx, t, p){
+function drawHeroIdle(t, p){
   const sc = p.scale;
   const groundY = CH - 60;
   const breathe = Math.sin(t * p.idleBreatheSpd * Math.PI * 2) * p.idleBreathe;
@@ -602,46 +789,30 @@ function drawHeroIdle(ctx, t, p){
 
   ctx.save();
   ctx.translate(cx, hipY);
-  // jambes droites
-  drawLeg(ctx, p, sc, 0, p.legH * sc);
-  // torse
-  shape(ctx, p.jersey, () => {
-    const sw = p.shoulderW * sc / 2;
-    const tw = p.torsoW * sc / 2;
-    const h = p.bodyH * sc;
-    ctx.moveTo(-tw, 0);
-    ctx.lineTo(tw, 0);
-    ctx.lineTo(sw, -h);
-    ctx.lineTo(-sw, -h);
-    ctx.closePath();
-  });
-  // bras le long du corps
-  const armAng = Math.PI / 2; // bras vers le bas
-  const shoulderH = -p.bodyH * sc * 0.92;
-  drawArm(ctx, p, sc, 0.1, p.armL * sc * 0.9, p.shoulderW * sc / 2 - 1, shoulderH);
-  drawArm(ctx, p, sc, -0.1, p.armL * sc * 0.9, -p.shoulderW * sc / 2 + 1, shoulderH);
-  // tête
-  const neckTop = -p.bodyH * sc - p.neckH * sc;
-  if(p.neckH > 0){
-    shape(ctx, p.skin, () => { ctx.rect(-p.headH * sc * 0.18, -p.bodyH * sc - p.neckH * sc, p.headH * sc * 0.36, p.neckH * sc); });
-  }
-  const headR = p.headH * sc / 2;
-  shape(ctx, p.skin, () => { ellipsePath(0, neckTop - headR, headR * 0.85, headR); });
-  shape(ctx, p.hair, () => { ctx.ellipse(0, neckTop - headR - headR * 0.15, headR * 0.95, headR * 0.55, 0, Math.PI, 0); });
-  ctx.fillStyle = '#1a1a1a';
-  ctx.beginPath(); ctx.arc(headR * 0.45, neckTop - headR + 1, 1.4, 0, Math.PI*2); ctx.fill();
+  drawLeg(p, sc, 0, p.legH * sc, 0);
+  // 2e jambe légèrement décalée pour pas se superposer parfaitement
+  ctx.save();
+  ctx.translate(2, 0);
+  drawLeg(p, sc, 0, p.legH * sc, 0);
+  ctx.restore();
+
+  drawTorso(p, sc, 0);
+
+  const shoulderY = -p.bodyH * sc * (1 - p.chibi * 0.5) * 0.92;
+  drawArm(p, sc, 0.05, p.armL * sc * 0.9, p.elbowBend * 0.3, p.shoulderW * sc / 2 - 1, shoulderY);
+  drawArm(p, sc, -0.05, p.armL * sc * 0.9, p.elbowBend * 0.3, -p.shoulderW * sc / 2 + 1, shoulderY);
+
+  const neckTopY = -p.bodyH * sc * (1 - p.chibi * 0.5) - p.neckH * sc;
+  drawHead(p, sc, neckTopY);
   ctx.restore();
 }
 
-function drawHeroJump(ctx, t, p){
+function drawHeroJump(t, p){
   const sc = p.scale;
   const groundY = CH - 60;
-  // cycle du saut basé sur jumpDur
   const dur = p.jumpDur;
   const phase = ((t / dur) % 1);
-  // courbe : arc (sin)
   const lift = Math.sin(phase * Math.PI) * p.jumpHeight;
-  // jambes pliées au pic
   const tuck = Math.sin(phase * Math.PI) * p.jumpTuck;
   const cx = CW * 0.5;
   const legCurrentLen = p.legH * sc * (1 - tuck * 0.5);
@@ -649,65 +820,38 @@ function drawHeroJump(ctx, t, p){
 
   ctx.save();
   ctx.translate(cx, hipY);
-  // lean back un peu
   ctx.rotate(-0.1);
-  // jambes pliées (angle vers l'avant)
-  const legAng = tuck * 0.6;
-  drawLeg(ctx, p, sc, legAng, legCurrentLen);
-  drawLeg(ctx, p, sc, -legAng, legCurrentLen);
-  // torse
-  shape(ctx, p.jersey, () => {
-    const sw = p.shoulderW * sc / 2;
-    const tw = p.torsoW * sc / 2;
-    const h = p.bodyH * sc;
-    ctx.moveTo(-tw, 0);
-    ctx.lineTo(tw, 0);
-    ctx.lineTo(sw, -h);
-    ctx.lineTo(-sw, -h);
-    ctx.closePath();
-  });
-  // bras vers le haut/avant
-  const shoulderH = -p.bodyH * sc * 0.92;
-  drawArm(ctx, p, sc, -0.7 + tuck * 0.3, p.armL * sc, p.shoulderW * sc / 2 - 1, shoulderH);
-  drawArm(ctx, p, sc, -0.5 - tuck * 0.3, p.armL * sc, -p.shoulderW * sc / 2 + 1, shoulderH);
-  // tête
-  const neckTop = -p.bodyH * sc - p.neckH * sc;
-  if(p.neckH > 0){ shape(ctx, p.skin, () => { ctx.rect(-p.headH * sc * 0.18, -p.bodyH * sc - p.neckH * sc, p.headH * sc * 0.36, p.neckH * sc); }); }
-  const headR = p.headH * sc / 2;
-  shape(ctx, p.skin, () => { ellipsePath(0, neckTop - headR, headR * 0.85, headR); });
-  shape(ctx, p.hair, () => { ctx.ellipse(0, neckTop - headR - headR * 0.15, headR * 0.95, headR * 0.55, 0, Math.PI, 0); });
-  ctx.fillStyle = '#1a1a1a';
-  ctx.beginPath(); ctx.arc(headR * 0.45, neckTop - headR + 1, 1.4, 0, Math.PI*2); ctx.fill();
+  // Jambes pliées vers l'avant
+  drawLeg(p, sc, tuck * 0.6, legCurrentLen, tuck);
+  drawLeg(p, sc, -tuck * 0.6, legCurrentLen, tuck);
+  drawTorso(p, sc, 0);
+  const shoulderY = -p.bodyH * sc * (1 - p.chibi * 0.5) * 0.92;
+  // bras vers le haut
+  drawArm(p, sc, -0.7 + tuck * 0.3, p.armL * sc, p.elbowBend * 0.5, p.shoulderW * sc / 2 - 1, shoulderY);
+  drawArm(p, sc, -0.5 - tuck * 0.3, p.armL * sc, p.elbowBend * 0.5, -p.shoulderW * sc / 2 + 1, shoulderY);
+  const neckTopY = -p.bodyH * sc * (1 - p.chibi * 0.5) - p.neckH * sc;
+  drawHead(p, sc, neckTopY);
   ctx.restore();
 }
 
-function drawHeroVictory(ctx, t, p){
+function drawHeroVictory(t, p){
   const sc = p.scale;
   const groundY = CH - 60;
-  // bounce mode "yeah"
-  const bounce = Math.abs(Math.sin(t * 4)) * 8;
+  const bounce = Math.abs(Math.sin(t * 4)) * 10;
   const cx = CW * 0.5;
   const hipY = groundY - p.legH * sc - bounce;
   const armUp = -Math.PI * 0.85 - Math.sin(t * 3) * 0.15;
 
   ctx.save();
   ctx.translate(cx, hipY);
-  drawLeg(ctx, p, sc, 0, p.legH * sc);
-  shape(ctx, p.jersey, () => {
-    const sw = p.shoulderW * sc / 2;
-    const tw = p.torsoW * sc / 2;
-    const h = p.bodyH * sc;
-    ctx.moveTo(-tw, 0); ctx.lineTo(tw, 0); ctx.lineTo(sw, -h); ctx.lineTo(-sw, -h); ctx.closePath();
-  });
-  const shoulderH = -p.bodyH * sc * 0.92;
-  drawArm(ctx, p, sc, armUp, p.armL * sc, p.shoulderW * sc / 2 - 1, shoulderH);
-  drawArm(ctx, p, sc, armUp + 0.1, p.armL * sc, -p.shoulderW * sc / 2 + 1, shoulderH);
-  const neckTop = -p.bodyH * sc - p.neckH * sc;
-  const headR = p.headH * sc / 2;
-  shape(ctx, p.skin, () => { ellipsePath(0, neckTop - headR, headR * 0.85, headR); });
-  shape(ctx, p.hair, () => { ctx.ellipse(0, neckTop - headR - headR * 0.15, headR * 0.95, headR * 0.55, 0, Math.PI, 0); });
-  ctx.fillStyle = '#1a1a1a';
-  ctx.beginPath(); ctx.arc(headR * 0.45, neckTop - headR + 1, 1.4, 0, Math.PI*2); ctx.fill();
+  drawLeg(p, sc, 0.05, p.legH * sc, 0);
+  drawLeg(p, sc, -0.05, p.legH * sc, 0);
+  drawTorso(p, sc, 0);
+  const shoulderY = -p.bodyH * sc * (1 - p.chibi * 0.5) * 0.92;
+  drawArm(p, sc, armUp, p.armL * sc, p.elbowBend * 0.6, p.shoulderW * sc / 2 - 1, shoulderY);
+  drawArm(p, sc, armUp + 0.1, p.armL * sc, p.elbowBend * 0.6, -p.shoulderW * sc / 2 + 1, shoulderY);
+  const neckTopY = -p.bodyH * sc * (1 - p.chibi * 0.5) - p.neckH * sc;
+  drawHead(p, sc, neckTopY);
   ctx.restore();
 }
 
@@ -727,21 +871,16 @@ function loop(){
   }
   statsEl.textContent = `FPS: ${_fpsDisplay} | frame: ${_frameCount} | t: ${t.toFixed(2)}s | anim: ${params.animMode}`;
 
-  // clear
   ctx.clearRect(0, 0, CW, CH);
+  drawGrid(params);
+  drawTrack(params);
 
-  // grille debug
-  drawGrid(ctx, params);
-  // piste
-  drawTrack(ctx, params);
-
-  // hero
   switch(params.animMode){
-    case 'idle':    drawHeroIdle(ctx, t, params); break;
-    case 'run':     drawHeroRun(ctx, t, params, false); break;
-    case 'sprint':  drawHeroRun(ctx, t, params, true); break;
-    case 'jump':    drawHeroJump(ctx, t, params); break;
-    case 'victory': drawHeroVictory(ctx, t, params); break;
+    case 'idle':    drawHeroIdle(t, params); break;
+    case 'run':     drawHeroRun(t, params, false); break;
+    case 'sprint':  drawHeroRun(t, params, true); break;
+    case 'jump':    drawHeroJump(t, params); break;
+    case 'victory': drawHeroVictory(t, params); break;
   }
 
   requestAnimationFrame(loop);

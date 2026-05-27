@@ -10176,7 +10176,7 @@ body{
 
 <div class="modal" id="star-tree-modal">
   <div class="modal-card" style="max-width:480px; max-height:80vh; overflow-y:auto;">
-    <button type="button" class="modal-close" data-close-modal="star-tree-modal" aria-label="Fermer" onclick="(function(){const m=document.getElementById('star-tree-modal');m.classList.remove('show');m.style.display='';})()">×</button>
+    <button type="button" class="modal-close" data-close-modal="star-tree-modal" aria-label="Fermer">×</button>
     <h2 style="display:flex; align-items:center; justify-content:center; gap:8px; margin:0;"><svg width="20" height="20" viewBox="0 0 24 24" fill="#ffd060"><path d="M12 2 L14.4 8.4 L21 9.2 L16 13.6 L17.6 20.4 L12 16.8 L6.4 20.4 L8 13.6 L3 9.2 L9.6 8.4 z"/></svg> PRESTIGE</h2>
     <div class="modal-subtitle">— investis tes étoiles —</div>
     <div style="text-align:center; color:#888; margin:6px 0 12px;">Étoiles : <strong id="star-tree-avail" style="color:#ffd060; font-size:18px;">0</strong></div>
@@ -10191,7 +10191,7 @@ body{
 <!-- VAGUE 20 P4 — Modale Reliques -->
 <div class="modal" id="relics-modal">
   <div class="modal-card" style="max-width:480px; max-height:80vh; overflow-y:auto;">
-    <button class="modal-close" data-close-modal="relics-modal" aria-label="Fermer" onclick="document.getElementById('relics-modal').style.display='none'">×</button>
+    <button class="modal-close" data-close-modal="relics-modal" aria-label="Fermer">×</button>
     <h2 style="margin:0 0 4px;">💎 Reliques</h2>
     <div class="modal-subtitle" style="color:#666; margin-bottom:10px;">Équipe jusqu'à 3 reliques. Drops 1% sur coffres legendary.</div>
     <div id="relics-equipped"></div>
@@ -10201,7 +10201,7 @@ body{
 
 <div class="modal" id="lore-modal">
   <div class="modal-card" style="max-width:520px; max-height:80vh; overflow-y:auto;">
-    <button class="modal-close" data-close-modal="lore-modal" aria-label="Fermer" onclick="document.getElementById('lore-modal').style.display='none'">×</button>
+    <button class="modal-close" data-close-modal="lore-modal" aria-label="Fermer">×</button>
     <h2 style="margin:0 0 4px;">📜 Codex narratif</h2>
     <div class="modal-subtitle" style="color:#666; margin-bottom:14px;">Histoire de FOULÉE — débloquée par tes exploits</div>
     <div id="lore-list" style="display:flex; flex-direction:column; gap:8px;"></div>
@@ -10224,7 +10224,7 @@ body{
 <!-- VAGUE 20 — Quêtes Saisonnières (longues, reset à l'ascension) -->
 <div class="modal" id="season-quests-modal">
   <div class="modal-card" style="max-width:480px; max-height:80vh; overflow-y:auto;">
-    <button class="modal-close" data-close-modal="season-quests-modal" aria-label="Fermer" onclick="document.getElementById('season-quests-modal').style.display='none'">×</button>
+    <button class="modal-close" data-close-modal="season-quests-modal" aria-label="Fermer">×</button>
     <h2 style="margin:0 0 4px;">🏆 Quêtes de Saison</h2>
     <div class="modal-subtitle" style="color:#666; margin-bottom:12px;">Reset à chaque ascension. Récompense : +2⭐ +50k g par quête.</div>
     <div id="season-quests-list" style="display:flex; flex-direction:column; gap:8px;"></div>
@@ -10797,9 +10797,11 @@ if(document.readyState === 'loading'){
   let stopped = false;
 
   function drawHeroIdle(x, y, scale){
-    // V53 : délègue au voxel renderer hero-lab (idle stationnaire = phase nulle)
+    // V53/V59 : délègue au voxel renderer hero-lab (idle stationnaire = phase nulle).
+    // V59 FIX P1 : retire l'offset +24*scale (créait un héros qui flottait au splash)
+    //              et le scale*1.5 (qui rendait le voxel splash 50% plus gros que in-game).
     if(typeof drawVoxelRunner === 'function'){
-      drawVoxelRunner(x, y + 24 * scale, scale * 1.5, {
+      drawVoxelRunner(x, y, scale, {
         jersey: '#e62e2e', short: '#1040c0', hair: '#1040c0', skin: '#f4c890',
         accent: '#FFB030', hairStyle: 'cap', faceExpr: 'smile',
         headExtra: 'headband_gold',
@@ -10877,9 +10879,10 @@ if(document.readyState === 'loading'){
 
   // === PNJ de course (couleur custom) — PIXEL ART, sens gauche→droite ===
   function drawPnjRunner(x, y, scale, time, jerseyColor, skinColor, hairColor, shoeColor){
-    // V53 : délègue au voxel renderer hero-lab (PNJ courant sur le splash)
+    // V53/V59 : délègue au voxel renderer hero-lab (PNJ courant sur le splash).
+    // V59 FIX P1 : aligne sur in-game (pas d'offset ni scale*1.4 qui rendait PNJ trop gros).
     if(typeof drawVoxelRunner === 'function'){
-      drawVoxelRunner(x, y + 24 * scale, scale * 1.4, {
+      drawVoxelRunner(x, y, scale, {
         jersey: jerseyColor || '#4a9fd9',
         skin: skinColor || '#d0a880',
         hair: hairColor || '#3a2418',
@@ -11390,6 +11393,8 @@ if(document.readyState === 'loading'){
 <!-- CARTES STAR : pick après ascension -->
 <div id="card-pick-modal" class="modal">
   <div class="modal-card">
+    <!-- V59 FIX P1 : ajout du bouton de fermeture (joueur piégé sinon si veut annuler) -->
+    <button type="button" class="modal-close" id="card-pick-close" aria-label="Fermer">×</button>
     <h2>PIOCHE TA CARTE</h2>
     <div class="divider"></div>
     <div id="card-pick-body"></div>
@@ -27516,12 +27521,13 @@ function load(){
     STATE.starterPackDeclined = s.starterPackDeclined ?? false;
     STATE.ownedSkins = s.ownedSkins || {};
     STATE.selectedSkinId = s.selectedSkinId || 'base';
-    STATE.records = s.records || null;
+    // V59 FIX P1 : init défensive — jamais null (sinon updateRecords/dailyChallenge crash)
+    STATE.records = s.records || {};
     STATE.skillsLastUsed = s.skillsLastUsed || {};
     STATE.skillSprintUntil = s.skillSprintUntil ?? 0;
     STATE.skillTailwindUntil = s.skillTailwindUntil ?? 0;
     STATE.skillBreathUntil = s.skillBreathUntil ?? 0;
-    STATE.dailyQuests = s.dailyQuests || null;
+    STATE.dailyQuests = s.dailyQuests || {};
     STATE.selectedStadiumId = s.selectedStadiumId || null;
     STATE.equipment = s.equipment || {};
     STATE.loadouts = s.loadouts || STATE.loadouts;
@@ -27553,7 +27559,8 @@ function load(){
     STATE.rabbitsCaughtThisRun = 0;
     STATE.cleanAutoKm = 0;
     // Daily challenge
-    STATE.dailyChallenge = s.dailyChallenge || null;
+    // V59 FIX P1 : init défensive — jamais null (sinon getTodayChallenge() crash)
+    STATE.dailyChallenge = s.dailyChallenge || { id: null, progress: 0, completed: false, claimed: false };
     STATE.npcOvertakeCount = s.npcOvertakeCount || 0;
     // Skill tree
     STATE.skills = s.skills || { unlocked: {}, pointsSpent: 0 };
@@ -27562,9 +27569,9 @@ function load(){
     STATE.starTree = s.starTree || { tapPower:0, lapPower:0, dropRate:0, basePower:0, staminaPlus:0, critPower:0, cooldownNeg:0, starsJackpot:0 };
     STATE.starSpec = s.starSpec || null;
     STATE._upgFirstHints = s._upgFirstHints || {};
-    // === VAGUE 20 — Rivaux nommés & Boss déterministes ===
-    if(s.rivals) STATE.rivals = Object.assign({}, STATE.rivals, s.rivals);
-    if(s.bosses) STATE.bosses = Object.assign({}, STATE.bosses, s.bosses);
+    // === V59 FIX P0/P1 — Migration safe : merge inconditionnel + fallback {} ===
+    STATE.rivals = Object.assign({}, STATE.rivals || {}, s.rivals || {});
+    STATE.bosses = Object.assign({}, STATE.bosses || {}, s.bosses || {});
     // === VAGUE 20 — Quêtes saisonnières ===
     if(s.seasonQuests) STATE.seasonQuests = Object.assign({}, STATE.seasonQuests, s.seasonQuests);
     STATE._seasonNoDoping = (s._seasonNoDoping !== false);
@@ -38000,7 +38007,9 @@ function _drawBirds(ctx, W, H, dt){
         const pillW = tw + padX * 2;
         const pillH = 12 * scale + padY;
         ctx.beginPath();
-        const rx = x - pillW / 2;
+        // V59 FIX P1 : clamp dans le canvas pour pas déborder sur mobile 320px
+        let rx = x - pillW / 2;
+        rx = Math.max(2, Math.min(W - pillW - 2, rx));
         const ry = labelY - pillH / 2;
         const radius = 6 * scale;
         ctx.moveTo(rx + radius, ry);
@@ -38023,10 +38032,10 @@ function _drawBirds(ctx, W, H, dt){
           ctx.font = `900 ${Math.round(9 * scale)}px Nunito, sans-serif`;
           ctx.fillText(npc.bibNum, rx - bibW / 2 + 2, ry + pillH / 2);
         }
-        // Texte nom (sombre sur fond clair)
+        // Texte nom (sombre sur fond clair) — centre dans la pill clampée
         ctx.font = `900 ${Math.round(10 * scale)}px Nunito, sans-serif`;
         ctx.fillStyle = '#1f1f24';
-        ctx.fillText(labelText, x, labelY);
+        ctx.fillText(labelText, rx + pillW / 2, labelY);
       }
     }
 
@@ -38056,8 +38065,10 @@ function _drawBirds(ctx, W, H, dt){
     window._hurdleSpawnTimer -= dt;
     const lapsForPatterns = window.STATE?.lapsRun || 0;
     // CHANTIER 2 : DIFFICULTY CURVE par paliers de km, spacing en MÈTRES réel
-    // Vitesse de drift effective ≈ ((speed - 0.3) * 0.15 + 0.6) m/s (cf. ligne ~29863)
-    const _driftMps = Math.max(0.3, (speed - 0.3) * 0.15 + 0.6);
+    // V59 FIX P0 : `speed` était undefined dans ce scope → _driftMps devenait NaN.
+    // On dérive depuis displayKmh (m/s ≈ kmh / 3.6), avec fallback safe.
+    const _hurdleSpeedMps = ((typeof displayKmh === 'number' ? displayKmh : 7) / 3.6);
+    const _driftMps = Math.max(0.3, _hurdleSpeedMps * 0.7 + 0.6);
     if(window._hurdleSpawnTimer <= 0 && lapsForPatterns >= 8 && hurdles.length === 0){
       // Pool + spacing en mètres par palier de km
       let pool, metersBetween;

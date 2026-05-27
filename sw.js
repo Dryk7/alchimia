@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v56 : identités PNJ (noms, drapeaux, dossards visibles, personnalités)
-const CACHE = 'foulee-v56';
+// v59 : fix wave P0+P1 (saves, voxel, modals, mobile)
+const CACHE = 'foulee-v59';
 const ASSETS = [
   './',
   './index.html',

@@ -29960,7 +29960,8 @@ function _drawBirds(ctx, W, H, dt){
   function drawVoxelRunner(x, y, scale, spec, phase, isHero, effortLevel, airborneFrac){
     const p = _specToVoxParams(spec, isHero);
     _voxP = p;
-    const sc = scale * 0.55;
+    // V60 : bump 0.55→0.85 (personnages 55% plus grands sans toucher les call sites)
+    const sc = scale * 0.85;
     const isAirborne = typeof airborneFrac === 'number';
     const effort = (typeof effortLevel === 'number') ? effortLevel : 0;
     // Aura héros (préservée pour visibilité in-game)
@@ -37771,6 +37772,28 @@ function _drawBirds(ctx, W, H, dt){
         ctx.fillStyle = 'rgba(255,255,255,0.35)';
         ctx.fillRect(0, ly - 0.5, W, 0.5);
       }
+
+      // ═══ V60 : TRACETS PERSPECTIVE DÉFILANTS ═══
+      // Dashes blancs scrollants au MILIEU de chaque couloir → sensation de mouvement vers l'avant
+      // Couloirs au fond (lane 0,1) : dashes petits + vitesse lente | couloirs proches (lane 3,4) : grands + rapides
+      const _dashScroll = decorScroll;
+      const _dashCfg = [
+        { lane: 0, w: 14, gap: 36, speedMul: 0.55, alpha: 0.35 }, // fond
+        { lane: 1, w: 18, gap: 40, speedMul: 0.75, alpha: 0.45 },
+        { lane: 2, w: 22, gap: 48, speedMul: 0.95, alpha: 0.55 }, // lane héros
+        { lane: 3, w: 28, gap: 56, speedMul: 1.20, alpha: 0.65 },
+        { lane: 4, w: 36, gap: 70, speedMul: 1.50, alpha: 0.80 }, // premier plan
+      ];
+      _dashCfg.forEach(cfg => {
+        const cy = LANES_TOP + (cfg.lane + 0.5) * LANE_H;
+        const step = cfg.w + cfg.gap;
+        const off = ((_dashScroll * cfg.speedMul) % step + step) % step;
+        ctx.fillStyle = `rgba(255,255,255,${cfg.alpha})`;
+        const dashH = 1.5 + cfg.lane * 0.5; // épaisseur progressive
+        for(let x = -off; x < W + step; x += step){
+          ctx.fillRect(x, cy - dashH / 2, cfg.w, dashH);
+        }
+      });
 
       // Texture TARTAN (couche existante — petits points sombres défilants)
       const tartanT = -(decorScroll * 1.2);

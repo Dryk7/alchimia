@@ -394,6 +394,7 @@ body{
     <div class="nav-item" data-section="biomes"><span class="ico">🌍</span>Biomes<span class="count">10</span></div>
     <div class="nav-item" data-section="npc"><span class="ico">🏃</span>PNJ Tiers<span class="count">7</span></div>
     <div class="nav-item" data-section="biome_npc"><span class="ico">👽</span>PNJ par biome<span class="count">9</span></div>
+    <div class="nav-item" data-section="identities"><span class="ico">🎭</span>Identités PNJ<span class="count">30</span></div>
     <div class="nav-item" data-section="stadiums"><span class="ico">🏟</span>Stades<span class="count">19</span></div>
     <div class="nav-item" data-section="bosses"><span class="ico">👑</span>Bosses<span class="count">5</span></div>
     <div class="nav-item" data-section="rivals"><span class="ico">⚔️</span>Rivaux<span class="count">5</span></div>
@@ -404,7 +405,7 @@ body{
   </nav>
   <footer>
     Données extraites de index.html<br>
-    Snapshot 2026-05-27 · v54
+    Snapshot 2026-05-27 · v60 (latest)
   </footer>
 </aside>
 
@@ -435,10 +436,12 @@ body{
       <div class="stat-card"><div class="stat-val">11</div><div class="stat-label">Skins héros</div></div>
       <div class="stat-card"><div class="stat-val">19</div><div class="stat-label">Stades km 0→100</div></div>
       <div class="stat-card"><div class="stat-val">7</div><div class="stat-label">Tiers PNJ</div></div>
+      <div class="stat-card"><div class="stat-val">30</div><div class="stat-label">Identités PNJ</div></div>
       <div class="stat-card"><div class="stat-val">5</div><div class="stat-label">Bosses</div></div>
       <div class="stat-card"><div class="stat-val">5</div><div class="stat-label">Rivaux</div></div>
       <div class="stat-card"><div class="stat-val">6</div><div class="stat-label">Coureurs AFK</div></div>
       <div class="stat-card"><div class="stat-val">20</div><div class="stat-label">Entrées lore</div></div>
+      <div class="stat-card"><div class="stat-val">10</div><div class="stat-label">Presets musique</div></div>
     </div>
 
     <div class="intro-block">
@@ -499,6 +502,31 @@ body{
       </div>
     </div>
     <div class="grid" id="grid-biome-npc"></div>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 5b. IDENTITÉS PNJ (V56)                                -->
+  <!-- ====================================================== -->
+  <section class="section" data-section="identities">
+    <div class="section-header">
+      <div>
+        <h2>IDENTITÉS PNJ</h2>
+        <div class="desc">30 noms + drapeaux + surnoms + personnalités (v56). Chaque coureur autour du héros est un personnage unique.</div>
+      </div>
+    </div>
+    <div class="intro-block">
+      <h3>🎭 SYSTÈME D'IDENTITÉ</h3>
+      <p>À chaque spawn, un PNJ reçoit aléatoirement un nom du pool ci-dessous + une personnalité influencée par son tier :</p>
+      <ul style="margin:8px 0 0 22px;font-size:13px;line-height:1.7">
+        <li><strong>T5-6 (élite)</strong> : pro / badass / sprinter</li>
+        <li><strong>T3-4 (compétiteurs)</strong> : sprinter / steady / showoff / pro</li>
+        <li><strong>T1-2 (amateurs)</strong> : steady / showoff / grumpy / noob</li>
+        <li><strong>T0 (promeneurs)</strong> : noob / grumpy / steady</li>
+      </ul>
+      <p style="margin-top:8px"><strong>Étiquette flottante</strong> : pill blanche avec dossard coloré à gauche, prénom + drapeau + nom — affichée uniquement quand le PNJ est proche du héros (< 250px) et dans une lane de premier plan.</p>
+    </div>
+    <h3 style="font-family:'Bebas Neue',Impact;font-size:18px;color:var(--brand-navy);letter-spacing:1px;margin:24px 0 12px">POOL DE NOMS (30)</h3>
+    <div class="grid" id="grid-identities"></div>
   </section>
 
   <!-- ====================================================== -->
@@ -728,6 +756,49 @@ const LORE = [
   { id:'l18', title:'La Banquise',            unlock:'km 400 arctic', text:'Tu glisses. Tu profites. Tu accélères.' },
   { id:'l19', title:'L\'Apesanteur Galactique', unlock:'km 800 galaxy', text:'Les étoiles défilent. Plus de poids. Juste la course.' },
   { id:'l20', title:'L\'Olympe Final',        unlock:'final',   text:'Tu n\'as plus rien à prouver. Tu cours pour le plaisir. Enfin.' },
+];
+
+const IDENTITIES = [
+  { first:'Lucas',   last:'M.',    nick:'Le Sprinter', flag:'🇫🇷' },
+  { first:'Emma',    last:'V.',    nick:'La Flèche',   flag:'🇫🇷' },
+  { first:'Hugo',    last:'D.',    nick:'Endurance',   flag:'🇫🇷' },
+  { first:'Léa',     last:'P.',    nick:'Tempête',     flag:'🇫🇷' },
+  { first:'Théo',    last:'R.',    nick:'Le Bûcheron', flag:'🇫🇷' },
+  { first:'Chloé',   last:'B.',    nick:'Vif-Argent',  flag:'🇫🇷' },
+  { first:'Maxime',  last:'L.',    nick:'Bull-Dozer',  flag:'🇫🇷' },
+  { first:'Jules',   last:'T.',    nick:'Casquette',   flag:'🇫🇷' },
+  { first:'Manon',   last:'F.',    nick:'La Foulée',   flag:'🇫🇷' },
+  { first:'Kenji',   last:'T.',    nick:'Le Samouraï', flag:'🇯🇵' },
+  { first:'Yuki',    last:'S.',    nick:'Neige',       flag:'🇯🇵' },
+  { first:'Diego',   last:'R.',    nick:'El Toro',     flag:'🇪🇸' },
+  { first:'Sofia',   last:'M.',    nick:'Bailadora',   flag:'🇪🇸' },
+  { first:'Luca',    last:'B.',    nick:'Il Fulmine',  flag:'🇮🇹' },
+  { first:'Giulia',  last:'V.',    nick:'La Vespa',    flag:'🇮🇹' },
+  { first:'Hans',    last:'K.',    nick:'Der Wolf',    flag:'🇩🇪' },
+  { first:'Greta',   last:'M.',    nick:'Eisig',       flag:'🇩🇪' },
+  { first:'Mike',    last:'J.',    nick:'Lightning',   flag:'🇺🇸' },
+  { first:'Sarah',   last:'K.',    nick:'Storm',       flag:'🇺🇸' },
+  { first:'Ravi',    last:'P.',    nick:'Tigre',       flag:'🇮🇳' },
+  { first:'Amira',   last:'B.',    nick:'Faucon',      flag:'🇲🇦' },
+  { first:'Olu',     last:'A.',    nick:'Cheetah',     flag:'🇰🇪' },
+  { first:'Mei',     last:'L.',    nick:'Dragon',      flag:'🇨🇳' },
+  { first:'Pablo',   last:'G.',    nick:'El Loco',     flag:'🇲🇽' },
+  { first:'Anya',    last:'P.',    nick:'Сила',        flag:'🇷🇺' },
+  { first:'Doc',     last:'',      nick:'Le Scientifique', flag:'🇫🇷' },
+  { first:'Pépé',    last:'',      nick:'Grand-Père',  flag:'🇫🇷' },
+  { first:'Bambi',   last:'',      nick:'Le Yougster', flag:'🇫🇷' },
+  { first:'Bizarro', last:'',      nick:'???',         flag:'🛸' },
+  { first:'Zephyr',  last:'',      nick:'Le Vent',     flag:'🌀' },
+];
+
+const PERSONALITIES = [
+  { id:'sprinter',  label:'Le Sprinter',   color:'#e62e2e', quirk:'Boost rapide au passage' },
+  { id:'steady',    label:'Le Régulier',   color:'#4a9fd9', quirk:'Tempo constant, tient la distance' },
+  { id:'showoff',   label:'Le Frimeur',    color:'#FFB030', quirk:'Frime quand il dépasse' },
+  { id:'grumpy',    label:'Le Grognon',    color:'#6a5848', quirk:'Râle quand on le double' },
+  { id:'badass',    label:'Le Badass',     color:'#1a1a1a', quirk:'Indifférent, pro absolu' },
+  { id:'noob',      label:'Le Novice',     color:'#a8c890', quirk:'Trébuche parfois sur les haies' },
+  { id:'pro',       label:'Le Pro',        color:'#1a2b4d', quirk:'Tempo parfait, jamais essoufflé' },
 ];
 
 const MUSIC = [
@@ -1031,6 +1102,33 @@ function renderBiomeNpc(){
       });
     }
   });
+}
+
+function renderIdentities(){
+  const grid = document.getElementById('grid-identities');
+  // D'abord les personnalités
+  const persoHtml = `
+    <div style="grid-column: 1 / -1; margin-bottom: 8px">
+      <h3 style="font-family:'Bebas Neue',Impact;font-size:18px;color:var(--brand-navy);letter-spacing:1px;margin:0 0 10px">7 PERSONNALITÉS</h3>
+    </div>
+  ` + PERSONALITIES.map(p => `
+    <div class="card" style="border-left:4px solid ${p.color}">
+      <div class="card-title">${p.label}<span class="card-tag" style="background:${p.color}33;color:${p.color}">${p.id}</span></div>
+      <div class="card-desc"><em>${p.quirk}</em></div>
+    </div>
+  `).join('');
+  const sepHtml = `
+    <div style="grid-column: 1 / -1; margin-top: 16px">
+      <h3 style="font-family:'Bebas Neue',Impact;font-size:18px;color:var(--brand-navy);letter-spacing:1px;margin:0 0 10px">30 NOMS POOL</h3>
+    </div>
+  `;
+  const namesHtml = IDENTITIES.map((n, i) => `
+    <div class="card" data-name="${(n.first+' '+n.nick).toLowerCase()}">
+      <div class="card-title">${n.flag} ${n.first} ${n.last}</div>
+      <div class="card-desc"><em>"${n.nick}"</em></div>
+    </div>
+  `).join('');
+  grid.innerHTML = persoHtml + sepHtml + namesHtml;
 }
 
 function renderStadiums(){
@@ -1400,6 +1498,7 @@ renderSkins();
 renderBiomes();
 renderNpcTiers();
 renderBiomeNpc();
+renderIdentities();
 renderStadiums();
 renderBosses();
 renderRivals();

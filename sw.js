@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v59 : fix wave P0+P1 (saves, voxel, modals, mobile)
-const CACHE = 'foulee-v59';
+// v60 : voxel scale +55% + perspective piste + identités catalogue
+const CACHE = 'foulee-v60';
 const ASSETS = [
   './',
   './index.html',

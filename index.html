@@ -4366,13 +4366,15 @@ body.tab-drawer-open #progress-map{
    COMBO DISPLAY v2 — tiered premium badge (semaine 4 polish)
    4 paliers : 1.5x (bronze) · 2x (silver) · 3x (gold/fire) · 5x (legendary/sparkle)
    ═══════════════════════════════════════════════════════════════ */
+/* v5 mobile-fix : repositionne le combo en BAS-DROITE pour ne PLUS masquer la zone km/HUD top
+   (avant: top:54px; left:50% chevauchait .hud-pill à top:~44px sur mobile) */
 .combo-display{
   position:absolute;
-  top:54px; left:50%;
-  transform:translate(-50%, 0) scale(.5);
+  bottom:96px; right:10px; left:auto; top:auto;
+  transform:translate(0, 0) scale(.5);
   display:none; align-items:center; justify-content:center;
   pointer-events:none; z-index:14;
-  width:auto; min-width:120px;
+  width:auto; min-width:auto;
   opacity:0;
   /* visibility:hidden quand display:none → garantit que toute l'arborescence (rays, sparkles) cesse de calculer */
   visibility:hidden;
@@ -4384,38 +4386,38 @@ body.tab-drawer-open #progress-map{
   animation:comboBurstIn .42s cubic-bezier(.34,1.56,.64,1) forwards;
 }
 @keyframes comboBurstIn{
-  0%   { transform:translate(-50%, -8px) scale(.4) rotate(-8deg); opacity:0; }
-  60%  { transform:translate(-50%, 4px)  scale(1.18) rotate(3deg); opacity:1; }
-  100% { transform:translate(-50%, 0)    scale(1)    rotate(0deg); opacity:1; }
+  0%   { transform:translate(10px, 4px) scale(.4) rotate(-6deg); opacity:0; }
+  60%  { transform:translate(0, -2px)  scale(1.12) rotate(2deg); opacity:.96; }
+  100% { transform:translate(0, 0)     scale(1)    rotate(0deg); opacity:.92; }
 }
 
-/* === COMBO v4 : transparent + sport DA blanc+rouge marathon === */
+/* === COMBO v5 : transparent + sport DA blanc+rouge marathon (compact, coin bas-droit) === */
 .combo-display .combo-body{
   position:relative;
-  display:flex; flex-direction:row; align-items:baseline; justify-content:center; gap:6px;
-  padding:6px 14px 7px;
+  display:flex; flex-direction:row; align-items:baseline; justify-content:center; gap:5px;
+  padding:5px 11px 6px;
   min-width:auto;
-  border-radius:12px;
+  border-radius:11px;
   border:none;
   border-top:2px solid var(--brand-gold);
   font-family:"Nunito", sans-serif; font-weight:900;
   text-align:center;
   z-index:2;
-  background:rgba(255,255,255,.78);
+  background:rgba(255,255,255,.72);
   backdrop-filter:blur(8px);
   -webkit-backdrop-filter:blur(8px);
-  box-shadow:0 4px 12px rgba(20,20,20,.12);
+  box-shadow:0 3px 10px rgba(20,20,20,.10);
   color:#1a1a1a;
 }
 .combo-display .combo-x-label{
-  font-size:8px; letter-spacing:.22em;
-  opacity:.55; line-height:1;
+  font-size:7px; letter-spacing:.20em;
+  opacity:.50; line-height:1;
   color:var(--brand-gold-dark);
   margin-bottom:0;
   text-shadow:none;
 }
 .combo-display .combo-x{
-  font-size:22px; line-height:1;
+  font-size:18px; line-height:1;
   letter-spacing:.02em;
   color:var(--brand-gold-dark);
   text-shadow:none;
@@ -4423,7 +4425,7 @@ body.tab-drawer-open #progress-map{
   font-weight:900;
 }
 .combo-display .combo-count{
-  font-size:10px; opacity:.55;
+  font-size:9px; opacity:.50;
   color:#1a1a1a;
   margin-top:0;
   margin-left:2px;
@@ -4509,20 +4511,53 @@ body.tab-drawer-open #progress-map{
   box-shadow:0 4px 16px rgba(200,64,48,.22), 0 0 22px rgba(255,200,80,.32);
   animation:comboBreathe1 .65s ease-in-out infinite;
 }
-.combo-display[data-tier="3"] .combo-x{ color:var(--brand-gold-dark); font-size:26px; text-shadow:0 0 8px rgba(255,200,80,.45); }
-.combo-display[data-tier="3"] .combo-rays{ opacity:.45; }
+.combo-display[data-tier="3"] .combo-x{ color:var(--brand-gold-dark); font-size:21px; text-shadow:0 0 6px rgba(255,200,80,.40); }
+.combo-display[data-tier="3"] .combo-rays{ opacity:.35; }
 .combo-display[data-tier="4"] .combo-body{
   border-top-color:var(--brand-gold-dark);
-  border-top-width:5px;
-  background:rgba(255,250,245,.94);
-  box-shadow:0 8px 28px rgba(200,64,48,.34), 0 0 34px rgba(255,210,80,.55), 0 0 60px rgba(255,180,40,.30);
+  border-top-width:4px;
+  background:rgba(255,250,245,.88);
+  box-shadow:0 6px 20px rgba(200,64,48,.26), 0 0 24px rgba(255,210,80,.42), 0 0 44px rgba(255,180,40,.22);
   animation:comboBreathe1 .5s ease-in-out infinite;
-  transform:scale(1.06);
+  transform:scale(1.04);
 }
-.combo-display[data-tier="4"] .combo-x{ color:var(--brand-gold-dark); font-size:30px; text-shadow:0 0 12px rgba(255,210,80,.7), 0 0 4px rgba(255,255,255,.8); }
+.combo-display[data-tier="4"] .combo-x{ color:var(--brand-gold-dark); font-size:24px; text-shadow:0 0 10px rgba(255,210,80,.6), 0 0 3px rgba(255,255,255,.7); }
 .combo-display[data-tier="4"] .combo-x-label{ color:var(--brand-gold-dark); letter-spacing:.22em; }
-.combo-display[data-tier="4"] .combo-rays{ opacity:.65; }
-.combo-display[data-tier="4"] .combo-sparkles{ opacity:.95; }
+.combo-display[data-tier="4"] .combo-rays{ opacity:.50; }
+.combo-display[data-tier="4"] .combo-sparkles{ opacity:.80; }
+
+/* v5 mobile-fix : sur petit écran, combo encore plus compact + semi-transparent
+   pour ne pas distraire de la zone km/progression (HUD top + barre du bas) */
+@media (max-width: 600px){
+  .combo-display{
+    bottom:88px; right:8px;
+    opacity:0;
+  }
+  .combo-display.show{
+    /* opacité finale réduite sur mobile pour rester discret */
+    animation:comboBurstInMobile .38s cubic-bezier(.34,1.4,.64,1) forwards;
+  }
+  @keyframes comboBurstInMobile{
+    0%   { transform:translate(8px, 4px) scale(.5) rotate(-4deg); opacity:0; }
+    60%  { transform:translate(0, -2px)  scale(1.08) rotate(1deg); opacity:.85; }
+    100% { transform:translate(0, 0)     scale(1)    rotate(0deg); opacity:.82; }
+  }
+  .combo-display .combo-body{
+    padding:4px 9px 5px;
+    border-radius:10px;
+    gap:4px;
+  }
+  .combo-display .combo-x-label{ font-size:6px; letter-spacing:.18em; }
+  .combo-display .combo-x{ font-size:15px; }
+  .combo-display .combo-count{ font-size:8px; }
+  .combo-display[data-tier="3"] .combo-x{ font-size:17px; }
+  .combo-display[data-tier="4"] .combo-x{ font-size:19px; }
+  /* Réduire les effets distrayants (rayons + sparkles) sur petit écran */
+  .combo-display[data-tier="3"] .combo-rays{ opacity:.20; }
+  .combo-display[data-tier="4"] .combo-rays{ opacity:.30; }
+  .combo-display[data-tier="4"] .combo-sparkles{ opacity:.55; }
+  .combo-display .combo-rays{ inset:-22px; }
+}
 
 /* Upgrade buttons — 6 améliorations en grille 3×2 */
 .tap-upgrades{
@@ -26110,6 +26145,26 @@ function applyProgressiveDisclosure(){
   const laps = (STATE && STATE.lapsRun) || 0;
   const saison = (STATE && STATE.saison) || 1;
   window._revealedUnlocks = window._revealedUnlocks || new Set();
+  // === UX ANTI-HARCÈLEMENT : marque les items DÉJÀ débloqués au boot comme "vus" silencieusement
+  // (évite la cascade de toasts si le joueur recharge avec lapsRun=20 et que 5 items étaient déjà disponibles)
+  // S'exécute lors du 1er appel où le STATE est stabilisé (lapsRun connu) — sinon refait au prochain tick
+  if(!window._unlocksBootstrapDone){
+    // Initialise toujours le boot time pour le délai initial de 3s, même si on n'a pas encore le STATE
+    if(!window._unlocksBootTime) window._unlocksBootTime = Date.now();
+    // Attendre que STATE existe vraiment (sinon on bootstrappe rien et on rate les items déjà débloqués)
+    if(typeof STATE !== 'undefined' && STATE){
+      window._unlocksBootstrapDone = true;
+      document.querySelectorAll('[data-unlock-km], [data-unlock-saison]').forEach(_el => {
+        const _needKm = parseInt(_el.getAttribute('data-unlock-km') || '0', 10);
+        const _needSaison = parseInt(_el.getAttribute('data-unlock-saison') || '0', 10);
+        const _alreadyUnlocked = (laps >= _needKm) && (saison >= _needSaison);
+        if(_alreadyUnlocked){
+          const _id = _el.getAttribute('data-upgrade') || _el.getAttribute('data-action') || _el.id || '';
+          if(_id) window._revealedUnlocks.add(_id);
+        }
+      });
+    }
+  }
   // META-PRESTIGE : bouton TRANSCENDER visible uniquement quand canTranscend() == true
   try {
     const transBtn = document.getElementById('transcend-btn');
@@ -26134,11 +26189,11 @@ function applyProgressiveDisclosure(){
         || el.querySelector('.menu-label')?.textContent
         || el.getAttribute('aria-label')
         || rawLabel;
-      // === QUEUE anti-cascade : pousse dans la file, drain 1 toast / 1.2s
-      // (UX 6.5/10 : "13 popups d'un coup à 50 km — overwhelming")
+      // === QUEUE anti-cascade : pousse dans la file, drain 1 toast / 5s
+      // (UX : "harcèlement de pop-up au début c'est horrible" — espacer strictement)
       window._unlockToastQueue = window._unlockToastQueue || [];
       window._unlockToastQueue.push({ niceLabel: niceLabel, el: el });
-      // Pump récurrent : draine 1 toast toutes les 1.2s, s'arrête quand la file est vide ET stable
+      // Pump récurrent : draine 1 toast toutes les 5s, s'arrête quand la file est vide ET stable
       if(!window._unlockToastPumpActive){
         window._unlockToastPumpActive = true;
         const pumpOne = () => {
@@ -26155,8 +26210,8 @@ function applyProgressiveDisclosure(){
           _n.className = 'unlock-toast';
           _n.id = 'unlock-toast-' + Date.now() + '-' + Math.floor(Math.random()*1000);
           _n.innerHTML = '✨ NOUVEAU : ' + item.niceLabel + ' débloqué !';
-          const _ex = document.querySelectorAll('.unlock-toast').length;
-          _n.style.cssText = 'position:fixed;top:' + (80 + _ex * 56) + 'px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#ffd060,#ff9020);color:#1a1a2e;padding:12px 22px;border-radius:24px;font-weight:700;z-index:9999;box-shadow:0 6px 20px rgba(0,0,0,0.4);animation:unlockFadeInOut 4s ease forwards;';
+          // Toast unique à l'écran (plus jamais d'empilement vertical : la queue garantit espacement)
+          _n.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#ffd060,#ff9020);color:#1a1a2e;padding:12px 22px;border-radius:24px;font-weight:700;z-index:9999;box-shadow:0 6px 20px rgba(0,0,0,0.4);animation:unlockFadeInOut 4s ease forwards;';
           document.body.appendChild(_n);
           setTimeout(()=>{ _n.remove(); }, 4000);
           try {
@@ -26165,11 +26220,15 @@ function applyProgressiveDisclosure(){
             if(typeof sfxAchievement==='function') sfxAchievement();
             else if(typeof sfxBuyScaled==='function') sfxBuyScaled(1);
           } catch(e){}
-          // Toujours attendre 1.2s avant le prochain drain — c'est ÇA qui espace les toasts
-          setTimeout(pumpOne, 1200);
+          // Toujours attendre 5s avant le prochain drain — espacement strict pour respecter le joueur
+          setTimeout(pumpOne, 5000);
         };
-        // Premier drain différé de 50ms pour laisser la boucle forEach pousser tous les items
-        setTimeout(pumpOne, 50);
+        // Premier drain : différé de 3s après le boot (laisse le joueur découvrir l'écran)
+        // sinon différé de 50ms (cas normal mid-game)
+        const _boot = window._unlocksBootTime || 0;
+        const _sinceBoot = Date.now() - _boot;
+        const _initialDelay = (_sinceBoot < 3000) ? (3000 - _sinceBoot) : 50;
+        setTimeout(pumpOne, _initialDelay);
       }
       // Legacy direct path (désactivé, conservé pour stabilité — la queue ci-dessus gère tout)
       if(false){

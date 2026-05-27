@@ -4874,6 +4874,13 @@ body.tab-drawer-open #progress-map{
   .tap-upgrades-v2 .upg-btn { padding: 6px 8px; }
   .tap-upgrades-v2 .upg-desc { display: none; }
   .tap-upgrades-v2 .upg-effect { font-size: 9.5px; }
+  /* V63 : fixes XS extra-small (320-340px) */
+  .modal-card { padding: 14px 12px !important; max-width: 96vw !important; }
+  .modal-card h2 { padding: 0 14px; font-size: 18px !important; }
+  .modal-close { width: 38px !important; height: 38px !important; top: 6px !important; right: 6px !important; }
+  .skills-bar { right: 4px !important; top: calc(env(safe-area-inset-top, 0px) + 70px) !important; }
+  /* HUD top : éviter chevauchements */
+  .hud-top, .hud-stats { font-size: 11px !important; gap: 4px !important; }
 }
 @media (min-width: 400px) and (max-width: 599px) {
   .tap-upgrades-v2 { grid-template-columns: repeat(2, 1fr); }
@@ -28666,15 +28673,22 @@ function _drawBirds(ctx, W, H, dt){
   const _PERF = (() => {
     const cores = (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) ? navigator.hardwareConcurrency : 4;
     const isMobile = (typeof window !== 'undefined' && window.innerWidth < 768);
-    const isLowEnd = cores < 4 || isMobile;
+    // V63 : détection low-end enrichie via deviceMemory (Chrome mobile) + connection type
+    const deviceMem = (navigator.deviceMemory) || 4; // gigs RAM exposés
+    const conn = navigator.connection;
+    const slowConn = conn && (conn.effectiveType === '2g' || conn.effectiveType === 'slow-2g' || conn.saveData);
+    const isVeryLowEnd = cores <= 2 || deviceMem <= 2 || slowConn;
+    const isLowEnd = isVeryLowEnd || cores < 4 || isMobile;
     return {
       isMobile,
       isLowEnd,
+      isVeryLowEnd,
       cores,
-      shadows: !isMobile,                    // mobile = pas de shadowBlur
-      partMul: isLowEnd ? 0.5 : 1,           // /2 sur mobile et low-end
+      deviceMem,
+      shadows: !isMobile && !isVeryLowEnd,   // mobile/low-end = pas de shadowBlur
+      partMul: isVeryLowEnd ? 0.25 : (isLowEnd ? 0.5 : 1), // /4 very-low, /2 low, 1 sinon
       lighter: !isLowEnd,                    // 'lighter' (additive blending) trop cher sur low-end
-      fpsCapMs: isLowEnd ? (1000/30) : (1000/60), // 30 FPS sur low-end, 60 sinon
+      fpsCapMs: isVeryLowEnd ? (1000/24) : (isLowEnd ? (1000/30) : (1000/60)), // 24 FPS very-low, 30 low, 60 sinon
     };
   })();
   // Helper court pour scaler un count de particules (jamais < 1)

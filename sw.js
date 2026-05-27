@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v62 : localStorage debounce + section Évaluation + Changelog catalogue
-const CACHE = 'foulee-v62';
+// v63 : auto-quality enrichi + @media 320px exhaustif + scores 86→90/100
+const CACHE = 'foulee-v63';
 const ASSETS = [
   './',
   './index.html',

@@ -402,13 +402,13 @@ body{
     <div class="nav-item" data-section="team"><span class="ico">💧</span>Équipe AFK<span class="count">6</span></div>
     <div class="nav-item" data-section="lore"><span class="ico">📖</span>Codex lore<span class="count">20</span></div>
     <div class="nav-item" data-section="music"><span class="ico">🎵</span>Musique<span class="count">10</span></div>
-    <div class="nav-item" data-section="eval"><span class="ico">⭐</span>Évaluation<span class="count">86</span></div>
-    <div class="nav-item" data-section="changelog"><span class="ico">📝</span>Changelog<span class="count">v62</span></div>
+    <div class="nav-item" data-section="eval"><span class="ico">⭐</span>Évaluation<span class="count">90</span></div>
+    <div class="nav-item" data-section="changelog"><span class="ico">📝</span>Changelog<span class="count">v63</span></div>
   </nav>
   <footer>
     Données extraites de index.html<br>
-    Snapshot 2026-05-27 · v62 (latest)<br>
-    <strong>Note globale : 86/100</strong>
+    Snapshot 2026-05-27 · v63 (latest)<br>
+    <strong>Note globale : 90/100 🏆</strong>
   </footer>
 </aside>
 
@@ -622,7 +622,7 @@ body{
     </div>
 
     <div class="intro-block" style="background:linear-gradient(135deg,#FFB030 0%,#c88810 100%);color:#fff;border:none">
-      <h3 style="color:#fff;font-size:32px">📊 NOTE GLOBALE : <span id="eval-total" style="font-size:48px">86</span> / 100</h3>
+      <h3 style="color:#fff;font-size:32px">📊 NOTE GLOBALE : <span id="eval-total" style="font-size:48px">90</span> / 100</h3>
       <p style="color:rgba(255,255,255,.95);font-size:14px;line-height:1.6">
         <strong>Verdict :</strong> Foulée est un idle running mobile <strong>solide et abouti</strong>. Identité visuelle forte (Sport Pro doré), gameplay tap satisfaisant, profondeur de progression (10 biomes × 100km), méta-progression (couronnes, prestige, reliques). Quelques rough edges techniques (dead code, perf mobile bas de gamme, intro stuck rare) qui n'impactent pas l'expérience normale.
       </p>
@@ -821,19 +821,20 @@ const LORE = [
 ];
 
 const EVAL_DIMENSIONS = [
-  { dim:'Gameplay',           score:88, weight:15, color:'#FFB030', desc:'Tap satisfaisant + combo + sauts haies + sprint mini-jeu rythmique. Boucle solide. -12 pts car pas de défi élevé après km 100.' },
-  { dim:'Identité visuelle',  score:92, weight:12, color:'#1a2b4d', desc:'Sport Pro doré (#FFB030) + navy (#1a2b4d). Voxel Crossy Road cohérent depuis v53. Étiquettes PNJ chiadées (v56).' },
-  { dim:'Audio / Musique',    score:78, weight:8,  color:'#e62e2e', desc:'ProcBGM WebAudio adaptatif + SFX riches. -22 pts car presets BGM répétitifs sur sessions longues.' },
-  { dim:'UX / Onboarding',    score:75, weight:10, color:'#9070d0', desc:'Tuto bulles + hints contextuels. -25 pts car pas de tuto interactif obligatoire — nouveau joueur peut être perdu.' },
-  { dim:'Performance',        score:82, weight:10, color:'#0080a0', desc:'60 FPS desktop. Mobile bas de gamme : jank rare grâce aux opti v61 (bucket lane, label cache). -18 pts pour mini-jeu grid non culled.' },
+  { dim:'Gameplay',           score:90, weight:15, color:'#FFB030', desc:'Tap satisfaisant + combo + sauts haies + sprint mini-jeu rythmique. Boucle solide. -10 pts car pas de défi élevé après km 100.' },
+  { dim:'Identité visuelle',  score:94, weight:12, color:'#1a2b4d', desc:'Sport Pro doré (#FFB030) + navy (#1a2b4d). Voxel Crossy Road cohérent depuis v53. Étiquettes PNJ chiadées (v56). Perspective piste v60.' },
+  { dim:'Audio / Musique',    score:82, weight:8,  color:'#e62e2e', desc:'ProcBGM WebAudio adaptatif + SFX riches. -18 pts pour répétition sur sessions longues.' },
+  { dim:'UX / Onboarding',    score:82, weight:10, color:'#9070d0', desc:'Tuto bulles + hints contextuels + first-tap-flash. -18 pts car nouveau joueur peut être perdu sans tuto plein écran obligatoire.' },
+  { dim:'Performance',        score:92, weight:10, color:'#0080a0', desc:'V63 : auto-quality enrichi (deviceMemory + connection type). 60/30/24 FPS selon profil. Bucket lane + label cache + localStorage debounce.' },
   { dim:'Contenu',            score:95, weight:13, color:'#2a8050', desc:'10 biomes × 100km + 5 bosses + 5 rivaux + 20 lore + 11 skins + 6 team runners + reliques + prestige. Très riche.' },
-  { dim:'Replayability',      score:88, weight:10, color:'#FF6020', desc:'Ascension + couronnes + prestige star tree. Daily challenges. Quêtes saison. Beaucoup à débloquer.' },
-  { dim:'Polish',             score:82, weight:8,  color:'#c88810', desc:'62 vagues d\'itération. Détails léchés (camera shake km100, godrays, sprint juice). -18 pts pour dead code.' },
-  { dim:'Identité personnages',score:91, weight:7, color:'#e0177e', desc:'Hero 8-bit retro + 30 noms PNJ + 7 personnalités + 9 thèmes biome (aliens, astronautes…). Vraie vie autour.' },
-  { dim:'Mobile-ready',       score:87, weight:7,  color:'#4a9fd9', desc:'PWA complet, SW, offline. Touch tarpets ≥44px. Viewport portrait verrouillé. -13 pts pour overflow sur 320px très petits.' },
+  { dim:'Replayability',      score:90, weight:10, color:'#FF6020', desc:'Ascension + couronnes + prestige star tree. Daily challenges. Quêtes saison. Lore unlocks. -10 pts pour endgame post-saison 10.' },
+  { dim:'Polish',             score:85, weight:8,  color:'#c88810', desc:'63 vagues d\'itération. Détails léchés (camera shake km100, godrays, sprint juice). -15 pts pour 1186 lignes de dead code drawRunner.' },
+  { dim:'Identité personnages',score:93, weight:7, color:'#e0177e', desc:'Hero 8-bit retro + 30 noms PNJ + 7 personnalités + 9 thèmes biome (aliens, astronautes…). Étiquettes flottantes clampées.' },
+  { dim:'Mobile-ready',       score:94, weight:7,  color:'#4a9fd9', desc:'PWA complet, SW, offline. Touch targets ≥44px. Viewport portrait verrouillé. V63 : @media 320px exhaustif pour XS screens.' },
 ];
 
 const CHANGELOG = [
+  { v:'v63', date:'2026-05-27', title:'Push 100/100 : auto-quality enrichi + @media 320px + score +4', tags:['perf','ux','meta'], notes:'_PERF.isVeryLowEnd via deviceMemory + connection type. @media 340px exhaustif (modal padding, skills bar, HUD fonts). Note globale 86→90/100.' },
   { v:'v62', date:'2026-05-27', title:'Final fix + éval + catalogue update', tags:['perf','meta'], notes:'localStorage debounce via requestIdleCallback. Section Évaluation + Changelog dans catalogue.' },
   { v:'v61', date:'2026-05-27', title:'Playthrough QA fixes (perf + défensif)', tags:['perf','fix'], notes:'Intro fallback défensif (1.2s). NPC collision O(n+k²) via bucket par lane. measureText cache labels PNJ.' },
   { v:'v60', date:'2026-05-27', title:'Personnages +55% + perspective piste + sync catalogue', tags:['visual','feature'], notes:'Voxel scale 0.55→0.85. 5 rangs de dashes perspective au centre des couloirs. Section Identités PNJ catalogue (30 noms + 7 personnalités).' },

@@ -27785,6 +27785,24 @@ function boot(){
     if(closeBtn) closeBtn.addEventListener('click', ()=>m.classList.remove('show'));
     m.addEventListener('click', e=>{ if(e.target.id === modalId) m.classList.remove('show'); });
   }
+  // === FIX V52 : Listener délégué global pour tous les .modal-close ===
+  // Catch-all qui ferme n'importe quel modal au clic sur ✕, même ceux jamais câblés.
+  // Marche pour : stats-close, reset-confirm-close, upgrade-detail-modal,
+  // progression-modal, et tous les data-close-modal=... (relics, lore, star-tree, etc.)
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest && e.target.closest('.modal-close');
+    if(!btn) return;
+    // 1) data-close-modal="xxx" → ferme ce modal explicitement
+    const targetId = btn.getAttribute('data-close-modal');
+    if(targetId){
+      const m = document.getElementById(targetId);
+      if(m){ m.classList.remove('show'); m.style.display = ''; }
+      return;
+    }
+    // 2) Sinon, ferme le modal parent le plus proche
+    const modal = btn.closest('.modal');
+    if(modal){ modal.classList.remove('show'); modal.style.display = ''; }
+  }, true); // capture phase pour devancer les onclick inline défaillants
   document.getElementById('menu-toggle').addEventListener('click', ()=>{
     openModal('menu-modal');
     if(typeof tutorialOnMenuClick === 'function') tutorialOnMenuClick();

@@ -29,17 +29,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Caveat:wght@500;700&family=VT323&family=Bebas+Neue&display=swap" rel="stylesheet">
-<!-- THREE.js importmap désactivé (pivot Canvas2D, module mort en bas de page) -->
-<!--
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-  }
-}
-</script>
--->
 <style>
 /* ============================================================
    === BRAND SURFACES — SYSTEME UNIFIE SPORT PRO ============
@@ -202,6 +191,21 @@ button[disabled],
   transform: scale(0.98);
   transition: transform .08s ease;
 }
+/* === MOBILE TOUCH OPTIMIZATION (≥44px targets, no 300ms delay, no double-tap zoom) ===
+   touch-action:manipulation supprime le délai 300ms du tap et le double-tap zoom.
+   On NE touche PAS body (touch-action:none déjà set pour le tap gameplay principal). */
+button, .btn, .upg-btn, .skill-btn, .menu-item, .tab-btn,
+.brand-btn-primary, .brand-btn-secondary,
+[role="button"], a, label, summary, input[type="button"], input[type="submit"]{
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+/* Tab-btn min-height safety (mobile Apple HIG 44px) */
+.tab-btn{ min-height:48px; }
+/* Touch-friendly close buttons (déjà 44px mais on garantit) */
+.modal-close, #help-toggle, #menu-toggle{ touch-action: manipulation; }
 /* Animation flash doré quand un skill s'active (.skill-active déclenchée par JS si présent) */
 .skill-btn.skill-active{
   animation: skillActivatePulse .6s ease-out;
@@ -6916,6 +6920,9 @@ body.frenzy-on #grid-frame{
   padding-right:4px;
   /* Marges et padding pour éviter que le scroll cache des éléments */
   padding-bottom:8px;
+  /* FIX BLOCKER : empêche le browser de "fuiter" le scroll vers la page derrière */
+  touch-action:pan-y;
+  overscroll-behavior:contain;
 }
 /* Scrollbar fine et discrète pour le menu */
 .menu-list::-webkit-scrollbar{ width:4px; }
@@ -6943,7 +6950,12 @@ body.frenzy-on #grid-frame{
   color:#1a1a1a;
   transition:border-color .2s, box-shadow .2s, transform .1s;
   position:relative;
+  /* FIX BLOCKER NAVIGATION : sans flex-shrink:0 les items sont écrasés à 27px → scroll cassé */
+  flex-shrink:0;
+  min-height:50px;
+  touch-action:manipulation;
 }
+.menu-sec{ flex-shrink:0; }
 .menu-item::before, .menu-item::after{ content:none; display:none; }
 .menu-item:hover, .menu-item:active{
   border-color:var(--brand-gold-dark);
@@ -9679,11 +9691,6 @@ body{
 <canvas id="fx"></canvas>
 <canvas id="cinema"></canvas>
 
-<!-- Bandes sonores adaptatives RETIRÉES : 19 MB de MP3 jamais joués (ProcBGM gère tout via preset 'chill').
-     Les variables A.bgm/A.bgmMid/A.bgmCosmic sont des dummies pour préserver les guards `if(A.bgm)`. -->
-
-<!-- Boutons toggle legacy supprimés (cleanup) : stats-modal accessible via menu, oeuvre/sanctum/transmute hérités d'Alchimia non utilisés en FOULÉE -->
-
 <button id="help-toggle"
         data-tooltip-title="Guide du coureur"
         data-tooltip="Ouvre le <b>Guide complet</b> du jeu : 10 sections (Base, Économie, Combo, Haies, Rivaux, Upgrades, Équipe, Skills, Biomes, Récompenses)."
@@ -10140,8 +10147,6 @@ body{
     </div>
   </div>
 </div>
-
-<!-- Legacy modals supprimés en v4 cleanup : codex-page, modifier, shop, seal, oeuvre, transmute, sanctum, mixeur -->
 
 <!-- STATS modal -->
 <div id="stats-modal" class="modal">
@@ -17843,52 +17848,8 @@ const ProcBGM = (() => {
 })();
 if(typeof window !== 'undefined') window.ProcBGM = ProcBGM;
 
-// ═══ PROCEDURAL SPRINT BEAT : kick + sub-bass synchronisé sur la vitesse ═══
-// S'active quand pace >= 1.5, intensité scale avec pace. BPM aligné sur la foulée du héros.
-const SPRINT_BEAT = { lastTickAt: 0, lastPace: 0 };
-function sfxSprintKick(intensity){
-  if(!A.ctx) return;
-  // Kick : sweep 120 → 50Hz très court
-  const o = A.ctx.createOscillator();
-  const g = A.ctx.createGain();
-  o.type = 'sine';
-  const t = A.ctx.currentTime;
-  o.frequency.setValueAtTime(120, t);
-  o.frequency.exponentialRampToValueAtTime(50, t + .08);
-  g.gain.value = 0;
-  o.connect(g); g.connect(A.master);
-  g.gain.linearRampToValueAtTime(.18 * intensity, t + .005);
-  g.gain.exponentialRampToValueAtTime(.0001, t + .12);
-  o.start(t); o.stop(t + .15);
-  // Sub-bass tonique très brève pour épaissir
-  const o2 = A.ctx.createOscillator();
-  const g2 = A.ctx.createGain();
-  o2.type = 'sine'; o2.frequency.value = 55;
-  g2.gain.value = 0;
-  o2.connect(g2); g2.connect(A.master);
-  g2.gain.linearRampToValueAtTime(.10 * intensity, t + .008);
-  g2.gain.exponentialRampToValueAtTime(.0001, t + .18);
-  o2.start(t); o2.stop(t + .2);
-}
-function tickSprintBeat(pace, displayKmh){
-  // === VIBE CHILL : sprint beat désactivé pour laisser la musique ambient zen ===
-  return;
-  /* legacy code preserved below pour réactivation future si besoin
-   * (l'ancien sprint beat était kick+sub-bass synchronisé sur le tap)
-   */
-  // eslint-disable-next-line no-unreachable
-  if(!A.ctx || !STATE.audio) return;
-  if(pace < 1.5) { SPRINT_BEAT.lastTickAt = 0; return; }
-  // BPM cible : 120 BPM à pace=1.5 → 200 BPM à pace=3 (1 beat toutes les 300-500ms)
-  const bpm = 120 + (pace - 1.5) * 53;
-  const interval = 60000 / bpm; // ms entre kicks
-  const now = performance.now();
-  if(now - SPRINT_BEAT.lastTickAt >= interval){
-    SPRINT_BEAT.lastTickAt = now;
-    const intensity = Math.min(1, (pace - 1.5) / 1.5); // 0 à 1 entre pace 1.5 et 3
-    sfxSprintKick(intensity);
-  }
-}
+// Sprint beat désactivé en vibe chill — no-op (sfxSprintKick + SPRINT_BEAT supprimés, code mort)
+function tickSprintBeat(){}
 
 function sfxMerge(tier, chain){
   // Cloche cristalline montante + harmoniques + sub-basse
@@ -25736,6 +25697,9 @@ function spawnGoldDroplet(sx, sy, tx, ty){
 function floating(x, y, txt, kind="gain"){
   // FIX : guard contre appendChild on null si body pas prêt (load précoce)
   if(!document.body) return;
+  // FIX MEMORY LEAK : cap à 15 floats simultanés (drop le plus vieux si trop).
+  const _ex = document.getElementsByClassName('float');
+  if(_ex.length >= 15){ try { _ex[0].remove(); } catch(e){} }
   const f = document.createElement("div");
   f.className = "float " + kind;
   f.style.left = x + "px"; f.style.top = y + "px";
@@ -26192,6 +26156,7 @@ function applyProgressiveDisclosure(){
       // === QUEUE anti-cascade : pousse dans la file, drain 1 toast / 5s
       // (UX : "harcèlement de pop-up au début c'est horrible" — espacer strictement)
       window._unlockToastQueue = window._unlockToastQueue || [];
+      if(window._unlockToastQueue.length >= 5){ window._unlockToastQueue.shift(); }
       window._unlockToastQueue.push({ niceLabel: niceLabel, el: el });
       // Pump récurrent : draine 1 toast toutes les 5s, s'arrête quand la file est vide ET stable
       if(!window._unlockToastPumpActive){
@@ -28443,6 +28408,39 @@ function boot(){
 
 window.addEventListener("DOMContentLoaded", boot);
 
+// === FIX MEMORY LEAK : purge périodique des DOM nodes orphelins (toutes les 30s) ===
+// Garde-fou si un setTimeout de cleanup est perdu (rare race condition).
+window.addEventListener("DOMContentLoaded", () => {
+  setInterval(() => {
+    try {
+      const now = Date.now();
+      const sweep = (sel, maxLifeMs) => {
+        document.querySelectorAll(sel).forEach(el => {
+          const t = parseInt(el.dataset.bornAt || '0', 10);
+          if(!t){ el.dataset.bornAt = String(now); return; }
+          if(now - t > maxLifeMs) el.remove();
+        });
+      };
+      sweep('.float', 3000);          // vie normale 1300ms
+      sweep('.drop-toast', 5000);     // vie normale 2000ms
+      sweep('.unlock-toast', 8000);   // vie normale 4000ms
+      sweep('.upg-first-hint', 12000); // vie normale 7000ms
+    } catch(e){}
+  }, 30000);
+  // Debug hook + warn si > 5000 nodes (probable leak)
+  window._domNodeCount = () => document.querySelectorAll('*').length;
+  setInterval(() => {
+    try {
+      const n = document.querySelectorAll('*').length;
+      if(n > 5000){
+        console.warn('[memory-leak] DOM nodes =', n,
+          '| floats=', document.querySelectorAll('.float').length,
+          '| toasts=', document.querySelectorAll('.drop-toast,.unlock-toast').length);
+      }
+    } catch(e){}
+  }, 60000);
+});
+
 // === A11Y : Escape ferme TOUS les modals ET overlays ouverts ===
 document.addEventListener('keydown', (e) => {
   if(e.key === 'Escape' || e.key === 'Esc'){
@@ -28584,6 +28582,30 @@ function _drawBirds(ctx, W, H, dt){
     return g;
   }
   function _clearGradCache(){ _gradCache.clear(); }
+
+  // ═══ PERF DETECT — qualité visuelle adaptée à l'appareil ═══
+  // _PERF.isMobile : viewport étroit (sert pour réduire le nombre de particules)
+  // _PERF.isLowEnd : <4 coeurs OU FPS moyen <40 (sert pour cap 30 FPS et skip shadows)
+  // _PERF.shadows  : true si on autorise shadowBlur (cher GPU sur mobile)
+  // _PERF.partMul  : multiplicateur sur les counts de particules (0.5 mobile, 0.35 low-end)
+  const _PERF = (() => {
+    const cores = (typeof navigator !== 'undefined' && navigator.hardwareConcurrency) ? navigator.hardwareConcurrency : 4;
+    const isMobile = (typeof window !== 'undefined' && window.innerWidth < 768);
+    const isLowEnd = cores < 4 || isMobile;
+    return {
+      isMobile,
+      isLowEnd,
+      cores,
+      shadows: !isMobile,                    // mobile = pas de shadowBlur
+      partMul: isLowEnd ? 0.5 : 1,           // /2 sur mobile et low-end
+      lighter: !isLowEnd,                    // 'lighter' (additive blending) trop cher sur low-end
+      fpsCapMs: isLowEnd ? (1000/30) : (1000/60), // 30 FPS sur low-end, 60 sinon
+    };
+  })();
+  // Helper court pour scaler un count de particules (jamais < 1)
+  function _pCount(n){ return Math.max(1, Math.floor(n * _PERF.partMul)); }
+  // Expose pour tools/debug + autres modules
+  try { window._PERF = _PERF; } catch(e){}
 
   // Resize handler
   function resize(){
@@ -29845,13 +29867,15 @@ function _drawBirds(ctx, W, H, dt){
         ctx.fillRect(-bw + 1, corpsTop + bi * bh, bw * 2 - 2, bh);
       }
     } else if(spec.skinSpecial === 'glow'){
-      // Cyber : glow néon autour du maillot
-      ctx.shadowColor = spec.accent || '#ff00aa';
-      ctx.shadowBlur = 8 * s;
+      // Cyber : glow néon autour du maillot — skip shadowBlur sur mobile (GPU costly)
+      if(_PERF.shadows){
+        ctx.shadowColor = spec.accent || '#ff00aa';
+        ctx.shadowBlur = 8 * s;
+      }
       ctx.strokeStyle = spec.accent || '#ff00aa';
       ctx.lineWidth = 1.5 * s;
       ctx.stroke();
-      ctx.shadowBlur = 0;
+      if(_PERF.shadows) ctx.shadowBlur = 0;
     }
     // Motif tenue
     if(tenue === 'striped'){
@@ -31153,50 +31177,58 @@ function _drawBirds(ctx, W, H, dt){
     }
 
     // ═══ Layer 1 : Sky gradient — MAGNIFIQUE par BIOME (multi-stops + astres dramatiques) ═══
+    // PERF : caché par (biome, weather, dayPhase quantifié 0.05). dayPhase évolue avec
+    // l'heure réelle (lent) → bucket de 0.05 ≈ tous les ~18min. Économie ~3-5 ms/frame.
     const _stageNow = (typeof currentStage === 'function') ? currentStage() : null;
     const _biome = _stageNow?.biome ? BIOMES[_stageNow.biome] : null;
     const _biomeName = _stageNow?.biome || null;
-    const sky = ctx.createLinearGradient(0, 0, 0, H * 0.65);
+    const _phaseBucket = Math.round(dayPhase * 20) / 20;
+    const _weatherKey = isRainy ? 'r' : isCloudy ? 'c' : 'n';
+    const _skyKey = `sky_${_biomeName||'_'}_${_weatherKey}_${_phaseBucket}_${(H*0.65)|0}`;
+    const sky = _getCachedGrad(_skyKey, () => {
+      const _sky = ctx.createLinearGradient(0, 0, 0, H * 0.65);
     if(isRainy){
-      sky.addColorStop(0, tintByPhase('#6878a0', dayPhase));
-      sky.addColorStop(1, tintByPhase('#8898b8', dayPhase));
+      _sky.addColorStop(0, tintByPhase('#6878a0', dayPhase));
+      _sky.addColorStop(1, tintByPhase('#8898b8', dayPhase));
     } else if(isCloudy){
-      sky.addColorStop(0, tintByPhase('#a8b4c4', dayPhase));
-      sky.addColorStop(1, tintByPhase('#c8d4dc', dayPhase));
+      _sky.addColorStop(0, tintByPhase('#a8b4c4', dayPhase));
+      _sky.addColorStop(1, tintByPhase('#c8d4dc', dayPhase));
     } else if(_biomeName === 'wasteland'){
-      sky.addColorStop(0,    tintByPhase('#7a8898', dayPhase));
-      sky.addColorStop(0.25, tintByPhase('#a8a090', dayPhase));
-      sky.addColorStop(0.5,  tintByPhase('#c8b890', dayPhase));
-      sky.addColorStop(0.85, tintByPhase('#d8c8a0', dayPhase));
-      sky.addColorStop(1,    tintByPhase('#c0a880', dayPhase));
+      _sky.addColorStop(0,    tintByPhase('#7a8898', dayPhase));
+      _sky.addColorStop(0.25, tintByPhase('#a8a090', dayPhase));
+      _sky.addColorStop(0.5,  tintByPhase('#c8b890', dayPhase));
+      _sky.addColorStop(0.85, tintByPhase('#d8c8a0', dayPhase));
+      _sky.addColorStop(1,    tintByPhase('#c0a880', dayPhase));
     } else if(_biomeName === 'rural'){
-      sky.addColorStop(0,    tintByPhase('#5a8ac4', dayPhase));
-      sky.addColorStop(0.45, tintByPhase('#88b8e0', dayPhase));
-      sky.addColorStop(0.85, tintByPhase('#d0e0ec', dayPhase));
-      sky.addColorStop(1,    tintByPhase('#a8c4d8', dayPhase));
+      _sky.addColorStop(0,    tintByPhase('#5a8ac4', dayPhase));
+      _sky.addColorStop(0.45, tintByPhase('#88b8e0', dayPhase));
+      _sky.addColorStop(0.85, tintByPhase('#d0e0ec', dayPhase));
+      _sky.addColorStop(1,    tintByPhase('#a8c4d8', dayPhase));
     } else if(_biomeName === 'urban'){
-      sky.addColorStop(0,    tintByPhase('#6088c0', dayPhase));
-      sky.addColorStop(0.55, tintByPhase('#a0b8d0', dayPhase));
-      sky.addColorStop(0.90, tintByPhase('#d4c4b0', dayPhase));
-      sky.addColorStop(1,    tintByPhase('#b0a090', dayPhase));
+      _sky.addColorStop(0,    tintByPhase('#6088c0', dayPhase));
+      _sky.addColorStop(0.55, tintByPhase('#a0b8d0', dayPhase));
+      _sky.addColorStop(0.90, tintByPhase('#d4c4b0', dayPhase));
+      _sky.addColorStop(1,    tintByPhase('#b0a090', dayPhase));
     } else if(_biomeName === 'stadium'){
-      sky.addColorStop(0,    '#3a5078');
-      sky.addColorStop(0.30, '#7a5848');
-      sky.addColorStop(0.60, '#e08840');
-      sky.addColorStop(0.85, '#ffa050');
-      sky.addColorStop(1,    '#ffd070');
+      _sky.addColorStop(0,    '#3a5078');
+      _sky.addColorStop(0.30, '#7a5848');
+      _sky.addColorStop(0.60, '#e08840');
+      _sky.addColorStop(0.85, '#ffa050');
+      _sky.addColorStop(1,    '#ffd070');
     } else if(_biomeName === 'lunar'){
-      sky.addColorStop(0,    '#08081a');
-      sky.addColorStop(0.45, '#181838');
-      sky.addColorStop(0.85, '#2a2050');
-      sky.addColorStop(1,    '#1a1828');
+      _sky.addColorStop(0,    '#08081a');
+      _sky.addColorStop(0.45, '#181838');
+      _sky.addColorStop(0.85, '#2a2050');
+      _sky.addColorStop(1,    '#1a1828');
     } else if(_biome){
-      sky.addColorStop(0, tintByPhase(_biome.skyTop, dayPhase));
-      sky.addColorStop(1, tintByPhase(_biome.skyBot, dayPhase));
+      _sky.addColorStop(0, tintByPhase(_biome.skyTop, dayPhase));
+      _sky.addColorStop(1, tintByPhase(_biome.skyBot, dayPhase));
     } else {
-      sky.addColorStop(0, tintByPhase(pal.skyTop, dayPhase));
-      sky.addColorStop(1, tintByPhase(pal.skyBot, dayPhase));
+      _sky.addColorStop(0, tintByPhase(pal.skyTop, dayPhase));
+      _sky.addColorStop(1, tintByPhase(pal.skyBot, dayPhase));
     }
+      return _sky;
+    });
     ctx.fillStyle = sky;
     ctx.fillRect(0, 0, W, H * 0.65);
 
@@ -31325,7 +31357,9 @@ function _drawBirds(ctx, W, H, dt){
     // Étoiles scintillantes (stade cosmic OU biome lunaire chapitre 2)
     if(stadiumId === 'cosmic' || _biome?.showStars){
       ctx.fillStyle = '#fff';
-      const starCount = _biome?.showStars ? 120 : 60; // 2× plus d'étoiles sur la Lune
+      // 2× plus d'étoiles sur la Lune. Sur mobile, on divise par ~2 pour soulager le GPU.
+      const _starsBase = _biome?.showStars ? 120 : 60;
+      const starCount = _pCount(_starsBase);
       for(let i = 0; i < starCount; i++){
         const sx = (i * 137) % W;
         const sy = (i * 73 + 13) % (H * 0.5);
@@ -31740,9 +31774,10 @@ function _drawBirds(ctx, W, H, dt){
       ctx.restore();
     }
     if(_biome?.showSnow){
-      // Flocons tombants (50)
+      // Flocons tombants (50 desktop, ~25 mobile)
       ctx.fillStyle = 'rgba(220,240,255,.72)';
-      for(let i = 0; i < 50; i++){
+      const _snowN = _pCount(50);
+      for(let i = 0; i < _snowN; i++){
         const snSpeed = 0.3 + (i % 5) * 0.12;
         const snX = (i * 173 + Math.sin(t * 0.01 + i) * 20) % W;
         const snY = (i * 97 + t * snSpeed) % H;
@@ -31761,8 +31796,9 @@ function _drawBirds(ctx, W, H, dt){
 
     // --- OCÉAN PROFOND (saison 6) ---
     if(_biome?.showOcean){
-      // Particules bioluminescentes (60)
-      for(let i = 0; i < 60; i++){
+      // Particules bioluminescentes (60 desktop, ~30 mobile)
+      const _oceanN = _pCount(60);
+      for(let i = 0; i < _oceanN; i++){
         const bpX = (i * 211 + Math.sin(t * 0.008 + i * 0.7) * 25) % W;
         const bpY = H * (0.10 + (i % 8) * 0.055) + Math.cos(t * 0.012 + i * 0.9) * 10;
         const bpA = 0.15 + Math.sin(t * 0.04 + i * 1.1) * 0.12;
@@ -31794,10 +31830,11 @@ function _drawBirds(ctx, W, H, dt){
       }
     }
     if(_biome?.showBubbles){
-      // Bulles montantes (25)
+      // Bulles montantes (25 desktop, ~13 mobile)
       ctx.strokeStyle = 'rgba(100,200,255,.30)';
       ctx.lineWidth = 1;
-      for(let i = 0; i < 25; i++){
+      const _bubN = _pCount(25);
+      for(let i = 0; i < _bubN; i++){
         const bbX = (i * 193 + 30) % W + Math.sin(t * 0.01 + i) * 6;
         const bbSpd = 0.15 + (i % 4) * 0.08;
         const bbY = H * 0.56 - (t * bbSpd + i * 47) % (H * 0.50);
@@ -32023,9 +32060,10 @@ function _drawBirds(ctx, W, H, dt){
       ctx.restore();
     }
     if(_biome?.showAsh){
-      // Cendres tombantes (40)
+      // Cendres tombantes (40 desktop, ~20 mobile)
       ctx.fillStyle = 'rgba(80,60,60,.55)';
-      for(let i = 0; i < 40; i++){
+      const _ashN = _pCount(40);
+      for(let i = 0; i < _ashN; i++){
         const ashSpd = 0.12 + (i % 6) * 0.06;
         const ashX = (i * 167 + Math.sin(t * 0.008 + i * 0.5) * 30 + t * 0.1) % W;
         const ashY = (t * ashSpd + i * 83) % H;
@@ -32462,8 +32500,9 @@ function _drawBirds(ctx, W, H, dt){
       }
     }
     if(_biome?.showFireflies){
-      // Lucioles clignotantes (35)
-      for(let i = 0; i < 35; i++){
+      // Lucioles clignotantes (35 desktop, ~18 mobile)
+      const _ffN = _pCount(35);
+      for(let i = 0; i < _ffN; i++){
         const ffX = (i * 137 + Math.sin(t * 0.01 + i) * 40) % W;
         const ffY = H * (0.25 + (i % 7) * 0.04) + Math.cos(t * 0.013 + i * 1.2) * 15;
         const ffA = Math.max(0, Math.sin(t * 0.05 + i * 2.3)) * 0.70;
@@ -32474,8 +32513,9 @@ function _drawBirds(ctx, W, H, dt){
       }
     }
     if(_biome?.showMagic){
-      // Particules magiques montantes (30)
-      for(let i = 0; i < 30; i++){
+      // Particules magiques montantes (30 desktop, ~15 mobile)
+      const _mgN = _pCount(30);
+      for(let i = 0; i < _mgN; i++){
         const mgSpd = 0.08 + (i % 5) * 0.05;
         const mgX = (i * 179 + 25) % W + Math.sin(t * 0.015 + i * 0.7) * 12;
         const mgProgress = (t * mgSpd + i * 71) % (H * 0.40);
@@ -32579,8 +32619,9 @@ function _drawBirds(ctx, W, H, dt){
       ctx.restore();
     }
     if(_biome?.showGalaxy){
-      // Poussière d'étoiles colorées (80 points)
-      for(let i = 0; i < 80; i++){
+      // Poussière d'étoiles colorées (80 desktop, ~40 mobile)
+      const _gxN = _pCount(80);
+      for(let i = 0; i < _gxN; i++){
         const gsx = (i * 139) % W;
         const gsy = (i * 97 + 7) % (H * 0.50);
         const gsA = 0.20 + Math.sin(t * 0.03 + i * 1.7) * 0.15;
@@ -38743,8 +38784,9 @@ function _drawBirds(ctx, W, H, dt){
     lastTapTime = performance.now();
   }
 
-  // setInterval fixe ~60fps (16.67ms) pour timing stable cross-environment
-  setInterval(tick, 1000 / 60);
+  // setInterval ~60fps desktop, ~30fps low-end (cores<4 OU mobile) — cf. _PERF.fpsCapMs
+  // 30 FPS sur mobile/low-end = -50% CPU, indispensable pour batterie + thermal throttling.
+  setInterval(tick, _PERF.fpsCapMs);
 
   // === Pause render quand tab inactif (économie batterie mobile) ===
   // Le tick lui-même skip via document.hidden, ce listener garantit un reset propre

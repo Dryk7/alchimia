@@ -471,22 +471,68 @@ function drawTribune(biome, t){
 
 function drawTrack(biome, t){
   const skyBottom = CH * 0.45;
-  // Piste pleine (rouge / variant biome)
-  ctx.fillStyle = BIOMES[biome].track;
-  ctx.fillRect(0, skyBottom, CW, CH - skyBottom);
-  // Ligne blanche supérieure
+  const trackH = CH - skyBottom;
+  const trackColor = BIOMES[biome].track;
+
+  // Piste avec gradient subtil (plus clair vers horizon, plus dense en bas)
+  const trackGrad = ctx.createLinearGradient(0, skyBottom, 0, CH);
+  const lighter = shade(trackColor, 0.10);
+  const darker  = shade(trackColor, -0.06);
+  trackGrad.addColorStop(0, lighter);
+  trackGrad.addColorStop(0.4, trackColor);
+  trackGrad.addColorStop(1, darker);
+  ctx.fillStyle = trackGrad;
+  ctx.fillRect(0, skyBottom, CW, trackH);
+
+  // Ligne horizon (top)
   ctx.fillStyle = '#fff';
   ctx.fillRect(0, skyBottom, CW, 2);
-  // Hashes défilants
-  const scrollSpeedPx = 90;
-  state.scroll = (state.scroll + scrollSpeedPx * 0.016) % 40;
-  for(let x = -state.scroll; x < CW + 40; x += 40){
-    ctx.fillRect(x, skyBottom + 12, 22, 3);
-  }
-  // 2 lignes basses (couloirs)
-  ctx.fillStyle = 'rgba(255,255,255,.4)';
-  ctx.fillRect(0, skyBottom + 60, CW, 1);
-  ctx.fillRect(0, skyBottom + 120, CW, 1);
+
+  // === Couloirs : 4 lignes horizontales avec perspective ===
+  // Position relative (0 = horizon, 1 = bas) — espacement non linéaire (perspective)
+  const laneDepths = [0.15, 0.35, 0.62, 0.88];
+  ctx.fillStyle = 'rgba(255,255,255,.55)';
+  laneDepths.forEach((d, i) => {
+    const y = skyBottom + d * trackH;
+    const thickness = 1 + d * 1.8; // ligne plus épaisse au premier plan
+    ctx.fillRect(0, y, CW, thickness);
+  });
+
+  // === Tracets (dashes) défilants, 3 niveaux de profondeur ===
+  // Chaque rang scroll à sa propre vitesse (plus rapide en bas = effet perspective)
+  state.scroll = (state.scroll + 90 * 0.016);
+  const dashRows = [
+    { y: 0.24, dashW: 14, gap: 36, scrollMul: 0.5, alpha: 0.55, h: 2 },
+    { y: 0.48, dashW: 22, gap: 50, scrollMul: 0.85, alpha: 0.75, h: 3 },
+    { y: 0.76, dashW: 32, gap: 70, scrollMul: 1.25, alpha: 0.95, h: 4 },
+  ];
+  dashRows.forEach(row => {
+    const y = skyBottom + row.y * trackH;
+    const step = row.dashW + row.gap;
+    const off = (state.scroll * row.scrollMul) % step;
+    ctx.fillStyle = `rgba(255,255,255,${row.alpha})`;
+    for(let x = -off; x < CW + step; x += step){
+      ctx.fillRect(x, y, row.dashW, row.h);
+    }
+  });
+
+  // === Ombre douce sous l'horizon (profondeur) ===
+  const shadow = ctx.createLinearGradient(0, skyBottom, 0, skyBottom + 28);
+  shadow.addColorStop(0, 'rgba(0,0,0,.18)');
+  shadow.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = shadow;
+  ctx.fillRect(0, skyBottom + 2, CW, 28);
+}
+
+// Petit helper : éclaircit/assombrit une couleur hex (#RRGGBB)
+function shade(hex, amt){
+  if(!hex || hex[0] !== '#') return hex;
+  const n = parseInt(hex.slice(1), 16);
+  let r = (n >> 16) & 0xff, g = (n >> 8) & 0xff, b = n & 0xff;
+  r = Math.max(0, Math.min(255, r + Math.round(amt * 255)));
+  g = Math.max(0, Math.min(255, g + Math.round(amt * 255)));
+  b = Math.max(0, Math.min(255, b + Math.round(amt * 255)));
+  return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
 }
 
 function drawSky(biome){

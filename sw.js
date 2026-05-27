@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v60 : voxel scale +55% + perspective piste + identités catalogue
-const CACHE = 'foulee-v60';
+// v61 : playthrough QA fix (intro fallback + NPC collision bucket + measureText cache)
+const CACHE = 'foulee-v61';
 const ASSETS = [
   './',
   './index.html',

@@ -11889,8 +11889,12 @@ function alchProgress(){
   return { pct: Math.min(100, (xpInLvl/xpNeeded)*100), inLvl: xpInLvl, need: xpNeeded };
 }
 function alchGoldMul(){
-  // +1% gold par niveau acquis
-  return 1 + (alchLevel() - 1) * 0.01;
+  // REBALANCE v45 : +5% gold par niveau (au lieu de +1%) — niveau a un VRAI impact
+  // + bonus palier : tous les 10 niveaux, +5% supplémentaire (stack permanent)
+  const lvl = alchLevel();
+  const base = 1 + (lvl - 1) * 0.05;
+  const palier = Math.floor(lvl / 10) * 0.05;
+  return base + palier;
 }
 function gainXp(amount){
   if(!amount) return;
@@ -11917,6 +11921,17 @@ function gainXp(amount){
     if(typeof checkAchievements === 'function') checkAchievements();
     // Quête : level
     if(typeof progressQuest === 'function') progressQuest('level', newLvl);
+    // REBALANCE v45 : bonus palier — chaque niveau franchi qui est multiple de 10 → +1 gemme
+    for(let n = oldLvl + 1; n <= newLvl; n++){
+      if(n % 10 === 0){
+        STATE.gemmes = (STATE.gemmes || 0) + 1;
+        try {
+          if(typeof showRunnerBubble === 'function'){
+            setTimeout(() => showRunnerBubble(`🏆 Palier ${n} ! +1 💎 +5% gouttes permanent`, 3500), 800);
+          }
+        } catch(e){}
+      }
+    }
   }
   renderAlchLevel();
 }
@@ -19887,7 +19902,8 @@ function runnerBaseSpeed(){
   }
   base += ((STATE.saison || 1) - 1) * 0.5;
   if(typeof saisonAutoBase === 'function') base += saisonAutoBase() * 0.1;
-  base += Math.floor((STATE.alchLevel || 1) / 10) * 0.1;
+  // REBALANCE v45 : +0.3 km/h tous les 5 niveaux (au lieu de +0.1/10) — Niv 50 = +3 km/h, Niv 100 = +6 km/h
+  base += Math.floor((STATE.alchLevel || 1) / 5) * 0.3;
   if(typeof equipBonus === 'function') base += equipBonus('speed') * 3;
   // === FIX BUG : upgradeBaseSpeed (VITESSE PASSIVE) doit aussi multiplier la vitesse visible ===
   // Avant : lapProgress était bien × Math.pow(1.10, lvl) en interne, MAIS runnerBaseSpeed

@@ -29555,7 +29555,366 @@ function _drawBirds(ctx, W, H, dt){
     }
   }
 
+  // ============================================================
+  // === VOXEL RENDERER (V53) — porté du hero-lab ================
+  // ============================================================
+  // Donne aux coureurs (héros + PNJ) le look voxel Crossy Road clean du hero-lab.
+  // Remplace le rendu drawRunner ancien (gardé en fallback dead code en dessous).
+  const _VOX_DEFAULTS = {
+    scale: 1, headH: 16, headW: 16, neckH: 0, bodyH: 22, shoulderW: 20, torsoW: 18,
+    bodyV: 0, chibi: 0.2, legH: 18, legW: 6, calfDef: 0, armL: 16, armW: 5, bicepDef: 0,
+    footL: 9, footH: 3,
+    hairStyle: 'cap', eyeSize: 2, eyeX: 0.30, eyeY: 0.50,
+    mouthW: 0, mouthY: 0.78, expression: 'neutral', showBrows: false,
+    skin: '#f4c89b', jersey: '#e62e2e', jerseyBand: '#FFB030',
+    short: '#1040c0', shortBand: '#e62e2e',
+    hair: '#1040c0', shoes: '#FFB030', sole: '#1040c0',
+    outline: '#1a1a1a', outlineW: 0,
+    runBpm: 170, legSwing: 38, armSwing: 48, bodyBounce: 3,
+    leanFwd: 6, elbowBend: 30, kneeBend: 0.3,
+  };
+  let _voxP = _VOX_DEFAULTS;
+
+  function _voxRect(x, y, w, h, color){
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, w, h);
+    if(_voxP.outlineW > 0){
+      ctx.strokeStyle = _voxP.outline;
+      ctx.lineWidth = _voxP.outlineW;
+      ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
+    }
+  }
+
+  function _voxFace(p, hx, hy, hw, hh){
+    const eyeS = p.eyeSize;
+    const eyeY = hy + hh * p.eyeY;
+    const eyeX1 = hx + hw * (0.5 - p.eyeX);
+    const eyeX2 = hx + hw * (0.5 + p.eyeX);
+    if(p.showBrows){
+      ctx.fillStyle = p.outline;
+      let browTilt = 0;
+      if(p.expression === 'focus') browTilt = 1;
+      if(p.expression === 'happy') browTilt = -0.5;
+      const browY = eyeY - eyeS - 1.5;
+      ctx.fillRect(eyeX1 - eyeS - 1, browY + browTilt, eyeS * 2 + 2, 1.5);
+      ctx.fillRect(eyeX2 - eyeS - 1, browY + browTilt, eyeS * 2 + 2, 1.5);
+    }
+    ctx.fillStyle = p.outline;
+    ctx.fillRect(eyeX1 - eyeS, eyeY - eyeS, eyeS * 2, eyeS * 2);
+    ctx.fillRect(eyeX2 - eyeS, eyeY - eyeS, eyeS * 2, eyeS * 2);
+    if(eyeS >= 1.5){
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(eyeX1 - eyeS + eyeS * 0.4, eyeY - eyeS + eyeS * 0.2, eyeS * 0.5, eyeS * 0.5);
+      ctx.fillRect(eyeX2 - eyeS + eyeS * 0.4, eyeY - eyeS + eyeS * 0.2, eyeS * 0.5, eyeS * 0.5);
+    }
+    if(p.mouthW > 0){
+      const mouthCenterY = hy + hh * p.mouthY;
+      const mw = p.mouthW;
+      if(p.expression === 'smile' || p.expression === 'happy'){
+        ctx.fillStyle = p.outline;
+        ctx.fillRect(hx + hw/2 - mw/2, mouthCenterY, mw, 1.5);
+        ctx.fillRect(hx + hw/2 - mw/2 - 1, mouthCenterY - 1, 1.5, 1.5);
+        ctx.fillRect(hx + hw/2 + mw/2 - 0.5, mouthCenterY - 1, 1.5, 1.5);
+      } else if(p.expression === 'focus'){
+        ctx.fillStyle = p.outline;
+        ctx.fillRect(hx + hw/2 - mw/2, mouthCenterY, mw, 1);
+      } else {
+        ctx.fillStyle = p.outline;
+        ctx.fillRect(hx + hw/2 - mw/2, mouthCenterY, mw, 1.5);
+      }
+    }
+  }
+
+  function _voxHair(p, hx, hy, hw, hh){
+    const style = p.hairStyle;
+    if(style === 'bald') return;
+    if(style === 'cap'){
+      _voxRect(hx - 1, hy - 4, hw + 2, 6, p.hair);
+      _voxRect(hx + hw - 2, hy + 2, 6, 2, p.hair);
+    } else if(style === 'short' || style === 'dome' || style === 'spiky' || style === 'flat'){
+      _voxRect(hx, hy - 3, hw, 5, p.hair);
+    } else if(style === 'long'){
+      _voxRect(hx - 2, hy - 3, hw + 4, hh * 0.7, p.hair);
+      _voxRect(hx - 1, hy + hh * 0.7 - 3, hw + 2, hh * 0.5, p.hair);
+    } else if(style === 'ponytail'){
+      _voxRect(hx, hy - 3, hw, 5, p.hair);
+      _voxRect(hx - 4, hy + 2, 4, hh * 0.8, p.hair);
+    } else if(style === 'headband'){
+      _voxRect(hx, hy + 2, hw, 3, p.hair);
+    } else {
+      _voxRect(hx, hy - 3, hw, 5, p.hair);
+    }
+  }
+
+  // headExtra : accessoires biome (port simplifié de l'ancien drawRunner)
+  function _voxHeadExtra(extra, hx, hy, hw, hh, sc){
+    if(!extra) return;
+    const cx = hx + hw / 2;
+    if(extra === 'headband_gold'){
+      // signature héros : bandeau doré + liseré navy
+      ctx.fillStyle = '#FFB030';
+      ctx.fillRect(hx, hy + hh * 0.35, hw, 3 * sc);
+      ctx.fillStyle = '#1a2b4d';
+      ctx.fillRect(hx, hy + hh * 0.35, hw, 0.8 * sc);
+      ctx.fillRect(hx, hy + hh * 0.35 + 2.4 * sc, hw, 0.8 * sc);
+    } else if(extra === 'astro_helmet'){
+      // dôme transparent
+      ctx.save();
+      ctx.fillStyle = 'rgba(180,210,240,0.20)';
+      ctx.beginPath(); ctx.arc(cx, hy + hh * 0.5, hw * 0.7, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = 'rgba(200,220,255,0.85)';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.arc(cx, hy + hh * 0.5, hw * 0.7, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = 'rgba(255,255,255,0.55)';
+      ctx.beginPath(); ctx.arc(cx - hw * 0.25, hy + hh * 0.25, hw * 0.18, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    } else if(extra === 'antennas_alien'){
+      ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.moveTo(cx - hw * 0.25, hy); ctx.lineTo(cx - hw * 0.4, hy - hw * 0.6); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx + hw * 0.25, hy); ctx.lineTo(cx + hw * 0.4, hy - hw * 0.6); ctx.stroke();
+      ctx.fillStyle = '#a0e070';
+      ctx.beginPath(); ctx.arc(cx - hw * 0.4, hy - hw * 0.6, 1.8, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx + hw * 0.4, hy - hw * 0.6, 1.8, 0, Math.PI * 2); ctx.fill();
+    } else if(extra === 'turban'){
+      ctx.fillStyle = '#f8f4e8';
+      ctx.fillRect(hx - 1, hy - 4, hw + 2, 6);
+      ctx.fillStyle = '#d4c098';
+      ctx.fillRect(hx - 1, hy, hw + 2, 1.5);
+    } else if(extra === 'beanie'){
+      ctx.fillStyle = '#c83020';
+      ctx.fillRect(hx, hy - 4, hw, 5);
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(hx, hy, hw, 2);
+      ctx.beginPath(); ctx.arc(cx, hy - 4, 2, 0, Math.PI * 2);
+      ctx.fillStyle = '#fff'; ctx.fill();
+    } else if(extra === 'mask_diver'){
+      ctx.fillStyle = '#1a4060';
+      ctx.fillRect(hx, hy + hh * 0.30, hw, hh * 0.30);
+      ctx.fillStyle = 'rgba(200,220,240,0.55)';
+      ctx.fillRect(hx + 1, hy + hh * 0.34, hw * 0.4, hh * 0.22);
+      ctx.fillRect(hx + hw * 0.55, hy + hh * 0.34, hw * 0.4, hh * 0.22);
+    } else if(extra === 'flame_hair'){
+      ctx.fillStyle = '#ff6020';
+      ctx.beginPath();
+      ctx.moveTo(hx, hy);
+      ctx.lineTo(cx - hw * 0.2, hy - hh * 0.6);
+      ctx.lineTo(cx, hy);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(cx, hy);
+      ctx.lineTo(cx + hw * 0.2, hy - hh * 0.7);
+      ctx.lineTo(hx + hw, hy);
+      ctx.fill();
+    } else if(extra === 'leaves'){
+      ctx.fillStyle = '#3a8030';
+      for(let i = 0; i < 5; i++){
+        const a = -Math.PI + (i / 4) * Math.PI;
+        const lx = cx + Math.cos(a) * hw * 0.55;
+        const ly = hy + hh * 0.10 + Math.sin(a) * hw * 0.25;
+        ctx.beginPath();
+        ctx.ellipse(lx, ly, 3, 1.5, a + Math.PI / 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    } else if(extra === 'laurel'){
+      ctx.fillStyle = '#7aa040';
+      for(let i = 0; i < 6; i++){
+        const a = -Math.PI + (i / 5) * Math.PI;
+        const lx = cx + Math.cos(a) * hw * 0.58;
+        const ly = hy + hh * 0.10 + Math.sin(a) * hw * 0.25;
+        ctx.beginPath();
+        ctx.ellipse(lx, ly, 3.4, 1.6, a + Math.PI / 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.fillStyle = '#FFB030';
+      for(let i = 0; i < 3; i++){
+        const a = -Math.PI * 0.75 + (i / 2) * Math.PI * 0.5;
+        const lx = cx + Math.cos(a) * hw * 0.5;
+        const ly = hy + hh * 0.10 + Math.sin(a) * hw * 0.25;
+        ctx.beginPath(); ctx.arc(lx, ly, 1.4, 0, Math.PI * 2); ctx.fill();
+      }
+    }
+  }
+
+  function _voxLeg(p, sc, ang, legH, kneeBend){
+    const cuisseH = legH * (0.5 + (1 - kneeBend) * 0.1);
+    const tibiaH = legH - cuisseH;
+    const legWpx = p.legW * sc;
+    ctx.save();
+    ctx.rotate(ang);
+    _voxRect(-legWpx/2, 0, legWpx, cuisseH, p.short);
+    _voxRect(-legWpx/2, cuisseH - 2, legWpx, 1.5, p.shortBand);
+    ctx.translate(0, cuisseH);
+    ctx.rotate(kneeBend * 0.8);
+    const calfBulge = p.calfDef * 1.5;
+    ctx.beginPath();
+    ctx.moveTo(-legWpx/2, 0);
+    ctx.lineTo(legWpx/2, 0);
+    ctx.lineTo(legWpx/2 + calfBulge, tibiaH * 0.55);
+    ctx.lineTo(legWpx/2, tibiaH);
+    ctx.lineTo(-legWpx/2, tibiaH);
+    ctx.lineTo(-legWpx/2 - calfBulge * 0.5, tibiaH * 0.55);
+    ctx.closePath();
+    ctx.fillStyle = p.skin;
+    ctx.fill();
+    if(p.outlineW > 0){ ctx.strokeStyle = p.outline; ctx.lineWidth = p.outlineW; ctx.stroke(); }
+    ctx.translate(0, tibiaH);
+    ctx.rotate(-(ang + kneeBend * 0.8) * 0.55);
+    _voxRect(-p.footL * sc * 0.35, 0, p.footL * sc, p.footH, p.shoes);
+    ctx.fillStyle = p.sole;
+    ctx.fillRect(-p.footL * sc * 0.35, p.footH, p.footL * sc, 1.5);
+    ctx.restore();
+  }
+
+  function _voxArm(p, sc, ang, armL, elbowBend, anchorX, anchorY){
+    ctx.save();
+    ctx.translate(anchorX, anchorY);
+    ctx.rotate(ang);
+    const armWpx = p.armW * sc;
+    const biceps = armL * 0.5;
+    const forearm = armL * 0.5;
+    const bicepBulge = p.bicepDef * 1.2;
+    ctx.beginPath();
+    ctx.moveTo(-armWpx/2, 0);
+    ctx.lineTo(armWpx/2, 0);
+    ctx.lineTo(armWpx/2 + bicepBulge, biceps * 0.5);
+    ctx.lineTo(armWpx/2, biceps);
+    ctx.lineTo(-armWpx/2, biceps);
+    ctx.lineTo(-armWpx/2 - bicepBulge * 0.5, biceps * 0.5);
+    ctx.closePath();
+    ctx.fillStyle = p.jersey;
+    ctx.fill();
+    if(p.outlineW > 0){ ctx.strokeStyle = p.outline; ctx.lineWidth = p.outlineW; ctx.stroke(); }
+    ctx.translate(0, biceps);
+    ctx.rotate(elbowBend * Math.PI / 180);
+    _voxRect(-armWpx/2, 0, armWpx, forearm, p.skin);
+    _voxRect(-armWpx/2 - 0.5, forearm, armWpx + 1, armWpx + 1, p.skin);
+    ctx.restore();
+  }
+
+  function _voxTorso(p, sc){
+    const sw = p.shoulderW * sc / 2;
+    const tw = p.torsoW * sc / 2;
+    const h = p.bodyH * sc;
+    const hMul = 1 - p.chibi * 0.5;
+    const torsoTopY = -h * hMul;
+    ctx.beginPath();
+    ctx.moveTo(-tw, 0);
+    ctx.lineTo(tw, 0);
+    ctx.lineTo(sw, torsoTopY);
+    ctx.lineTo(-sw, torsoTopY);
+    ctx.closePath();
+    ctx.fillStyle = p.jersey;
+    ctx.fill();
+    if(p.outlineW > 0){ ctx.strokeStyle = p.outline; ctx.lineWidth = p.outlineW; ctx.stroke(); }
+    ctx.fillStyle = p.jerseyBand;
+    ctx.fillRect(-1, torsoTopY, 2, -torsoTopY);
+  }
+
+  function _voxHead(p, sc, neckTopY){
+    const headW = p.headW * sc * (1 + p.chibi * 0.4);
+    const headH = p.headH * sc * (1 + p.chibi * 0.4);
+    const headX = -headW / 2;
+    const headY = neckTopY - headH;
+    if(p.neckH > 0){
+      _voxRect(-headW * 0.18, neckTopY, headW * 0.36, p.neckH * sc, p.skin);
+    }
+    _voxRect(headX, headY, headW, headH, p.skin);
+    _voxHair(p, headX, headY, headW, headH);
+    _voxFace(p, headX, headY, headW, headH);
+    _voxHeadExtra(p._headExtra, headX, headY, headW, headH, sc);
+  }
+
+  // Map in-game spec → params voxel
+  function _specToVoxParams(spec, isHero){
+    const p = Object.assign({}, _VOX_DEFAULTS);
+    if(isHero){
+      // Hero retro 8-bit signature (rouge/bleu/doré Mario)
+      p.jersey = spec.jersey || '#e62e2e';
+      p.short = spec.short || '#1040c0';
+      p.shortBand = '#e62e2e';
+      p.jerseyBand = spec.accent || '#FFB030';
+      p.shoes = '#FFB030'; p.sole = '#1040c0';
+      p.hair = spec.hair || '#1040c0';
+      p.skin = spec.skin || '#f4c890';
+      p.hairStyle = (spec.hairStyle === 'dome') ? 'cap' : (spec.hairStyle || 'cap');
+      p.expression = spec.faceExpr || 'smile';
+      p.mouthW = 0;
+    } else {
+      // PNJ : couleurs depuis le spec (incluant biome theme override)
+      if(spec.jersey) p.jersey = spec.jersey;
+      if(spec.short) p.short = spec.short;
+      if(spec.short) p.shortBand = spec.short;
+      if(spec.accent){ p.jerseyBand = spec.accent; }
+      if(spec.hair) p.hair = spec.hair;
+      if(spec.skin) p.skin = spec.skin;
+      p.shoes = spec.short || '#3a2818';
+      p.sole = '#1a1a1a';
+      if(spec.hairStyle){
+        p.hairStyle = (spec.hairStyle === 'dome') ? 'short' : spec.hairStyle;
+      }
+      if(spec.faceExpr) p.expression = spec.faceExpr;
+      // Rival color override
+      if(spec.rivalColor) p.jersey = spec.rivalColor;
+    }
+    p._headExtra = spec.headExtra || null;
+    return p;
+  }
+
+  // Drop-in replacement de drawRunner — rendu voxel hero-lab
+  function drawVoxelRunner(x, y, scale, spec, phase, isHero, effortLevel, airborneFrac){
+    const p = _specToVoxParams(spec, isHero);
+    _voxP = p;
+    const sc = scale * 0.55;
+    const isAirborne = typeof airborneFrac === 'number';
+    const effort = (typeof effortLevel === 'number') ? effortLevel : 0;
+    // Aura héros (préservée pour visibilité in-game)
+    if(isHero){
+      const heroPulse = 0.85 + Math.sin(phase * 0.8) * 0.15;
+      ctx.save();
+      const auraGrad = ctx.createRadialGradient(x, y - 5 * sc, 0, x, y - 5 * sc, 48 * sc);
+      auraGrad.addColorStop(0, `rgba(120,200,255,${0.20 * heroPulse})`);
+      auraGrad.addColorStop(0.6, `rgba(120,200,255,${0.09 * heroPulse})`);
+      auraGrad.addColorStop(1, 'rgba(120,200,255,0)');
+      ctx.fillStyle = auraGrad;
+      ctx.beginPath(); ctx.arc(x, y - 5 * sc, 48 * sc, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    }
+    const bounce = isAirborne ? 0 : Math.abs(Math.sin(phase)) * p.bodyBounce * sc;
+    const lean = (p.leanFwd + effort * 6) * Math.PI / 180;
+    const hipY = y - p.legH * sc - bounce;
+    ctx.save();
+    ctx.translate(x, hipY);
+    ctx.rotate(lean);
+    const legSwingRad = p.legSwing * Math.PI / 180;
+    const ang1 = Math.sin(phase) * legSwingRad;
+    const ang2 = Math.sin(phase + Math.PI) * legSwingRad;
+    const knee1 = p.kneeBend * Math.max(0, Math.sin(phase));
+    const knee2 = p.kneeBend * Math.max(0, Math.sin(phase + Math.PI));
+    if(isAirborne){
+      _voxLeg(p, sc, 0.5, p.legH * sc * 0.7, 0.8);
+      _voxLeg(p, sc, -0.5, p.legH * sc * 0.7, 0.8);
+    } else {
+      _voxLeg(p, sc, ang1, p.legH * sc, knee1);
+      _voxLeg(p, sc, ang2, p.legH * sc, knee2);
+    }
+    _voxTorso(p, sc);
+    const armSwingRad = p.armSwing * Math.PI / 180;
+    const shoulderY = -p.bodyH * sc * (1 - p.chibi * 0.5) * 0.92;
+    const armAng1 = isAirborne ? -0.8 : Math.sin(phase + Math.PI) * armSwingRad;
+    const armAng2 = isAirborne ? -0.6 : Math.sin(phase) * armSwingRad;
+    _voxArm(p, sc, armAng1, p.armL * sc, p.elbowBend, p.shoulderW * sc / 2 - 1, shoulderY);
+    _voxArm(p, sc, armAng2, p.armL * sc, p.elbowBend, -p.shoulderW * sc / 2 + 1, shoulderY);
+    const neckTopY = -p.bodyH * sc * (1 - p.chibi * 0.5) - p.neckH * sc;
+    _voxHead(p, sc, neckTopY);
+    ctx.restore();
+  }
+  // ============================================================
+  // === FIN VOXEL RENDERER ======================================
+  // ============================================================
+
   function drawRunner(x, y, scale, spec, phase, isHero, effortLevel, airborneFrac){
+    // V53 : délègue au renderer voxel hero-lab (le code ancien plus bas est dead code).
+    return drawVoxelRunner(x, y, scale, spec, phase, isHero, effortLevel, airborneFrac);
     // === Builds (variations morpho) ===
     const BUILDS = {
       normal: { bw: 13, bh: 17, hr: 19 },  // chibi : tête HR énorme vs corps court

@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Foulée — Scene Mockup (preview style épuré)</title>
+<style>
+  :root {
+    --brand-gold:#FFB030;
+    --brand-gold-dark:#c88810;
+    --brand-navy:#1a2b4d;
+    --brand-charcoal:#1f1f24;
+    --bg:#f5f1e8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:"Nunito",system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--brand-charcoal);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:20px;
+  }
+  h1{
+    font-family:"Bebas Neue",Impact,sans-serif;
+    color:var(--brand-gold);
+    font-size:28px;letter-spacing:1.5px;
+    transform:skew(-6deg);
+    text-shadow:0 2px 0 var(--brand-gold-dark);
+    margin-bottom:8px;
+  }
+  .subtitle{font-size:12px;color:#888;margin-bottom:14px;text-align:center}
+
+  /* === Phone-like frame === */
+  .phone{
+    width:380px;
+    max-width:96vw;
+    aspect-ratio:9/16;
+    background:#000;
+    border-radius:28px;
+    overflow:hidden;
+    box-shadow:0 24px 60px rgba(0,0,0,.18);
+    position:relative;
+    display:flex;
+    flex-direction:column;
+  }
+
+  /* HUD top simulé */
+  .mock-hud{
+    position:absolute;top:14px;left:14px;right:14px;z-index:5;
+    display:flex;justify-content:space-between;align-items:center;
+    pointer-events:none;
+    font-size:11px;font-weight:800;
+  }
+  .mock-niv{
+    background:#fff;border-radius:18px;padding:4px 10px;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+    display:flex;align-items:center;gap:6px;
+  }
+  .mock-niv .lvl{color:var(--brand-gold-dark)}
+  .mock-pill{
+    background:#fff;border-radius:14px;padding:5px 10px;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+    display:flex;gap:8px;align-items:center;font-size:10px;
+  }
+  .mock-pill .km{font-weight:900;color:#222}
+  .mock-pill .kmh{color:var(--brand-gold-dark);font-weight:900}
+  .mock-gouttes{
+    background:#fff;border-radius:14px;padding:4px 10px;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+    text-align:right;font-weight:900;font-size:11px;
+    color:var(--brand-gold-dark);
+  }
+
+  /* Bottom UI (cards UPGRADES simulées) */
+  .mock-cards{
+    position:absolute;bottom:0;left:0;right:0;
+    background:#fdf8ef;
+    padding:10px 8px 14px;
+    border-top:2px solid #f0e8d8;
+    z-index:5;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr 1fr;
+    gap:6px;
+  }
+  .mock-cards .stat{
+    background:#fffbf0;border-radius:8px;padding:4px 2px;
+    text-align:center;
+    border:1px solid #f0e8d8;
+  }
+  .mock-cards .stat .l{font-size:8px;color:#888;letter-spacing:.5px}
+  .mock-cards .stat .v{font-size:14px;font-weight:900;color:var(--brand-gold-dark)}
+
+  #scene-canvas{
+    width:100%;
+    height:100%;
+    display:block;
+  }
+
+  /* === Controls === */
+  .controls-row{
+    display:flex;gap:8px;flex-wrap:wrap;justify-content:center;
+    margin-top:16px;max-width:760px;
+  }
+  .ctrl-btn{
+    background:var(--brand-navy);color:#fff;border:none;border-radius:8px;
+    padding:8px 14px;font-weight:800;font-size:11px;letter-spacing:.5px;
+    cursor:pointer;font-family:inherit;
+  }
+  .ctrl-btn:hover{background:var(--brand-charcoal)}
+  .ctrl-btn.active{background:var(--brand-gold);color:var(--brand-charcoal)}
+  .legend{
+    margin-top:16px;font-size:11px;color:#666;text-align:center;
+    max-width:540px;line-height:1.5;
+  }
+</style>
+</head>
+<body>
+
+<h1>Scene Mockup · Foulée</h1>
+<div class="subtitle">Aperçu du style épuré (piste plate + élément signature par biome) — clique sur un biome pour voir</div>
+
+<div class="phone">
+  <!-- HUD top simulé -->
+  <div class="mock-hud">
+    <div class="mock-niv">🏃 <span class="lvl">NIV 30</span></div>
+    <div class="mock-pill"><span class="km">5.7 km</span><span class="kmh">4.2 km/h</span></div>
+    <div class="mock-gouttes">💧 20k</div>
+  </div>
+  <canvas id="scene-canvas" width="380" height="676"></canvas>
+  <!-- Cards bas simulées -->
+  <div class="mock-cards">
+    <div class="stat"><div class="l">PAR TAP</div><div class="v">+16</div></div>
+    <div class="stat"><div class="l">G/SEC</div><div class="v">0</div></div>
+    <div class="stat"><div class="l">PROCHAIN</div><div class="v">+57</div></div>
+    <div class="stat"><div class="l">CRIT</div><div class="v">5%</div></div>
+  </div>
+</div>
+
+<!-- Biome selector -->
+<div class="controls-row" id="biome-selector">
+  <button class="ctrl-btn active" data-biome="urban">🏙 Urban</button>
+  <button class="ctrl-btn" data-biome="lunar">🌙 Lune</button>
+  <button class="ctrl-btn" data-biome="jungle">🌿 Jungle</button>
+  <button class="ctrl-btn" data-biome="desert">🏜 Désert</button>
+  <button class="ctrl-btn" data-biome="arctic">❄️ Arctic</button>
+  <button class="ctrl-btn" data-biome="ocean">🌊 Ocean</button>
+  <button class="ctrl-btn" data-biome="volcano">🌋 Volcan</button>
+  <button class="ctrl-btn" data-biome="forest">🌲 Forêt</button>
+  <button class="ctrl-btn" data-biome="galaxy">🌌 Galaxie</button>
+  <button class="ctrl-btn" data-biome="olympe">⚡ Olympe</button>
+</div>
+
+<!-- Toggles -->
+<div class="controls-row">
+  <button class="ctrl-btn" data-toggle="tribune" data-on="1">Tribune ON</button>
+  <button class="ctrl-btn" data-toggle="signature" data-on="1">Signature ON</button>
+  <button class="ctrl-btn" data-toggle="hero" data-on="1">Hero ON</button>
+  <button class="ctrl-btn" data-toggle="npcs" data-on="1">PNJ ON</button>
+</div>
+
+<div class="legend">
+  Style proposé : <b>piste rouge plate</b> avec bandes blanches défilantes (comme hero-lab) +
+  <b>1 élément signature</b> par biome (Lune, palmier, pyramide…) +
+  <b>tribunes discrètes</b> en arrière-plan. Le hero voxel reste central.
+  <br><br>
+  ⚠️ Aperçu only — le jeu actuel n'est PAS modifié. Si tu valides la direction, on l'applique au jeu.
+</div>
+
+<script>
+'use strict';
+
+const canvas = document.getElementById('scene-canvas');
+const ctx = canvas.getContext('2d');
+const CW = canvas.width;
+const CH = canvas.height;
+
+const BIOMES = {
+  urban:    { sky:['#a8d8f0','#d0e8f0'], horizon:'#586878', track:'#a8553f', name:'STADE URBAIN' },
+  lunar:    { sky:['#000020','#1a2050'], horizon:'#101830', track:'#3a3550', name:'LUNE' },
+  jungle:   { sky:['#0d2b0d','#2d6620'], horizon:'#1a4a18', track:'#6a4528', name:'JUNGLE' },
+  desert:   { sky:['#ff6020','#ffc060'], horizon:'#cc6020', track:'#c8843a', name:'SAHARA' },
+  arctic:   { sky:['#1a2a4a','#5a8aa8'], horizon:'#9ac0d8', track:'#a8b8c8', name:'ARCTIQUE' },
+  ocean:    { sky:['#062a4a','#108aa0'], horizon:'#0a4060', track:'#1a4060', name:'OCÉAN' },
+  volcano:  { sky:['#2a0808','#7a2010'], horizon:'#3a0a08', track:'#4a1810', name:'VOLCAN' },
+  forest:   { sky:['#1a0a4a','#3a1a6a'], horizon:'#1a0a3a', track:'#3a2818', name:'FORÊT ENCHANTÉE' },
+  galaxy:   { sky:['#000010','#1a0830'], horizon:'#0a0420', track:'#2a1840', name:'GALAXIE' },
+  olympe:   { sky:['#fff0a0','#ffd060'], horizon:'#f0c060', track:'#d8a040', name:'OLYMPE' },
+};
+
+let state = {
+  biome:'urban',
+  tribune: true,
+  signature: true,
+  hero: true,
+  npcs: true,
+  scroll: 0,
+};
+let _animStart = performance.now();
+
+// === Wiring biome selector ===
+document.querySelectorAll('#biome-selector .ctrl-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('#biome-selector .ctrl-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    state.biome = b.dataset.biome;
+  });
+});
+
+// === Toggles ===
+document.querySelectorAll('[data-toggle]').forEach(b => {
+  b.addEventListener('click', () => {
+    const k = b.dataset.toggle;
+    state[k] = !state[k];
+    b.textContent = b.textContent.replace(/ON|OFF/, state[k] ? 'ON' : 'OFF');
+    b.classList.toggle('active', state[k]);
+  });
+});
+
+// === DRAW HELPERS (voxel style) ===
+function vox(x, y, w, h, color){
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, w, h);
+}
+
+// === SIGNATURE ELEMENTS PER BIOME ===
+function drawSignature(biome, t){
+  if(!state.signature) return;
+  const skyBottom = CH * 0.45;
+  switch(biome){
+    case 'urban':
+      // tour Eiffel-like silhouette discrete
+      ctx.fillStyle = '#384858';
+      const tx = CW * 0.72, ty = CH * 0.30;
+      ctx.beginPath();
+      ctx.moveTo(tx - 18, skyBottom);
+      ctx.lineTo(tx + 18, skyBottom);
+      ctx.lineTo(tx + 4, ty);
+      ctx.lineTo(tx - 4, ty);
+      ctx.closePath();
+      ctx.fill();
+      // antenne
+      vox(tx - 1, ty - 12, 2, 12, '#384858');
+      break;
+    case 'lunar':
+      // grosse lune cratérée
+      ctx.fillStyle = '#d0d0e0';
+      ctx.beginPath();
+      ctx.arc(CW * 0.72, CH * 0.22, 50, 0, Math.PI*2);
+      ctx.fill();
+      // cratères
+      ctx.fillStyle = '#a0a0b8';
+      [[15,-10,8],[-5,12,6],[20,18,5],[-18,-5,4]].forEach(c=>{
+        ctx.beginPath();
+        ctx.arc(CW*0.72 + c[0], CH*0.22 + c[1], c[2], 0, Math.PI*2);
+        ctx.fill();
+      });
+      // étoiles
+      ctx.fillStyle = '#fff';
+      for(let i=0;i<30;i++){
+        const sx = (i*47 + Math.sin(t*0.5+i)*3) % CW;
+        const sy = (i*31) % (skyBottom - 20);
+        vox(sx, sy, 1, 1, '#fff');
+      }
+      break;
+    case 'jungle':
+      // 2 palmiers
+      [CW*0.20, CW*0.78].forEach((px, i) => {
+        const py = skyBottom - 60 + (i?6:0);
+        vox(px-2, py, 4, 60, '#5a3520');
+        ctx.fillStyle = '#3a7028';
+        for(let f=0;f<6;f++){
+          const ang = (f/6) * Math.PI*2 + Math.sin(t)*0.05;
+          const fx = px + Math.cos(ang) * 22;
+          const fy = py + Math.sin(ang) * 10;
+          ctx.beginPath();
+          ctx.ellipse(fx, fy, 18, 7, ang, 0, Math.PI*2);
+          ctx.fill();
+        }
+      });
+      break;
+    case 'desert':
+      // pyramide
+      ctx.fillStyle = '#a86030';
+      ctx.beginPath();
+      ctx.moveTo(CW*0.55, skyBottom);
+      ctx.lineTo(CW*0.92, skyBottom);
+      ctx.lineTo(CW*0.74, skyBottom-90);
+      ctx.closePath();
+      ctx.fill();
+      // face ombrée
+      ctx.fillStyle = '#7a4520';
+      ctx.beginPath();
+      ctx.moveTo(CW*0.74, skyBottom);
+      ctx.lineTo(CW*0.92, skyBottom);
+      ctx.lineTo(CW*0.74, skyBottom-90);
+      ctx.closePath();
+      ctx.fill();
+      // soleil dramatique
+      ctx.fillStyle = '#ff4020';
+      ctx.beginPath();
+      ctx.arc(CW*0.20, CH*0.18, 30, 0, Math.PI*2);
+      ctx.fill();
+      break;
+    case 'arctic':
+      // aurore boréale (gradient flowy)
+      for(let b=0; b<3; b++){
+        ctx.fillStyle = ['rgba(80,255,120,.25)','rgba(60,180,255,.20)','rgba(180,80,255,.18)'][b];
+        ctx.beginPath();
+        ctx.moveTo(0, CH*0.15 + b*30);
+        for(let x=0;x<=CW;x+=8){
+          const y = CH*0.15 + b*30 + Math.sin((x+t*30)*0.02 + b)*15;
+          ctx.lineTo(x, y);
+        }
+        ctx.lineTo(CW, 0); ctx.lineTo(0, 0); ctx.closePath();
+        ctx.fill();
+      }
+      // montagne enneigée
+      ctx.fillStyle = '#dde5ed';
+      ctx.beginPath();
+      ctx.moveTo(CW*0.55, skyBottom);
+      ctx.lineTo(CW*0.95, skyBottom);
+      ctx.lineTo(CW*0.75, skyBottom-80);
+      ctx.closePath();
+      ctx.fill();
+      break;
+    case 'ocean':
+      // méduses
+      [[0.25,0.30],[0.55,0.18],[0.78,0.36]].forEach(([px,py], i) => {
+        const x = CW*px, y = CH*py + Math.sin(t*1.5+i)*8;
+        ctx.fillStyle = 'rgba(255,150,200,.6)';
+        ctx.beginPath();
+        ctx.arc(x, y, 18, Math.PI, 0);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,200,220,.5)';
+        ctx.lineWidth = 1.5;
+        for(let k=-2;k<=2;k++){
+          ctx.beginPath();
+          ctx.moveTo(x+k*5, y);
+          ctx.bezierCurveTo(x+k*5+Math.sin(t*2+k)*3, y+10, x+k*5+Math.sin(t*2+k+1)*4, y+20, x+k*5, y+28);
+          ctx.stroke();
+        }
+      });
+      // particules bioluminescentes
+      ctx.fillStyle = '#a0e0ff';
+      for(let i=0;i<25;i++){
+        const sx = (i*47 + Math.sin(t+i)*8) % CW;
+        const sy = (i*23 + Math.cos(t*0.5+i)*5) % skyBottom;
+        vox(sx, sy, 2, 2, `hsla(${180+(i*15)%60},80%,70%,.7)`);
+      }
+      break;
+    case 'volcano':
+      // volcan en éruption
+      ctx.fillStyle = '#2a0a08';
+      ctx.beginPath();
+      ctx.moveTo(CW*0.55, skyBottom);
+      ctx.lineTo(CW*0.95, skyBottom);
+      ctx.lineTo(CW*0.78, skyBottom-100);
+      ctx.lineTo(CW*0.68, skyBottom-100);
+      ctx.closePath();
+      ctx.fill();
+      // lave en haut
+      ctx.fillStyle = '#ff6020';
+      ctx.fillRect(CW*0.68, skyBottom-100, 35, 6);
+      // fumée
+      for(let i=0;i<5;i++){
+        const sy = skyBottom - 110 - i*15 + Math.sin(t+i)*3;
+        ctx.fillStyle = `rgba(80,60,60,${0.4-i*0.07})`;
+        ctx.beginPath();
+        ctx.arc(CW*0.73, sy, 12+i*4, 0, Math.PI*2);
+        ctx.fill();
+      }
+      // cendres
+      ctx.fillStyle = '#888';
+      for(let i=0;i<20;i++){
+        const sx = (i*53 + t*20)%CW;
+        const sy = (i*31 + t*15)%skyBottom;
+        vox(sx, sy, 2, 2, 'rgba(80,60,60,.5)');
+      }
+      break;
+    case 'forest':
+      // arbres enchantés silhouette
+      [0.18,0.40,0.62,0.85].forEach((px, i) => {
+        const x = CW*px;
+        const baseY = skyBottom;
+        ctx.fillStyle = '#1a0530';
+        vox(x-3, baseY-70-i*5, 6, 70+i*5, '#1a0530');
+        ctx.beginPath();
+        ctx.arc(x, baseY-70-i*5, 20, 0, Math.PI*2);
+        ctx.fill();
+      });
+      // lucioles
+      for(let i=0;i<20;i++){
+        const fx = (i*47 + Math.sin(t*1.5+i)*15) % CW;
+        const fy = (i*23 + Math.cos(t+i)*10) % skyBottom;
+        const a = Math.max(0, Math.sin(t*3+i*2));
+        ctx.fillStyle = `rgba(200,255,80,${a*0.7})`;
+        ctx.fillRect(fx, fy, 2, 2);
+      }
+      break;
+    case 'galaxy':
+      // planètes
+      [[0.20,0.18,18,'#a86040'],[0.72,0.14,28,'#4070b0'],[0.50,0.30,12,'#60a070']].forEach(([px,py,r,c]) => {
+        const x = CW*px, y = CH*py;
+        ctx.fillStyle = c;
+        ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+        // highlight
+        ctx.fillStyle = 'rgba(255,255,255,.20)';
+        ctx.beginPath(); ctx.arc(x-r*0.3, y-r*0.3, r*0.4, 0, Math.PI*2); ctx.fill();
+      });
+      // anneaux saturne
+      ctx.strokeStyle = 'rgba(200,160,80,.5)';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.ellipse(CW*0.72, CH*0.14, 50, 12, 0.3, 0, Math.PI*2);
+      ctx.stroke();
+      // étoiles
+      ctx.fillStyle = '#fff';
+      for(let i=0;i<60;i++){
+        const sx = (i*37)%CW;
+        const sy = (i*23)%skyBottom;
+        vox(sx, sy, 1, 1, i%5===0?'#fff':'rgba(255,255,255,.5)');
+      }
+      break;
+    case 'olympe':
+      // colonnes antiques + rayons divins
+      for(let r=0;r<6;r++){
+        const rx = CW * (0.10 + r*0.16);
+        const grad = ctx.createLinearGradient(rx, 0, rx+15, skyBottom);
+        grad.addColorStop(0, 'rgba(255,240,120,.20)');
+        grad.addColorStop(1, 'rgba(255,200,80,0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.moveTo(rx-10, 0); ctx.lineTo(rx+10, 0);
+        ctx.lineTo(rx+35, skyBottom); ctx.lineTo(rx-20, skyBottom);
+        ctx.closePath();
+        ctx.fill();
+      }
+      // colonnes
+      [0.18,0.50,0.82].forEach(px => {
+        const x = CW*px;
+        // base
+        vox(x-12, skyBottom-8, 24, 8, '#fff5d0');
+        // fût
+        vox(x-7, skyBottom-50, 14, 42, '#fff8e0');
+        // chapiteau
+        vox(x-13, skyBottom-58, 26, 8, '#fff5d0');
+      });
+      break;
+  }
+}
+
+function drawTribune(biome, t){
+  if(!state.tribune) return;
+  const skyBottom = CH * 0.45;
+  // Tribune fine ligne juste au-dessus de la piste
+  const tribuneY = skyBottom - 20;
+  ctx.fillStyle = BIOMES[biome].horizon;
+  ctx.fillRect(0, tribuneY, CW, 20);
+  // Foule pointillée colorée — petits carrés rapides
+  for(let i=0; i<60; i++){
+    const cx = (i * 11 + Math.sin(t*0.5+i)*2) % CW;
+    const cy = tribuneY + 4 + (i%3) * 3;
+    const hue = (i * 37) % 360;
+    ctx.fillStyle = `hsla(${hue},65%,55%,.85)`;
+    ctx.fillRect(cx, cy, 2, 3);
+  }
+}
+
+function drawTrack(biome, t){
+  const skyBottom = CH * 0.45;
+  // Piste pleine (rouge / variant biome)
+  ctx.fillStyle = BIOMES[biome].track;
+  ctx.fillRect(0, skyBottom, CW, CH - skyBottom);
+  // Ligne blanche supérieure
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(0, skyBottom, CW, 2);
+  // Hashes défilants
+  const scrollSpeedPx = 90;
+  state.scroll = (state.scroll + scrollSpeedPx * 0.016) % 40;
+  for(let x = -state.scroll; x < CW + 40; x += 40){
+    ctx.fillRect(x, skyBottom + 12, 22, 3);
+  }
+  // 2 lignes basses (couloirs)
+  ctx.fillStyle = 'rgba(255,255,255,.4)';
+  ctx.fillRect(0, skyBottom + 60, CW, 1);
+  ctx.fillRect(0, skyBottom + 120, CW, 1);
+}
+
+function drawSky(biome){
+  const b = BIOMES[biome];
+  const grad = ctx.createLinearGradient(0, 0, 0, CH * 0.5);
+  grad.addColorStop(0, b.sky[0]);
+  grad.addColorStop(1, b.sky[1]);
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, CW, CH * 0.5);
+}
+
+// === HERO voxel (simple version) ===
+function drawHero(t){
+  if(!state.hero) return;
+  const groundY = CH * 0.45 + 80; // sur la piste
+  const cx = CW * 0.35;
+  const cad = 170/60;
+  const phase = t * cad * Math.PI;
+  const bounce = Math.abs(Math.sin(phase)) * 4;
+  const hipY = groundY - 32 - bounce;
+  ctx.save();
+  ctx.translate(cx, hipY);
+  ctx.rotate(0.10);
+  // Jambes
+  const swing = 35 * Math.PI/180;
+  drawLeg(Math.sin(phase) * swing);
+  drawLeg(Math.sin(phase + Math.PI) * swing);
+  // Torse
+  ctx.fillStyle = '#FFB030';
+  ctx.beginPath();
+  ctx.moveTo(-9,0); ctx.lineTo(9,0); ctx.lineTo(11,-30); ctx.lineTo(-11,-30); ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 1.25; ctx.stroke();
+  // F dossard
+  ctx.fillStyle = '#1a2b4d';
+  ctx.font = 'bold 11px "Bebas Neue", monospace';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('F', 0, -16);
+  // Bras
+  drawArm(Math.sin(phase+Math.PI) * 45 * Math.PI/180, 10, -27);
+  drawArm(Math.sin(phase) * 45 * Math.PI/180, -10, -27);
+  // Tête
+  ctx.fillStyle = '#f4c89b';
+  ctx.fillRect(-9, -48, 18, 18);
+  ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 1.25;
+  ctx.strokeRect(-9, -48, 18, 18);
+  // Casquette
+  ctx.fillStyle = '#1a2b4d';
+  ctx.fillRect(-10, -52, 20, 6);
+  ctx.fillRect(4, -47, 8, 2);
+  // Yeux
+  ctx.fillStyle = '#1a1a1a';
+  ctx.fillRect(-5, -42, 2, 2);
+  ctx.fillRect(3, -42, 2, 2);
+  ctx.restore();
+}
+
+function drawLeg(ang){
+  ctx.save();
+  ctx.rotate(ang);
+  ctx.fillStyle = '#1a2b4d';
+  ctx.fillRect(-3, 0, 6, 18);
+  ctx.fillStyle = '#f4c89b';
+  ctx.fillRect(-3, 18, 6, 14);
+  // chaussure
+  ctx.fillStyle = '#ffd060';
+  ctx.fillRect(-4, 32, 11, 4);
+  ctx.restore();
+}
+
+function drawArm(ang, anchorX, anchorY){
+  ctx.save();
+  ctx.translate(anchorX, anchorY);
+  ctx.rotate(ang);
+  ctx.fillStyle = '#FFB030';
+  ctx.fillRect(-2.5, 0, 5, 12);
+  ctx.fillStyle = '#f4c89b';
+  ctx.fillRect(-2.5, 12, 5, 12);
+  ctx.fillRect(-3, 24, 6, 6);
+  ctx.restore();
+}
+
+function drawNPCs(t){
+  if(!state.npcs) return;
+  const groundY = CH * 0.45 + 80;
+  // 2 NPCs à droite et un peu derrière
+  [[CW*0.65, '#e85040', '#fff'], [CW*0.82, '#4070b0', '#fff']].forEach((n, i) => {
+    const phase = t * 170/60 * Math.PI + i;
+    const bounce = Math.abs(Math.sin(phase)) * 3;
+    const y = groundY - 28 - bounce;
+    const x = n[0];
+    // body simple
+    ctx.fillStyle = n[1];
+    ctx.fillRect(x-7, y-22, 14, 22);
+    // tête
+    ctx.fillStyle = '#f4c89b';
+    ctx.fillRect(x-6, y-36, 12, 12);
+    // jambes
+    const lang = Math.sin(phase) * 20;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(lang*Math.PI/180);
+    ctx.fillStyle = '#1a2b4d'; ctx.fillRect(-2,0,4,14); ctx.restore();
+    ctx.save(); ctx.translate(x, y); ctx.rotate(-lang*Math.PI/180);
+    ctx.fillStyle = '#1a2b4d'; ctx.fillRect(-2,0,4,14); ctx.restore();
+  });
+}
+
+// === LOOP ===
+function loop(){
+  const t = (performance.now() - _animStart) / 1000;
+  ctx.clearRect(0, 0, CW, CH);
+  drawSky(state.biome);
+  drawSignature(state.biome, t);
+  drawTribune(state.biome, t);
+  drawTrack(state.biome, t);
+  drawNPCs(t);
+  drawHero(t);
+  requestAnimationFrame(loop);
+}
+loop();
+
+</script>
+</body>
+</html>

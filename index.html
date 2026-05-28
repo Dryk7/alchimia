@@ -9544,7 +9544,7 @@ body{
               <div style="font-weight:700; color:#1a1a2e;">Cours pour débloquer tes aides</div>
               <div style="margin-top:6px; font-size:12px;">Ton premier upgrade arrive au km 1</div>
             </div>
-            <button class="upg-btn upg-power" data-upgrade="tapValue" data-unlock-km="1" aria-label="Puissance">
+            <button class="upg-btn upg-power" data-upgrade="tapValue" data-unlock-km="0" data-unlock-taps="12" aria-label="Puissance">
               <div class="upg-icon-wrap">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 12 L7 6 L10 6 L10 4 L14 4 L14 6 L17 6 L17 12 L20 12 L17 18 L14 16 L14 20 L10 20 L10 16 L7 18 L4 12 z"/></svg>
               </div>
@@ -26254,10 +26254,11 @@ function applyProgressiveDisclosure(){
     // Attendre que STATE existe vraiment (sinon on bootstrappe rien et on rate les items déjà débloqués)
     if(typeof STATE !== 'undefined' && STATE){
       window._unlocksBootstrapDone = true;
-      document.querySelectorAll('[data-unlock-km], [data-unlock-saison]').forEach(_el => {
+      document.querySelectorAll('[data-unlock-km], [data-unlock-saison], [data-unlock-taps]').forEach(_el => {
         const _needKm = parseInt(_el.getAttribute('data-unlock-km') || '0', 10);
         const _needSaison = parseInt(_el.getAttribute('data-unlock-saison') || '0', 10);
-        const _alreadyUnlocked = (laps >= _needKm) && (saison >= _needSaison);
+        const _needTaps = parseInt(_el.getAttribute('data-unlock-taps') || '0', 10);
+        const _alreadyUnlocked = (laps >= _needKm) && (saison >= _needSaison) && ((STATE.totalTaps||0) >= _needTaps);
         if(_alreadyUnlocked){
           const _id = _el.getAttribute('data-upgrade') || _el.getAttribute('data-action') || _el.id || '';
           if(_id) window._revealedUnlocks.add(_id);
@@ -26271,10 +26272,13 @@ function applyProgressiveDisclosure(){
     if(transBtn) transBtn.style.display = (typeof canTranscend === 'function' && canTranscend()) ? 'flex' : 'none';
   } catch(e){}
   // Items du menu avec data-unlock-km ou data-unlock-saison
-  document.querySelectorAll('[data-unlock-km], [data-unlock-saison]').forEach(el => {
+  document.querySelectorAll('[data-unlock-km], [data-unlock-saison], [data-unlock-taps]').forEach(el => {
     const needKm = parseInt(el.getAttribute('data-unlock-km') || '0', 10);
     const needSaison = parseInt(el.getAttribute('data-unlock-saison') || '0', 10);
-    const locked = (laps < needKm) || (saison < needSaison);
+    // V75 : gate par nombre de taps (pour révéler le 1er upgrade "après quelques taps", pas au km)
+    const needTaps = parseInt(el.getAttribute('data-unlock-taps') || '0', 10);
+    const totalTaps = (STATE.totalTaps || 0);
+    const locked = (laps < needKm) || (saison < needSaison) || (totalTaps < needTaps);
     el.setAttribute('data-locked', locked ? '1' : '0');
     // Toast notification on unlock transition
     const id = el.getAttribute('data-upgrade') || el.getAttribute('data-action') || el.id || '';
@@ -26443,7 +26447,10 @@ function applyProgressiveDisclosure(){
   const visibleUpgs = document.querySelectorAll('.upg-btn:not([data-locked="1"])').length;
   const emptyMsg = document.getElementById('upg-empty-msg');
   if(emptyMsg){
-    emptyMsg.style.display = (visibleUpgs === 0) ? '' : 'none';
+    // V75 : tout début (< 12 taps) = écran PUR tap, aucun "truc d'upgrades".
+    // Le message "Cours pour débloquer" n'apparaît qu'une fois le 1er tapotage fait.
+    const _taps = (STATE.totalTaps || 0);
+    emptyMsg.style.display = (visibleUpgs === 0 && _taps >= 12) ? '' : 'none';
   }
   // Pulse menu PRESTIGE si stars dispo et non investies récemment
   try {
@@ -26519,73 +26526,62 @@ const ActiveTuto = (() => {
 
   // === Définition des 12 étapes ===
   // Chaque étape : { target?, text, eyebrow?, position?, waitFor?, onEnter?, button? }
+  // === V75 : tuto à jour — flow tap → 12 taps → Puissance apparaît → automatisation ===
   const STEPS = [
     {
       eyebrow: 'BIENVENUE',
-      text: 'Salut champion ! Je vais te montrer comment jouer. Ça prend 2 minutes.',
+      text: 'Salut champion ! 2 min pour apprendre à courir. C\'est parti.',
       button: 'COMMENCER',
     },
     {
       eyebrow: 'ÉTAPE 1 — TAP',
       target: '#runner-stadium',
-      text: 'Tape sur la piste pour faire <b>avancer ton coureur</b>. Vas-y, essaye !',
+      text: 'Tape sur la piste pour faire <b>courir ton coureur</b> et gagner des <b>gouttes</b>. Essaie !',
       waitFor: { type: 'state', check: () => (STATE.totalTaps || 0) >= 1 },
     },
     {
-      eyebrow: 'ÉTAPE 2 — RYTHME',
+      eyebrow: 'ÉTAPE 2 — C\'EST TOI LE MOTEUR',
       target: '#runner-stadium',
-      text: 'Bravo ! Plus tu tapes vite, plus tu accélères. Continue à taper.',
-      waitFor: { type: 'state', check: () => (STATE.totalTaps || 0) >= 6 },
+      text: 'Au début, <b>chaque goutte vient de tes taps</b>. Continue à taper en rythme !',
+      waitFor: { type: 'state', check: () => (STATE.totalTaps || 0) >= 12 },
     },
     {
       eyebrow: 'COMBO',
       target: '#runner-stadium',
-      text: 'Regarde le <b>×1.5 COMBO</b> qui s\'affiche en haut → tu gagnes plus de gouttes quand tu tapes en rythme.',
+      text: 'Tape en rythme → le <b>COMBO</b> (×1.5, ×2…) multiplie tes gouttes. Plus tu enchaînes, mieux c\'est.',
       button: 'OK',
+    },
+    {
+      eyebrow: '🥇 PUISSANCE DÉBLOQUÉE',
+      target: '.upg-btn[data-upgrade="tapValue"]',
+      text: 'Ta 1ère amélioration apparaît ! <b>PUISSANCE</b> = +1 goutte par tap. Achète-la.',
+      // V75 : ouvre automatiquement l'onglet UPGRADES pour que le bouton soit visible/spotlit
+      onEnter: () => {
+        const upBtn = document.querySelector('.tab-btn[data-tab="upgrades"]');
+        if(upBtn && !upBtn.classList.contains('active')) upBtn.click();
+      },
+      waitFor: { type: 'state', check: () => (STATE.upgradeTapValue || 0) >= 1 },
     },
     {
       eyebrow: 'GOUTTES',
       target: '#stat-gold',
-      text: 'Voici tes <b>gouttes</b> — la monnaie principale. Tu en gagnes à chaque tap.',
+      text: 'Voici tes <b>gouttes</b> — la monnaie. Garde-les pour acheter des améliorations de plus en plus fortes.',
       button: 'COMPRIS',
     },
     {
-      eyebrow: 'PREMIER KM',
-      target: '#runner-stadium',
-      text: 'Continue de taper jusqu\'à atteindre <b>1 km</b> ! Tu y es presque.',
-      waitFor: { type: 'state', check: () => (STATE.lapsRun || 0) >= 1 },
-    },
-    {
-      eyebrow: 'BRAVO',
-      text: 'Premier kilomètre bouclé ! Tu viens de gagner un <b>bonus de fin de km</b>.',
-      button: 'CONTINUER',
-    },
-    {
-      eyebrow: 'UPGRADE',
-      target: '.tab-btn[data-tab="upgrades"]',
-      text: 'Maintenant, ouvre <b>UPGRADES</b> en bas pour devenir plus fort.',
-      waitFor: { type: 'event', selector: '.tab-btn[data-tab="upgrades"]', event: 'click' },
-    },
-    {
-      eyebrow: 'PUISSANCE',
-      target: '.upg-btn[data-upgrade="tapValue"]',
-      text: 'Achète <b>PUISSANCE</b> (en rouge) — ça donne +1 goutte à chaque tap.',
-      waitFor: { type: 'state', check: () => (STATE.upgradeTapValue || 0) >= 1 },
-    },
-    {
-      eyebrow: 'TU ES LANCÉ',
-      text: 'Excellent ! Continue à taper jusqu\'au <b>km 3</b> pour débloquer l\'AUTO-COURSE.',
-      button: 'GO',
+      eyebrow: '🤖 BIENTÔT : L\'AUTOMATISATION',
+      text: 'Vers <b>km 10</b>, tu débloques l\'<b>AUTO-TAP</b> : ton coureur tape tout seul. Plus besoin de t\'épuiser — l\'idle prend le relais !',
+      button: 'GÉNIAL',
     },
     {
       eyebrow: 'BOUTON AIDE',
       target: '#help-toggle',
-      text: 'Si tu te perds, le bouton <b>?</b> en haut à droite ouvre le guide complet du jeu.',
+      text: 'Perdu ? Le bouton <b>?</b> en haut ouvre le guide complet à tout moment.',
       button: 'OK',
     },
     {
       eyebrow: 'À TOI DE JOUER',
-      text: 'Tu connais l\'essentiel ! Cours, gagne des gouttes, achète des upgrades, deviens une légende. Bonne course !',
+      text: 'Tu sais tout ! Tape, gagne des gouttes, améliore-toi, automatise, deviens une légende. Bonne course ! 🏃',
       button: 'JOUER',
     },
   ];

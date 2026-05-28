@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v74 : éco galère early (km passif -50%) + auto-tap plus tôt (km10) et puissant (2.5/niv cap12)
-const CACHE = 'foulee-v74';
+// v75 : tuto à jour (9 étapes) + upgrades révélées après 12 taps (écran pur tap au start)
+const CACHE = 'foulee-v75';
 const ASSETS = [
   './',
   './index.html',

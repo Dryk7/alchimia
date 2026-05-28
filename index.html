@@ -9388,6 +9388,8 @@ body{
           <span class="hud-pill-sep"></span>
           <b id="runner-pace" style="font-size:11px;color:var(--brand-gold-dark);font-weight:900" aria-live="polite" aria-atomic="true">0.0</b>
           <span style="font-size:8px;color:#888;letter-spacing:.04em">km/h</span>
+          <!-- V67 ENDLESS : badge vague, caché hors endless -->
+          <span id="endless-badge" style="display:none;align-items:center;gap:3px;background:linear-gradient(135deg,#7030a0,#FFB030);color:#fff;font-size:10px;font-weight:900;padding:2px 7px;border-radius:10px;margin-left:4px;box-shadow:0 1px 4px rgba(112,48,160,.4)">♾ <b id="endless-wave">0</b></span>
           <span class="hud-pill-sep"></span>
           <div id="hud-stamina" style="display:flex;align-items:center;gap:4px;pointer-events:none" aria-label="Stamina">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="#7ec46a" aria-hidden="true"><path d="M13 2L4 14h7v8l9-12h-7z"/></svg>
@@ -21468,6 +21470,14 @@ function renderSaisonModal(){
     row.addEventListener('click', ()=>buyStarPerk(row.dataset.perk));
   });
 }
+/* === V67 ENDLESS MODE : l'Olympe (saison 10) prolongée à l'infini ===
+   Au lieu de Transcender à km 100 saison 10, le joueur peut continuer à courir.
+   Chaque "vague" = 50 km au-delà de km 100. Difficulté + récompense scalent. */
+function isEndless(){ return (STATE.saison || 1) >= 10 && (STATE.lapsRun || 0) >= 100; }
+function endlessWave(){ return isEndless() ? Math.floor(((STATE.lapsRun || 0) - 100) / 50) : 0; }
+function endlessRewardMul(){ return 1 + endlessWave() * 0.12; } // +12% gouttes par vague (incite le grind endless)
+function endlessSpeedMul(){ return 1 + endlessWave() * 0.05; }  // +5% vitesse PNJ par vague (challenge croissant)
+
 /* Multiplicateurs permanents dérivés des étoiles */
 function saisonGoldMul(){
   const base = 1 + (STATE.perkGoldMul||0) * 0.05;
@@ -21475,7 +21485,9 @@ function saisonGoldMul(){
   const factor = s >= 8 ? 2.0 : s >= 5 ? 1.5 : 1.0;
   // META-PRESTIGE : chaque couronne donne +10% à TOUS les gains (cumul sans cap)
   const couronnesMul = 1 + (STATE.couronnes || 0) * 0.10;
-  return base * factor * couronnesMul;
+  // V67 ENDLESS : bonus gouttes qui scale avec la vague endless (1.0 hors endless)
+  const endlessMul = (typeof endlessRewardMul === 'function') ? endlessRewardMul() : 1;
+  return base * factor * couronnesMul * endlessMul;
 }
 // META-PRESTIGE : 3e couche au-dessus des étoiles. Débloqué après avoir fini la saison 10.
 // 1 couronne par "cycle complet" (saison 10 atteinte) → bonus permanent +10% à tous gains.
@@ -23405,6 +23417,26 @@ function updateRunnerHUD(){
       }
     }
   }
+  // === V67 ENDLESS : badge ♾ vague dans le HUD + annonce nouvelle vague ===
+  const endlessBadge = document.getElementById('endless-badge');
+  if(endlessBadge && typeof endlessWave === 'function'){
+    const wave = endlessWave();
+    if(wave > 0){
+      endlessBadge.style.display = 'inline-flex';
+      const waveEl = document.getElementById('endless-wave');
+      if(waveEl) waveEl.textContent = wave;
+      // Annonce + SFX quand on franchit une nouvelle vague
+      if(wave > (window._lastEndlessWave || 0)){
+        window._lastEndlessWave = wave;
+        if(typeof showRunnerBubble === 'function'){
+          showRunnerBubble(`♾ VAGUE ${wave} · +${Math.round((endlessRewardMul()-1)*100)}% gouttes !`);
+        }
+        if(typeof blip === 'function'){ try{ blip(660,.12,'triangle',.14,.5); setTimeout(()=>blip(990,.15,'sine',.12,.55),110);}catch(e){} }
+      }
+    } else {
+      endlessBadge.style.display = 'none';
+    }
+  }
 }
 
 const UPG_ID_SUFFIX = { tapValue:'tap', critChance:'crit', lapBonus:'lap', autoTap:'auto', endurance:'endurance', baseSpeed:'bspeed', eagleEye:'eagle', cruiseControl:'cruise' };
@@ -23838,6 +23870,7 @@ function ensureRecords(){
   if(typeof r.maxSaison !== 'number')  r.maxSaison = STATE.saison || 1;
   if(typeof r.maxCombo !== 'number')   r.maxCombo = STATE.bestCombo || 0;
   if(typeof r.totalTaps !== 'number')  r.totalTaps = STATE.totalTaps || 0;
+  if(typeof r.endlessMaxWave !== 'number') r.endlessMaxWave = 0; // V67 : meilleure vague endless atteinte
 }
 function updateRecords(){
   ensureRecords();
@@ -23847,6 +23880,10 @@ function updateRecords(){
   STATE.records.maxSaison = Math.max(STATE.records.maxSaison, STATE.saison || 1);
   STATE.records.maxCombo = Math.max(STATE.records.maxCombo, STATE.bestCombo || 0);
   STATE.records.totalTaps = STATE.totalTaps || 0;
+  // V67 ENDLESS : track la meilleure vague atteinte
+  if(typeof endlessWave === 'function'){
+    STATE.records.endlessMaxWave = Math.max(STATE.records.endlessMaxWave || 0, endlessWave());
+  }
 }
 function shareProgress(){
   ensureRecords();
@@ -23941,6 +23978,7 @@ function renderRecords(){
       <div class="records-row"><span>KM bouclés</span><b>${fmtBigNumber(r.maxLapsRun)}</b></div>
       <div class="records-row"><span>Niveau max</span><b>${r.maxLevel}</b></div>
       <div class="records-row"><span>Saison max</span><b>${r.maxSaison}</b></div>
+      ${(r.endlessMaxWave||0) > 0 ? `<div class="records-row"><span>♾ Vague Endless max</span><b>${r.endlessMaxWave}</b></div>` : ''}
       <div class="records-row"><span>Gouttes à vie</span><b>${fmtBigNumber(S.totalGoldEarned||0)}</b></div>
 
       <div class="records-section-title">LOOT &amp; PROGRESSION</div>
@@ -29188,6 +29226,8 @@ function _drawBirds(ctx, W, H, dt){
     const tier = NPC_TIERS[tierIdx];
     const pick = arr => arr[Math.floor(Math.random() * arr.length)];
     let speed = tier.baseSpeed + (Math.random() - 0.5) * tier.speedVar;
+    // V67 ENDLESS : les PNJ accélèrent avec la vague endless (+5%/vague) — challenge croissant
+    if(typeof endlessSpeedMul === 'function') speed *= endlessSpeedMul();
     let metersAhead;
     if(opts.fromBehind){
       // Coureur agressif qui arrive de derrière pour DÉPASSER le héros inactif

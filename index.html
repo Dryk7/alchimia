@@ -20154,7 +20154,9 @@ function tapBoost(e){
   const _starTapPower = 1 + (STATE.starTree?.tapPower || 0) * 0.10 * (typeof hybridStarMul==='function' ? hybridStarMul() : 1);
   // === Relique MédailleCassée : ×2 gouttes par tap ===
   const _medCasseMul = (typeof hasRelic==='function' && hasRelic('medCasse')) ? 2 : 1;
-  const perTap = (1 + (STATE.upgradeTapValue||0) * 0.5) * comboMul * tapMul * shopMul * eTapMul * eGoldMul * skillTap * equipMul * cardTap * cardAll * bigBangBonus * mapTapMul * starsBoost * (typeof saisonGoldMul==='function'?saisonGoldMul():1) * _buffMul * _stTapMul * _starTapPower * _medCasseMul;
+  // V72 COHÉRENCE ÉCONOMIE : base = 1 goutte/tap au départ, +1 par niveau de Puissance.
+  // (avant : ×0.5 dans le gain réel mais ×1.5 affiché — le joueur voyait un chiffre faux)
+  const perTap = (1 + (STATE.upgradeTapValue||0) * 1) * comboMul * tapMul * shopMul * eTapMul * eGoldMul * skillTap * equipMul * cardTap * cardAll * bigBangBonus * mapTapMul * starsBoost * (typeof saisonGoldMul==='function'?saisonGoldMul():1) * _buffMul * _stTapMul * _starTapPower * _medCasseMul;
   // Crit chance plafonné à 60% + équipement + cartes
   const equipCrit = (typeof equipBonus === 'function') ? equipBonus('critRate') : 0;
   const cardCrit = (typeof deckBonus === 'function') ? deckBonus('crit') : 0;
@@ -20283,7 +20285,7 @@ function updateTapStrip(){
   const perTap = document.getElementById('tap-per-tap');
   const perLap = document.getElementById('tap-per-lap');
   const critRate = document.getElementById('tap-crit-rate');
-  const tapValue = 1 + (STATE.upgradeTapValue||0) * 1.5;
+  const tapValue = 1 + (STATE.upgradeTapValue||0) * 1; // V72 : cohérent avec le gain réel (+1/niv)
   if(perTap){
     const oldTxt = perTap.textContent;
     const newTxt = '+' + tapValue;
@@ -20532,7 +20534,7 @@ function buyUpgrade(id){
 }
 function _upgradeEffectAtLvl(id, lvl){
   switch(id){
-    case 'tapValue':     return '+' + (1 + lvl * 1.5).toFixed(1) + ' g/tap';
+    case 'tapValue':     return '+' + (1 + lvl * 1) + ' g/tap';
     case 'critChance':   return ((5 + lvl) | 0) + '% chance crit';
     case 'lapBonus':     return '+' + Math.floor(Math.pow(lvl, 1.5) * 2) + ' g/km';
     case 'autoTap':      return (lvl * 1.5).toFixed(1) + ' tap/s automatique';
@@ -23485,7 +23487,7 @@ function _previewUpgradeEffect(id){
   const lvl = STATE[u.state] || 0;
   const fmt = (l) => {
     switch(id){
-      case 'tapValue':     return '+' + (1 + l * 1.5).toFixed(1) + ' g/tap';
+      case 'tapValue':     return '+' + (1 + l * 1) + ' g/tap';
       case 'critChance':   return (5 + l) + '% crit';
       case 'lapBonus':     return '+' + Math.floor(Math.pow(l, 1.5) * 2) + ' g/km';
       case 'autoTap':      return '+' + (l * 1.5).toFixed(1) + ' tap/s';
@@ -23599,7 +23601,8 @@ function tickAutoTap(dt){
     const _atStTapMul = STATE._stTapMul || 1; // skill tree tap multiplier
     // Star tree bonus
     const _atStarTapPower = 1 + (STATE.starTree?.tapPower || 0) * 0.10 * (typeof hybridStarMul==='function' ? hybridStarMul() : 1);
-    const perTap = (1 + (STATE.upgradeTapValue||0) * 0.5)
+    // V72 COHÉRENCE : auto-tap utilise la même base que le tap manuel (+1/niv au lieu de +0.5)
+    const perTap = (1 + (STATE.upgradeTapValue||0) * 1)
       * _atShopMul * _atTapMul * _atETapMul * _atEGoldMul
       * _atEquipMul * _atCardTap * _atCardAll * _atMapMul
       * _atStars * (typeof saisonGoldMul==='function'?saisonGoldMul():1) * _atBuffMul * _atStTapMul * _atStarTapPower;
@@ -26223,7 +26226,7 @@ const UNLOCK_LABELS = {
 };
 function getUpgradeFirstHint(id){
   const hints = {
-    'tapValue': '🥇 PUISSANCE débloqué ! Chaque tap rapporte plus de gouttes. Effet net : +1.5 g/tap par niveau.',
+    'tapValue': '🥇 PUISSANCE débloqué ! Chaque tap rapporte plus de gouttes. Effet net : +1 g/tap par niveau.',
     'lapBonus': '🏃 TROPHÉE débloqué ! Boucler 1 km te rapporte des gouttes bonus. Courbe exponentielle douce — investis tôt.',
     'critChance': '✨ CHANCE CRITIQUE débloquée ! +1% chance de crit (×5 sur ce tap). Cap 60%.',
     'eagleEye': '👁️ VISION D\'AIGLE débloquée ! Tu vois les haies plus loin = + de temps pour le saut. Indispensable mid-game.',
@@ -28002,7 +28005,12 @@ function boot(){
   if(typeof updateDailyButton === 'function') updateDailyButton();
   // Auto-ouvre la modal daily si disponible (au boot) — petit délai pour laisser l'UI charger
   // MAIS : pas avant que la story intro soit dismiss + pas pendant que l'ActiveTuto guide le nouveau joueur
-  if(typeof dailyAvailable === 'function' && dailyAvailable()){
+  // V72 : ET pas avant que le joueur ait dépassé l'early-early game (km 5 OU 1 ascension OU 3+ sessions).
+  //       Un tout nouveau joueur ne doit PAS être assailli par la récompense quotidienne.
+  const _dailyProgressOK = (STATE.lapsRun || 0) >= 5
+                        || (STATE.ascensions || 0) >= 1
+                        || (STATE.totalPlayMs || 0) > 600000; // 10 min de jeu cumulées
+  if(typeof dailyAvailable === 'function' && dailyAvailable() && _dailyProgressOK){
     const tryOpenDaily = () => {
       // FIX P0 : ne JAMAIS afficher daily reward tant que ActiveTuto n'est pas terminé
       if(typeof ActiveTuto !== 'undefined' && typeof ActiveTuto.isActive === 'function' && ActiveTuto.isActive()) return;

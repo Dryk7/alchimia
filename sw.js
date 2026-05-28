@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v71 : calme TOUS les pop-ups (bulle ambiante, tier banner, level-up, durées)
-const CACHE = 'foulee-v71';
+// v72 : daily gated early-game + économie tap cohérente (1 goutte/tap, +1/niv partout)
+const CACHE = 'foulee-v72';
 const ASSETS = [
   './',
   './index.html',

@@ -17777,9 +17777,13 @@ const ProcBGM = (() => {
     if(!_preset || !A.ctx) return;
     const totalSteps = _preset.bars * _preset.stepsPerBar;
     const noteDur = _stepDur * 1.6;
+    // V65 AUDIO : humanisation — micro-swing timing (±6ms) sur voix mélodiques
+    // pour casser l'effet robotique sur sessions longues. Kick/bass restent tight.
+    const _humanize = (Math.random() - 0.5) * 0.012;
     const when = _nextStepAt;
+    const whenH = when + _humanize; // version humanisée pour melody/arp/flute
     const i = _step;
-    _playMelodyNote(_preset.melody[i], when, noteDur);
+    _playMelodyNote(_preset.melody[i], whenH, noteDur);
     _playBassNote(_preset.bass[i], when, _stepDur * 2);
     // Adaptive drum intensity : chill = drums subtils (scale 0.5), full energy = 1.0
     const drumScale = (typeof _preset.drumScale === 'number') ? _preset.drumScale : 1.0;
@@ -17798,17 +17802,19 @@ const ProcBGM = (() => {
     if(_preset.clap && _preset.clap[i] === 'x') _playClap(when, kmIntensity * 0.7);
     // SHAKER : groove continu 16e très doux
     if(_preset.shaker && _preset.shaker[i] === 'x') _playShaker(when, kmIntensity);
-    // ARPEGE BELL : nouvelle voix shimmer
+    // ARPEGE BELL : nouvelle voix shimmer (vélocité humanisée ±8%)
     if(_preset.arp && _preset.arp[i] && _preset.arp[i] !== '-'){
-      _playArpNote(_preset.arp[i], when, _stepDur * 4, kmIntensity * 0.8);
+      const _av = 0.92 + Math.random() * 0.16;
+      _playArpNote(_preset.arp[i], whenH, _stepDur * 4, kmIntensity * 0.8 * _av);
     }
     // COUNTER-MELODY (electric piano) : 2e voix harmonisée
     if(_preset.melody2 && _preset.melody2[i] && _preset.melody2[i] !== '-'){
-      _playCounterNote(_preset.melody2[i], when, _stepDur * 3, kmIntensity);
+      _playCounterNote(_preset.melody2[i], whenH, _stepDur * 3, kmIntensity);
     }
     // FLÛTE : 3e voix woodwind (timbre warm, surtout bridge + outro pour aération)
     if(_preset.flute && _preset.flute[i] && _preset.flute[i] !== '-'){
-      _playFluteNote(_preset.flute[i], when, _stepDur * 4, kmIntensity * 0.9);
+      const _fv = 0.90 + Math.random() * 0.18;
+      _playFluteNote(_preset.flute[i], whenH, _stepDur * 4, kmIntensity * 0.9 * _fv);
     }
     // Chord pad : un nouvel accord au premier step de chaque bar
     if(_preset.chord && i % _preset.stepsPerBar === 0){

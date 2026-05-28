@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v76 : personnages plus grands (scale voxel 0.85→1.15)
-const CACHE = 'foulee-v76';
+// v77 : slider taille coureurs dans Réglages (80-160%, live + persistant)
+const CACHE = 'foulee-v77';
 const ASSETS = [
   './',
   './index.html',

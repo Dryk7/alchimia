@@ -10095,6 +10095,14 @@ body{
         </div>
       </section>
       <section class="grim-sec">
+        <h3>Affichage</h3>
+        <div class="setting-row">
+          <span class="set-lbl">Taille des coureurs</span>
+          <input type="range" id="set-hero-scale" min="80" max="160" value="115" step="5" aria-label="Taille des coureurs">
+          <span class="set-val" id="set-hero-scale-val">115%</span>
+        </div>
+      </section>
+      <section class="grim-sec">
         <h3>Sauvegarde</h3>
         <p class="set-help">Ta progression est gardée localement (LocalStorage). Tu peux l'exporter sous forme de texte, ou tout effacer.</p>
         <div class="setting-row">
@@ -28280,6 +28288,22 @@ function boot(){
     localStorage.setItem('alchimia.vibration', next ? '1' : '0');
     if(next) vibrate(20);
   });
+  // V77 : Taille des coureurs (slider 80-160%, défaut 115%) — pilote drawVoxelRunner en direct
+  const heroScaleSlider = document.getElementById('set-hero-scale');
+  const heroScaleVal = document.getElementById('set-hero-scale-val');
+  if(heroScaleSlider){
+    const initialScale = parseInt(localStorage.getItem('alchimia.heroScale') ?? (STATE.heroScalePct || 115), 10);
+    STATE.heroScalePct = initialScale;
+    heroScaleSlider.value = initialScale;
+    if(heroScaleVal) heroScaleVal.textContent = initialScale + '%';
+    heroScaleSlider.addEventListener('input', ()=>{
+      const v = parseInt(heroScaleSlider.value, 10);
+      STATE.heroScalePct = v;
+      if(heroScaleVal) heroScaleVal.textContent = v + '%';
+      localStorage.setItem('alchimia.heroScale', v);
+      // effet visible immédiat (le rendu lit STATE.heroScalePct à chaque frame)
+    });
+  }
   // Export / Import
   document.getElementById('set-export').addEventListener('click', ()=>{
     save();
@@ -30074,8 +30098,9 @@ function _drawBirds(ctx, W, H, dt){
   function drawVoxelRunner(x, y, scale, spec, phase, isHero, effortLevel, airborneFrac){
     const p = _specToVoxParams(spec, isHero);
     _voxP = p;
-    // V76 : bump 0.85→1.15 (personnages encore +35% — toujours jugés trop petits par le joueur)
-    const sc = scale * 1.15;
+    // V76/V77 : taille pilotée par le réglage joueur (slider Réglages → Affichage, défaut 115%)
+    const _scalePct = (window.STATE && STATE.heroScalePct) ? STATE.heroScalePct : 115;
+    const sc = scale * (_scalePct / 100);
     const isAirborne = typeof airborneFrac === 'number';
     const effort = (typeof effortLevel === 'number') ? effortLevel : 0;
     // Aura héros (préservée pour visibilité in-game)

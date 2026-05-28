@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v80 : taille coureurs 160 par défaut + fix dépassements PNJ + opti rendu (DPR fx, skip-clear)
-const CACHE = 'foulee-v80';
+// v81 : QA playthrough A→Z + fix libellé warning ascension
+const CACHE = 'foulee-v81';
 const ASSETS = [
   './',
   './index.html',

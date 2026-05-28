@@ -29367,34 +29367,27 @@ function _drawBirds(ctx, W, H, dt){
     }
   }
   // Spawn ERRATIQUE : pas toujours, parfois plusieurs, max 4 visibles
-  // === BONUS GAMEFEEL : si le joueur est INACTIF (>5s sans tap), des coureurs viennent de derrière
-  //     et le doublent → pression psychologique pour reprendre le tap ===
+  // === V70 : AMBIANCE VIVANTE, ZÉRO HARCÈLEMENT ===
+  // Avant : dès 5s sans tap, des coureurs déboulaient pour te doubler ("pression psychologique").
+  // Ressenti pénible → supprimé. Maintenant les PNJ apparaissent à un rythme calme et constant,
+  // qu'on tape ou non. Si très longue inactivité (45s), 1 coureur passe DISCRÈTEMENT (vie, pas pression).
   function npcSpawnLoop(){
     const curTier = (typeof stadiumTier === 'function') ? stadiumTier() : 5;
     const inactiveMs = performance.now() - (lastTapTime || 0);
-    const isInactive = inactiveMs > 5000 && (window.STATE?.totalTaps || 0) > 5; // ignore le tout début
-    if(curTier >= 1){
+    // Seuil relevé 5s → 45s, et un seul coureur doux (plus de swarm/peloton agressif)
+    const longIdle = inactiveMs > 45000 && (window.STATE?.totalTaps || 0) > 5;
+    if(curTier >= 1 && npcs.length < 4){
       const r = Math.random();
-      if(npcs.length < 4){
-        if(isInactive){
-          // Mode "dépassement" : proba haute + spawn from-behind agressif
-          if(r < 0.85){
-            spawnNpc({ fromBehind: true });
-            // Parfois en pelloton (2 coureurs qui te doublent ensemble)
-            if(r < 0.30){
-              setTimeout(() => spawnNpc({ fromBehind: true }), 400 + Math.random() * 600);
-            }
-          }
-        } else if(r < 0.55){
-          spawnNpc();
-          if(r < 0.12){
-            setTimeout(spawnNpc, 300 + Math.random() * 500);
-          }
-        }
+      if(r < 0.50){
+        // Spawn normal devant (ambiance) — JAMAIS de fromBehind agressif
+        spawnNpc();
+      } else if(longIdle && r < 0.65){
+        // Très longue pause : 1 seul coureur passe tranquillement (vie sur la piste, pas de harcèlement)
+        spawnNpc({ fromBehind: true });
       }
     }
-    // Délai prochain check : 1.2-2.8s si inactif (vite et insistant), 2.5-8s sinon
-    const delay = isInactive ? (1200 + Math.random() * 1600) : (2500 + Math.random() * 5500);
+    // Cadence calme et constante (plus de "vite et insistant" quand inactif)
+    const delay = 3000 + Math.random() * 5000;
     setTimeout(npcSpawnLoop, delay);
   }
   // 1er spawn différé : seulement si déjà au-delà du chantier

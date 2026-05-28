@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v69 : variation mélodique procédurale → Audio 93, global 94/100
-const CACHE = 'foulee-v69';
+// v70 : stop harcèlement — coureurs agressifs inactif 5s→45s, cadence calme
+const CACHE = 'foulee-v70';
 const ASSETS = [
   './',
   './index.html',

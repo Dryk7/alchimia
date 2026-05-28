@@ -9795,14 +9795,14 @@ body{
         <svg width="20" height="20" viewBox="0 0 24 24" fill="#ff9020"><path d="M12 2 L13 6 L15 5 L14 7 L18 8 L14 9 L15 11 L13 10 L12 14 L11 10 L9 11 L10 9 L6 8 L10 7 L9 5 L11 6 z M9 14 L15 14 L15 20 L9 20 z"/></svg>
         <div class="mi-meta">
           <div class="mi-title">BOUGIE</div>
-          <div class="mi-sub">5 000 gouttes — +5% boost 5 min</div>
+          <div class="mi-sub">2 000 gouttes — +25% gouttes · 3 min</div>
         </div>
       </button>
       <button class="menu-item" data-action="buy-doping" data-unlock-km="30">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="#e84030"><path d="M7 4 L17 4 L17 9 Q21 11 19 14 Q17 17 14 17 L14 19 L17 21 L7 21 L10 19 L10 17 Q7 17 5 14 Q3 11 7 9 z"/></svg>
         <div class="mi-meta">
           <div class="mi-title">DOPING</div>
-          <div class="mi-sub">50 000 gouttes — +20% boost 30 min, 24h CD</div>
+          <div class="mi-sub">30 000 gouttes — ×2 gouttes · 5 min, CD 2h</div>
         </div>
       </button>
 
@@ -14904,47 +14904,49 @@ window.recordRivalBeat = recordRivalBeat;
 window.defeatBoss = defeatBoss;
 
 // === BUFFS Bougie / Doping (sinks gouttes) ===
+// === BUFFS V73 — chiffres cohérents, vrais boosts, gold sinks exigeants ===
+// Bougie : boost régulier accessible (+25% / 3 min, sans cooldown)
+// Doping : gros boost ponctuel (×2 / 5 min) coûteux + cooldown raisonnable 2h
+const BOUGIE_COST = 2000, BOUGIE_DUR = 3 * 60 * 1000, BOUGIE_MUL = 0.25;
+const DOPING_COST = 30000, DOPING_DUR = 5 * 60 * 1000, DOPING_MUL = 1.00, DOPING_CD = 2 * 60 * 60 * 1000;
 function buyBougie(){
-  const cost = 5000;
-  if((STATE.gold || 0) < cost){
+  if((STATE.gold || 0) < BOUGIE_COST){
     if(typeof sfxDeny === 'function') sfxDeny();
-    if(typeof showToast === 'function') showToast('Il manque ' + (cost - (STATE.gold||0)) + ' gouttes', 'warn');
+    if(typeof showRunnerBubble === 'function') showRunnerBubble('Il manque ' + (BOUGIE_COST - (STATE.gold||0)) + ' gouttes');
     return false;
   }
-  STATE.gold -= cost;
+  STATE.gold -= BOUGIE_COST;
   if(!STATE.buffs) STATE.buffs = { bougie:0, doping:0, dopingLastUsed:0 };
-  STATE.buffs.bougie = Date.now() + 5 * 60 * 1000;
+  STATE.buffs.bougie = Date.now() + BOUGIE_DUR;
   try {
     if(typeof sfxAchievement === 'function') sfxAchievement();
     else if(typeof sfxBuyScaled === 'function') sfxBuyScaled(1);
-    if(typeof showToast === 'function') showToast('🕯️ Bougie allumée : +5% boost 5 min', 'success');
+    if(typeof showRunnerBubble === 'function') showRunnerBubble('🕯️ Bougie : +25% gouttes · 3 min');
     if(typeof saveNow === 'function') saveNow();
   } catch(e){}
   return true;
 }
 function buyDoping(){
-  const cost = 50000;
-  const cooldownMs = 24 * 60 * 60 * 1000;
   if(!STATE.buffs) STATE.buffs = { bougie:0, doping:0, dopingLastUsed:0 };
-  if((STATE.gold || 0) < cost){
+  if((STATE.gold || 0) < DOPING_COST){
     if(typeof sfxDeny === 'function') sfxDeny();
-    if(typeof showToast === 'function') showToast('Il manque ' + (cost - (STATE.gold||0)) + ' gouttes', 'warn');
+    if(typeof showRunnerBubble === 'function') showRunnerBubble('Il manque ' + (DOPING_COST - (STATE.gold||0)) + ' gouttes');
     return false;
   }
-  if(Date.now() - (STATE.buffs.dopingLastUsed || 0) < cooldownMs){
+  if(Date.now() - (STATE.buffs.dopingLastUsed || 0) < DOPING_CD){
     if(typeof sfxDeny === 'function') sfxDeny();
-    const hLeft = Math.ceil((cooldownMs - (Date.now() - STATE.buffs.dopingLastUsed)) / (60*60*1000));
-    if(typeof showToast === 'function') showToast('Doping en cooldown ' + hLeft + 'h', 'warn');
+    const mLeft = Math.ceil((DOPING_CD - (Date.now() - STATE.buffs.dopingLastUsed)) / (60*1000));
+    if(typeof showRunnerBubble === 'function') showRunnerBubble('Doping en cooldown : ' + mLeft + ' min');
     return false;
   }
-  STATE.gold -= cost;
-  STATE.buffs.doping = Date.now() + 30 * 60 * 1000;
+  STATE.gold -= DOPING_COST;
+  STATE.buffs.doping = Date.now() + DOPING_DUR;
   STATE.buffs.dopingLastUsed = Date.now();
   // VAGUE 20 — Quête Marathonien : flag KO dès usage Doping
   STATE._seasonNoDoping = false;
   try {
     if(typeof sfxAchievement === 'function') sfxAchievement();
-    if(typeof showToast === 'function') showToast('💉 Doping actif : +20% boost 30 min', 'success');
+    if(typeof showRunnerBubble === 'function') showRunnerBubble('💉 Doping : ×2 gouttes · 5 min !');
     if(typeof saveNow === 'function') saveNow();
   } catch(e){}
   return true;
@@ -14952,8 +14954,8 @@ function buyDoping(){
 function getActiveBuffMul(){
   let mul = 1.0;
   const now = Date.now();
-  if(STATE.buffs && STATE.buffs.bougie > now) mul += 0.05;
-  if(STATE.buffs && STATE.buffs.doping > now) mul += 0.20;
+  if(STATE.buffs && STATE.buffs.bougie > now) mul += BOUGIE_MUL;
+  if(STATE.buffs && STATE.buffs.doping > now) mul += DOPING_MUL;
   return mul;
 }
 window.buyBougie = buyBougie;

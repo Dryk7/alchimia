@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v82 : crossfade fluide entre biomes/stades + lisibilité sous-titre splash
-const CACHE = 'foulee-v82';
+// v83 : zone de transition graduelle entre biomes (skyline horizon + bâtiments au sol)
+const CACHE = 'foulee-v83';
 const ASSETS = [
   './',
   './index.html',

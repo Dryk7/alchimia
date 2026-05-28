@@ -30855,6 +30855,50 @@ function _drawBirds(ctx, W, H, dt){
     ctx.fillStyle = sky;
     ctx.fillRect(0, 0, W, H * 0.65);
 
+    // === V83 : ZONE DE TRANSITION — le biome qui ARRIVE grandit sur l'horizon (saison 1) ===
+    // Tu vois la ville / le stade approcher au loin AVANT d'y entrer → passage graduel, pas un cut sec.
+    // Dessiné juste après le ciel = derrière les montagnes/midground du biome courant (bonne profondeur).
+    (function(){
+      try {
+        if((STATE.saison || 1) !== 1) return;
+        const _km = (STATE.lapsRun || 0) + (STATE.lapProgress || 0);
+        const BANDS = [ {at:10, next:'rural'}, {at:38, next:'urban'}, {at:80, next:'stadium'} ];
+        let nb = null, ap = 0;
+        for(const _b of BANDS){ if(_km >= _b.at - 6 && _km < _b.at){ nb = _b.next; ap = (_km - (_b.at - 6)) / 6; break; } }
+        if(!nb) return;
+        ap = Math.max(0, Math.min(1, ap));
+        const hy = H * 0.55;
+        const par = -(decorScroll * 0.06);
+        ctx.save();
+        ctx.globalAlpha = ap * 0.9;
+        if(nb === 'rural'){
+          ctx.fillStyle = BIOMES.rural.mountainFar || '#7c9c5a';
+          ctx.beginPath(); ctx.moveTo(0, hy);
+          for(let x = 0; x <= W; x += 5){ ctx.lineTo(x, hy - 12 - Math.sin((x + par) * 0.012) * 10 - Math.sin((x + par) * 0.031) * 6); }
+          ctx.lineTo(W, hy); ctx.closePath(); ctx.fill();
+        } else if(nb === 'urban'){
+          const _ug = ctx.createLinearGradient(0, hy - 112, 0, hy);
+          _ug.addColorStop(0, 'rgba(128,144,176,1)'); _ug.addColorStop(1, 'rgba(74,88,116,1)');
+          const step = 24, x0 = ((par % step) + step) % step;
+          for(let i = -1; i <= W / step + 1; i++){
+            const wx = i * step - x0, bh = 44 + Math.abs(Math.sin(i * 7.3)) * 66;
+            ctx.fillStyle = _ug;
+            ctx.fillRect(wx, hy - bh, step - 3, bh);
+            ctx.fillStyle = 'rgba(255,226,150,0.55)';
+            for(let wy = hy - bh + 7; wy < hy - 7; wy += 9){ if(((i + (wy | 0)) % 3) === 0) ctx.fillRect(wx + 3, wy, 3, 4); }
+          }
+        } else if(nb === 'stadium'){
+          const cx = W * 0.5;
+          ctx.fillStyle = 'rgba(118,108,94,1)';
+          ctx.beginPath(); ctx.ellipse(cx, hy, W * 0.46, 58, 0, Math.PI, 0); ctx.fill();
+          ctx.fillRect(cx - W * 0.46, hy - 28, W * 0.92, 28);
+          ctx.fillStyle = 'rgba(150,140,120,1)';
+          [-0.4, -0.18, 0.18, 0.4].forEach(function(f){ const mx = cx + f * W * 0.45; ctx.fillRect(mx - 2, hy - 76, 4, 76); ctx.fillRect(mx - 9, hy - 84, 18, 9); });
+        }
+        ctx.restore();
+      } catch(e){}
+    })();
+
     // Astres dramatiques selon biome (au-dessus du gradient, avant nuages/montagnes)
     if(!isRainy && !isCloudy){
       if(_biomeName === 'rural'){
@@ -36467,6 +36511,39 @@ function _drawBirds(ctx, W, H, dt){
     });
 
     // ═══ Layer 5 : Track — varie selon BIOME (terre battue → asphalte → tartan rouge) ═══
+    // === V83 : ZONE DE TRANSITION (premier plan) — les premiers bâtiments du biome QUI ARRIVE
+    // poussent au sol parmi le décor courant (immeubles de ville / maisons de banlieue) ===
+    (function(){
+      try {
+        if((STATE.saison || 1) !== 1) return;
+        const _km = (STATE.lapsRun || 0) + (STATE.lapProgress || 0);
+        const BANDS = [ {at:10, next:'rural'}, {at:38, next:'urban'} ]; // stade : la tribune monte déjà toute seule
+        let nb = null, ap = 0;
+        for(const _b of BANDS){ if(_km >= _b.at - 5 && _km < _b.at){ nb = _b.next; ap = (_km - (_b.at - 5)) / 5; break; } }
+        if(!nb) return;
+        ap = Math.max(0, Math.min(1, ap));
+        const gY = H * 0.55, pf = -(decorScroll * 0.3), sp = 240, x0 = ((pf % sp) + sp) % sp;
+        ctx.save();
+        ctx.globalAlpha = ap * 0.92;
+        for(let i = -1; i <= W / sp + 1; i++){
+          const bx = i * sp - x0 + 40;
+          if(bx < -90 || bx > W + 90) continue;
+          if(nb === 'urban'){
+            const bw = 46, bh = 56;
+            ctx.fillStyle = '#5a6478'; ctx.fillRect(bx, gY - bh, bw, bh);
+            ctx.fillStyle = '#48505f'; ctx.fillRect(bx + bw, gY - bh + 10, 14, bh - 10);
+            ctx.fillStyle = 'rgba(255,226,150,0.6)';
+            for(let wy = gY - bh + 6; wy < gY - 6; wy += 10){ for(let wx = bx + 5; wx < bx + bw - 4; wx += 11){ ctx.fillRect(wx, wy, 5, 5); } }
+          } else if(nb === 'rural'){
+            const hw = 40, hh = 26;
+            ctx.fillStyle = '#b89070'; ctx.fillRect(bx, gY - hh, hw, hh);
+            ctx.fillStyle = '#7a4030'; ctx.beginPath(); ctx.moveTo(bx - 4, gY - hh); ctx.lineTo(bx + hw/2, gY - hh - 15); ctx.lineTo(bx + hw + 4, gY - hh); ctx.closePath(); ctx.fill();
+            ctx.fillStyle = 'rgba(255,226,150,0.6)'; ctx.fillRect(bx + hw/2 - 4, gY - hh + 6, 8, 8);
+          }
+        }
+        ctx.restore();
+      } catch(e){}
+    })();
     const _trackBiome = _stageNow?.biome || 'stadium';
     const LANES_TOP = H * .58;
     const LANES_BOTTOM = H * .96;

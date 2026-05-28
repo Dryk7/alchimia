@@ -34271,7 +34271,7 @@ function _drawBirds(ctx, W, H, dt){
       { const _bflySeeds = [14,67,33,81,22,55,44,90];
         for(let _bfi = 0; _bfi < _bflySeeds.length; _bfi++){
           const _seed = _bflySeeds[_bfi];
-          const _bx2 = ((_seed * 43 + (t * 12 * (_seed % 3 === 0 ? 1 : -1))) % (W + 60) + (W + 60)) % (W + 60) - 30;
+          const _bx2 = ((_seed * 43 + (t * 2.2 * (_seed % 3 === 0 ? 1 : -1))) % (W + 60) + (W + 60)) % (W + 60) - 30;
           const _by2 = H * 0.28 + Math.sin(t * 1.4 + _seed) * 18 + (_seed % 5) * 12;
           if(_bx2 < -20 || _bx2 > W + 20) continue;
           const _cols = ['#ff8040','#ffd060','#e85090','#40c8ff','#a0e060','#ff60b0'];

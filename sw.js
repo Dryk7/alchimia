@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v83 : zone de transition graduelle entre biomes (skyline horizon + bâtiments au sol)
-const CACHE = 'foulee-v83';
+// v84 : papillons ralentis (vol bien plus lent/naturel)
+const CACHE = 'foulee-v84';
 const ASSETS = [
   './',
   './index.html',

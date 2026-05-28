@@ -9534,7 +9534,7 @@ body{
             </div>
             <div class="tap-stat">
               <span class="tap-stat-lbl">CRITIQUE</span>
-              <span class="tap-stat-val" id="tap-crit-rate">5%</span>
+              <span class="tap-stat-val" id="tap-crit-rate">0%</span>
             </div>
           </div>
           <!-- v2 : 6 upgrades regroupés en 4 axes clairs avec icônes + couleurs distinctives -->
@@ -20173,7 +20173,7 @@ function tapBoost(e){
   const _atalanteCrit = (typeof hasRelic === 'function' && hasRelic('atalante')) ? 0.10 : 0;
   // Star tree bonus
   const _starCritPower = (STATE.starTree?.critPower || 0) * 0.10 * (typeof hybridStarMul==='function' ? hybridStarMul() : 1);
-  const rawCrit = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + equipCrit + cardCrit + _atalanteCrit + _starCritPower + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
+  const rawCrit = 0 + (STATE.upgradeCritChance||0) * 0.01 + equipCrit + cardCrit + _atalanteCrit + _starCritPower + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
   const critChance = Math.min(0.60, rawCrit);
   const isCrit = Math.random() < critChance;
   const _stCritMul = STATE._stCritMul || 5; // skill tree crit multiplier (default 5)
@@ -20315,7 +20315,7 @@ function updateTapStrip(){
     perLap.textContent = '+' + lapReward;
   }
   // Crit affiché : 5% base + 1% par niveau (cohérent avec le calcul réel rawCrit = 0.05 + lvl*0.01)
-  if(critRate) critRate.textContent = Math.round((5 + (STATE.upgradeCritChance||0))) + '%';
+  if(critRate) critRate.textContent = Math.round((0 + (STATE.upgradeCritChance||0))) + '%';
   // === Stat globale GOUTTES/SEC
   const _gps = document.getElementById('stat-gps');
   if(_gps){
@@ -20544,7 +20544,7 @@ function buyUpgrade(id){
 function _upgradeEffectAtLvl(id, lvl){
   switch(id){
     case 'tapValue':     return '+' + (1 + lvl * 1) + ' g/tap';
-    case 'critChance':   return ((5 + lvl) | 0) + '% chance crit';
+    case 'critChance':   return ((0 + lvl) | 0) + '% chance crit';
     case 'lapBonus':     return '+' + Math.floor(Math.pow(lvl, 1.5) * 2) + ' g/km';
     case 'autoTap':      return Math.min(12, lvl * 2.5).toFixed(1) + ' tap/s automatique';
     case 'endurance':    return 'combo +long • sprint +' + (lvl * 2) + '%';
@@ -23497,7 +23497,7 @@ function _previewUpgradeEffect(id){
   const fmt = (l) => {
     switch(id){
       case 'tapValue':     return '+' + (1 + l * 1) + ' g/tap';
-      case 'critChance':   return (5 + l) + '% crit';
+      case 'critChance':   return (0 + l) + '% crit';
       case 'lapBonus':     return '+' + Math.floor(Math.pow(l, 1.5) * 2) + ' g/km';
       case 'autoTap':      return '+' + Math.min(12, l * 2.5).toFixed(1) + ' tap/s';
       case 'endurance':    return 'combo +long • sprint +' + (l * 2) + '%';
@@ -23619,7 +23619,7 @@ function tickAutoTap(dt){
     const _atalanteCritAuto = (typeof hasRelic === 'function' && hasRelic('atalante')) ? 0.10 : 0;
     // Star tree bonus
     const _atStarCritPower = (STATE.starTree?.critPower || 0) * 0.10 * (typeof hybridStarMul==='function' ? hybridStarMul() : 1);
-    const rawCrit = 0.05 + (STATE.upgradeCritChance||0) * 0.01 + _atalanteCritAuto + _atStarCritPower + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
+    const rawCrit = 0 + (STATE.upgradeCritChance||0) * 0.01 + _atalanteCritAuto + _atStarCritPower + (typeof saisonCritBonus==='function'?saisonCritBonus():0);
     const critChance = Math.min(0.60, rawCrit);
     const isCrit = Math.random() < critChance;
     const _atStCritMul = STATE._stCritMul || 5; // skill tree crit multiplier

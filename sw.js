@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v84 : papillons ralentis (vol bien plus lent/naturel)
-const CACHE = 'foulee-v84';
+// v85 : 0 critique de base — le crit vient uniquement de l'upgrade CHANCE
+const CACHE = 'foulee-v85';
 const ASSETS = [
   './',
   './index.html',

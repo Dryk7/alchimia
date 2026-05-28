@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v79 : commerces différenciés (café/tabac/pizza/presse/bar) + identité stable
-const CACHE = 'foulee-v79';
+// v80 : taille coureurs 160 par défaut + fix dépassements PNJ + opti rendu (DPR fx, skip-clear)
+const CACHE = 'foulee-v80';
 const ASSETS = [
   './',
   './index.html',

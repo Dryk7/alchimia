@@ -10098,8 +10098,8 @@ body{
         <h3>Affichage</h3>
         <div class="setting-row">
           <span class="set-lbl">Taille des coureurs</span>
-          <input type="range" id="set-hero-scale" min="80" max="160" value="115" step="5" aria-label="Taille des coureurs">
-          <span class="set-val" id="set-hero-scale-val">115%</span>
+          <input type="range" id="set-hero-scale" min="80" max="160" value="160" step="5" aria-label="Taille des coureurs">
+          <span class="set-val" id="set-hero-scale-val">160%</span>
         </div>
       </section>
       <section class="grim-sec">
@@ -25456,14 +25456,18 @@ const themedC = document.getElementById("themed");
 const thCtx = themedC.getContext("2d");
 
 function resize(){
+  // V80 OPTI : DPR plafonné à 1.5 sur les calques fx/particules (overlays plein écran flous,
+  // pas besoin de netteté retina) → jusqu'à 4× moins de pixels à effacer/dessiner chaque frame
+  // sur mobile haute densité (DPR 3). Gros gain perf, différence visuelle imperceptible.
+  const fxDpr = Math.min(window.devicePixelRatio || 1, 1.5);
   for(const c of [fx, dust, candleC, cinemaC, themedC]){
-    c.width = window.innerWidth * devicePixelRatio;
-    c.height = window.innerHeight * devicePixelRatio;
+    c.width = window.innerWidth * fxDpr;
+    c.height = window.innerHeight * fxDpr;
     c.style.width = window.innerWidth + "px";
     c.style.height = window.innerHeight + "px";
   }
   for(const ctx of [fxCtx, dustCtx, cdCtx, cnCtx, thCtx]){
-    ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+    ctx.setTransform(fxDpr,0,0,fxDpr,0,0);
   }
 }
 window.addEventListener("resize", resize);
@@ -25505,9 +25509,16 @@ function spawnThemed(){
     });
   }
 }
+let _themedBlank=false, _fxBlank=false, _cinemaBlank=false; // V80 OPTI : éviter le clear plein écran quand le calque est vide
 function tickThemed(){
-  thCtx.clearRect(0,0,window.innerWidth,window.innerHeight);
   spawnThemed();
+  if(THEMED.length === 0){
+    if(_themedBlank) return;        // calque déjà vide → pas de clear inutile
+    thCtx.clearRect(0,0,window.innerWidth,window.innerHeight);
+    _themedBlank = true; return;
+  }
+  _themedBlank = false;
+  thCtx.clearRect(0,0,window.innerWidth,window.innerHeight);
   for(let i=THEMED.length-1; i>=0; i--){
     const p = THEMED[i];
     p.x += p.vx; p.y += p.vy;
@@ -25713,6 +25724,12 @@ function makeBoltPoints(x1, y1, x2, y2){
 }
 
 function tickFX(){
+  if(SHOCKS.length===0 && BOLTS.length===0 && FX_PARTS.length===0){
+    if(_fxBlank) return;            // aucun effet actif → pas de clear inutile
+    fxCtx.clearRect(0,0,window.innerWidth,window.innerHeight);
+    _fxBlank = true; return;
+  }
+  _fxBlank = false;
   fxCtx.clearRect(0,0,window.innerWidth,window.innerHeight);
   // SHOCKS
   for(let i=SHOCKS.length-1;i>=0;i--){
@@ -25783,6 +25800,12 @@ function cinematicBurst(color, tier=5){
   CINEMA = { life:1, max: 100 + (tier-5)*30, color, tier, born: performance.now() };
 }
 function tickCinema(){
+  if(!CINEMA){
+    if(_cinemaBlank) return;        // pas de cinématique active → pas de clear inutile
+    cnCtx.clearRect(0,0,window.innerWidth,window.innerHeight);
+    _cinemaBlank = true; return;
+  }
+  _cinemaBlank = false;
   cnCtx.clearRect(0,0,window.innerWidth,window.innerHeight);
   if(!CINEMA) return;
   CINEMA.life -= 1/CINEMA.max;
@@ -28286,7 +28309,7 @@ function boot(){
   const heroScaleSlider = document.getElementById('set-hero-scale');
   const heroScaleVal = document.getElementById('set-hero-scale-val');
   if(heroScaleSlider){
-    const initialScale = parseInt(localStorage.getItem('alchimia.heroScale') ?? (STATE.heroScalePct || 115), 10);
+    const initialScale = parseInt(localStorage.getItem('alchimia.heroScale') ?? (STATE.heroScalePct || 160), 10);
     STATE.heroScalePct = initialScale;
     heroScaleSlider.value = initialScale;
     if(heroScaleVal) heroScaleVal.textContent = initialScale + '%';
@@ -30092,8 +30115,8 @@ function _drawBirds(ctx, W, H, dt){
   function drawVoxelRunner(x, y, scale, spec, phase, isHero, effortLevel, airborneFrac){
     const p = _specToVoxParams(spec, isHero);
     _voxP = p;
-    // V76/V77 : taille pilotée par le réglage joueur (slider Réglages → Affichage, défaut 115%)
-    const _scalePct = (window.STATE && STATE.heroScalePct) ? STATE.heroScalePct : 115;
+    // V76/V77 : taille pilotée par le réglage joueur (slider Réglages → Affichage, défaut 160%)
+    const _scalePct = (window.STATE && STATE.heroScalePct) ? STATE.heroScalePct : 160;
     const sc = scale * (_scalePct / 100);
     const isAirborne = typeof airborneFrac === 'number';
     const effort = (typeof effortLevel === 'number') ? effortLevel : 0;
@@ -36945,10 +36968,11 @@ function _drawBirds(ctx, W, H, dt){
       const wasBehind = npc.metersAhead < 0;
       // === FIX cohérence : vitesse relative NPC en m/s basée sur displayKmh ===
       // npc.speed (0.3-0.8) = facteur de baseline (1.0 = vitesse 100% du héros baseline).
-      // Conversion km/h héros → m/s : displayKmh/3.6. NPC à npcKmh = displayKmh * (npc.speed / 0.55)
-      // où 0.55 = visualBaseline pour rb=1 (baseline jogger ≈ 0.55).
+      // V80 FIX dépassements : point neutre relevé à 0.72 (≈ amateur). En sprint, le héros
+      // double promeneurs/joggers/amateurs ; semi-pros/pros/champions le doublent. Avant : 0.55
+      // (= jogger sérieux) → quasi tous les PNJ collés au héros, aucun dépassement ressenti.
       const _heroMs = displayKmh / 3.6;
-      const _npcMs  = _heroMs * (npc.speed / 0.55);
+      const _npcMs  = _heroMs * (npc.speed / 0.72);
       npc.metersAhead -= (_heroMs - _npcMs) * dt;
       const pixAhead = npc.metersAhead * 8;
       // === DÉPASSEMENT : NPC vient de passer derrière le héros → bonus gouttes ===

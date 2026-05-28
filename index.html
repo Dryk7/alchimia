@@ -30074,8 +30074,8 @@ function _drawBirds(ctx, W, H, dt){
   function drawVoxelRunner(x, y, scale, spec, phase, isHero, effortLevel, airborneFrac){
     const p = _specToVoxParams(spec, isHero);
     _voxP = p;
-    // V60 : bump 0.55→0.85 (personnages 55% plus grands sans toucher les call sites)
-    const sc = scale * 0.85;
+    // V76 : bump 0.85→1.15 (personnages encore +35% — toujours jugés trop petits par le joueur)
+    const sc = scale * 1.15;
     const isAirborne = typeof airborneFrac === 'number';
     const effort = (typeof effortLevel === 'number') ? effortLevel : 0;
     // Aura héros (préservée pour visibilité in-game)

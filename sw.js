@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v75 : tuto à jour (9 étapes) + upgrades révélées après 12 taps (écran pur tap au start)
-const CACHE = 'foulee-v75';
+// v76 : personnages plus grands (scale voxel 0.85→1.15)
+const CACHE = 'foulee-v76';
 const ASSETS = [
   './',
   './index.html',

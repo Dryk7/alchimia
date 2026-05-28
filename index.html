@@ -30236,13 +30236,20 @@ function _drawBirds(ctx, W, H, dt){
         window.STATE.stamina = Math.min(window.STATE.staminaMax, (window.STATE.stamina ?? 0) + 8 * dt * _weatherSReg);
       }
     }
-    // === Music intensity adapt stamina (vague 15)
-    if(typeof ProcBGM !== 'undefined' && window.STATE && window.STATE.stamina !== undefined && window.STATE.staminaMax){
-      if(!window._lastMusicAdapt || performance.now() - window._lastMusicAdapt > 500){
+    // === V86 : Musique adaptative pilotée par le COMBO ===
+    // Avant : pilotée par la stamina → devenue morte depuis la suppression de la fatigue
+    // (stamina épinglée au max) → musique bloquée à plein régime. Maintenant elle respire
+    // avec ton jeu : posée quand tu lâches, intense + plus rapide quand tu enchaînes le combo.
+    if(typeof ProcBGM !== 'undefined'){
+      if(!window._lastMusicAdapt || performance.now() - window._lastMusicAdapt > 400){
         window._lastMusicAdapt = performance.now();
-        const sRatio = window.STATE.stamina / Math.max(1, window.STATE.staminaMax);
-        const mIntensity = sRatio > 0.8 ? 1.2 : sRatio < 0.3 ? 0.7 : 1.0;
-        const mTempo = sRatio < 0.3 ? 0.85 : sRatio > 0.8 ? 1.10 : 1.0;
+        const _combo = window._comboForFire || 0;
+        const _e = Math.max(0, Math.min(1, _combo / 16)); // 0 (idle) → 1 (combo ≥16, plein régime)
+        // lissage pour éviter les sauts brusques d'intensité
+        window._musicEnergy = (window._musicEnergy == null) ? _e : (window._musicEnergy * 0.7 + _e * 0.3);
+        const _me = window._musicEnergy;
+        const mIntensity = 0.72 + _me * 0.50; // 0.72 posé → 1.22 plein
+        const mTempo     = 0.94 + _me * 0.16; // 0.94 → 1.10
         try {
           if(typeof ProcBGM.setIntensity === 'function') ProcBGM.setIntensity(mIntensity);
           if(typeof ProcBGM.setTempo === 'function') ProcBGM.setTempo(mTempo);

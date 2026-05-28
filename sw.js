@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v85 : 0 critique de base — le crit vient uniquement de l'upgrade CHANCE
-const CACHE = 'foulee-v85';
+// v86 : musique adaptative pilotée par le combo (fix adapt morte depuis suppression fatigue)
+const CACHE = 'foulee-v86';
 const ASSETS = [
   './',
   './index.html',

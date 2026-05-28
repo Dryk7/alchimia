@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v72 : daily gated early-game + économie tap cohérente (1 goutte/tap, +1/niv partout)
-const CACHE = 'foulee-v72';
+// v73 : refonte boosts (bougie/doping cohérents) + audit éco complet
+const CACHE = 'foulee-v73';
 const ASSETS = [
   './',
   './index.html',

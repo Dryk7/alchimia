@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v78 : suppression de la fatigue — spam libre = vitesse + 1 goutte/tap, aucune pénalité
-const CACHE = 'foulee-v78';
+// v79 : commerces différenciés (café/tabac/pizza/presse/bar) + identité stable
+const CACHE = 'foulee-v79';
 const ASSETS = [
   './',
   './index.html',

@@ -30045,15 +30045,25 @@ function _drawBirds(ctx, W, H, dt){
     const isAirborne = typeof airborneFrac === 'number';
     const effort = (typeof effortLevel === 'number') ? effortLevel : 0;
     // Aura héros (préservée pour visibilité in-game)
+    // V68 ENDLESS : aura DORÉE pulsée en endless (récompense visuelle de l'endgame) sinon bleue
     if(isHero){
       const heroPulse = 0.85 + Math.sin(phase * 0.8) * 0.15;
+      const _endless = (typeof isEndless === 'function') && isEndless();
+      const auraR = _endless ? 56 * sc : 48 * sc;
       ctx.save();
-      const auraGrad = ctx.createRadialGradient(x, y - 5 * sc, 0, x, y - 5 * sc, 48 * sc);
-      auraGrad.addColorStop(0, `rgba(120,200,255,${0.20 * heroPulse})`);
-      auraGrad.addColorStop(0.6, `rgba(120,200,255,${0.09 * heroPulse})`);
-      auraGrad.addColorStop(1, 'rgba(120,200,255,0)');
+      const auraGrad = ctx.createRadialGradient(x, y - 5 * sc, 0, x, y - 5 * sc, auraR);
+      if(_endless){
+        // Doré chaud + halo plus large : le coureur a transcendé l'Olympe
+        auraGrad.addColorStop(0, `rgba(255,200,80,${0.30 * heroPulse})`);
+        auraGrad.addColorStop(0.55, `rgba(255,176,48,${0.14 * heroPulse})`);
+        auraGrad.addColorStop(1, 'rgba(255,176,48,0)');
+      } else {
+        auraGrad.addColorStop(0, `rgba(120,200,255,${0.20 * heroPulse})`);
+        auraGrad.addColorStop(0.6, `rgba(120,200,255,${0.09 * heroPulse})`);
+        auraGrad.addColorStop(1, 'rgba(120,200,255,0)');
+      }
       ctx.fillStyle = auraGrad;
-      ctx.beginPath(); ctx.arc(x, y - 5 * sc, 48 * sc, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(x, y - 5 * sc, auraR, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
     }
     const bounce = isAirborne ? 0 : Math.abs(Math.sin(phase)) * p.bodyBounce * sc;

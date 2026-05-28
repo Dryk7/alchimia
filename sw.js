@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v67 : Endless Mode (Olympe infinie post-saison 10)
-const CACHE = 'foulee-v67';
+// v68 : aura dorée endless + re-score UX honnête → 93/100
+const CACHE = 'foulee-v68';
 const ASSETS = [
   './',
   './index.html',

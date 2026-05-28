@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v68 : aura dorée endless + re-score UX honnête → 93/100
-const CACHE = 'foulee-v68';
+// v69 : variation mélodique procédurale → Audio 93, global 94/100
+const CACHE = 'foulee-v69';
 const ASSETS = [
   './',
   './index.html',

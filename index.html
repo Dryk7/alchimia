@@ -17386,6 +17386,16 @@ const ProcBGM = (() => {
   let _stepDur = 0; // sec per step
   let _baseVol = 0.22; // vague 15 : snapshot volume pour setIntensity
   let _baseStepDur = null; // vague 15 : snapshot stepDur pour setTempo
+  let _loopCount = 0; // V69 : compteur de boucles pour la variation mélodique
+
+  // V69 : décale une note d'octaves (ex: 'C5' +1 → 'C6'). Retourne null si hors gamme.
+  function _octaveShift(noteName, delta){
+    if(!noteName || noteName === '-') return null;
+    const m = /^([A-G]#?)(\d)$/.exec(noteName);
+    if(!m) return null;
+    const shifted = m[1] + (parseInt(m[2], 10) + delta);
+    return NOTE_FREQ[shifted] ? shifted : null;
+  }
 
   function _makeMasterGain(volume){
     if(!A.ctx) return null;
@@ -17786,6 +17796,23 @@ const ProcBGM = (() => {
     const whenH = when + _humanize; // version humanisée pour melody/arp/flute
     const i = _step;
     _playMelodyNote(_preset.melody[i], whenH, noteDur);
+    // === V69 VARIATION MÉLODIQUE : la mélodie "respire" en A/B au fil des boucles ===
+    // Mode tournant tous les 2 loops. Ajoute des ornements SANS toucher la mélodie de base.
+    const _varMode = _loopCount % 4; // 0=plain, 1=sparkle octave, 2=plain, 3=écho doux
+    const _melNote = _preset.melody[i];
+    if(_melNote && _melNote !== '-'){
+      const _isBarStart = (i % _preset.stepsPerBar) === 0;
+      const _isBarMid = (i % _preset.stepsPerBar) === Math.floor(_preset.stepsPerBar / 2);
+      if(_varMode === 1 && _isBarStart){
+        // Sparkle : grace note une octave au-dessus, légèrement décalée + douce
+        const up = _octaveShift(_melNote, 1);
+        if(up) _playMelodyNote(up, whenH + _stepDur * 0.5, noteDur * 0.35);
+      } else if(_varMode === 3 && _isBarMid){
+        // Écho doux : reprise une octave au-dessus en fin de mesure (effet call-response)
+        const up = _octaveShift(_melNote, 1);
+        if(up) _playMelodyNote(up, whenH + _stepDur * 0.25, noteDur * 0.3);
+      }
+    }
     _playBassNote(_preset.bass[i], when, _stepDur * 2);
     // Adaptive drum intensity : chill = drums subtils (scale 0.5), full energy = 1.0
     const drumScale = (typeof _preset.drumScale === 'number') ? _preset.drumScale : 1.0;
@@ -17825,6 +17852,7 @@ const ProcBGM = (() => {
       if(chord) _playChord(chord, when, _stepDur * _preset.stepsPerBar);
     }
     _step = (_step + 1) % totalSteps;
+    if(_step === 0) _loopCount++; // V69 : fin de boucle complète → variation suivante
     _nextStepAt += _stepDur;
   }
 
@@ -17848,6 +17876,7 @@ const ProcBGM = (() => {
     _masterGain = _makeMasterGain(_baseVol);
     _nextStepAt = A.ctx.currentTime + 0.05;
     _step = 0;
+    _loopCount = 0; // V69 : reset variation au démarrage du preset
     // Loop scheduler — schedule batch + replanifie
     const SCHED_AHEAD = 0.25; // sec d'avance
     const TICK_MS = 50;

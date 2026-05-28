@@ -11143,8 +11143,8 @@ if(document.readyState === 'loading'){
     ctx.font = 'bold 16px Nunito, sans-serif';
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText('OPENING DAY', 0, -2);
-    ctx.font = 'bold 9px Nunito, sans-serif';
-    ctx.fillText('★ STADE FOULÉE ★', 0, 12);
+    ctx.font = '800 11px Nunito, sans-serif';
+    ctx.fillText('★ STADE FOULÉE ★', 0, 13);
     ctx.restore();
   }
 
@@ -30792,6 +30792,19 @@ function _drawBirds(ctx, W, H, dt){
     const _stageNow = (typeof currentStage === 'function') ? currentStage() : null;
     const _biome = _stageNow?.biome ? BIOMES[_stageNow.biome] : null;
     const _biomeName = _stageNow?.biome || null;
+    // === V82 : CROSSFADE biome/stade — capture la frame d'AVANT (encore l'ancien décor) quand le biome change.
+    // Le fondu se compose plus bas (avant le héros). Transition douce au lieu d'un cut sec à chaque seuil de km/saison.
+    if(window.__lastRenderedBiome === undefined) window.__lastRenderedBiome = _biomeName;
+    if(_biomeName !== window.__lastRenderedBiome){
+      try {
+        if(!window.__xfadeCanvas) window.__xfadeCanvas = document.createElement('canvas');
+        const _xf = window.__xfadeCanvas;
+        if(_xf.width !== cv.width || _xf.height !== cv.height){ _xf.width = cv.width; _xf.height = cv.height; }
+        _xf.getContext('2d').drawImage(cv, 0, 0);
+        window.__xfadeAlpha = 1;
+      } catch(e){ window.__xfadeAlpha = 0; }
+      window.__lastRenderedBiome = _biomeName;
+    }
     const _phaseBucket = Math.round(dayPhase * 20) / 20;
     const _weatherKey = isRainy ? 'r' : isCloudy ? 'c' : 'n';
     const _skyKey = `sky_${_biomeName||'_'}_${_weatherKey}_${_phaseBucket}_${(H*0.65)|0}`;
@@ -37923,6 +37936,16 @@ function _drawBirds(ctx, W, H, dt){
     let airborneFrac = null;
     if(heroJumpY < -3){
       airborneFrac = Math.max(-1, Math.min(1, heroJumpVY / 380));
+    }
+    // === V82 : CROSSFADE biome/stade — fond l'ancien décor par-dessus le nouveau (sous le héros, qui reste net) ===
+    if(window.__xfadeAlpha > 0 && window.__xfadeCanvas){
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, Math.min(1, window.__xfadeAlpha));
+      ctx.setTransform(1, 0, 0, 1, 0, 0); // pixels device : l'image capturée est déjà à la résolution du canvas
+      try { ctx.drawImage(window.__xfadeCanvas, 0, 0); } catch(e){}
+      ctx.restore();
+      window.__xfadeAlpha -= (dt || 0.016) / 0.7; // fondu ~0.7s
+      if(window.__xfadeAlpha < 0) window.__xfadeAlpha = 0;
     }
     // POLISH : HALO LÉGENDAIRE autour du héros à partir du km 95 (proche de la fin)
     const _kmHero = (window.STATE && window.STATE.lapsRun) || 0;

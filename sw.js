@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v81 : QA playthrough A→Z + fix libellé warning ascension
-const CACHE = 'foulee-v81';
+// v82 : crossfade fluide entre biomes/stades + lisibilité sous-titre splash
+const CACHE = 'foulee-v82';
 const ASSETS = [
   './',
   './index.html',

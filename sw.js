@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v73 : refonte boosts (bougie/doping cohérents) + audit éco complet
-const CACHE = 'foulee-v73';
+// v74 : éco galère early (km passif -50%) + auto-tap plus tôt (km10) et puissant (2.5/niv cap12)
+const CACHE = 'foulee-v74';
 const ASSETS = [
   './',
   './index.html',

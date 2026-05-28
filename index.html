@@ -9576,7 +9576,7 @@ body{
               </div>
             </button>
 
-            <button class="upg-btn upg-auto" data-upgrade="autoTap" data-unlock-km="18" aria-label="Auto-pilote">
+            <button class="upg-btn upg-auto" data-upgrade="autoTap" data-unlock-km="10" aria-label="Auto-pilote">
               <div class="upg-icon-wrap">
                 <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="3"/><path d="M12 2 v4 M12 18 v4 M2 12 h4 M18 12 h4 M5 5 l3 3 M16 16 l3 3 M5 19 l3 -3 M16 8 l3 -3" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
               </div>
@@ -10389,7 +10389,7 @@ const I18N_STRINGS = {
     upg_desc_tapValue: 'Chaque pas pèse plus lourd — +1 goutte par tap',
     upg_desc_critChance: '1% de plus de récolter le jackpot ×5 sur un tap',
     upg_desc_lapBonus: 'Boucler 1 km te rapporte +2 gouttes',
-    upg_desc_autoTap: 'Ton coureur tape lui-même 1 fois par seconde',
+    upg_desc_autoTap: 'Ton coureur tape lui-même : +2.5 taps/sec par niveau (cap 12/s)',
     upg_desc_endurance: 'Tu peux respirer plus longtemps entre 2 sprints',
     upg_desc_baseSpeed: '+10% de vitesse même quand tu ne tapes pas',
     upg_desc_cruiseControl: '+5% de vitesse maintenue sans toucher l\'écran',
@@ -10489,7 +10489,7 @@ const I18N_STRINGS = {
     upg_desc_tapValue: 'Each stride hits harder — +1 drop per tap',
     upg_desc_critChance: '+1% chance to land a ×5 drop jackpot',
     upg_desc_lapBonus: 'Every km completed earns +2 extra drops',
-    upg_desc_autoTap: 'Your runner taps 1 time per second on their own',
+    upg_desc_autoTap: 'Your runner taps on their own: +2.5 taps/sec per level (cap 12/s)',
     upg_desc_endurance: 'You can breathe longer between two sprints',
     upg_desc_baseSpeed: '+10% speed even when you don\'t tap',
     upg_desc_cruiseControl: '+5% maintained speed without touching the screen',
@@ -20302,9 +20302,9 @@ function updateTapStrip(){
   const boostPerTap = document.getElementById('boost-per-tap');
   if(boostPerTap) boostPerTap.textContent = tapValue;
   if(perLap){
-    // Récolte gouttes logarithmique : km 1 = 5, km 10 = 16, km 50 = 35, km 100 = 50, km 200 = 71
+    // V74 : affichage = vrai calcul (1 + km*0.8 + upgrade), récolte volontairement faible early
     const lapBonus = Math.floor(Math.pow(STATE.upgradeLapBonus||0, 1.5) * 2);
-    const lapReward = Math.floor(5 * Math.sqrt(((STATE.lapsRun||0) + 1))) + lapBonus;
+    const lapReward = 1 + Math.floor((STATE.lapsRun||0) * 0.8) + lapBonus;
     perLap.textContent = '+' + lapReward;
   }
   // Crit affiché : 5% base + 1% par niveau (cohérent avec le calcul réel rawCrit = 0.05 + lvl*0.01)
@@ -20313,7 +20313,7 @@ function updateTapStrip(){
   const _gps = document.getElementById('stat-gps');
   if(_gps){
     const tapV = tapValue;
-    const autoR = Math.min(10, (STATE.upgradeAutoTap || 0) * 1.5);
+    const autoR = Math.min(12, (STATE.upgradeAutoTap || 0) * 2.5); // V74 : cohérent avec tickAutoTap
     const teamR = (typeof teamPassiveRate === 'function' ? teamPassiveRate() : 0);
     const gps = Math.max(0, Math.round(tapV * autoR + teamR));
     const oldGps = _gps.textContent;
@@ -20402,9 +20402,9 @@ const UPGRADES_TAP = {
     unlockLaps: 3,
   },
   autoTap: {
-    nameKey: 'upg_autoTap', base: 2500, factor: 1.90,
+    nameKey: 'upg_autoTap', base: 1200, factor: 1.90,
     state: 'upgradeAutoTap',
-    unlockLaps: 18,
+    unlockLaps: 10, // V74 : automatisation plus tôt (km 10) + base moins chère (2500→1200)
   },
   endurance: {
     nameKey: 'upg_endurance', base: 800, factor: 1.85,
@@ -20539,7 +20539,7 @@ function _upgradeEffectAtLvl(id, lvl){
     case 'tapValue':     return '+' + (1 + lvl * 1) + ' g/tap';
     case 'critChance':   return ((5 + lvl) | 0) + '% chance crit';
     case 'lapBonus':     return '+' + Math.floor(Math.pow(lvl, 1.5) * 2) + ' g/km';
-    case 'autoTap':      return (lvl * 1.5).toFixed(1) + ' tap/s automatique';
+    case 'autoTap':      return Math.min(12, lvl * 2.5).toFixed(1) + ' tap/s automatique';
     case 'endurance':    return '+' + (lvl * 10) + ' stamina max';
     case 'baseSpeed':    return '×' + Math.pow(1.15, lvl).toFixed(2) + ' vitesse passive';
     case 'eagleEye':     return '×' + (1 + lvl * 0.15).toFixed(2) + ' vision haies';
@@ -23492,7 +23492,7 @@ function _previewUpgradeEffect(id){
       case 'tapValue':     return '+' + (1 + l * 1) + ' g/tap';
       case 'critChance':   return (5 + l) + '% crit';
       case 'lapBonus':     return '+' + Math.floor(Math.pow(l, 1.5) * 2) + ' g/km';
-      case 'autoTap':      return '+' + (l * 1.5).toFixed(1) + ' tap/s';
+      case 'autoTap':      return '+' + Math.min(12, l * 2.5).toFixed(1) + ' tap/s';
       case 'endurance':    return '+' + (l * 10) + ' stamina';
       case 'baseSpeed':    return '×' + Math.pow(1.15, l).toFixed(2) + ' vitesse';
       case 'eagleEye':     return '×' + (1 + l * 0.15).toFixed(2) + ' vision';
@@ -23582,8 +23582,8 @@ function updateUpgradesUI(){
    (passif, comme un employé qui tape pour toi) */
 let _autoTapAccumulator = 0;
 function tickAutoTap(dt){
-  // SOFT CAP V16: autoTap rate plafonné à 10 taps/sec (équivaut humain rapide)
-  const rate = Math.min(10, (STATE.upgradeAutoTap || 0) * 1.5 + (typeof saisonAutoBase==='function'?saisonAutoBase():0));
+  // V74 : auto-tap PUISSANT (2.5/niv, cap 12 taps/sec) → l'automatisation prend vraiment le relais du tap manuel
+  const rate = Math.min(12, (STATE.upgradeAutoTap || 0) * 2.5 + (typeof saisonAutoBase==='function'?saisonAutoBase():0));
   if(rate <= 0) return;
   _autoTapAccumulator += dt * rate;
   while(_autoTapAccumulator >= 1){
@@ -23712,11 +23712,12 @@ function completeLap(){
     if(lapNum === 50) Analytics.track('milestone_km50');
     if(lapNum === 100) Analytics.track('milestone_km100_ascension');
   }
-  // ÉCO ULTRA-SIMPLIFIÉE : gains réduits encore ×2.5 (base 3 + km 2 + upgrade scale 1.5 par niveau)
-  // Au km 100 : 3 + 200 + bonus ≈ 250 gouttes par km (vs 510 avant, 2700 il y a 3 push)
-  // Rebalance lapBonus : scaling exponentiel doux pour rendre l'upgrade vraiment rentable
+  // V74 ÉCO "GALÈRE EARLY" : la récolte passive/km est volontairement FAIBLE au début
+  // → le tap manuel est la source dominante tant que le joueur n'a pas investi (auto-tap, lapBonus).
+  // Courbe : 1 + km*0.8 (vs 3 + km*2 avant) ≈ moitié. Au km 100 : ~81 + bonus upgrade.
+  // L'upgrade lapBonus (scaling exponentiel doux) reste LE levier pour transformer le km en vraie source.
   const upgradeBonus = Math.floor(Math.pow(STATE.upgradeLapBonus||0, 1.5) * 2);
-  let baseReward = 3 + lapNum * 2 + upgradeBonus;
+  let baseReward = 1 + Math.floor(lapNum * 0.8) + upgradeBonus;
   // Bonus carte "Champion National" → +30% lap gold
   if(typeof deckBonus === 'function') baseReward = Math.floor(baseReward * (1 + deckBonus('lapGold') + deckBonus('goldAll')));
   // Bonus event lapBonus aussi

@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v77 : slider taille coureurs dans Réglages (80-160%, live + persistant)
-const CACHE = 'foulee-v77';
+// v78 : suppression de la fatigue — spam libre = vitesse + 1 goutte/tap, aucune pénalité
+const CACHE = 'foulee-v78';
 const ASSETS = [
   './',
   './index.html',

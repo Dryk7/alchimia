@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v70 : stop harcèlement — coureurs agressifs inactif 5s→45s, cadence calme
-const CACHE = 'foulee-v70';
+// v71 : calme TOUS les pop-ups (bulle ambiante, tier banner, level-up, durées)
+const CACHE = 'foulee-v71';
 const ASSETS = [
   './',
   './index.html',

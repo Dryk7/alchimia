@@ -11970,10 +11970,13 @@ function gainXp(amount){
   renderAlchLevel();
 }
 function showLevelUp(newLevel, newTitle){
+  // V71 anti-harcèlement : ne plus annoncer CHAQUE niveau (spam toutes les ~30s en mid-game).
+  // Bulle uniquement aux paliers de 5 OU si le titre change (moments qui comptent vraiment).
+  if(!newTitle && (newLevel % 5 !== 0)) return;
   // Plus de popup plein écran — le runner annonce via bulle enrichie
   if(typeof showRunnerBubble === 'function'){
     const txt = newTitle ? `Niveau ${newLevel} · ${newTitle}` : `Niveau ${newLevel} !`;
-    showRunnerBubble(txt, 2500);
+    showRunnerBubble(txt, 2000);
     // Ajoute la classe level-up-bubble après insertion (showRunnerBubble crée l'élément)
     const stadium = document.getElementById('runner-stadium');
     if(stadium){
@@ -24846,8 +24849,8 @@ function showRunnerBubble(text, durationMs){
     if(/💰|🏆|✨|🎁|⭐|💎/.test(text || '')) bub.classList.add('pop-gold');
     bub.style.transform = 'translateX(-50%) translateY(0) scale(1)';
   }, 20);
-  // Durée : 1.4s par défaut, override possible pour bulles tuto plus longues
-  const dur = (typeof durationMs === 'number' && durationMs > 0) ? durationMs : 1400;
+  // Durée : 1.0s par défaut (V71 : raccourci 1.4→1.0 pour moins polluer), override pour tuto
+  const dur = (typeof durationMs === 'number' && durationMs > 0) ? durationMs : 1000;
   setTimeout(()=>{
     bub.classList.remove('show');
     bub.style.transform = 'translateX(-50%) translateY(-8px) scale(.9)';
@@ -24856,8 +24859,10 @@ function showRunnerBubble(text, durationMs){
 }
 function maybeRunnerBubble(){
   const now = Date.now();
-  if(now - _lastBubbleAt < 18000) return; // pas plus d'une bulle toutes 18s
-  if(Math.random() > 0.35) return;
+  // V71 anti-harcèlement : bavardage ambiant DRASTIQUEMENT réduit (18s→90s, 35%→6%)
+  // → reste une touche de vie occasionnelle, plus du spam de bulles
+  if(now - _lastBubbleAt < 90000) return;
+  if(Math.random() > 0.06) return;
   const asc = STATE.ascensions || STATE.transmutations || 0;
   const speed = runnerSpeedMultiplier();
   let pool = RUNNER_LINES.default;
@@ -38775,22 +38780,14 @@ function _drawBirds(ctx, W, H, dt){
     tierBanner.classList.remove('out');
     tierBannerMsg.textContent = msg;
     tierBanner.style.display = 'flex';
-    // Confettis dans le canvas pour fêter
-    if(window.RUNNER_2D && window.RUNNER_2D.spawnConfetti){
-      window.RUNNER_2D.spawnConfetti();
-    }
-    // SFX si dispo
-    if(typeof blip === 'function'){
-      blip(660, .12, 'sine', .25, .5);
-      setTimeout(()=>blip(880, .14, 'sine', .25, .5), 100);
-      setTimeout(()=>blip(1320, .18, 'sine', .25, .5), 220);
-    }
-    if(typeof vibrate === 'function') vibrate([40, 60, 80]);
+    // V71 anti-harcèlement : plus de confettis ni de triple-blip à chaque palier (spam visuel/sonore).
+    // Un seul blip discret + pas de vibration. La bannière reste, juste plus sobre + plus courte.
+    if(typeof blip === 'function') blip(880, .10, 'sine', .18, .5);
     if(bannerTimeout) clearTimeout(bannerTimeout);
     bannerTimeout = setTimeout(()=>{
       tierBanner.classList.add('out');
       setTimeout(()=>{ if(tierBanner) tierBanner.style.display = 'none'; }, 500);
-    }, 3500);
+    }, 2000);
   }
 
   /* === 3.5. ACHIEVEMENT 1er km (récompense bonus + message dédié) === */

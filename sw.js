@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v64 : modals défensifs + roadmap honest 90→100
-const CACHE = 'foulee-v64';
+// v66 : dead code cleanup (-1186 lignes) + audio humanisation
+const CACHE = 'foulee-v66';
 const ASSETS = [
   './',
   './index.html',

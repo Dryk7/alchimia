@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v66 : dead code cleanup (-1186 lignes) + audio humanisation
-const CACHE = 'foulee-v66';
+// v67 : Endless Mode (Olympe infinie post-saison 10)
+const CACHE = 'foulee-v67';
 const ASSETS = [
   './',
   './index.html',

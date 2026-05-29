@@ -1141,9 +1141,11 @@ header .stats #stat-stars.hud-show{ display:flex; }
   box-shadow:0 8px 30px rgba(0,0,0,.25);
   font-family:"Nunito", sans-serif;
   color:#1a1a1a;
-  pointer-events:auto;
+  pointer-events:none; /* V87 : la bulle du tuto ne bloque plus les taps sur le jeu */
   animation:tutoBubbleIn .35s cubic-bezier(.34,1.56,.64,1) forwards;
 }
+/* V87 : seuls les boutons de la bulle restent cliquables (Passer / Suivant) */
+.active-tuto-bubble button, .active-tuto-bubble a{ pointer-events:auto; }
 @keyframes tutoBubbleIn{
   0%   { transform:translateY(20px) scale(.85); opacity:0; }
   60%  { transform:translateY(-4px) scale(1.05); opacity:1; }
@@ -8453,7 +8455,8 @@ body.shop-epic-flash::after{
   opacity: 0;
   transition: opacity .3s;
 }
-#lap-result.show { opacity: 1; pointer-events: auto; }
+#lap-result.show { opacity: 1; } /* V87 : la carte de km ne bloque plus les taps — tu continues à courir pendant la célébration */
+#lap-result button, #lap-result a { pointer-events: auto; } /* garde un éventuel bouton cliquable */
 #lap-result-card {
   background: linear-gradient(160deg, #1a0808 0%, #2a0a0a 40%, #1a0818 100%);
   border: 1.5px solid rgba(200,64,48,.5);

@@ -1,6 +1,6 @@
 // Service Worker — FOULÉE (idle-tap mobile)
-// v86 : musique adaptative pilotée par le combo (fix adapt morte depuis suppression fatigue)
-const CACHE = 'foulee-v86';
+// v87 : fix taps bloqués — la carte de km + bulles tuto n'avalent plus les taps (jeu jouable + perso accélère)
+const CACHE = 'foulee-v87';
 const ASSETS = [
   './',
   './index.html',
